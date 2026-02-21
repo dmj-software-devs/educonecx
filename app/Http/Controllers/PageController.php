@@ -6,6 +6,39 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
+    /**
+     * Team members data
+     */
+    private function getTeamMembers()
+    {
+        return [
+            [
+                'name' => 'Loumiel Joseph',
+                'position' => 'Chief Executive Officer (Global Vision)',
+                'image' => 'https://educonecx.com/wp-content/uploads/2025/09/Our-Team.png',
+                'bio' => 'Leading with global vision and strategic direction.',
+            ],
+            [
+                'name' => 'Elyona Raynell',
+                'position' => 'Chief Product & Technology Officer (CPT)',
+                'image' => 'https://educonecx.com/wp-content/uploads/2025/09/Our-Team-2.png',
+                'bio' => 'Driving product innovation and technological excellence.',
+            ],
+            [
+                'name' => 'Garcia Rico',
+                'position' => 'Chief Operations & Strategic Partnerships Officer (COSPO)',
+                'image' => 'https://educonecx.com/wp-content/uploads/2025/09/18ca3ab7-2f68-40cd-8961-aa6fb9642156.png',
+                'bio' => 'Building strategic partnerships and operational efficiency.',
+            ],
+            [
+                'name' => 'Daniella Roy',
+                'position' => 'Chief Learning & Academic Officer (CLAO)',
+                'image' => 'https://educonecx.com/wp-content/uploads/2025/09/aefd2257-13f8-48f4-aef7-a5f60553a9ec-e1761195154721.png',
+                'bio' => 'Shaping learning experiences and academic excellence.',
+            ],
+        ];
+    }
+
     public function home()
     {
         return view('home');
@@ -26,25 +59,15 @@ class PageController extends Controller
         return view('neo-ed-tech');
     }
 
-    // Remove the blog method from here since we're using BlogController
-    // public function blog()
-    // {
-    //     return view('blog');
-    // }
-
     public function ourTeam()
     {
-        return view('our-team');
+        $teamMembers = $this->getTeamMembers();
+        return view('our-team', compact('teamMembers'));
     }
 
     public function contact()
     {
         return view('contact');
-    }
-
-    public function courses()
-    {
-        return view('courses');
     }
 
     public function quiz()
