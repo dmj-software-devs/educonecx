@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\BlogController;
-use App\Http\Controllers\TeamController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +19,7 @@ Route::get('/academy', [PageController::class, 'academy'])->name('academy');
 Route::get('/neo-ed-tech', [PageController::class, 'neoEdTech'])->name('neo-ed-tech');
 Route::get('/our-team', [PageController::class, 'ourTeam'])->name('our-team');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 Route::get('/crowd-quiz', [PageController::class, 'quiz'])->name('quiz');
 Route::get('/dashboard', [PageController::class, 'dashboard'])->name('dashboard');
 Route::get('/membership-pricing', [PageController::class, 'pricing'])->name('pricing');
