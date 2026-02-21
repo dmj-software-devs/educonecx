@@ -54,7 +54,7 @@
                     <h4>Support</h4>
                     <ul class="footer-links">
                         <li><a href="{{ route('faqs') }}"><i class="fas fa-chevron-right"></i> FAQs</a></li>
-                        <li><a href="{{ route('pricing') }}"><i class="fas fa-chevron-right"></i> Pricing</a></li>
+                        <li><a href="{{ route('pricing') }}"><i class="fas fa-chevron-right"></i>Pricing</a></li>
                         <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
                         <li><a href="{{ route('refund') }}"><i class="fas fa-chevron-right"></i> Refund Policy</a></li>
                         <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>

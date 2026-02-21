@@ -82,7 +82,52 @@ class PageController extends Controller
 
     public function pricing()
     {
-        return view('pricing');
+        $plans = [
+            'free' => [
+                'name' => 'Free Plan',
+                'price' => 0,
+                'description' => 'Start learning with free access to selected courses.',
+                'features' => [
+                    'Sign up and get Access to beginner courses',
+                    'Community support',
+                    'Mobile-friendly learning'
+                ],
+                'button_text' => 'Get Started',
+                'button_url' => '/checkout?plan=free',
+                'highlight' => false
+            ],
+            'pro' => [
+                'name' => 'Pro Plan',
+                'price' => 22,
+                'description' => 'Unlock all core courses and features for serious learners.',
+                'features' => [
+                    'Everything in Free',
+                    'Access to all courses',
+                    'Downloadable resources',
+                    'Certificate of completion'
+                ],
+                'button_text' => 'Get Started',
+                'button_url' => '/checkout?plan=pro',
+                'highlight' => true,
+                'popular' => true
+            ],
+            'vip' => [
+                'name' => 'VIP Plan',
+                'price' => 49,
+                'description' => 'Premium access with personalized support and bonuses.',
+                'features' => [
+                    'Everything in Pro',
+                    '1-on-1 mentorship',
+                    'Exclusive webinars',
+                    'Priority support'
+                ],
+                'button_text' => 'Get Started',
+                'button_url' => '/checkout?plan=vip',
+                'highlight' => false
+            ]
+        ];
+
+        return view('pricing', compact('plans'));
     }
 
     public function faqs()
