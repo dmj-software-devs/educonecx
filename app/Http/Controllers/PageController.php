@@ -26,10 +26,11 @@ class PageController extends Controller
         return view('neo-ed-tech');
     }
 
-    public function blog()
-    {
-        return view('blog');
-    }
+    // Remove the blog method from here since we're using BlogController
+    // public function blog()
+    // {
+    //     return view('blog');
+    // }
 
     public function ourTeam()
     {

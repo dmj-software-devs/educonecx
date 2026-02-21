@@ -33,7 +33,8 @@
                     <!-- In the navigation menu, update the Courses link -->
                     <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">All Courses</a></li>
                     <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">NEO ED-TECH</a></li>
-                    <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">Blog</a></li>
+                    <!-- In the navigation menu, update the Blog link -->
+                    <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">Blog</a></li>
                     <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">Our Team</a></li>
                     <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">Contact</a></li>
                     <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}" style="font-weight: 500; padding: 5px 0; border-bottom: 2px solid transparent; transition: all 0.3s;">Quiz</a></li>
