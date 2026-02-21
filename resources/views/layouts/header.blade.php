@@ -15,7 +15,7 @@
             <!-- Logo -->
             <div class="logo" style="flex: 0 0 auto;">
                 <a href="{{ route('home') }}">
-                    <img src="{{ asset('images/logo.jpeg') }}" alt="EDUCONECX Logo" style="height: 50px; width: auto;">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="EDUCONECX Logo" style="height: 50px; width: auto;">
                 </a>
             </div>
 
