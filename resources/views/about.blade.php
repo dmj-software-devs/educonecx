@@ -1,111 +1,1227 @@
 @extends('layouts.main')
 
-@section('title', 'About - EDUCONECX')
+@section('title', 'About Us - EDUCONECX | Empowering Global Learners')
 
 @section('meta_description', 'Learn about EDUCONECX, an international AI-powered educational platform dedicated to supporting learners worldwide with practical language and digital business skills.')
 
 @push('styles')
 <style>
-    .about-section {
-        padding: 60px 0;
+    /* Hero Section */
+    .about-hero {
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 100px 0;
+        overflow: hidden;
+        color: var(--white);
     }
-    
-    .about-content {
-        max-width: 900px;
+
+    .about-hero-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+
+    .about-hero-particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .about-hero-particle:nth-child(1) {
+        width: 300px;
+        height: 300px;
+        top: -100px;
+        right: -100px;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .about-hero-particle:nth-child(2) {
+        width: 200px;
+        height: 200px;
+        bottom: -50px;
+        left: -50px;
+        animation: float 10s ease-in-out infinite reverse;
+    }
+
+    .about-hero-particle:nth-child(3) {
+        width: 150px;
+        height: 150px;
+        top: 30%;
+        left: 20%;
+        animation: float 12s ease-in-out infinite;
+    }
+
+    .about-hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 800px;
         margin: 0 auto;
     }
-    
-    .about-section-title {
-        font-size: 32px;
-        margin-bottom: 30px;
-        color: var(--primary-color);
-    }
-    
-    .about-paragraph {
+
+    .about-hero-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: var(--border-radius-full);
+        font-weight: 600;
+        font-size: 0.9rem;
         margin-bottom: 25px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .about-hero-title {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 20px;
+        line-height: 1.1;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .about-hero-text {
+        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        opacity: 0.9;
         line-height: 1.8;
-        color: #444;
     }
-    
-    .about-highlight {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px;
-        border-radius: 15px;
-        margin: 40px 0;
+
+    /* Mission Section */
+    .mission-section {
+        padding: 80px 0;
+        background: var(--white);
     }
-    
+
+    .mission-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .mission-content {
+        padding-right: 40px;
+    }
+
+    .mission-subtitle {
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .mission-title {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 25px;
+        line-height: 1.2;
+    }
+
+    .mission-text {
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    .mission-stats {
+        display: flex;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .mission-stat {
+        text-align: center;
+    }
+
+    .mission-stat-number {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin-bottom: 5px;
+    }
+
+    .mission-stat-label {
+        color: var(--gray);
+        font-size: 0.95rem;
+    }
+
+    .mission-image {
+        position: relative;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .mission-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: var(--transition-slow);
+    }
+
+    .mission-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .mission-image-badge {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        background: var(--gradient-1);
+        color: var(--white);
+        padding: 15px 25px;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-lg);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .mission-image-badge i {
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+
+    .mission-image-badge span {
+        display: block;
+        font-weight: 600;
+    }
+
+    /* Values Section */
+    .values-section {
+        padding: 80px 0;
+        background: var(--light);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .section-subtitle {
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .section-title {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .section-description {
+        color: var(--gray);
+        max-width: 700px;
+        margin: 0 auto;
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+
     .values-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 30px;
-        margin: 40px 0;
+        margin-top: 50px;
     }
-    
+
     .value-card {
-        background: #f8f9fa;
-        padding: 30px;
-        border-radius: 10px;
+        background: var(--white);
+        padding: 40px 30px;
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
         text-align: center;
-        transition: transform 0.3s;
+        position: relative;
+        overflow: hidden;
     }
-    
+
+    .value-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient-1);
+        transform: translateX(-100%);
+        transition: var(--transition);
+    }
+
+    .value-card:hover::before {
+        transform: translateX(0);
+    }
+
     .value-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
     }
-    
+
     .value-icon {
-        font-size: 40px;
-        color: var(--primary-color);
+        width: 80px;
+        height: 80px;
+        background: var(--gradient-1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        color: var(--white);
+        font-size: 2rem;
+        transition: var(--transition);
+    }
+
+    .value-card:hover .value-icon {
+        transform: rotateY(180deg);
+    }
+
+    .value-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .value-text {
+        color: var(--gray);
+        line-height: 1.6;
+    }
+
+    /* Story Section */
+    .story-section {
+        padding: 80px 0;
+        background: var(--white);
+    }
+
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .story-image {
+        position: relative;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .story-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: var(--transition-slow);
+    }
+
+    .story-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .story-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        z-index: 1;
+    }
+
+    .story-content {
+        padding-left: 40px;
+    }
+
+    .story-title {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 25px;
+        line-height: 1.2;
+    }
+
+    .story-text {
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    .story-quote {
+        margin: 30px 0;
+        padding: 20px 30px;
+        background: var(--light);
+        border-radius: var(--border-radius-lg);
+        position: relative;
+        font-style: italic;
+    }
+
+    .story-quote i {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 2rem;
+        color: var(--primary);
+        opacity: 0.2;
+    }
+
+    .story-quote p {
+        margin-left: 30px;
+        font-size: 1.1rem;
+        color: var(--dark);
+    }
+
+    /* Services Section */
+    .services-section {
+        padding: 80px 0;
+        background: var(--light);
+    }
+
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+    }
+
+    .service-card {
+        background: var(--white);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        height: 100%;
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .service-header {
+        background: var(--gradient-1);
+        color: var(--white);
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .service-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service-header h3 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service-header p {
+        opacity: 0.9;
+        font-size: 0.95rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service-body {
+        padding: 30px;
+    }
+
+    .service-features {
+        list-style: none;
+        margin-bottom: 25px;
+    }
+
+    .service-features li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 12px;
+        color: var(--gray);
+    }
+
+    .service-features li i {
+        color: var(--success);
+        font-size: 1rem;
+    }
+
+    .service-btn {
+        display: inline-block;
+        padding: 10px 25px;
+        background: var(--gradient-1);
+        color: var(--white);
+        border-radius: var(--border-radius-full);
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: var(--transition);
+    }
+
+    .service-btn:hover {
+        transform: translateX(5px);
+        box-shadow: var(--shadow-md);
+        color: var(--white);
+    }
+
+    /* Team Section */
+    .team-section {
+        padding: 80px 0;
+        background: var(--white);
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 40px;
+        margin-top: 50px;
+    }
+
+    .team-card {
+        background: var(--white);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .team-image {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 1;
+    }
+
+    .team-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition-slow);
+    }
+
+    .team-card:hover .team-image img {
+        transform: scale(1.1);
+    }
+
+    .team-social {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding: 15px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        transition: var(--transition);
+    }
+
+    .team-card:hover .team-social {
+        bottom: 0;
+    }
+
+    .team-social a {
+        width: 35px;
+        height: 35px;
+        background: var(--white);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        transition: var(--transition);
+    }
+
+    .team-social a:hover {
+        background: var(--primary);
+        color: var(--white);
+        transform: translateY(-3px);
+    }
+
+    .team-info {
+        padding: 25px;
+    }
+
+    .team-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .team-position {
+        color: var(--primary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .team-bio {
+        color: var(--gray);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    /* CTA Section */
+    .about-cta {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: var(--white);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-cta::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 10s ease-in-out infinite;
+    }
+
+    .about-cta::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite reverse;
+    }
+
+    .about-cta-content {
+        position: relative;
+        z-index: 2;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .about-cta h2 {
+        font-size: clamp(2rem, 5vw, 3rem);
         margin-bottom: 20px;
     }
-    
-    .value-title {
-        font-size: 20px;
-        margin-bottom: 15px;
+
+    .about-cta p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+    }
+
+    .about-cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .about-cta-buttons .btn {
+        min-width: 200px;
+    }
+
+    .about-cta-buttons .btn-secondary {
+        border-color: var(--white);
+        color: var(--white);
+    }
+
+    .about-cta-buttons .btn-secondary:hover {
+        background: var(--white);
+        color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+
+        .mission-grid,
+        .story-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .mission-content {
+            padding-right: 0;
+        }
+
+        .story-content {
+            padding-left: 0;
+        }
+
+        .mission-stats {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .values-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .mission-stats {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .about-cta-buttons .btn {
+            min-width: 150px;
+        }
     }
 </style>
 @endpush
 
 @section('content')
-    <div class="container about-section">
-        <div class="about-content animate-on-scroll">
-            <h1 class="about-section-title">Who We Are</h1>
-            <p class="about-paragraph">EDUCONECX is an international, AI-powered educational platform dedicated to supporting learners worldwide with practical language and digital business skills. Our mission is to help individuals overcome language barriers, build real-world competencies, and succeed in today's global digital economy.</p>
-            
-            <p class="about-paragraph">EDUCONECX operates as an educational platform focused on skill development, learning guidance, and practical application. We support learners, freelancers, and entrepreneurs by helping them combine structured learning programs to build projects, develop businesses, and grow in fields such as AI, linguistics, technology, and digital entrepreneurship.</p>
-            
-            <p class="about-paragraph">Our learning programs are curated from trusted and recognized educational sources and platforms. All content is reviewed, updated, and organized to ensure relevance, practicality, and alignment with real-world needs. Instead of requiring learners to search for and invest in multiple separate trainings, EDUCONECX brings essential knowledge together in one accessible platform, offering a comprehensive learning experience supported by tools and resources.</p>
-            
-            <p class="about-paragraph">In addition to the educational platform, EDUCONECX also operates NEO-EDTECH, a professional agency providing digital marketing, AI-powered solutions, web and e-commerce services, and business support. This initiative complements the learning experience by helping individuals and organizations apply knowledge in practical contexts and translate skills into measurable outcomes.</p>
-            
-            <p class="about-paragraph">EDUCONECX serves a global audience and focuses on effective, results-oriented programs designed for individuals who are motivated to apply what they learn and grow through real-world implementation.</p>
-        </div>
-        
-        <div class="about-highlight animate-on-scroll">
-            <h2 style="font-size: 28px; margin-bottom: 20px;">Who We Serve</h2>
-            <p style="font-size: 18px; line-height: 1.8;">EDUCONECX supports learners, professionals, and entrepreneurs who seek to grow and adapt in a rapidly evolving digital world. The platform is designed for individuals who want to develop practical skills across areas such as technology, digital business, AI integration, communication, and professional development.</p>
-            <p style="font-size: 18px; line-height: 1.8; margin-top: 20px;">Whether learners are beginning their journey or advancing existing skills, EDUCONECX provides structured learning paths, educational resources, and interactive experiences that support confident and continuous growth.</p>
-        </div>
-        
-        <div class="about-content animate-on-scroll">
-            <h2 class="about-section-title">Why We Created This Platform</h2>
-            <p class="about-paragraph">We believe access to practical education is essential for personal and economic growth. Many individuals face challenges due to limited access to relevant learning resources or training that connects directly to real-world applications.</p>
-            
-            <p class="about-paragraph">EDUCONECX was created to address this gap. By combining AI-powered learning tools with a practical, skill-focused approach, the platform helps learners build capabilities that open opportunities in areas such as customer service, freelancing, online business, and global professional collaboration.</p>
-        </div>
-        
-        <div class="about-content animate-on-scroll">
-            <h2 class="about-section-title">Our Services</h2>
-            <p class="about-paragraph">Empowering Learners with Practical Language and Digital Business Skills</p>
-            
-            <p class="about-paragraph">EDUCONECX offers AI-powered educational services designed to support success in the global digital economy. The platform provides flexible learning experiences for individuals seeking to improve communication skills, prepare for customer-facing roles, or develop digital and entrepreneurial capabilities.</p>
-            
-            <h3 style="font-size: 24px; margin: 30px 0 15px;">Language Learning Programs</h3>
-            <p class="about-paragraph">Our language programs focus on practical communication skills designed for professional, digital, and everyday use. Learners develop confidence in real-world interactions, workplace communication, and global collaboration through structured and adaptable learning paths.</p>
-            
-            <h3 style="font-size: 24px; margin: 30px 0 15px;">Call Center & Customer Service Training</h3>
-            <p class="about-paragraph">EDUCONECX provides training programs focused on communication skills, customer engagement, and professional readiness for customer support and service-based roles in international and remote environments.</p>
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="about-hero-particles">
+        <div class="about-hero-particle"></div>
+        <div class="about-hero-particle"></div>
+        <div class="about-hero-particle"></div>
+    </div>
+
+    <div class="container">
+        <div class="about-hero-content" data-aos="fade-up">
+            <span class="about-hero-badge">About EDUCONECX</span>
+            <h1 class="about-hero-title">Empowering Learners Worldwide</h1>
+            <p class="about-hero-text">
+                We're on a mission to make quality education accessible to everyone,
+                everywhere through AI-powered learning and practical skill development.
+            </p>
         </div>
     </div>
+</section>
+
+<!-- Mission Section -->
+<section class="mission-section">
+    <div class="container">
+        <div class="mission-grid">
+            <div class="mission-content" data-aos="fade-right">
+                <span class="mission-subtitle">Our Mission</span>
+                <h2 class="mission-title">Breaking Barriers, Building Futures</h2>
+                <p class="mission-text">
+                    EDUCONECX is an international, AI-powered educational platform dedicated to
+                    supporting learners worldwide with practical language and digital business skills.
+                    Our mission is to help individuals overcome language barriers, build real-world
+                    competencies, and succeed in today's global digital economy.
+                </p>
+                <p class="mission-text">
+                    We believe that access to practical education is essential for personal and
+                    economic growth. By combining AI-powered learning tools with a practical,
+                    skill-focused approach, we help learners build capabilities that open opportunities
+                    in customer service, freelancing, online business, and global professional collaboration.
+                </p>
+
+                <div class="mission-stats">
+                    <div class="mission-stat">
+                        <div class="mission-stat-number">10K+</div>
+                        <div class="mission-stat-label">Active Learners</div>
+                    </div>
+                    <div class="mission-stat">
+                        <div class="mission-stat-number">50+</div>
+                        <div class="mission-stat-label">Expert Instructors</div>
+                    </div>
+                    <div class="mission-stat">
+                        <div class="mission-stat-number">15+</div>
+                        <div class="mission-stat-label">Countries</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mission-image" data-aos="fade-left">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Our Mission">
+                <div class="mission-image-badge">
+                    <i class="fas fa-robot"></i>
+                    <span>AI-Powered Learning</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="values-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-subtitle">Our Values</span>
+            <h2 class="section-title">What Drives Us Forward</h2>
+            <p class="section-description">
+                These core principles guide everything we do at EDUCONECX
+            </p>
+        </div>
+
+        <div class="values-grid">
+            <div class="value-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3 class="value-title">Accessibility</h3>
+                <p class="value-text">
+                    We believe quality education should be accessible to everyone, regardless of
+                    their location, background, or financial situation.
+                </p>
+            </div>
+
+            <div class="value-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="value-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h3 class="value-title">Innovation</h3>
+                <p class="value-text">
+                    We continuously leverage AI and cutting-edge technology to create more effective
+                    and engaging learning experiences.
+                </p>
+            </div>
+
+            <div class="value-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="value-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3 class="value-title">Integrity</h3>
+                <p class="value-text">
+                    We are committed to transparency, honesty, and ethical practices in everything
+                    we do, from content creation to learner support.
+                </p>
+            </div>
+
+            <div class="value-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="value-icon">
+                    <i class="fas fa-globe"></i>
+                </div>
+                <h3 class="value-title">Global Community</h3>
+                <p class="value-text">
+                    We foster a diverse, inclusive community where learners from all backgrounds
+                    can connect, share, and grow together.
+                </p>
+            </div>
+
+            <div class="value-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="value-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="value-title">Practical Excellence</h3>
+                <p class="value-text">
+                    We focus on real-world skills that learners can immediately apply to advance
+                    their careers and businesses.
+                </p>
+            </div>
+
+            <div class="value-card" data-aos="fade-up" data-aos-delay="600">
+                <div class="value-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="value-title">Learner-Centered</h3>
+                <p class="value-text">
+                    Every decision we make is focused on providing the best possible experience
+                    and outcomes for our learners.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Story Section -->
+<section class="story-section">
+    <div class="container">
+        <div class="story-grid">
+            <div class="story-image" data-aos="fade-right">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Our Story">
+            </div>
+
+            <div class="story-content" data-aos="fade-left">
+                <span class="section-subtitle">Our Story</span>
+                <h2 class="story-title">Why We Created This Platform</h2>
+                <p class="story-text">
+                    Many individuals face challenges due to limited access to relevant learning
+                    resources or training that connects directly to real-world applications.
+                    EDUCONECX was created to address this gap.
+                </p>
+                <p class="story-text">
+                    We saw a world where talented individuals were held back not by their ability,
+                    but by their access to quality education. So we built a platform that combines
+                    AI-powered learning tools with practical, skill-focused programs that prepare
+                    learners for the digital economy.
+                </p>
+
+                <div class="story-quote">
+                    <i class="fas fa-quote-left"></i>
+                    <p>
+                        Our learning programs are curated from trusted educational sources and platforms,
+                        reviewed and updated to ensure relevance, practicality, and alignment with real-world
+                        needs. We bring essential knowledge together in one accessible platform.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="services-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-subtitle">Our Services</span>
+            <h2 class="section-title">Comprehensive Learning Solutions</h2>
+            <p class="section-description">
+                Empowering Learners with Practical Language and Digital Business Skills
+            </p>
+        </div>
+
+        <div class="services-grid">
+            <!-- Service 1: Language Programs -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3>Language Learning Programs</h3>
+                    <p>Master practical communication skills for the global workplace</p>
+                </div>
+                <div class="service-body">
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> English, French, Spanish & Haitian Creole</li>
+                        <li><i class="fas fa-check-circle"></i> Professional & everyday communication</li>
+                        <li><i class="fas fa-check-circle"></i> AI-powered speaking practice</li>
+                        <li><i class="fas fa-check-circle"></i> Cultural context integration</li>
+                        <li><i class="fas fa-check-circle"></i> Progress tracking & certification</li>
+                    </ul>
+                    <a href="{{ route('courses') }}" class="service-btn">Explore Programs <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Service 2: Customer Service Training -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Call Center & Customer Service Training</h3>
+                    <p>Prepare for international customer support roles</p>
+                </div>
+                <div class="service-body">
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> Communication skills mastery</li>
+                        <li><i class="fas fa-check-circle"></i> Customer engagement strategies</li>
+                        <li><i class="fas fa-check-circle"></i> Remote work readiness</li>
+                        <li><i class="fas fa-check-circle"></i> Conflict resolution techniques</li>
+                        <li><i class="fas fa-check-circle"></i> Industry certification</li>
+                    </ul>
+                    <a href="{{ route('courses') }}" class="service-btn">Start Training <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+            <!-- Service 3: Digital Business Skills -->
+            <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="service-header">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Digital Business & Entrepreneurship</h3>
+                    <p>Build and scale your online business</p>
+                </div>
+                <div class="service-body">
+                    <ul class="service-features">
+                        <li><i class="fas fa-check-circle"></i> E-commerce fundamentals</li>
+                        <li><i class="fas fa-check-circle"></i> Digital marketing strategies</li>
+                        <li><i class="fas fa-check-circle"></i> AI integration for business</li>
+                        <li><i class="fas fa-check-circle"></i> Freelancing mastery</li>
+                        <li><i class="fas fa-check-circle"></i> Business planning & execution</li>
+                    </ul>
+                    <a href="{{ route('courses') }}" class="service-btn">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEO-EDTECH Section -->
+<section class="neo-section">
+    <div class="container">
+        <div class="neo-grid">
+            <div class="neo-content" data-aos="fade-right">
+                <span class="neo-subtitle">NEO-EDTECH</span>
+                <h2 class="neo-title">Professional Agency Services</h2>
+                <p class="neo-text">
+                    In addition to our educational platform, EDUCONECX operates NEO-EDTECH,
+                    a professional agency providing digital marketing, AI-powered solutions,
+                    web and e-commerce services, and business support.
+                </p>
+                <p class="neo-text">
+                    This initiative complements the learning experience by helping individuals
+                    and organizations apply knowledge in practical contexts and translate skills
+                    into measurable outcomes.
+                </p>
+                <div class="neo-features">
+                    <div class="neo-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Digital Marketing Strategy</span>
+                    </div>
+                    <div class="neo-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>AI-Powered Business Solutions</span>
+                    </div>
+                    <div class="neo-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Web Development & E-commerce</span>
+                    </div>
+                    <div class="neo-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Business Consulting</span>
+                    </div>
+                </div>
+                <a href="{{ route('neo-ed-tech') }}" class="btn btn-primary">
+                    Explore NEO-EDTECH <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="neo-image" data-aos="fade-left">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="NEO-EDTECH">
+                <div class="neo-badge">
+                    <i class="fas fa-robot"></i>
+                    <span>AI-Powered</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .neo-section {
+        padding: 80px 0;
+        background: var(--white);
+    }
+
+    .neo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .neo-subtitle {
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .neo-title {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 25px;
+        line-height: 1.2;
+    }
+
+    .neo-text {
+        color: var(--gray);
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    .neo-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .neo-feature {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .neo-feature i {
+        color: var(--success);
+        font-size: 1.1rem;
+    }
+
+    .neo-image {
+        position: relative;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .neo-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: var(--transition-slow);
+    }
+
+    .neo-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .neo-badge {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        background: var(--gradient-2);
+        color: var(--white);
+        padding: 15px 20px;
+        border-radius: var(--border-radius-lg);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .neo-badge i {
+        font-size: 1.5rem;
+    }
+
+    .neo-badge span {
+        font-weight: 600;
+    }
+
+    @media (max-width: 992px) {
+        .neo-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .neo-features {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-subtitle">Our Team</span>
+            <h2 class="section-title">Meet the Experts Behind EDUCONECX</h2>
+            <p class="section-description">
+                Passionate educators and industry professionals dedicated to your success
+            </p>
+        </div>
+
+        <div class="team-grid">
+            <!-- Team Member 1 -->
+            <div class="team-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="John Smith">
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <h3 class="team-name">John Smith</h3>
+                    <p class="team-position">Founder & CEO</p>
+                    <p class="team-bio">15+ years in edtech and digital transformation</p>
+                </div>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="team-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Sarah Johnson">
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <h3 class="team-name">Sarah Johnson</h3>
+                    <p class="team-position">Head of Curriculum</p>
+                    <p class="team-bio">Former university professor, PhD in Education</p>
+                </div>
+            </div>
+
+            <!-- Team Member 3 -->
+            <div class="team-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Michael Chen">
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <h3 class="team-name">Michael Chen</h3>
+                    <p class="team-position">AI & Technology Lead</p>
+                    <p class="team-bio">AI researcher and machine learning expert</p>
+                </div>
+            </div>
+
+            <!-- Team Member 4 -->
+            <div class="team-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="team-image">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Maria Garcia">
+                    <div class="team-social">
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fas fa-envelope"></i></a>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <h3 class="team-name">Maria Garcia</h3>
+                    <p class="team-position">Language Programs Director</p>
+                    <p class="team-bio">Linguistics expert, multilingual educator</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="about-cta">
+    <div class="container">
+        <div class="about-cta-content" data-aos="zoom-in">
+            <h2>Ready to Start Your Learning Journey?</h2>
+            <p>Join thousands of students worldwide and transform your future with EDUCONECX</p>
+            <div class="about-cta-buttons">
+                <a href="{{ route('academy') }}" class="btn btn-primary">
+                    <i class="fas fa-graduation-cap"></i> Join Academy
+                </a>
+                <a href="{{ route('contact') }}" class="btn btn-secondary">
+                    <i class="fas fa-headset"></i> Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
 @endsection
