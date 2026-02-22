@@ -1,0 +1,220 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\User;
+use App\Models\Course;
+use App\Models\Quiz;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class ReportController extends Controller
+{
+    /**
+     * Show reports dashboard.
+     */
+    public function index()
+    {
+        return view('admin.reports.index');
+    }
+
+    /**
+     * Sales report.
+     */
+    public function sales(Request $request)
+    {
+        $startDate = $request->start_date ?? now()->startOfMonth();
+        $endDate = $request->end_date ?? now()->endOfMonth();
+
+        $orders = Order::with('items.course')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('payment_status', 'paid')
+            ->get();
+
+        $totalRevenue = $orders->sum('total');
+        $totalOrders = $orders->count();
+        $averageOrderValue = $totalOrders > 0 ? $totalRevenue / $totalOrders : 0;
+
+        // Daily sales
+        $dailySales = Order::select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(total) as total')
+            )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('payment_status', 'paid')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        // Top selling courses
+        $topCourses = Course::select('courses.id', 'courses.title')
+            ->selectRaw('COUNT(order_items.id) as total_sales')
+            ->selectRaw('SUM(order_items.total) as total_revenue')
+            ->join('order_items', 'courses.id', '=', 'order_items.course_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->where('orders.payment_status', 'paid')
+            ->groupBy('courses.id', 'courses.title')
+            ->orderBy('total_revenue', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('admin.reports.sales', compact(
+            'startDate', 'endDate', 'totalRevenue', 'totalOrders',
+            'averageOrderValue', 'dailySales', 'topCourses'
+        ));
+    }
+
+    /**
+     * Students report.
+     */
+    public function students(Request $request)
+    {
+        $startDate = $request->start_date ?? now()->startOfMonth();
+        $endDate = $request->end_date ?? now()->endOfMonth();
+
+        // New registrations
+        $newStudents = User::where('role', 'student')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        // Total students
+        $totalStudents = User::where('role', 'student')->count();
+
+        // Active students (with enrollments in last 30 days)
+        $activeStudents = User::where('role', 'student')
+            ->whereHas('enrollments', function($q) {
+                $q->where('last_accessed', '>=', now()->subDays(30));
+            })
+            ->count();
+
+        // Student growth by month
+        $studentGrowth = User::select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->where('role', 'student')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->take(12)
+            ->get();
+
+        // Top students by course completions
+        $topStudents = User::select('users.id', 'users.name', 'users.email')
+            ->selectRaw('COUNT(enrollments.id) as total_enrollments')
+            ->selectRaw('SUM(CASE WHEN enrollments.completed_at IS NOT NULL THEN 1 ELSE 0 END) as completions')
+            ->join('enrollments', 'users.id', '=', 'enrollments.user_id')
+            ->where('users.role', 'student')
+            ->groupBy('users.id', 'users.name', 'users.email')
+            ->orderBy('completions', 'desc')
+            ->take(20)
+            ->get();
+
+        return view('admin.reports.students', compact(
+            'startDate', 'endDate', 'newStudents', 'totalStudents',
+            'activeStudents', 'studentGrowth', 'topStudents'
+        ));
+    }
+
+    /**
+     * Courses report.
+     */
+    public function courses(Request $request)
+    {
+        $startDate = $request->start_date ?? now()->startOfMonth();
+        $endDate = $request->end_date ?? now()->endOfMonth();
+
+        $courses = Course::withCount(['enrollments', 'reviews'])
+            ->withAvg('reviews as avg_rating', 'rating')
+            ->where('status', 'published')
+            ->get();
+
+        $totalCourses = $courses->count();
+        $totalEnrollments = $courses->sum('enrollments_count');
+        $averageRating = $courses->avg('avg_rating');
+
+        // Most popular courses
+        $popularCourses = Course::withCount('enrollments')
+            ->where('status', 'published')
+            ->orderBy('enrollments_count', 'desc')
+            ->take(10)
+            ->get();
+
+        // Highest rated courses
+        $topRatedCourses = Course::select('courses.*')
+            ->selectRaw('AVG(reviews.rating) as avg_rating')
+            ->join('reviews', 'courses.id', '=', 'reviews.course_id')
+            ->where('reviews.status', 'approved')
+            ->groupBy('courses.id')
+            ->orderBy('avg_rating', 'desc')
+            ->take(10)
+            ->get();
+
+        return view('admin.reports.courses', compact(
+            'startDate', 'endDate', 'totalCourses', 'totalEnrollments',
+            'averageRating', 'popularCourses', 'topRatedCourses'
+        ));
+    }
+
+    /**
+     * Quizzes report.
+     */
+    public function quizzes(Request $request)
+    {
+        $startDate = $request->start_date ?? now()->startOfMonth();
+        $endDate = $request->end_date ?? now()->endOfMonth();
+
+        $quizzes = Quiz::withCount('attempts')
+            ->withAvg('attempts as avg_score', 'percentage')
+            ->get();
+
+        $totalQuizzes = $quizzes->count();
+        $totalAttempts = $quizzes->sum('attempts_count');
+        $averageScore = $quizzes->avg('avg_score');
+
+        // Most attempted quizzes
+        $popularQuizzes = Quiz::withCount('attempts')
+            ->orderBy('attempts_count', 'desc')
+            ->take(10)
+            ->get();
+
+        // Quizzes with highest pass rates
+        $quizPassRates = Quiz::select('quizzes.*')
+            ->selectRaw('COUNT(quiz_attempts.id) as attempts')
+            ->selectRaw('SUM(CASE WHEN quiz_attempts.passed = 1 THEN 1 ELSE 0 END) as passes')
+            ->leftJoin('quiz_attempts', 'quizzes.id', '=', 'quiz_attempts.quiz_id')
+            ->where('quiz_attempts.status', 'completed')
+            ->groupBy('quizzes.id')
+            ->having('attempts', '>', 0)
+            ->get()
+            ->map(function($quiz) {
+                $quiz->pass_rate = $quiz->attempts > 0 
+                    ? round(($quiz->passes / $quiz->attempts) * 100, 2) 
+                    : 0;
+                return $quiz;
+            })
+            ->sortByDesc('pass_rate')
+            ->take(10);
+
+        return view('admin.reports.quizzes', compact(
+            'startDate', 'endDate', 'totalQuizzes', 'totalAttempts',
+            'averageScore', 'popularQuizzes', 'quizPassRates'
+        ));
+    }
+
+    /**
+     * Export report.
+     */
+    public function export($type, $format)
+    {
+        // Implement export functionality (CSV, PDF, Excel)
+        // This would use packages like maatwebsite/excel or barryvdh/laravel-dompdf
+        
+        return back()->with('info', 'Export functionality coming soon.');
+    }
+}

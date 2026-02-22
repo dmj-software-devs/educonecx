@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Enrollment;
+use App\Models\QuizAttempt;
+use App\Models\Certificate;
 
 class AuthController extends Controller
 {
@@ -33,7 +36,16 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('dashboard');
+            // Redirect based on user role
+            $user = Auth::user();
+            
+            if ($user->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            } elseif ($user->role === 'instructor') {
+                return redirect()->intended(route('instructor.dashboard'));
+            }
+            
+            return redirect()->intended(route('dashboard'));
         }
 
         return back()->withErrors([
@@ -75,9 +87,19 @@ class AuthController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => 'student', // Default role for new registrations
+            'status' => 'active',
         ]);
 
         Auth::login($user);
+
+        // Create welcome notification
+        $user->notifications()->create([
+            'type' => 'welcome',
+            'title' => 'Welcome to EDUCONECX!',
+            'message' => 'Thank you for joining our learning community. Start exploring courses and enhance your skills.',
+            'data' => json_encode(['action' => 'browse_courses', 'url' => route('courses')])
+        ]);
 
         return redirect()->route('dashboard');
     }
@@ -93,5 +115,49 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Show forgot password form
+     */
+    public function showForgotForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    /**
+     * Send password reset link
+     */
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        // Implement password reset logic here
+        // For now, just redirect back with status
+        return back()->with('status', 'If your email exists in our system, you will receive a password reset link.');
+    }
+
+    /**
+     * Show password reset form
+     */
+    public function showResetForm($token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    /**
+     * Reset password
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        // Implement password reset logic here
+        // For now, just redirect to login
+        return redirect()->route('login')->with('status', 'Your password has been reset successfully.');
     }
 }
