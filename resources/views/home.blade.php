@@ -808,77 +808,61 @@
             <h2 class="section-title">Featured Learning Paths</h2>
         </div>
         <div class="grid grid-3">
-            <!-- Course Card 1 -->
-            <div class="course-card" data-aos="fade-up" data-aos-delay="100">
+            @forelse($featuredCourses as $course)
+            <!-- Course Card -->
+            <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="course-image">
-                    <img src="https://images.unsplash.com/photo-1581091226033-d5c48150dbaa?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Smartphone Videography">
-                    <span class="course-category">Videography</span>
+                    <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
+                    <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
+                    @if($course->hasDiscount)
+                    <span class="course-discount-badge">-{{ $course->discount_percentage }}%</span>
+                    @endif
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> 12 Hours</span>
-                        <span><i class="fas fa-signal"></i> Beginner</span>
+                        <span><i class="far fa-clock"></i> {{ $course->duration }} Hours</span>
+                        <span><i class="fas fa-signal"></i> {{ $course->level }}</span>
+                        <span><i class="fas fa-language"></i> {{ $course->language }}</span>
                     </div>
                     <h3 class="course-title">
-                        <a href="#">Smartphone Videography Masterclass</a>
+                        <a href="{{ route('courses.show', $course->slug) }}">{{ $course->title }}</a>
                     </h3>
-                    <p>Learn professional video creation using just your smartphone. Master lighting, editing, and storytelling.</p>
-                    <div class="course-footer">
-                        <div class="course-price">
-                            $49 <small>$99</small>
-                        </div>
-                        <a href="#" class="course-btn">Enroll Now</a>
-                    </div>
-                </div>
-            </div>
+                    <p>{{ $course->excerpt }}</p>
 
-            <!-- Course Card 2 -->
-            <div class="course-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="course-image">
-                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="International Business">
-                    <span class="course-category">Business</span>
-                </div>
-                <div class="course-content">
-                    <div class="course-meta">
-                        <span><i class="far fa-clock"></i> 20 Hours</span>
-                        <span><i class="fas fa-signal"></i> Intermediate</span>
+                    @if($course->total_students > 0)
+                    <div class="course-stats">
+                        <span><i class="fas fa-users"></i> {{ number_format($course->total_students) }} students</span>
+                        @if($course->average_rating > 0)
+                        <span>
+                            <i class="fas fa-star text-warning"></i>
+                            {{ number_format($course->average_rating, 1) }} ({{ $course->total_reviews }})
+                        </span>
+                        @endif
                     </div>
-                    <h3 class="course-title">
-                        <a href="#">Build a Profitable International Business</a>
-                    </h3>
-                    <p>Learn how to build and scale a profitable international family business from scratch.</p>
-                    <div class="course-footer">
-                        <div class="course-price">
-                            $79 <small>$149</small>
-                        </div>
-                        <a href="#" class="course-btn">Enroll Now</a>
-                    </div>
-                </div>
-            </div>
+                    @endif
 
-            <!-- Course Card 3 -->
-            <div class="course-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="course-image">
-                    <img src="https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Canva Design">
-                    <span class="course-category">Design</span>
-                </div>
-                <div class="course-content">
-                    <div class="course-meta">
-                        <span><i class="far fa-clock"></i> 8 Hours</span>
-                        <span><i class="fas fa-signal"></i> Beginner</span>
-                    </div>
-                    <h3 class="course-title">
-                        <a href="#">The Canva Success System</a>
-                    </h3>
-                    <p>Master Canva and create stunning professional designs for your business and social media.</p>
                     <div class="course-footer">
                         <div class="course-price">
-                            $39 <small>$79</small>
+                            @if($course->hasDiscount)
+                            ${{ number_format($course->sale_price, 2) }}
+                            <small>${{ number_format($course->price, 2) }}</small>
+                            @elseif($course->price > 0)
+                            ${{ number_format($course->price, 2) }}
+                            @else
+                            Free
+                            @endif
                         </div>
-                        <a href="#" class="course-btn">Enroll Now</a>
+                        <a href="{{ route('courses.show', $course->slug) }}" class="course-btn">
+                            {{ $course->price > 0 ? 'Enroll Now' : 'Start Learning' }}
+                        </a>
                     </div>
                 </div>
             </div>
+            @empty
+            <div class="col-span-3 text-center">
+                <p>No featured courses available at the moment.</p>
+            </div>
+            @endforelse
         </div>
         <div style="text-align: center; margin-top: 50px;">
             <a href="{{ route('courses') }}" class="btn btn-primary">

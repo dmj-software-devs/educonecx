@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -41,7 +42,23 @@ class PageController extends Controller
 
     public function home()
     {
-        return view('home');
+        // Fetch featured courses for the home page
+        $featuredCourses = Course::published()
+            ->with('category', 'instructor')
+            ->featured()
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        // You can also fetch popular courses if needed
+        $popularCourses = Course::published()
+            ->with('category', 'instructor')
+            ->popular()
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        return view('home', compact('featuredCourses', 'popularCourses'));
     }
 
     public function about()
