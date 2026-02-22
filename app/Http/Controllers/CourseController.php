@@ -2,117 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
-    /**
-     * Sample course data - In a real application, this would come from a database
-     */
-    private function getCourses()
-    {
-        return [
-            [
-                'id' => 1,
-                'title' => 'Smartphone Videography Masterclass',
-                'slug' => 'smartphone-videography-masterclass',
-                'excerpt' => 'Learn professional video creation using just your smartphone.',
-                'description' => 'Master the art of creating professional videos using only your smartphone. This comprehensive course covers lighting, composition, audio, and editing techniques.',
-                'price' => 22.00,
-                'sale_price' => null,
-                'thumbnail' => 'https://via.placeholder.com/400x225',
-                'categories' => [42],
-                'category_names' => ['Videography'],
-                'instructor' => 'EDUCONECX ACADEMY',
-                'instructor_avatar' => 'EA',
-                'students_count' => 0,
-                'rating' => 0,
-                'reviews_count' => 0,
-                'featured' => true,
-                'created_at' => '2026-01-15',
-            ],
-            [
-                'id' => 2,
-                'title' => 'Comment Bâtir Une Entreprise Familiale Internationale Très Rentable',
-                'slug' => 'comment-batir-une-entreprise-familiale-internationale-tres-rentable',
-                'excerpt' => 'Learn how to build a profitable international family business.',
-                'description' => 'Discover the strategies and techniques to build and scale a profitable international family business. Learn from real-world examples and expert insights.',
-                'price' => 22.00,
-                'sale_price' => null,
-                'thumbnail' => 'https://via.placeholder.com/400x225',
-                'categories' => [8],
-                'category_names' => ['Business & Finance'],
-                'instructor' => 'EDUCONECX ACADEMY',
-                'instructor_avatar' => 'EA',
-                'students_count' => 3,
-                'rating' => 0,
-                'reviews_count' => 0,
-                'featured' => false,
-                'created_at' => '2026-01-10',
-            ],
-            [
-                'id' => 3,
-                'title' => 'LE SYSTÈME DE RÉUSSITE CANVA',
-                'slug' => 'le-systeme-de-reussite-canva',
-                'excerpt' => 'Master Canva and create stunning professional designs.',
-                'description' => 'Learn the complete Canva system to create professional designs for social media, marketing, and business. From basics to advanced techniques.',
-                'price' => 22.00,
-                'sale_price' => null,
-                'thumbnail' => 'https://via.placeholder.com/400x225',
-                'categories' => [7],
-                'category_names' => ['Digital Skills & Technology'],
-                'instructor' => 'EDUCONECX ACADEMY',
-                'instructor_avatar' => 'EA',
-                'students_count' => 0,
-                'rating' => 0,
-                'reviews_count' => 0,
-                'featured' => false,
-                'created_at' => '2026-01-05',
-            ],
-            [
-                'id' => 4,
-                'title' => 'The Canva Success System',
-                'slug' => 'canva-success-system',
-                'excerpt' => 'Master Canva and create stunning professional designs.',
-                'description' => 'A comprehensive guide to mastering Canva for business and personal projects. Learn design principles, templates, and advanced features.',
-                'price' => 22.00,
-                'sale_price' => null,
-                'thumbnail' => 'https://via.placeholder.com/400x225',
-                'categories' => [7],
-                'category_names' => ['Digital Skills & Technology'],
-                'instructor' => 'EDUCONECX ACADEMY',
-                'instructor_avatar' => 'EA',
-                'students_count' => 6,
-                'rating' => 0,
-                'reviews_count' => 0,
-                'featured' => true,
-                'created_at' => '2026-01-01',
-            ],
-        ];
-    }
-
-    /**
-     * Get course categories
-     */
-    private function getCategories()
-    {
-        return [
-            ['id' => 8, 'name' => 'Business & Finance', 'slug' => 'business-finance', 'count' => 1],
-            ['id' => 7, 'name' => 'Digital Skills & Technology', 'slug' => 'digital-skills-technology', 'count' => 2],
-            ['id' => 9, 'name' => 'Personal Growth & Mindset', 'slug' => 'personal-growth-mindset', 'count' => 0],
-            ['id' => 42, 'name' => 'Videography', 'slug' => 'videography', 'count' => 1],
-        ];
-    }
-
     /**
      * Display a listing of courses
      */
     public function index(Request $request)
     {
-        $courses = $this->getCourses();
-        $categories = $this->getCategories();
-        
         // Get filter parameters
         $filters = [
             'keyword' => $request->input('keyword', ''),
@@ -121,93 +22,85 @@ class CourseController extends Controller
             'sort' => $request->input('sort', 'newest_first'),
         ];
 
-        // Filter courses based on criteria
-        $filteredCourses = $this->filterCourses($courses, $filters);
-        
-        // Sort courses
-        $filteredCourses = $this->sortCourses($filteredCourses, $filters['sort']);
-        
-        // Paginate results (12 per page as in WordPress)
+        // Base query with relationships
+        $query = Course::published()
+            ->with(['category', 'instructor', 'reviews']);
+
+        // Filter by keyword
+        if (!empty($filters['keyword'])) {
+            $query->where(function($q) use ($filters) {
+                $q->where('title', 'like', '%' . $filters['keyword'] . '%')
+                  ->orWhere('description', 'like', '%' . $filters['keyword'] . '%')
+                  ->orWhere('excerpt', 'like', '%' . $filters['keyword'] . '%');
+            });
+        }
+
+        // Filter by categories
+        if (!empty($filters['categories'])) {
+            $query->whereIn('category_id', $filters['categories']);
+        }
+
+        // Filter by price
+        if (!empty($filters['price'])) {
+            $query->where(function($q) use ($filters) {
+                if (in_array('free', $filters['price'])) {
+                    $q->orWhere('price', 0)
+                      ->orWhere(function($q2) {
+                          $q2->whereNotNull('sale_price')
+                             ->where('sale_price', 0);
+                      });
+                }
+                if (in_array('paid', $filters['price'])) {
+                    $q->orWhere('price', '>', 0)
+                      ->where(function($q2) {
+                          $q2->whereNull('sale_price')
+                             ->orWhere('sale_price', '>', 0);
+                      });
+                }
+            });
+        }
+
+        // Apply sorting
+        switch ($filters['sort']) {
+            case 'newest_first':
+                $query->latest('published_at');
+                break;
+            case 'oldest_first':
+                $query->oldest('published_at');
+                break;
+            case 'course_title_az':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'course_title_za':
+                $query->orderBy('title', 'desc');
+                break;
+            default:
+                $query->latest('published_at');
+        }
+
+        // Get active categories with course counts
+        $categories = Category::active()
+            ->withCount('courses')
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function($category) {
+                return [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'slug' => $category->slug,
+                    'count' => $category->courses_count,
+                    'icon' => $category->icon_class,
+                ];
+            });
+
+        // Paginate results (12 per page)
         $perPage = 12;
-        $currentPage = $request->input('page', 1);
-        $offset = ($currentPage - 1) * $perPage;
+        $paginatedCourses = $query->paginate($perPage);
         
-        $paginatedCourses = new LengthAwarePaginator(
-            array_slice($filteredCourses, $offset, $perPage),
-            count($filteredCourses),
-            $perPage,
-            $currentPage,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
+        // Add query parameters to pagination links
+        $paginatedCourses->appends($request->query());
 
         return view('courses', compact('paginatedCourses', 'categories', 'filters'));
-    }
-
-    /**
-     * Filter courses based on criteria
-     */
-    private function filterCourses($courses, $filters)
-    {
-        return array_filter($courses, function ($course) use ($filters) {
-            // Filter by keyword
-            if (!empty($filters['keyword'])) {
-                $keyword = strtolower($filters['keyword']);
-                $titleMatch = strpos(strtolower($course['title']), $keyword) !== false;
-                $descMatch = strpos(strtolower($course['description']), $keyword) !== false;
-                if (!$titleMatch && !$descMatch) {
-                    return false;
-                }
-            }
-
-            // Filter by categories
-            if (!empty($filters['categories'])) {
-                $categoryMatch = false;
-                foreach ($filters['categories'] as $catId) {
-                    if (in_array($catId, $course['categories'])) {
-                        $categoryMatch = true;
-                        break;
-                    }
-                }
-                if (!$categoryMatch) {
-                    return false;
-                }
-            }
-
-            // Filter by price
-            if (!empty($filters['price'])) {
-                if (in_array('free', $filters['price']) && $course['price'] > 0) {
-                    return false;
-                }
-                if (in_array('paid', $filters['price']) && $course['price'] == 0) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-    }
-
-    /**
-     * Sort courses
-     */
-    private function sortCourses($courses, $sortBy)
-    {
-        usort($courses, function ($a, $b) use ($sortBy) {
-            switch ($sortBy) {
-                case 'newest_first':
-                    return strtotime($b['created_at']) - strtotime($a['created_at']);
-                case 'oldest_first':
-                    return strtotime($a['created_at']) - strtotime($b['created_at']);
-                case 'course_title_az':
-                    return strcmp($a['title'], $b['title']);
-                case 'course_title_za':
-                    return strcmp($b['title'], $a['title']);
-                default:
-                    return 0;
-            }
-        });
-
-        return $courses;
     }
 
     /**
@@ -215,8 +108,6 @@ class CourseController extends Controller
      */
     public function filter(Request $request)
     {
-        $courses = $this->getCourses();
-        
         $filters = [
             'keyword' => $request->input('keyword', ''),
             'categories' => $request->input('categories', []),
@@ -224,16 +115,69 @@ class CourseController extends Controller
             'sort' => $request->input('sort', 'newest_first'),
         ];
 
-        $filteredCourses = $this->filterCourses($courses, $filters);
-        $filteredCourses = $this->sortCourses($filteredCourses, $filters['sort']);
+        // Base query with relationships
+        $query = Course::published()
+            ->with(['category', 'instructor']);
 
-        // Return HTML for AJAX response
-        $html = view('partials.course-list', ['courses' => $filteredCourses])->render();
+        // Apply filters (same logic as index method)
+        if (!empty($filters['keyword'])) {
+            $query->where(function($q) use ($filters) {
+                $q->where('title', 'like', '%' . $filters['keyword'] . '%')
+                  ->orWhere('description', 'like', '%' . $filters['keyword'] . '%');
+            });
+        }
+
+        if (!empty($filters['categories'])) {
+            $query->whereIn('category_id', $filters['categories']);
+        }
+
+        if (!empty($filters['price'])) {
+            $query->where(function($q) use ($filters) {
+                if (in_array('free', $filters['price'])) {
+                    $q->orWhere('price', 0)
+                      ->orWhere(function($q2) {
+                          $q2->whereNotNull('sale_price')
+                             ->where('sale_price', 0);
+                      });
+                }
+                if (in_array('paid', $filters['price'])) {
+                    $q->orWhere('price', '>', 0)
+                      ->where(function($q2) {
+                          $q2->whereNull('sale_price')
+                             ->orWhere('sale_price', '>', 0);
+                      });
+                }
+            });
+        }
+
+        switch ($filters['sort']) {
+            case 'newest_first':
+                $query->latest('published_at');
+                break;
+            case 'oldest_first':
+                $query->oldest('published_at');
+                break;
+            case 'course_title_az':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'course_title_za':
+                $query->orderBy('title', 'desc');
+                break;
+            default:
+                $query->latest('published_at');
+        }
+
+        // Get paginated results
+        $courses = $query->paginate(12);
+        
+        // Generate HTML for response
+        $html = view('partials.course-list', ['courses' => $courses])->render();
         
         return response()->json([
             'success' => true,
             'html' => $html,
-            'count' => count($filteredCourses)
+            'count' => $courses->total(),
+            'pagination' => (string) $courses->links()
         ]);
     }
 
@@ -242,14 +186,21 @@ class CourseController extends Controller
      */
     public function show($slug)
     {
-        $courses = $this->getCourses();
-        $course = collect($courses)->firstWhere('slug', $slug);
-        
-        if (!$course) {
-            abort(404);
-        }
+        $course = Course::published()
+            ->with(['category', 'instructor', 'reviews.user', 'sections.lessons'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        return view('course-single', compact('course'));
+        // Get related courses (same category, excluding current)
+        $relatedCourses = Course::published()
+            ->with('category')
+            ->where('category_id', $course->category_id)
+            ->where('id', '!=', $course->id)
+            ->latest('published_at')
+            ->take(3)
+            ->get();
+
+        return view('course-single', compact('course', 'relatedCourses'));
     }
 
     /**
@@ -257,22 +208,22 @@ class CourseController extends Controller
      */
     public function category($slug)
     {
-        $categories = $this->getCategories();
-        $category = collect($categories)->firstWhere('slug', $slug);
-        
-        if (!$category) {
-            abort(404);
-        }
+        $category = Category::where('slug', $slug)
+            ->active()
+            ->firstOrFail();
 
-        $courses = $this->getCourses();
-        $filteredCourses = array_filter($courses, function ($course) use ($category) {
-            return in_array($category['id'], $course['categories']);
-        });
+        $courses = Course::published()
+            ->with('category', 'instructor')
+            ->where('category_id', $category->id)
+            ->latest('published_at')
+            ->paginate(12);
 
-        return view('courses-category', [
-            'courses' => $filteredCourses,
-            'category' => $category,
-            'allCategories' => $categories
-        ]);
+        // Get all categories for sidebar
+        $categories = Category::active()
+            ->withCount('courses')
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('courses-category', compact('courses', 'category', 'categories'));
     }
 }

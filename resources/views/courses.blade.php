@@ -934,7 +934,7 @@
                                         <input type="checkbox" name="price[]" value="free" 
                                             {{ in_array('free', $filters['price'] ?? []) ? 'checked' : '' }}>
                                         Free Courses
-                                        <span class="filter-count">0</span>
+                                        <span class="filter-count">{{ \App\Models\Course::published()->free()->count() }}</span>
                                     </label>
                                 </li>
                                 <li class="filter-option">
@@ -942,7 +942,7 @@
                                         <input type="checkbox" name="price[]" value="paid" 
                                             {{ in_array('paid', $filters['price'] ?? []) ? 'checked' : '' }}>
                                         Paid Courses
-                                        <span class="filter-count">{{ count($paginatedCourses) }}</span>
+                                        <span class="filter-count">{{ \App\Models\Course::published()->paid()->count() }}</span>
                                     </label>
                                 </li>
                             </ul>
@@ -994,21 +994,20 @@
                             <div class="course-grid">
                                 @foreach($paginatedCourses as $course)
                                     <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
-                                        <!-- Note: Using array syntax [] instead of object syntax -> -->
-                                        @if(isset($course['featured']) && $course['featured'])
+                                        @if($course->featured)
                                             <span class="course-badge popular">Popular</span>
-                                        @elseif(isset($course['price']) && $course['price'] == 0)
+                                        @elseif($course->price == 0 || ($course->sale_price == 0))
                                             <span class="course-badge free">Free</span>
                                         @endif
                                         
                                         <div class="course-bookmark">
-                                            <button class="bookmark-btn" data-course-id="{{ $course['id'] }}">
+                                            <button class="bookmark-btn" data-course-id="{{ $course->id }}">
                                                 <i class="far fa-bookmark"></i>
                                             </button>
                                         </div>
                                         
                                         <div class="course-thumbnail">
-                                            <img src="{{ $course['thumbnail'] ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }}" alt="{{ $course['title'] }}">
+                                            <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
                                             <div class="course-overlay">
                                                 <span class="course-preview"><i class="far fa-play-circle"></i> Preview Course</span>
                                             </div>
@@ -1016,60 +1015,60 @@
                                         
                                         <div class="course-content">
                                             <div class="course-meta-top">
-                                                <span class="course-category">{{ $course['category_names'][0] ?? 'General' }}</span>
+                                                <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
                                                 <div class="course-rating">
                                                     <span class="stars">
                                                         @for($i = 1; $i <= 5; $i++)
-                                                            @if($i <= floor($course['rating'] ?? 0))
+                                                            @if($i <= floor($course->average_rating))
                                                                 <i class="fas fa-star"></i>
-                                                            @elseif($i - 0.5 <= ($course['rating'] ?? 0))
+                                                            @elseif($i - 0.5 <= $course->average_rating)
                                                                 <i class="fas fa-star-half-alt"></i>
                                                             @else
                                                                 <i class="far fa-star"></i>
                                                             @endif
                                                         @endfor
                                                     </span>
-                                                    <span class="rating-value">{{ number_format($course['rating'] ?? 0, 1) }}</span>
-                                                    <span class="rating-count">({{ $course['reviews_count'] ?? 0 }})</span>
+                                                    <span class="rating-value">{{ number_format($course->average_rating, 1) }}</span>
+                                                    <span class="rating-count">({{ $course->total_reviews }})</span>
                                                 </div>
                                             </div>
                                             
                                             <h3 class="course-title">
-                                                <a href="{{ route('courses.show', $course['slug']) }}">{{ $course['title'] }}</a>
+                                                <a href="{{ route('courses.show', $course->slug) }}">{{ $course->title }}</a>
                                             </h3>
                                             
-                                            <p class="course-description">{{ $course['excerpt'] ?? '' }}</p>
+                                            <p class="course-description">{{ $course->excerpt }}</p>
                                             
                                             <div class="course-meta">
-                                                <span><i class="far fa-clock"></i> 6 hours</span>
-                                                <span><i class="fas fa-signal"></i> All Levels</span>
-                                                <span><i class="fas fa-video"></i> 12 lessons</span>
+                                                <span><i class="far fa-clock"></i> {{ $course->duration }} hours</span>
+                                                <span><i class="fas fa-signal"></i> {{ $course->level }}</span>
+                                                <span><i class="fas fa-video"></i> {{ $course->total_lessons }} lessons</span>
                                             </div>
                                             
                                             <div class="course-instructor">
                                                 <div class="instructor-avatar">
-                                                    {{ $course['instructor_avatar'] ?? substr($course['instructor'] ?? 'EA', 0, 1) }}
+                                                    {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
                                                 </div>
                                                 <div class="instructor-info">
-                                                    <span class="instructor-name">{{ $course['instructor'] ?? 'EDUCONECX ACADEMY' }}</span>
+                                                    <span class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</span>
                                                     <div class="instructor-title">Expert Instructor</div>
                                                 </div>
                                             </div>
                                         </div>
                                         
                                         <div class="course-footer">
-                                            <div class="course-price {{ ($course['price'] ?? 0) == 0 ? 'free' : '' }}">
-                                                @if(($course['price'] ?? 0) == 0)
-                                                    Free
+                                            <div class="course-price {{ $course->price == 0 ? 'free' : '' }}">
+                                                @if($course->hasDiscount)
+                                                    ${{ number_format($course->sale_price, 2) }}
+                                                    <small>${{ number_format($course->price, 2) }}</small>
+                                                @elseif($course->price > 0)
+                                                    ${{ number_format($course->price, 2) }}
                                                 @else
-                                                    ${{ number_format($course['price'] ?? 0, 2) }}
-                                                    @if(isset($course['sale_price']) && $course['sale_price'] < $course['price'])
-                                                        <small>${{ number_format($course['price'], 2) }}</small>
-                                                    @endif
+                                                    Free
                                                 @endif
                                                 <span class="price-label">one-time payment</span>
                                             </div>
-                                            <a href="{{ route('courses.show', $course['slug']) }}" class="enroll-btn">
+                                            <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
                                                 View Details <i class="fas fa-arrow-right"></i>
                                             </a>
                                         </div>
@@ -1178,23 +1177,46 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const courseId = this.dataset.courseId;
             
-            // Toggle active class
-            this.classList.toggle('active');
-            
-            // Update icon
-            const icon = this.querySelector('i');
-            if (this.classList.contains('active')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
+            // Check if user is logged in
+            @auth
+                // Toggle active class
+                this.classList.toggle('active');
                 
-                // Show success message
-                showNotification('Course added to bookmarks', 'success');
-            } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                
-                showNotification('Course removed from bookmarks', 'info');
-            }
+                // Update icon
+                const icon = this.querySelector('i');
+                if (this.classList.contains('active')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    
+                    // Here you can make an AJAX call to add to wishlist
+                    fetch(`/wishlist/add/${courseId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    showNotification('Course added to bookmarks', 'success');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    
+                    // Here you can make an AJAX call to remove from wishlist
+                    fetch(`/wishlist/remove/${courseId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    showNotification('Course removed from bookmarks', 'info');
+                }
+            @else
+                // Redirect to login
+                window.location.href = '{{ route("login") }}';
+            @endauth
         });
     });
     
@@ -1229,6 +1251,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Filter handling
     const filterInputs = document.querySelectorAll('#categoryFilter input, #priceFilter input');
     const sortSelect = document.getElementById('sortSelect');
+    const searchForm = document.getElementById('searchForm');
+    const sortForm = document.getElementById('sortForm');
     const loadingSpinner = document.getElementById('loadingSpinner');
     const coursesContainer = document.getElementById('coursesContainer');
     
@@ -1279,7 +1303,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error:', error);
             // Fallback to form submission
-            document.getElementById('searchForm').submit();
+            searchForm?.submit();
         })
         .finally(() => {
             loadingSpinner.classList.remove('show');
@@ -1290,7 +1314,22 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.bookmark-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                // Add bookmark logic here
+                // Add bookmark logic here (same as above)
+                @auth
+                    this.classList.toggle('active');
+                    const icon = this.querySelector('i');
+                    if (this.classList.contains('active')) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        showNotification('Course added to bookmarks', 'success');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        showNotification('Course removed from bookmarks', 'info');
+                    }
+                @else
+                    window.location.href = '{{ route("login") }}';
+                @endauth
             });
         });
     }
@@ -1322,13 +1361,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Search form submission
-    const searchForm = document.getElementById('searchForm');
     if (searchForm) {
         searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             updateCourses();
         });
     }
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 });
 </script>
 @endpush
