@@ -725,101 +725,38 @@
         </div>
 
         <div class="category-grid">
-            <!-- Business Essentials -->
-            <div class="category-card" data-aos="fade-up" data-aos-delay="100">
+            @forelse($categories as $category)
+            <div class="category-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Business Essentials">
+                    <img src="{{ $category->image_url }}" alt="{{ $category->name }}">
                     <div class="category-overlay"></div>
+
+                    @if($category->courses->count() > 5)
                     <span class="category-badge">Popular</span>
-                    <div class="category-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                </div>
-                <div class="category-content">
-                    <div class="category-name">Business</div>
-                    <h3 class="category-title">📊 Business Essentials</h3>
-                    <p class="category-description">
-                        Learn the core principles of business, from entrepreneurship and management to
-                        strategy and leadership, designed to help you succeed in today's competitive world.
-                    </p>
-                    <div class="category-meta">
-                        <div class="category-meta-item">
-                            <i class="far fa-clock"></i>
-                            <span>24+ Hours</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-video"></i>
-                            <span>15 Courses</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('courses') }}" class="category-link">
-                        Explore Business Courses <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+                    @endif
 
-            <!-- Finance Made Simple -->
-            <div class="category-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Finance Made Simple">
-                    <div class="category-overlay"></div>
-                    <span class="category-badge">New</span>
-                    <div class="category-icon">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                </div>
-                <div class="category-content">
-                    <div class="category-name">Finance</div>
-                    <h3 class="category-title">💰 Finance Made Simple</h3>
-                    <p class="category-description">
-                        Understand money management, investments, and financial planning. This course helps
-                        you make smarter financial decisions for personal and professional growth.
-                    </p>
-                    <div class="category-meta">
-                        <div class="category-meta-item">
-                            <i class="far fa-clock"></i>
-                            <span>18+ Hours</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-signal"></i>
-                            <span>Beginner</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-video"></i>
-                            <span>12 Courses</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('courses') }}" class="category-link">
-                        Explore Finance Courses <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- English for Everyone -->
-            <div class="category-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="English for Everyone">
-                    <div class="category-overlay"></div>
+                    @if($loop->first)
                     <span class="category-badge">Featured</span>
+                    @endif
+
+                    @if($category->children->count() > 0)
+                    <span class="category-badge">Multi-level</span>
+                    @endif
+
                     <div class="category-icon">
-                        <i class="fas fa-language"></i>
+                        <i class="{{ $category->icon_class }}"></i>
                     </div>
                 </div>
                 <div class="category-content">
-                    <div class="category-name">Language</div>
-                    <h3 class="category-title">📘 English for Everyone</h3>
+                    <div class="category-name">{{ $category->name }}</div>
+                    <h3 class="category-title">{{ $category->description ? Str::limit($category->description, 60) : 'Learn ' . $category->name }}</h3>
                     <p class="category-description">
-                        Build strong communication skills with practical English lessons. Improve your speaking,
-                        writing, and comprehension for everyday use, academics, and the workplace.
+                        {{ $category->description ?? 'Master the essential skills in ' . $category->name . ' with our comprehensive courses designed for practical success.' }}
                     </p>
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>30+ Hours</span>
+                            <span>{{ $category->courses->sum('duration') ?? 20 }}+ Hours</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
@@ -827,123 +764,19 @@
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>20 Courses</span>
+                            <span>{{ $category->courses->count() }} Courses</span>
                         </div>
                     </div>
-                    <a href="{{ route('courses') }}" class="category-link">
-                        Explore English Courses <i class="fas fa-arrow-right"></i>
+                    <a href="{{ route('courses', ['category' => $category->slug]) }}" class="category-link">
+                        Explore {{ $category->name }} Courses <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
-
-            <!-- Technology & Innovation -->
-            <div class="category-card" data-aos="fade-up" data-aos-delay="400">
-                <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Technology & Innovation">
-                    <div class="category-overlay"></div>
-                    <span class="category-badge">Trending</span>
-                    <div class="category-icon">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                </div>
-                <div class="category-content">
-                    <div class="category-name">Technology</div>
-                    <h3 class="category-title">💻 Technology & Innovation</h3>
-                    <p class="category-description">
-                        Discover the latest in digital tools, software, and emerging technologies. Gain
-                        hands-on knowledge to stay ahead in the fast-changing tech landscape.
-                    </p>
-                    <div class="category-meta">
-                        <div class="category-meta-item">
-                            <i class="far fa-clock"></i>
-                            <span>25+ Hours</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-signal"></i>
-                            <span>Intermediate</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-video"></i>
-                            <span>18 Courses</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('courses') }}" class="category-link">
-                        Explore Tech Courses <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+            @empty
+            <div class="col-span-3 text-center">
+                <p>No categories available at the moment.</p>
             </div>
-
-            <!-- Digital Marketing -->
-            <div class="category-card" data-aos="fade-up" data-aos-delay="500">
-                <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Digital Marketing">
-                    <div class="category-overlay"></div>
-                    <div class="category-icon">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                </div>
-                <div class="category-content">
-                    <div class="category-name">Marketing</div>
-                    <h3 class="category-title">📱 Digital Marketing Mastery</h3>
-                    <p class="category-description">
-                        Master social media, SEO, content marketing, and analytics. Learn to build and
-                        execute effective digital marketing strategies for business growth.
-                    </p>
-                    <div class="category-meta">
-                        <div class="category-meta-item">
-                            <i class="far fa-clock"></i>
-                            <span>22+ Hours</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-video"></i>
-                            <span>14 Courses</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('courses') }}" class="category-link">
-                        Explore Marketing Courses <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Leadership & Management -->
-            <div class="category-card" data-aos="fade-up" data-aos-delay="600">
-                <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Leadership & Management">
-                    <div class="category-overlay"></div>
-                    <div class="category-icon">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                </div>
-                <div class="category-content">
-                    <div class="category-name">Leadership</div>
-                    <h3 class="category-title">👥 Leadership & Management</h3>
-                    <p class="category-description">
-                        Develop essential leadership skills, team management techniques, and strategies
-                        to inspire and guide others toward success.
-                    </p>
-                    <div class="category-meta">
-                        <div class="category-meta-item">
-                            <i class="far fa-clock"></i>
-                            <span>20+ Hours</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-signal"></i>
-                            <span>Intermediate</span>
-                        </div>
-                        <div class="category-meta-item">
-                            <i class="fas fa-video"></i>
-                            <span>10 Courses</span>
-                        </div>
-                    </div>
-                    <a href="{{ route('courses') }}" class="category-link">
-                        Explore Leadership Courses <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>
@@ -960,7 +793,36 @@
         </div>
 
         <div class="paths-grid">
-            <!-- Path 1: Business -->
+            @forelse($learningPaths as $path)
+            <div class="path-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                <div class="path-icon">
+                    <i class="{{ $path->icon_class }}"></i>
+                </div>
+                <h3 class="path-title">{{ $path->name }}</h3>
+                <p class="path-description">
+                    {{ $path->description ?? 'Complete ' . $path->name . ' training program' }}
+                </p>
+                <ul class="path-features">
+                    @php
+                    $features = $path->courses->take(4);
+                    @endphp
+
+                    @forelse($features as $course)
+                    <li><i class="fas fa-check-circle"></i> {{ $course->title }}</li>
+                    @empty
+                    <li><i class="fas fa-check-circle"></i> {{ $path->name }} Fundamentals</li>
+                    <li><i class="fas fa-check-circle"></i> Advanced {{ $path->name }}</li>
+                    <li><i class="fas fa-check-circle"></i> Professional Practice</li>
+                    <li><i class="fas fa-check-circle"></i> Industry Certification</li>
+                    @endforelse
+                </ul>
+                <span class="path-level">
+                    {{ $path->courses->count() }} Courses •
+                    {{ $path->courses->sum('duration') ?? 40 }} Hours
+                </span>
+            </div>
+            @empty
+            <!-- Fallback learning paths if none exist in database -->
             <div class="path-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="path-icon">
                     <i class="fas fa-briefcase"></i>
@@ -978,7 +840,6 @@
                 <span class="path-level">12 Courses • 45 Hours</span>
             </div>
 
-            <!-- Path 2: Finance -->
             <div class="path-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="path-icon">
                     <i class="fas fa-chart-pie"></i>
@@ -996,7 +857,6 @@
                 <span class="path-level">8 Courses • 32 Hours</span>
             </div>
 
-            <!-- Path 3: English -->
             <div class="path-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="path-icon">
                     <i class="fas fa-book-open"></i>
@@ -1014,7 +874,6 @@
                 <span class="path-level">15 Courses • 50 Hours</span>
             </div>
 
-            <!-- Path 4: Technology -->
             <div class="path-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="path-icon">
                     <i class="fas fa-code"></i>
@@ -1031,6 +890,7 @@
                 </ul>
                 <span class="path-level">10 Courses • 40 Hours</span>
             </div>
+            @endforelse
         </div>
     </div>
 </section>

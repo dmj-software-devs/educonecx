@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -68,7 +69,41 @@ class PageController extends Controller
 
     public function academy()
     {
-        return view('academy');
+        // Fetch active categories with their courses
+        $categories = Category::with(['courses' => function ($query) {
+            $query->published()
+                ->with('instructor')
+                ->latest('published_at')
+                ->take(10); // Limit courses per category if needed
+        }])
+            ->active()
+            ->orderBy('sort_order')
+            ->get();
+
+        // Calculate stats from database
+        $totalCourses = Course::published()->count();
+        $totalStudents = Course::published()->sum('total_students');
+        $totalCategories = Category::active()->count();
+        $averageRating = Course::published()->avg('average_rating');
+
+        // Get learning paths (you can create a separate model for this or use categories with parent/child)
+        $learningPaths = Category::with(['courses' => function ($query) {
+            $query->published()->with('instructor');
+        }])
+            ->parents() // Get parent categories as learning paths
+            ->active()
+            ->orderBy('sort_order')
+            ->take(4)
+            ->get();
+
+        return view('academy', compact(
+            'categories',
+            'totalCourses',
+            'totalStudents',
+            'totalCategories',
+            'averageRating',
+            'learningPaths'
+        ));
     }
 
     public function neoEdTech()
