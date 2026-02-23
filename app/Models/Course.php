@@ -18,6 +18,8 @@ class Course extends Model
         'video_intro',
         'price',
         'sale_price',
+        'is_free', // Add this
+        'course_type', // Add this
         'discount_percent',
         'discount_start_date',
         'discount_end_date',
@@ -46,6 +48,7 @@ class Course extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'is_free' => 'boolean', // Add this
         'featured' => 'boolean',
         'popular' => 'boolean',
         'discount_start_date' => 'datetime',
@@ -91,9 +94,34 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'enrollments')
+            ->withPivot('progress', 'completed_at', 'enrollment_date')
+            ->withTimestamps();
+    }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 
-    // Add these helper methods
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlist')->withTimestamps();
+    }
+
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
+    }
+
+    // Helper methods
     public function getIsEnrolledAttribute()
     {
         if (!auth()->check()) {
@@ -127,33 +155,6 @@ class Course extends Model
         return $enrollment ? $enrollment->progress : 0;
     }
 
-    public function students()
-    {
-        return $this->belongsToMany(User::class, 'enrollments')
-            ->withPivot('progress', 'completed_at', 'enrollment_date')
-            ->withTimestamps();
-    }
-
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    public function wishlistedBy()
-    {
-        return $this->belongsToMany(User::class, 'wishlist')->withTimestamps();
-    }
-
-    public function certificates()
-    {
-        return $this->hasMany(Certificate::class);
-    }
-
     // Scopes
     public function scopePublished($query)
     {
@@ -172,27 +173,39 @@ class Course extends Model
 
     public function scopeFree($query)
     {
-        return $query->where(function ($q) {
-            $q->where('price', 0)
-                ->orWhere(function ($q2) {
-                    $q2->whereNotNull('sale_price')
-                        ->where('sale_price', 0);
-                });
-        });
+        return $query->where('is_free', true);
     }
 
     public function scopePaid($query)
     {
-        return $query->where('price', '>', 0)
-            ->where(function ($q) {
-                $q->whereNull('sale_price')
-                    ->orWhere('sale_price', '>', 0);
-            });
+        return $query->where('course_type', 'paid');
     }
 
     // Accessors
+    public function getIsFreeAttribute($value)
+    {
+        return (bool) $value;
+    }
+
+    public function getDisplayPriceAttribute()
+    {
+        if ($this->is_free) {
+            return 'Free';
+        }
+        
+        if ($this->has_discount) {
+            return '$' . number_format($this->sale_price, 2);
+        }
+        
+        return '$' . number_format($this->price, 2);
+    }
+
     public function getCurrentPriceAttribute()
     {
+        if ($this->is_free) {
+            return 0;
+        }
+        
         if ($this->sale_price && $this->discount_start_date && $this->discount_end_date) {
             $now = now();
             if ($now >= $this->discount_start_date && $now <= $this->discount_end_date) {
@@ -204,6 +217,10 @@ class Course extends Model
 
     public function getHasDiscountAttribute()
     {
+        if ($this->is_free) {
+            return false;
+        }
+        
         $now = now();
         return $this->sale_price &&
             $this->discount_start_date &&
@@ -238,6 +255,4 @@ class Course extends Model
         $enrollment = $this->enrollments()->where('user_id', $userId)->first();
         return $enrollment ? $enrollment->progress : 0;
     }
-
-   
 }

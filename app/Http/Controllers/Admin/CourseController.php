@@ -32,7 +32,8 @@ class CourseController extends Controller
         $validated = $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'price' => 'required|numeric|min:0',
+            'course_type' => 'required|in:free,paid',
+            'price' => 'nullable|numeric|min:0|required_if:course_type,paid',
             'sale_price' => 'nullable|numeric|min:0|lte:price',
             'description' => 'required|min:50',
             'level' => 'nullable|in:beginner,intermediate,advanced',
@@ -40,6 +41,15 @@ class CourseController extends Controller
             'popular' => 'nullable|boolean',
             'status' => 'required|in:draft,published,archived'
         ]);
+
+        // Set is_free based on course_type
+        $validated['is_free'] = $validated['course_type'] === 'free';
+        
+        // If free, set price to null
+        if ($validated['is_free']) {
+            $validated['price'] = null;
+            $validated['sale_price'] = null;
+        }
 
         $validated['slug'] = Str::slug($validated['title']);
         $validated['created_by'] = auth()->id();
@@ -89,7 +99,8 @@ class CourseController extends Controller
         $validated = $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'nullable|exists:categories,id',
-            'price' => 'required|numeric|min:0',
+            'course_type' => 'required|in:free,paid',
+            'price' => 'nullable|numeric|min:0|required_if:course_type,paid',
             'sale_price' => 'nullable|numeric|min:0|lte:price',
             'description' => 'required|min:50',
             'level' => 'nullable|in:beginner,intermediate,advanced',
@@ -98,14 +109,31 @@ class CourseController extends Controller
             'status' => 'required|in:draft,published,archived'
         ]);
 
+        // Set is_free based on course_type
+        $validated['is_free'] = $validated['course_type'] === 'free';
+        
+        // If free, set price to null
+        if ($validated['is_free']) {
+            $validated['price'] = null;
+            $validated['sale_price'] = null;
+        }
+
         $validated['slug'] = Str::slug($validated['title']);
 
         if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail
+            if ($course->thumbnail) {
+                Storage::disk('public')->delete($course->thumbnail);
+            }
             $path = $request->file('thumbnail')->store('courses/thumbnails', 'public');
             $validated['thumbnail'] = $path;
         }
 
         if ($request->hasFile('video_intro')) {
+            // Delete old video
+            if ($course->video_intro) {
+                Storage::disk('public')->delete($course->video_intro);
+            }
             $path = $request->file('video_intro')->store('courses/videos', 'public');
             $validated['video_intro'] = $path;
         }
