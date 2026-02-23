@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Category;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -122,9 +123,28 @@ class PageController extends Controller
         return view('contact');
     }
 
-    public function quiz()
+    public function quiz(Request $request)
     {
-        return view('quiz');
+        // Get all published quizzes with their questions count
+        $quizzes = Quiz::withCount('questions')
+            ->where('status', 'published')
+            ->when($request->type, function ($query, $type) {
+                return $query->where('type', $type);
+            })
+            ->when($request->search, function ($query, $search) {
+                return $query->where('title', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(9);
+
+        // Get statistics
+        $totalQuizzes = Quiz::where('status', 'published')->count();
+        $totalQuestions = \App\Models\Question::whereHas('quiz', function ($q) {
+            $q->where('status', 'published');
+        })->count();
+        $totalAttempts = \App\Models\QuizAttempt::count();
+
+        return view('quiz', compact('quizzes', 'totalQuizzes', 'totalQuestions', 'totalAttempts'));
     }
 
     public function dashboard()
