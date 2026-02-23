@@ -236,6 +236,30 @@ if (app()->environment('local')) {
     });
 }
 
+// ==================== STRIPE PAYMENT ROUTES ====================
+Route::middleware('auth')->group(function () {
+    Route::post('/stripe/create-checkout-session', [App\Http\Controllers\StripePaymentController::class, 'createCheckoutSession'])
+        ->name('stripe.create-checkout-session');
+    Route::get('/stripe/success', [App\Http\Controllers\StripePaymentController::class, 'success'])
+        ->name('stripe.success');
+    Route::get('/stripe/cancel', [App\Http\Controllers\StripePaymentController::class, 'cancel'])
+        ->name('stripe.cancel');
+});
+
+// Stripe webhook (no auth required)
+Route::post('/stripe/webhook', [App\Http\Controllers\StripePaymentController::class, 'handleWebhook'])
+    ->name('stripe.webhook');
+
+
+    // Add this route temporarily
+Route::get('/test-url', function(Request $request) {
+    return response()->json([
+        'app_url_config' => config('app.url'),
+        'request_url' => $request->getSchemeAndHttpHost(),
+        'success_url' => route('stripe.success', [], false),
+        'full_success_url' => route('stripe.success', [], true),
+    ]);
+});
 // ==================== FALLBACK ROUTE ====================
 // Route::fallback(function () {
 //     return view('errors.404');

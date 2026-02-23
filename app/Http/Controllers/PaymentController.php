@@ -9,6 +9,9 @@ use App\Models\Enrollment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
+use Stripe\PaymentIntent;
 
 class PaymentController extends Controller
 {
@@ -32,17 +35,18 @@ class PaymentController extends Controller
             return redirect()->route('courses.enroll', $course);
         }
 
-        return view('checkout', compact('course'));
+        // Use the new Stripe checkout view
+        return view('checkout-stripe', compact('course'));
     }
 
     /**
-     * Process payment (simplified - you'll integrate with actual payment gateway)
+     * Process payment with Stripe
      */
     public function process(Request $request)
     {
         $validated = $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'payment_method' => 'required|string'
+            'payment_method_id' => 'required|string'
         ]);
 
         $course = Course::findOrFail($validated['course_id']);
@@ -61,8 +65,8 @@ class PaymentController extends Controller
                 'order_number' => 'ORD-' . strtoupper(uniqid()),
                 'subtotal' => $course->current_price,
                 'total' => $course->current_price,
-                'payment_method' => $validated['payment_method'],
-                'payment_status' => 'paid', // In real scenario, this would be 'pending' until payment confirmation
+                'payment_method' => 'stripe',
+                'payment_status' => 'pending',
                 'billing_name' => Auth::user()->name,
                 'billing_email' => Auth::user()->email
             ]);
@@ -76,25 +80,66 @@ class PaymentController extends Controller
                 'total' => $course->current_price
             ]);
 
-            // Create enrollment
-            Enrollment::create([
-                'user_id' => Auth::id(),
-                'course_id' => $course->id,
-                'order_id' => $order->id,
-                'enrollment_date' => now(),
-                'status' => 'active',
-                'progress' => 0
+            // Initialize Stripe
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            // Create Payment Intent
+            $paymentIntent = PaymentIntent::create([
+                'amount' => round($course->current_price * 100),
+                'currency' => 'usd',
+                'payment_method' => $validated['payment_method_id'],
+                'confirmation_method' => 'manual',
+                'confirm' => true,
+                'return_url' => route('payment.success'),
+                'metadata' => [
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'course_id' => $course->id,
+                    'user_id' => Auth::id()
+                ]
             ]);
 
-            // Increment total students count
-            $course->increment('total_students');
+            if ($paymentIntent->status === 'succeeded') {
+                // Update order
+                $order->update([
+                    'payment_status' => 'paid',
+                    'transaction_id' => $paymentIntent->id
+                ]);
 
-            DB::commit();
+                // Create enrollment
+                Enrollment::create([
+                    'user_id' => Auth::id(),
+                    'course_id' => $course->id,
+                    'order_id' => $order->id,
+                    'enrollment_date' => now(),
+                    'status' => 'active',
+                    'progress' => 0
+                ]);
 
-            return redirect()->route('payment.success', ['order' => $order->id]);
+                $course->increment('total_students');
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'redirect_url' => route('payment.success', ['order' => $order->id])
+                ]);
+            } else {
+                DB::rollBack();
+                
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Payment failed. Please try again.'
+                ], 400);
+            }
+
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Payment processing failed. Please try again.');
+            
+            return response()->json([
+                'success' => false,
+                'error' => 'Payment processing failed: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -123,8 +168,8 @@ class PaymentController extends Controller
      */
     public function webhook(Request $request)
     {
-        // Handle payment gateway webhooks
-        // Verify payment and update order status
-        // Create enrollment if payment successful
+        // You can keep this for backward compatibility
+        // Or delegate to the StripePaymentController
+        return app(StripePaymentController::class)->handleWebhook($request);
     }
 }
