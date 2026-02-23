@@ -6,501 +6,426 @@
 
 @section('content')
 <style>
-    /* Simple Login Page Styles */
-    :root {
-        --primary: #4361ee;
-        --primary-dark: #3a56d4;
-        --danger: #ef476f;
-        --success: #06d6a0;
-        --dark: #1e1e2f;
-        --gray: #6c757d;
-        --gray-light: #e9ecef;
-    }
-
-    .login-section {
-        padding: 60px 0;
-        min-height: calc(100vh - 400px);
-        background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
-    }
-
-    .login-container {
-        max-width: 480px;
-        margin: 0 auto;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-        padding: 40px;
-    }
-
-    .login-header {
-        text-align: center;
-        margin-bottom: 35px;
-    }
-
-    .login-header h1 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 8px;
-    }
-
-    .login-header p {
-        color: var(--gray);
-        font-size: 0.95rem;
-    }
-
-    .login-header a {
-        color: var(--primary);
-        font-weight: 600;
-        text-decoration: none;
-    }
-
-    .login-header a:hover {
-        text-decoration: underline;
-    }
-
-    /* Form Styles */
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--dark);
-    }
-
-    .required {
-        color: var(--danger);
-        margin-left: 3px;
-    }
-
-    input {
-        width: 100%;
-        height: 45px;
-        padding: 0 15px;
-        border: 1.5px solid var(--gray-light);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        color: var(--dark);
-        background: white;
-        transition: all 0.2s ease;
-    }
-
-    input:hover {
-        border-color: #cbd5e1;
-    }
-
-    input:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
-    }
-
-    input.is-invalid {
-        border-color: var(--danger);
-    }
-
-    .invalid-feedback {
-        color: var(--danger);
-        font-size: 0.8rem;
-        margin-top: 5px;
-    }
-
-    /* Password Field */
-    .password-wrapper {
-        position: relative;
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: var(--gray);
-        cursor: pointer;
-        font-size: 1.1rem;
-        padding: 0;
+    /* Login Page Specific Styles - Scoped to prevent conflicts */
+    .login-page-section {
+        min-height: 100vh;
         display: flex;
         align-items: center;
+        background: #ffffff;
+        padding: 20px;
+        font-family: 'Inter', sans-serif;
     }
 
-    .toggle-password:hover {
-        color: var(--primary);
+    .login-page-container {
+        max-width: 440px;
+        width: 100%;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        padding: 48px 40px;
+        border: 1px solid #f0f0f0;
+    }
+
+    /* Header */
+    .login-page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .login-page-header h1 {
+        font-size: 32px !important;
+        font-weight: 700 !important;
+        color: #1f2937 !important;
+        margin: 0 0 8px 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
+        background: none !important;
+        -webkit-text-fill-color: #1f2937 !important;
+    }
+
+    .login-page-header p {
+        color: #6b7280 !important;
+        font-size: 15px !important;
+        margin: 0 !important;
+    }
+
+    .login-page-header a {
+        color: #2563eb !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        background: none !important;
+        padding: 0 !important;
+    }
+
+    .login-page-header a:hover {
+        text-decoration: underline !important;
+    }
+
+    /* Alert Messages */
+    .login-page-alert {
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .login-page-alert-error {
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        color: #dc2626;
+    }
+
+    .login-page-alert-success {
+        background: #f0fdf4;
+        border: 1px solid #dcfce7;
+        color: #16a34a;
+    }
+
+    /* Form Groups - Fixed Alignment */
+    .login-page-form-group {
+        margin-bottom: 24px;
+        width: 100%;
+    }
+
+    .login-page-form-group label {
+        display: block !important;
+        margin: 0 0 8px 0 !important;
+        padding: 0 !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #1f2937 !important;
+        text-align: left !important;
+        line-height: 1.5 !important;
+        float: none !important;
+        width: auto !important;
+        background: none !important;
+        border: none !important;
+    }
+
+    .login-page-form-group label span {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .login-page-input-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .login-page-input-wrapper input {
+        width: 100% !important;
+        height: 48px !important;
+        padding: 0 16px !important;
+        border: 2px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        font-size: 15px !important;
+        color: #1f2937 !important;
+        background: #ffffff !important;
+        transition: all 0.2s ease !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        line-height: normal !important;
+    }
+
+    .login-page-input-wrapper input:hover {
+        border-color: #9ca3af !important;
+    }
+
+    .login-page-input-wrapper input:focus {
+        outline: none !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
+    }
+
+    .login-page-input-wrapper input.is-invalid {
+        border-color: #dc2626 !important;
+    }
+
+    .login-page-error-message {
+        color: #dc2626 !important;
+        font-size: 13px !important;
+        margin-top: 6px !important;
+        display: block !important;
+    }
+
+    /* Password Toggle */
+    .login-page-password-toggle {
+        position: absolute !important;
+        right: 14px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background: none !important;
+        border: none !important;
+        color: #6b7280 !important;
+        cursor: pointer !important;
+        font-size: 18px !important;
+        padding: 4px !important;
+        width: auto !important;
+        height: auto !important;
+        line-height: 1 !important;
+    }
+
+    .login-page-password-toggle:hover {
+        color: #2563eb !important;
     }
 
     /* Form Options */
-    .form-options {
+    .login-page-form-options {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 20px 0 25px;
-        flex-wrap: wrap;
-        gap: 15px;
+        margin: 20px 0 32px;
     }
 
-    .remember-me {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        color: var(--gray);
-        font-size: 0.9rem;
+    .login-page-remember-me {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        color: #1f2937 !important;
+        margin: 0 !important;
     }
 
-    .remember-me input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        accent-color: var(--primary);
+    .login-page-remember-me input[type="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+        cursor: pointer !important;
+        accent-color: #2563eb !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
-    .forgot-password {
-        color: var(--primary);
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-decoration: none;
+    .login-page-forgot-link {
+        color: #2563eb !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        background: none !important;
+        padding: 0 !important;
     }
 
-    .forgot-password:hover {
-        text-decoration: underline;
+    .login-page-forgot-link:hover {
+        text-decoration: underline !important;
     }
 
     /* Submit Button */
-    .btn-submit {
-        width: 100%;
-        height: 48px;
-        background: var(--primary);
-        border: none;
-        border-radius: 10px;
-        color: white;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
+    .login-page-btn-submit {
+        width: 100% !important;
+        height: 48px !important;
+        background: #2563eb !important;
+        border: none !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 48px !important;
+        text-align: center !important;
     }
 
-    .btn-submit:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
+    .login-page-btn-submit:hover:not(:disabled) {
+        background: #1d4ed8 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2) !important;
     }
 
-    .btn-submit:active {
-        transform: translateY(0);
+    .login-page-btn-submit:active:not(:disabled) {
+        transform: translateY(0) !important;
     }
 
-    /* Alert */
-    .alert {
-        padding: 12px 15px;
-        border-radius: 10px;
-        margin-bottom: 25px;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+    .login-page-btn-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 
-    .alert-error {
-        background: #fef2f2;
-        border: 1px solid #fee2e2;
-        color: #b91c1c;
+    /* Loading Spinner */
+    .login-page-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: login-page-spin 0.8s linear infinite;
     }
 
-    .alert-success {
-        background: #f0fdf4;
-        border: 1px solid #dcfce7;
-        color: #166534;
+    @keyframes login-page-spin {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
-    /* Demo Credentials */
-    .demo-credentials {
-        margin-top: 25px;
-        padding-top: 20px;
-        border-top: 1px solid var(--gray-light);
+    /* Notification */
+    .login-page-notification {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        padding: 14px 20px;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        animation: login-page-slideIn 0.3s ease;
     }
 
-    .demo-credentials h4 {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .demo-credentials h4 i {
-        color: var(--primary);
-    }
-
-    .demo-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
-        color: var(--gray);
-        font-size: 0.85rem;
-        padding: 8px 10px;
-        border-radius: 8px;
-        background: var(--gray-light);
-        opacity: 0.8;
-        transition: all 0.2s ease;
-        cursor: pointer;
-    }
-
-    .demo-item:hover {
-        opacity: 1;
-        transform: translateX(5px);
-    }
-
-    .demo-item strong {
-        color: var(--dark);
-        min-width: 50px;
-    }
-
-    .demo-item span {
-        font-family: monospace;
-        background: white;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-    }
-
-    .demo-item i {
-        margin-left: auto;
-        color: var(--primary);
-    }
-
-    .demo-note {
-        font-size: 0.8rem;
-        color: var(--gray);
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .demo-note i {
-        color: var(--primary);
-        font-size: 0.8rem;
+    @keyframes login-page-slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     /* Responsive */
-    @media (max-width: 576px) {
-        .login-section {
-            padding: 40px 0;
+    @media (max-width: 480px) {
+        .login-page-container {
+            padding: 32px 24px;
         }
-        
-        .login-container {
-            padding: 30px 20px;
-            margin: 0 15px;
+
+        .login-page-header h1 {
+            font-size: 28px !important;
         }
-        
-        .form-options {
+
+        .login-page-form-options {
             flex-direction: column;
             align-items: flex-start;
+            gap: 12px;
         }
     }
 </style>
 
-<section class="login-section">
-    <div class="container">
-        <div class="login-container">
-            <div class="login-header">
-                <h1>Welcome Back</h1>
-                <p>Don't have an account? <a href="{{ route('register') }}">Sign up</a></p>
-            </div>
-
-            @if(session('status'))
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <span>{{ session('status') }}</span>
-                </div>
-            @endif
-
-            @if($errors->any())
-                <div class="alert alert-error">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>{{ $errors->first() }}</span>
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login') }}" id="loginForm">
-                @csrf
-
-                <div class="form-group">
-                    <label for="email">
-                        Email address <span class="required">*</span>
-                    </label>
-                    <input type="email" 
-                           id="email" 
-                           name="email" 
-                           value="{{ old('email') }}" 
-                           placeholder="you@example.com"
-                           class="@error('email') is-invalid @enderror"
-                           required>
-                    @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="password">
-                        Password <span class="required">*</span>
-                    </label>
-                    <div class="password-wrapper">
-                        <input type="password" 
-                               id="password" 
-                               name="password" 
-                               placeholder="Enter your password"
-                               class="@error('password') is-invalid @enderror"
-                               required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('password')" tabindex="-1">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-options">
-                    <label class="remember-me">
-                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
-                        <span>Remember me</span>
-                    </label>
-                    <a href="#" class="forgot-password" onclick="showNotification('Password reset coming soon!', 'info')">
-                        Forgot password?
-                    </a>
-                </div>
-
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <span>Log in</span>
-                </button>
-            </form>
-
-            <!-- Demo Credentials (for development) -->
-            <div class="demo-credentials">
-                <h4>
-                    <i class="fas fa-info-circle"></i>
-                    Demo Credentials
-                </h4>
-                <div class="demo-item" onclick="fillDemoCredentials('admin@educonecx.com', 'password')">
-                    <strong>Admin:</strong>
-                    <span>admin@educonecx.com</span>
-                    <span>password</span>
-                    <i class="fas fa-copy" onclick="copyCredentials(event, 'admin@educonecx.com', 'password')"></i>
-                </div>
-                <div class="demo-item" onclick="fillDemoCredentials('user@educonecx.com', 'password')">
-                    <strong>User:</strong>
-                    <span>user@educonecx.com</span>
-                    <span>password</span>
-                    <i class="fas fa-copy" onclick="copyCredentials(event, 'user@educonecx.com', 'password')"></i>
-                </div>
-                <div class="demo-note">
-                    <i class="fas fa-lightbulb"></i>
-                    Click on any demo account to auto-fill
-                </div>
-            </div>
+<section class="login-page-section">
+    <div class="login-page-container">
+        <div class="login-page-header">
+            <h1>Welcome back</h1>
+            <p>Don't have an account? <a href="{{ route('register') }}">Sign up</a></p>
         </div>
+
+        @if(session('status'))
+        <div class="login-page-alert login-page-alert-success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            {{ session('status') }}
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="login-page-alert login-page-alert-error">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ $errors->first() }}
+        </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}" id="loginForm">
+            @csrf
+
+            <div class="login-page-form-group">
+                <label for="email">Email <span>*</span></label>
+                <div class="login-page-input-wrapper">
+                    <input type="email"
+                        id="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="name@example.com"
+                        class="@error('email') is-invalid @enderror"
+                        required>
+                </div>
+                @error('email')
+                <div class="login-page-error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="login-page-form-group">
+                <label for="password">Password <span>*</span></label>
+                <div class="login-page-input-wrapper">
+                    <input type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        class="@error('password') is-invalid @enderror"
+                        required>
+                    <button type="button"
+                        class="login-page-password-toggle"
+                        onclick="togglePassword('password')"
+                        tabindex="-1">
+                        👁️
+                    </button>
+                </div>
+                @error('password')
+                <div class="login-page-error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="login-page-form-options">
+                <label class="login-page-remember-me">
+                    <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <span>Remember me</span>
+                </label>
+                <a href="#" class="login-page-forgot-link" onclick="showNotification('Password reset coming soon!')">
+                    Forgot password?
+                </a>
+            </div>
+
+            <button type="submit" class="login-page-btn-submit" id="submitBtn">
+                <span>Log in</span>
+            </button>
+        </form>
     </div>
 </section>
 
-@push('scripts')
 <script>
     // Toggle password visibility
     window.togglePassword = function(fieldId) {
         const field = document.getElementById(fieldId);
-        const button = field.closest('.password-wrapper').querySelector('.toggle-password');
-        const icon = button.querySelector('i');
-        
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            field.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
+        const button = field.nextElementSibling;
+        const type = field.type === 'password' ? 'text' : 'password';
+        field.type = type;
+        button.textContent = type === 'password' ? '👁️' : '🔒';
     };
 
-    // Fill demo credentials
-    function fillDemoCredentials(email, password) {
-        document.getElementById('email').value = email;
-        document.getElementById('password').value = password;
-        
-        // Highlight effect
-        document.getElementById('email').style.backgroundColor = '#e8f5e9';
-        document.getElementById('password').style.backgroundColor = '#e8f5e9';
-        
-        setTimeout(() => {
-            document.getElementById('email').style.backgroundColor = '';
-            document.getElementById('password').style.backgroundColor = '';
-        }, 500);
-        
-        showNotification('Credentials filled!', 'success');
-    }
-
-    // Copy credentials
-    function copyCredentials(event, email, password) {
-        event.stopPropagation();
-        const text = `Email: ${email}\nPassword: ${password}`;
-        navigator.clipboard.writeText(text).then(() => {
-            showNotification('Credentials copied!', 'success');
-        });
-    }
-
     // Show notification
-    function showNotification(message, type = 'info') {
+    window.showNotification = function(message, type = 'info') {
         const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: ${type === 'success' ? '#06d6a0' : type === 'error' ? '#ef476f' : '#4361ee'};
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            z-index: 9999;
-            animation: slideIn 0.3s ease;
-            font-size: 0.9rem;
-        `;
+        notification.className = 'login-page-notification';
+        notification.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
         notification.textContent = message;
+
         document.body.appendChild(notification);
 
         setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
+            notification.style.animation = 'login-page-slideIn 0.3s reverse';
             setTimeout(() => notification.remove(), 300);
         }, 3000);
-    }
-
-    // Add animations
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-    `;
-    document.head.appendChild(style);
+    };
 
     // Form loading state
-    document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+    document.getElementById('loginForm')?.addEventListener('submit', function() {
         const submitBtn = document.getElementById('submitBtn');
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+        submitBtn.innerHTML = '<span class="login-page-spinner"></span> Logging in...';
         submitBtn.disabled = true;
     });
+
+    // Prevent double submission
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
 </script>
-@endpush
 @endsection
