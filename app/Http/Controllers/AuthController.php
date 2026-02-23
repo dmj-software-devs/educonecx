@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\Enrollment;
 use App\Models\QuizAttempt;
 use App\Models\Certificate;
+use Illuminate\Auth\Events\Registered;
+
 
 class AuthController extends Controller
 {
@@ -24,6 +26,9 @@ class AuthController extends Controller
     /**
      * Handle login request
      */
+    /**
+     * Handle login request
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -33,12 +38,27 @@ class AuthController extends Controller
 
         $remember = $request->has('remember');
 
+        // First, check if user exists and is verified
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && !$user->hasVerifiedEmail()) {
+            return back()->withErrors([
+                'email' => 'Please verify your email address before logging in. <a href="' . route('verification.resend') . '?email=' . $user->email . '">Resend verification email</a>',
+            ])->onlyInput('email');
+        }
+
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            // Redirect based on user role
-            $user = Auth::user();
+            // Check if user is active
+            if ($user->status !== 'active') {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Your account is not active. Please contact support.',
+                ])->onlyInput('email');
+            }
 
+            // Redirect based on user role
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
             } elseif ($user->role === 'instructor') {
@@ -90,23 +110,19 @@ class AuthController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'student', // Default role for new registrations
+            'role' => 'student',
             'status' => 'active',
         ]);
 
-        // Remove this line to prevent auto-login
-        // Auth::login($user);
+        // Trigger email verification notification
+        // event(new Registered($user));
+        $user->markEmailAsVerified();
 
-        // Create welcome notification (optional - you might want to move this to after first login)
-        $user->notifications()->create([
-            'type' => 'welcome',
-            'title' => 'Welcome to EDUCONECX!',
-            'message' => 'Thank you for joining our learning community. Start exploring courses and enhance your skills.',
-            'data' => json_encode(['action' => 'browse_courses', 'url' => route('courses')])
-        ]);
+        // Don't log them in
+        // Don't create notification yet (they need to verify email first)
 
-        // Redirect to login page with success message
-        return redirect()->route('login')->with('success', 'Registration successful! Please login to continue.');
+        // Redirect to login page with verification message
+        return redirect()->route('login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
     }
 
     /**

@@ -10,12 +10,34 @@ use App\Http\Controllers\QuizController;
 use App\Http\Controllers\DashboardController; // Student Dashboard
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\AdminDashboardController; // Renamed Admin Dashboard
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+// ==================== EMAIL VERIFICATION ROUTES ====================
+Route::middleware('auth')->group(function () {
+    // Email verification notice
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    // Email verification handler
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/login')->with('success', 'Email verified successfully! You can now log in.');
+    })->middleware(['signed'])->name('verification.verify');
+
+    // Resend verification email
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('success', 'Verification link sent! Please check your email.');
+    })->middleware(['throttle:6,1'])->name('verification.resend');
+});
 
 // ==================== AUTHENTICATION ROUTES ====================
 Route::middleware('guest')->group(function () {
@@ -58,7 +80,6 @@ Route::middleware('auth')->group(function () {
 
     // Learning Routes
     Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
-    Route::post('/courses/{course}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
     Route::post('/courses/{course}/rate', [CourseController::class, 'rate'])->name('courses.rate');
     Route::post('/lessons/{lesson}/complete', [CourseController::class, 'completeLesson'])->name('lessons.complete');
 
@@ -140,9 +161,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
     Route::delete('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
     Route::post('quizzes/questions/reorder', [App\Http\Controllers\Admin\QuizController::class, 'reorderQuestions'])->name('quizzes.questions.reorder');
-    // In your web.php, make sure this route exists:
-    Route::post('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'storeQuestion'])
-        ->name('quizzes.questions.store');
+
     // Categories Management
     Route::resource('categories', App\Http\Controllers\Admin\CategoryController::class);
 
