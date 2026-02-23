@@ -6,7 +6,6 @@ use App\Models\Course;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Enrollment;
-use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,110 +13,58 @@ use Illuminate\Support\Facades\DB;
 class PaymentController extends Controller
 {
     /**
-     * Show checkout page.
+     * Show checkout page
      */
-    public function checkout(Request $request, Course $course)
+    public function checkout(Course $course)
     {
-        $user = Auth::user();
+        // Check if user is already enrolled
+        $existingEnrollment = Enrollment::where('user_id', Auth::id())
+            ->where('course_id', $course->id)
+            ->first();
 
-        // Check if already enrolled
-        if ($user->courses()->where('course_id', $course->id)->exists()) {
-            return redirect()->route('courses.learn', $course)
+        if ($existingEnrollment) {
+            return redirect()->route('courses.learning', $course->slug)
                 ->with('info', 'You are already enrolled in this course.');
         }
 
-        $coupon = null;
-        $discountAmount = 0;
-        $total = $course->current_price;
-
-        if ($request->has('coupon')) {
-            $coupon = Coupon::where('code', $request->coupon)->active()->first();
-            
-            if ($coupon) {
-                // Check if coupon applies to this course
-                if ($coupon->courses->isNotEmpty() && !$coupon->courses->contains($course->id)) {
-                    return back()->with('error', 'This coupon does not apply to this course.');
-                }
-
-                // Calculate discount
-                if ($coupon->discount_type === 'percentage') {
-                    $discountAmount = ($total * $coupon->discount_value) / 100;
-                    if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
-                        $discountAmount = $coupon->max_discount_amount;
-                    }
-                } else {
-                    $discountAmount = $coupon->discount_value;
-                }
-
-                $total = max(0, $total - $discountAmount);
-            } else {
-                return back()->with('error', 'Invalid or expired coupon code.');
-            }
+        // Check if it's a free course
+        if ($course->is_free) {
+            return redirect()->route('courses.enroll', $course);
         }
 
-        return view('checkout', compact('course', 'coupon', 'discountAmount', 'total'));
+        return view('checkout', compact('course'));
     }
 
     /**
-     * Process payment.
+     * Process payment (simplified - you'll integrate with actual payment gateway)
      */
     public function process(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'payment_method' => 'required|in:stripe,paypal',
-            'coupon_code' => 'nullable|string|exists:coupons,code',
+            'payment_method' => 'required|string'
         ]);
 
-        $user = Auth::user();
-        $course = Course::findOrFail($request->course_id);
+        $course = Course::findOrFail($validated['course_id']);
 
-        // Check if already enrolled
-        if ($user->courses()->where('course_id', $course->id)->exists()) {
-            return redirect()->route('courses.learn', $course)
-                ->with('info', 'You are already enrolled in this course.');
+        // Check if it's a free course
+        if ($course->is_free) {
+            return redirect()->route('courses.enroll', $course);
         }
-
-        $coupon = null;
-        $discountAmount = 0;
-        $subtotal = $course->current_price;
-        $total = $subtotal;
-
-        if ($request->coupon_code) {
-            $coupon = Coupon::where('code', $request->coupon_code)->active()->first();
-            
-            if ($coupon) {
-                if ($coupon->courses->isNotEmpty() && !$coupon->courses->contains($course->id)) {
-                    return back()->with('error', 'This coupon does not apply to this course.');
-                }
-
-                if ($coupon->discount_type === 'percentage') {
-                    $discountAmount = ($subtotal * $coupon->discount_value) / 100;
-                    if ($coupon->max_discount_amount && $discountAmount > $coupon->max_discount_amount) {
-                        $discountAmount = $coupon->max_discount_amount;
-                    }
-                } else {
-                    $discountAmount = $coupon->discount_value;
-                }
-
-                $total = max(0, $subtotal - $discountAmount);
-            }
-        }
-
-        DB::beginTransaction();
 
         try {
+            DB::beginTransaction();
+
             // Create order
             $order = Order::create([
-                'user_id' => $user->id,
-                'subtotal' => $subtotal,
-                'discount_amount' => $discountAmount,
-                'coupon_code' => $request->coupon_code,
-                'total' => $total,
-                'payment_method' => $request->payment_method,
-                'payment_status' => 'pending',
-                'billing_name' => $user->name,
-                'billing_email' => $user->email,
+                'user_id' => Auth::id(),
+                'order_number' => 'ORD-' . strtoupper(uniqid()),
+                'subtotal' => $course->current_price,
+                'total' => $course->current_price,
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => 'paid', // In real scenario, this would be 'pending' until payment confirmation
+                'billing_name' => Auth::user()->name,
+                'billing_email' => Auth::user()->email
             ]);
 
             // Create order item
@@ -125,59 +72,34 @@ class PaymentController extends Controller
                 'order_id' => $order->id,
                 'course_id' => $course->id,
                 'course_title' => $course->title,
-                'price' => $course->price,
-                'discount_amount' => $discountAmount,
-                'total' => $total,
-            ]);
-
-            // Update coupon usage
-            if ($coupon) {
-                $coupon->increment('total_used');
-            }
-
-            // Here you would integrate with payment gateway
-            // For now, we'll simulate successful payment
-            
-            $order->update([
-                'payment_status' => 'paid',
-                'transaction_id' => 'TXN-' . strtoupper(uniqid())
+                'price' => $course->current_price,
+                'total' => $course->current_price
             ]);
 
             // Create enrollment
             Enrollment::create([
-                'user_id' => $user->id,
+                'user_id' => Auth::id(),
                 'course_id' => $course->id,
                 'order_id' => $order->id,
+                'enrollment_date' => now(),
                 'status' => 'active',
                 'progress' => 0
             ]);
 
-            // Update course student count
+            // Increment total students count
             $course->increment('total_students');
-
-            // Create notification
-            $user->notifications()->create([
-                'type' => 'course_enrolled',
-                'title' => 'Course Enrolled',
-                'message' => "You have successfully enrolled in '{$course->title}'.",
-                'data' => json_encode([
-                    'course_id' => $course->id,
-                    'order_id' => $order->id
-                ])
-            ]);
 
             DB::commit();
 
             return redirect()->route('payment.success', ['order' => $order->id]);
-
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Payment processing failed. Please try again.');
+            return redirect()->back()->with('error', 'Payment processing failed. Please try again.');
         }
     }
 
     /**
-     * Payment success page.
+     * Payment success page
      */
     public function success(Request $request)
     {
@@ -185,24 +107,24 @@ class PaymentController extends Controller
             ->where('user_id', Auth::id())
             ->findOrFail($request->order);
 
-        return view('payment.success', compact('order'));
+        return view('payment-success', compact('order'));
     }
 
     /**
-     * Payment cancel page.
+     * Payment cancel page
      */
     public function cancel()
     {
-        return view('payment.cancel');
+        return view('payment-cancel');
     }
 
     /**
-     * Payment webhook (for payment gateways).
+     * Payment webhook (for payment gateway callbacks)
      */
     public function webhook(Request $request)
     {
-        // Handle payment gateway webhook
-        // This would be implemented based on your payment gateway
-        return response()->json(['status' => 'received']);
+        // Handle payment gateway webhooks
+        // Verify payment and update order status
+        // Create enrollment if payment successful
     }
 }

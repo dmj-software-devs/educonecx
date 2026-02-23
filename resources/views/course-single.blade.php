@@ -467,6 +467,7 @@
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -983,9 +984,12 @@
 
     /* Animations */
     @keyframes course-page-float {
-        0%, 100% {
+
+        0%,
+        100% {
             transform: translateY(0);
         }
+
         50% {
             transform: translateY(-20px);
         }
@@ -1074,11 +1078,13 @@
                 @if($course->featured)
                 <span class="course-page-badge featured">Featured</span>
                 @endif
-                @if($course->price == 0 || ($course->sale_price == 0))
+                @if($course->is_free)
                 <span class="course-page-badge free">Free Course</span>
+                @elseif($course->sale_price && $course->sale_price < $course->price)
+                <span class="course-page-badge">Sale</span>
                 @endif
                 @if($course->level)
-                <span class="course-page-badge">{{ $course->level }}</span>
+                <span class="course-page-badge">{{ ucfirst($course->level) }}</span>
                 @endif
             </div>
 
@@ -1096,7 +1102,7 @@
                     </div>
                     <div class="course-page-meta-content">
                         <h4>Students Enrolled</h4>
-                        <p>{{ number_format($course->enrollments_count ?? 0) }}+</p>
+                        <p>{{ number_format($course->total_students ?? 0) }}+</p>
                     </div>
                 </div>
 
@@ -1126,7 +1132,7 @@
                     </div>
                     <div class="course-page-meta-content">
                         <h4>Level</h4>
-                        <p>{{ $course->level ?? 'All Levels' }}</p>
+                        <p>{{ ucfirst($course->level ?? 'All Levels') }}</p>
                     </div>
                 </div>
             </div>
@@ -1317,7 +1323,7 @@
                 </div>
 
                 <!-- Related Courses -->
-                @if($relatedCourses->count() > 0)
+                @if(isset($relatedCourses) && $relatedCourses->count() > 0)
                 <div class="course-page-related-courses" data-aos="fade-up">
                     <div class="course-page-related-header">
                         <h2 class="course-page-related-title">Related Courses</h2>
@@ -1335,14 +1341,16 @@
                                 <div class="course-page-related-category">{{ $relatedCourse->category->name ?? 'General' }}</div>
                                 <h3 class="course-page-related-title">{{ $relatedCourse->title }}</h3>
                                 <div class="course-page-related-meta">
-                                    <span class="course-page-related-price {{ $relatedCourse->price == 0 ? 'free' : '' }}">
-                                        @if($relatedCourse->sale_price && $relatedCourse->sale_price < $relatedCourse->price)
-                                            ${{ number_format($relatedCourse->sale_price, 2) }}
-                                            @elseif($relatedCourse->price > 0)
-                                            ${{ number_format($relatedCourse->price, 2) }}
-                                            @else
+                                    <span class="course-page-related-price {{ $relatedCourse->is_free ? 'free' : '' }}">
+                                        @if($relatedCourse->is_free)
                                             Free
-                                            @endif
+                                        @elseif($relatedCourse->sale_price && $relatedCourse->sale_price < $relatedCourse->price)
+                                            ${{ number_format($relatedCourse->sale_price, 2) }}
+                                        @elseif($relatedCourse->price > 0)
+                                            ${{ number_format($relatedCourse->price, 2) }}
+                                        @else
+                                            Free
+                                        @endif
                                     </span>
                                 </div>
                             </div>
@@ -1361,47 +1369,65 @@
                         <div class="course-page-thumbnail">
                             <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
                             @if($course->video_intro)
-                            <button class="course-page-preview-btn" id="previewVideo">
+                            <button class="course-page-preview-btn" id="previewVideo" data-video="{{ $course->video_intro_url }}">
                                 <i class="fas fa-play"></i>
                             </button>
                             @endif
                         </div>
 
                         <div class="course-page-price-box">
-                            <div class="course-page-price {{ $course->price == 0 ? 'free' : '' }}">
-                                @if($course->sale_price && $course->sale_price < $course->price)
+                            <div class="course-page-price {{ $course->is_free ? 'free' : '' }}">
+                                @if($course->is_free)
+                                    Free
+                                @elseif($course->sale_price && $course->sale_price < $course->price)
                                     ${{ number_format($course->sale_price, 2) }}
                                     <small>${{ number_format($course->price, 2) }}</small>
-                                    @elseif($course->price > 0)
+                                @elseif($course->price > 0)
                                     ${{ number_format($course->price, 2) }}
-                                    @else
+                                @else
                                     Free
-                                    @endif
+                                @endif
                             </div>
                             <span class="course-page-price-label">one-time payment, lifetime access</span>
                         </div>
 
+                        <!-- Course Actions -->
                         <div class="course-page-actions">
                             @auth
-                            @if($course->is_enrolled)
-                            <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
-                                <i class="fas fa-play-circle"></i>
-                                Continue Learning ({{ $course->user_progress }}%)
-                            </a>
+                                @if($course->is_enrolled)
+                                    <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
+                                        <i class="fas fa-play-circle"></i>
+                                        Continue Learning ({{ $course->user_progress ?? 0 }}%)
+                                    </a>
+                                @elseif($course->is_free)
+                                    <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}" data-course-type="free">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Enroll Now - Free
+                                    </button>
+                                @else
+                                    <a href="{{ route('checkout', $course) }}" class="course-page-btn-enroll" id="purchaseBtn">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Purchase Now - 
+                                        @if($course->sale_price && $course->sale_price < $course->price)
+                                            ${{ number_format($course->sale_price, 2) }}
+                                        @else
+                                            ${{ number_format($course->price, 2) }}
+                                        @endif
+                                    </a>
+                                @endif
                             @else
-                            <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
-                                <i class="fas fa-graduation-cap"></i>
-                                Enroll Now
-                            </button>
-                            @endif
-                            @else
-                            <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
-                                <i class="fas fa-sign-in-alt"></i>
-                                Login to Enroll
-                            </a>
+                                <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    Login to 
+                                    @if($course->is_free)
+                                        Enroll
+                                    @else
+                                        Purchase
+                                    @endif
+                                </a>
                             @endauth
 
-                            <button class="course-page-btn-wishlist" id="wishlistBtn">
+                            <button class="course-page-btn-wishlist" id="wishlistBtn" data-course-id="{{ $course->id }}">
                                 <i class="far fa-heart"></i>
                                 Add to Wishlist
                             </button>
@@ -1454,112 +1480,111 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // ========== TAB SWITCHING ==========
-    const tabBtns = document.querySelectorAll('.course-page-tab-btn');
-    const tabPanes = document.querySelectorAll('.course-page-tab-pane');
+    document.addEventListener('DOMContentLoaded', function() {
+        // ========== TAB SWITCHING ==========
+        const tabBtns = document.querySelectorAll('.course-page-tab-btn');
+        const tabPanes = document.querySelectorAll('.course-page-tab-pane');
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tabId = this.dataset.tab;
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
 
-            // Remove active class from all tabs and panes
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabPanes.forEach(p => p.classList.remove('active'));
+                // Remove active class from all tabs and panes
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
 
-            // Add active class to current tab and pane
-            this.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+                // Add active class to current tab and pane
+                this.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
         });
-    });
 
-    // ========== CURRICULUM ACCORDION ==========
-    const accordionHeaders = document.querySelectorAll('.course-page-accordion-header');
+        // ========== CURRICULUM ACCORDION ==========
+        const accordionHeaders = document.querySelectorAll('.course-page-accordion-header');
 
-    accordionHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const sectionId = this.dataset.section;
-            const content = document.getElementById(`section-${sectionId}`);
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const sectionId = this.dataset.section;
+                const content = document.getElementById(`section-${sectionId}`);
 
-            // Toggle active class
-            this.classList.toggle('active');
+                // Toggle active class
+                this.classList.toggle('active');
 
-            // Toggle content
-            if (content.classList.contains('show')) {
-                content.classList.remove('show');
-            } else {
-                content.classList.add('show');
-            }
-        });
-    });
-
-    // Open first accordion by default
-    if (accordionHeaders.length > 0) {
-        accordionHeaders[0].click();
-    }
-
-    // ========== VIDEO PREVIEW MODAL ==========
-    const modal = document.getElementById('videoModal');
-    const previewBtn = document.getElementById('previewVideo');
-    const closeBtn = document.getElementById('closeModal');
-    const videoContainer = document.getElementById('videoContainer');
-
-    if (previewBtn) {
-        previewBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            modal.classList.add('show');
-
-            // Example: If you have a YouTube video URL
-            const videoUrl = this.dataset.video || '{{ $course->video_intro_url ?? "" }}';
-            if (videoUrl) {
-                if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                    // Extract YouTube ID and create embed
-                    const videoId = extractYoutubeId(videoUrl);
-                    if (videoId) {
-                        videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                    }
-                } else if (videoUrl.includes('vimeo.com')) {
-                    // Extract Vimeo ID
-                    const vimeoId = videoUrl.split('/').pop();
-                    videoContainer.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allowfullscreen></iframe>`;
+                // Toggle content
+                if (content.classList.contains('show')) {
+                    content.classList.remove('show');
                 } else {
-                    // Assume it's a local video file
-                    videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
+                    content.classList.add('show');
                 }
+            });
+        });
+
+        // Open first accordion by default
+        if (accordionHeaders.length > 0) {
+            accordionHeaders[0].click();
+        }
+
+        // ========== VIDEO PREVIEW MODAL ==========
+        const modal = document.getElementById('videoModal');
+        const previewBtn = document.getElementById('previewVideo');
+        const closeBtn = document.getElementById('closeModal');
+        const videoContainer = document.getElementById('videoContainer');
+
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.classList.add('show');
+
+                const videoUrl = this.dataset.video;
+                if (videoUrl) {
+                    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                        // Extract YouTube ID and create embed
+                        const videoId = extractYoutubeId(videoUrl);
+                        if (videoId) {
+                            videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                        }
+                    } else if (videoUrl.includes('vimeo.com')) {
+                        // Extract Vimeo ID
+                        const vimeoId = videoUrl.split('/').pop();
+                        videoContainer.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allowfullscreen></iframe>`;
+                    } else {
+                        // Assume it's a local video file
+                        videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
+                    }
+                }
+            });
+        }
+
+        // Helper function to extract YouTube ID
+        function extractYoutubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('show');
+                videoContainer.innerHTML = ''; // Clear video when closing
+            });
+        }
+
+        // Close modal when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+                videoContainer.innerHTML = '';
             }
         });
-    }
 
-    // Helper function to extract YouTube ID
-    function extractYoutubeId(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-    }
+        // ========== ENROLLMENT FUNCTIONALITY ==========
+        const enrollBtn = document.getElementById('enrollBtn');
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
-            modal.classList.remove('show');
-            videoContainer.innerHTML = ''; // Clear video when closing
-        });
-    }
+        if (enrollBtn) {
+            enrollBtn.addEventListener('click', function(e) {
+                e.preventDefault();
 
-    // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.classList.remove('show');
-            videoContainer.innerHTML = '';
-        }
-    });
-
-    // ========== ENROLLMENT FUNCTIONALITY ==========
-    const enrollBtn = document.getElementById('enrollBtn');
-
-    if (enrollBtn) {
-        enrollBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            @auth
+                @auth
                 const courseId = this.dataset.courseId;
                 const originalText = this.innerHTML;
 
@@ -1569,53 +1594,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Make AJAX request to enroll
                 fetch(`/courses/${courseId}/enroll-ajax`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showNotification(data.message, 'success');
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(data.message, 'success');
 
-                        // Change button to continue learning
-                        setTimeout(() => {
-                            window.location.href = data.redirect_url;
-                        }, 1500);
-                    } else {
-                        showNotification(data.message, 'error');
+                            // Redirect to learning page
+                            setTimeout(() => {
+                                window.location.href = data.redirect_url;
+                            }, 1500);
+                        } else if (data.redirect_to_checkout) {
+                            // Redirect to checkout for paid courses
+                            window.location.href = data.checkout_url;
+                        } else {
+                            showNotification(data.message, 'error');
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('An error occurred. Please try again.', 'error');
                         this.innerHTML = originalText;
                         this.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('An error occurred. Please try again.', 'error');
-                    this.innerHTML = originalText;
-                    this.disabled = false;
-                });
-            @else
+                    });
+                @else
                 // Redirect to login with return URL
                 window.location.href = '{{ route("login") }}?redirect={{ url()->current() }}';
-            @endauth
-        });
-    }
+                @endauth
+            });
+        }
 
-    // ========== WISHLIST FUNCTIONALITY ==========
-    const wishlistBtn = document.getElementById('wishlistBtn');
+        // ========== WISHLIST FUNCTIONALITY ==========
+        const wishlistBtn = document.getElementById('wishlistBtn');
 
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-
+        if (wishlistBtn) {
+            // Check initial wishlist status
             @auth
+            @if($course->is_wishlisted ?? false)
+            wishlistBtn.classList.add('active');
+            wishlistBtn.querySelector('i').classList.remove('far');
+            wishlistBtn.querySelector('i').classList.add('fas');
+            @endif
+            @endauth
+
+            wishlistBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                @auth
                 // Check if user is enrolled (can't wishlist enrolled courses)
-                @if(isset($course) && $course->is_enrolled)
-                    showNotification('You are already enrolled in this course!', 'info');
-                    return;
+                @if(isset($course) && ($course->is_enrolled ?? false))
+                showNotification('You are already enrolled in this course!', 'info');
+                return;
                 @endif
 
                 this.classList.toggle('active');
@@ -1627,206 +1664,206 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     // Make AJAX call to add to wishlist
                     fetch('{{ route("wishlist.add", $course->id) }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showNotification('Course added to wishlist', 'success');
-                        } else {
-                            showNotification(data.message || 'Error adding to wishlist', 'error');
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showNotification('Course added to wishlist', 'success');
+                            } else {
+                                showNotification(data.message || 'Error adding to wishlist', 'error');
+                                // Revert if failed
+                                this.classList.remove('active');
+                                icon.classList.remove('fas');
+                                icon.classList.add('far');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showNotification('Error adding to wishlist', 'error');
                             // Revert if failed
                             this.classList.remove('active');
                             icon.classList.remove('fas');
                             icon.classList.add('far');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showNotification('Error adding to wishlist', 'error');
-                        // Revert if failed
-                        this.classList.remove('active');
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                    });
+                        });
                 } else {
                     icon.classList.remove('fas');
                     icon.classList.add('far');
 
                     // Make AJAX call to remove from wishlist
                     fetch('{{ route("wishlist.remove", $course->id) }}', {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showNotification('Course removed from wishlist', 'info');
-                        } else {
-                            showNotification(data.message || 'Error removing from wishlist', 'error');
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showNotification('Course removed from wishlist', 'info');
+                            } else {
+                                showNotification(data.message || 'Error removing from wishlist', 'error');
+                                // Revert if failed
+                                this.classList.add('active');
+                                icon.classList.remove('far');
+                                icon.classList.add('fas');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showNotification('Error removing from wishlist', 'error');
                             // Revert if failed
                             this.classList.add('active');
                             icon.classList.remove('far');
                             icon.classList.add('fas');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showNotification('Error removing from wishlist', 'error');
-                        // Revert if failed
-                        this.classList.add('active');
-                        icon.classList.remove('far');
-                        icon.classList.add('fas');
-                    });
+                        });
                 }
-            @else
+                @else
                 // Store the current page in session to redirect back after login
                 sessionStorage.setItem('redirectAfterLogin', window.location.href);
                 window.location.href = '{{ route("login") }}';
-            @endauth
-        });
-    }
+                @endauth
+            });
+        }
 
-    // ========== LESSON PREVIEW FUNCTIONALITY ==========
-    const previewLinks = document.querySelectorAll('.course-page-lesson-preview');
+        // ========== LESSON PREVIEW FUNCTIONALITY ==========
+        const previewLinks = document.querySelectorAll('.course-page-lesson-preview');
 
-    previewLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
+        previewLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
 
-            const videoUrl = this.dataset.video;
-            if (videoUrl && modal) {
-                modal.classList.add('show');
+                const videoUrl = this.dataset.video;
+                if (videoUrl && modal) {
+                    modal.classList.add('show');
 
-                if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                    const videoId = extractYoutubeId(videoUrl);
-                    if (videoId) {
-                        videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                        const videoId = extractYoutubeId(videoUrl);
+                        if (videoId) {
+                            videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                        }
+                    } else {
+                        videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
                     }
-                } else {
-                    videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
+                }
+            });
+        });
+
+        // ========== NOTIFICATION SYSTEM ==========
+        function showNotification(message, type = 'success') {
+            // Remove any existing notifications
+            const existingNotifications = document.querySelectorAll('.course-page-notification');
+            existingNotifications.forEach(notification => notification.remove());
+
+            const notification = document.createElement('div');
+            notification.className = 'course-page-notification';
+
+            // Set styles based on type
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                info: '#17a2b8',
+                warning: '#ffc107'
+            };
+
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle'
+            };
+
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: ${type === 'warning' ? '#212529' : 'white'};
+                padding: 15px 25px;
+                border-radius: 50px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: course-page-slideIn 0.3s ease;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 400px;
+            `;
+
+            // Add icon
+            const icon = document.createElement('i');
+            icon.className = `fas ${icons[type]}`;
+            notification.appendChild(icon);
+
+            // Add message
+            const textSpan = document.createElement('span');
+            textSpan.textContent = message;
+            notification.appendChild(textSpan);
+
+            document.body.appendChild(notification);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'course-page-slideOut 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // ========== ADD ANIMATION STYLES ==========
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes course-page-slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
                 }
             }
-        });
-    });
 
-    // ========== NOTIFICATION SYSTEM ==========
-    function showNotification(message, type = 'success') {
-        // Remove any existing notifications
-        const existingNotifications = document.querySelectorAll('.course-page-notification');
-        existingNotifications.forEach(notification => notification.remove());
+            @keyframes course-page-slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
 
-        const notification = document.createElement('div');
-        notification.className = 'course-page-notification';
+            .course-page-btn-enroll:disabled,
+            .course-page-btn-wishlist:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
 
-        // Set styles based on type
-        const colors = {
-            success: '#28a745',
-            error: '#dc3545',
-            info: '#17a2b8',
-            warning: '#ffc107'
-        };
+            .course-page-notification {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 0.95rem;
+            }
 
-        const icons = {
-            success: 'fa-check-circle',
-            error: 'fa-exclamation-circle',
-            info: 'fa-info-circle',
-            warning: 'fa-exclamation-triangle'
-        };
-
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: ${colors[type]};
-            color: ${type === 'warning' ? '#212529' : 'white'};
-            padding: 15px 25px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-            z-index: 10000;
-            animation: course-page-slideIn 0.3s ease;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            max-width: 400px;
+            .course-page-notification i {
+                font-size: 1.2rem;
+            }
         `;
+        document.head.appendChild(style);
 
-        // Add icon
-        const icon = document.createElement('i');
-        icon.className = `fas ${icons[type]}`;
-        notification.appendChild(icon);
-
-        // Add message
-        const textSpan = document.createElement('span');
-        textSpan.textContent = message;
-        notification.appendChild(textSpan);
-
-        document.body.appendChild(notification);
-
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-            notification.style.animation = 'course-page-slideOut 0.3s ease';
-            setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
-    }
-
-    // ========== ADD ANIMATION STYLES ==========
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes course-page-slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes course-page-slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-
-        .course-page-btn-enroll:disabled,
-        .course-page-btn-wishlist:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .course-page-notification {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.95rem;
-        }
-
-        .course-page-notification i {
-            font-size: 1.2rem;
-        }
-    `;
-    document.head.appendChild(style);
-
-    console.log('Course page JavaScript initialized successfully');
-});
+        console.log('Course page JavaScript initialized successfully');
+    });
 </script>
 @endsection

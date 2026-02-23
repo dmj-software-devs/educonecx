@@ -105,7 +105,7 @@
 
     .courses-hero-search input:focus {
         outline: none;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     }
 
     .courses-hero-search button {
@@ -437,7 +437,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 100%);
+        background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
         opacity: 0;
         transition: var(--transition);
         display: flex;
@@ -798,7 +798,9 @@
     }
 
     @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     /* Responsive */
@@ -858,268 +860,268 @@
 @endpush
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="courses-hero">
-        <div class="courses-hero-particles">
-            <div class="courses-hero-particle"></div>
-            <div class="courses-hero-particle"></div>
-            <div class="courses-hero-particle"></div>
+<!-- Hero Section -->
+<section class="courses-hero">
+    <div class="courses-hero-particles">
+        <div class="courses-hero-particle"></div>
+        <div class="courses-hero-particle"></div>
+        <div class="courses-hero-particle"></div>
+    </div>
+
+    <div class="container">
+        <div class="courses-hero-content" data-aos="fade-up">
+            <span class="courses-hero-badge">Start Learning Today</span>
+            <h1 class="courses-hero-title">Browse Our Course Library</h1>
+            <p class="courses-hero-text">
+                Discover expert-led courses designed to help you master new skills and advance your career
+            </p>
+
+            <form id="searchForm" method="GET" action="{{ route('courses') }}" class="courses-hero-search">
+                <input type="text" name="keyword" placeholder="What do you want to learn?" value="{{ $filters['keyword'] ?? '' }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
         </div>
-        
-        <div class="container">
-            <div class="courses-hero-content" data-aos="fade-up">
-                <span class="courses-hero-badge">Start Learning Today</span>
-                <h1 class="courses-hero-title">Browse Our Course Library</h1>
-                <p class="courses-hero-text">
-                    Discover expert-led courses designed to help you master new skills and advance your career
-                </p>
-                
-                <form id="searchForm" method="GET" action="{{ route('courses') }}" class="courses-hero-search">
-                    <input type="text" name="keyword" placeholder="What do you want to learn?" value="{{ $filters['keyword'] ?? '' }}">
-                    <button type="submit"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="courses-main">
+    <div class="container">
+        <!-- Mobile Filter Toggle -->
+        <div class="mobile-filter-toggle">
+            <button class="filter-toggle-btn" id="filterToggle">
+                <span><i class="fas fa-sliders-h"></i> Filter Courses</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
         </div>
-    </section>
 
-    <!-- Main Content -->
-    <section class="courses-main">
-        <div class="container">
-            <!-- Mobile Filter Toggle -->
-            <div class="mobile-filter-toggle">
-                <button class="filter-toggle-btn" id="filterToggle">
-                    <span><i class="fas fa-sliders-h"></i> Filter Courses</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
+        <div class="row">
+            <!-- Filter Sidebar -->
+            <div class="col-lg-3">
+                <div class="filter-sidebar" id="filterSidebar">
+                    <div class="filter-header">
+                        <h3><i class="fas fa-filter"></i> Filters</h3>
+                        <a href="{{ route('courses') }}" class="clear-filters">
+                            <i class="fas fa-times"></i> Clear All
+                        </a>
+                    </div>
 
-            <div class="row">
-                <!-- Filter Sidebar -->
-                <div class="col-lg-3">
-                    <div class="filter-sidebar" id="filterSidebar">
-                        <div class="filter-header">
-                            <h3><i class="fas fa-filter"></i> Filters</h3>
-                            <a href="{{ route('courses') }}" class="clear-filters">
-                                <i class="fas fa-times"></i> Clear All
-                            </a>
-                        </div>
+                    <!-- Categories Filter -->
+                    <div class="filter-section">
+                        <h4 class="filter-section-title">
+                            <i class="fas fa-folder"></i> Categories
+                        </h4>
+                        <ul class="filter-options" id="categoryFilter">
+                            @foreach($categories as $category)
+                            <li class="filter-option">
+                                <label>
+                                    <input type="checkbox" name="categories[]" value="{{ $category['id'] }}"
+                                        {{ in_array($category['id'], $filters['categories'] ?? []) ? 'checked' : '' }}>
+                                    {{ $category['name'] }}
+                                    <span class="filter-count">{{ $category['count'] }}</span>
+                                </label>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
-                        <!-- Categories Filter -->
-                        <div class="filter-section">
-                            <h4 class="filter-section-title">
-                                <i class="fas fa-folder"></i> Categories
-                            </h4>
-                            <ul class="filter-options" id="categoryFilter">
-                                @foreach($categories as $category)
-                                <li class="filter-option">
-                                    <label>
-                                        <input type="checkbox" name="categories[]" value="{{ $category['id'] }}" 
-                                            {{ in_array($category['id'], $filters['categories'] ?? []) ? 'checked' : '' }}>
-                                        {{ $category['name'] }}
-                                        <span class="filter-count">{{ $category['count'] }}</span>
-                                    </label>
-                                </li>
-                                @endforeach
-                            </ul>
-                        </div>
-
-                        <!-- Price Filter -->
-                        <div class="filter-section">
-                            <h4 class="filter-section-title">
-                                <i class="fas fa-tag"></i> Price
-                            </h4>
-                            <ul class="filter-options" id="priceFilter">
-                                <li class="filter-option">
-                                    <label>
-                                        <input type="checkbox" name="price[]" value="free" 
-                                            {{ in_array('free', $filters['price'] ?? []) ? 'checked' : '' }}>
-                                        Free Courses
-                                        <span class="filter-count">{{ \App\Models\Course::published()->free()->count() }}</span>
-                                    </label>
-                                </li>
-                                <li class="filter-option">
-                                    <label>
-                                        <input type="checkbox" name="price[]" value="paid" 
-                                            {{ in_array('paid', $filters['price'] ?? []) ? 'checked' : '' }}>
-                                        Paid Courses
-                                        <span class="filter-count">{{ \App\Models\Course::published()->paid()->count() }}</span>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
+                    <!-- Price Filter -->
+                    <div class="filter-section">
+                        <h4 class="filter-section-title">
+                            <i class="fas fa-tag"></i> Price
+                        </h4>
+                        <ul class="filter-options" id="priceFilter">
+                            <li class="filter-option">
+                                <label>
+                                    <input type="checkbox" name="price[]" value="free"
+                                        {{ in_array('free', $filters['price'] ?? []) ? 'checked' : '' }}>
+                                    Free Courses
+                                    <span class="filter-count">{{ \App\Models\Course::published()->free()->count() }}</span>
+                                </label>
+                            </li>
+                            <li class="filter-option">
+                                <label>
+                                    <input type="checkbox" name="price[]" value="paid"
+                                        {{ in_array('paid', $filters['price'] ?? []) ? 'checked' : '' }}>
+                                    Paid Courses
+                                    <span class="filter-count">{{ \App\Models\Course::published()->paid()->count() }}</span>
+                                </label>
+                            </li>
+                        </ul>
                     </div>
                 </div>
+            </div>
 
-                <!-- Courses Grid -->
-                <div class="col-lg-9">
-                    <!-- Sort Bar -->
-                    <div class="sort-bar" data-aos="fade-up">
-                        <div class="results-count">
-                            Showing <strong>{{ $paginatedCourses->firstItem() ?? 0 }}</strong> - <strong>{{ $paginatedCourses->lastItem() ?? 0 }}</strong> of <strong>{{ $paginatedCourses->total() }}</strong> courses
-                        </div>
-                        
-                        <form id="sortForm" method="GET" action="{{ route('courses') }}">
-                            <select name="sort" class="sort-select" id="sortSelect">
-                                <option value="newest_first" {{ ($filters['sort'] ?? '') == 'newest_first' ? 'selected' : '' }}>Most Recent</option>
-                                <option value="oldest_first" {{ ($filters['sort'] ?? '') == 'oldest_first' ? 'selected' : '' }}>Oldest First</option>
-                                <option value="course_title_az" {{ ($filters['sort'] ?? '') == 'course_title_az' ? 'selected' : '' }}>Course Title (A-Z)</option>
-                                <option value="course_title_za" {{ ($filters['sort'] ?? '') == 'course_title_za' ? 'selected' : '' }}>Course Title (Z-A)</option>
-                            </select>
-                            
-                            <!-- Preserve other filters -->
-                            @if(!empty($filters['keyword']))
-                                <input type="hidden" name="keyword" value="{{ $filters['keyword'] }}">
-                            @endif
-                            @if(!empty($filters['categories']))
-                                @foreach($filters['categories'] as $category)
-                                    <input type="hidden" name="categories[]" value="{{ $category }}">
-                                @endforeach
-                            @endif
-                            @if(!empty($filters['price']))
-                                @foreach($filters['price'] as $price)
-                                    <input type="hidden" name="price[]" value="{{ $price }}">
-                                @endforeach
-                            @endif
-                        </form>
+            <!-- Courses Grid -->
+            <div class="col-lg-9">
+                <!-- Sort Bar -->
+                <div class="sort-bar" data-aos="fade-up">
+                    <div class="results-count">
+                        Showing <strong>{{ $paginatedCourses->firstItem() ?? 0 }}</strong> - <strong>{{ $paginatedCourses->lastItem() ?? 0 }}</strong> of <strong>{{ $paginatedCourses->total() }}</strong> courses
                     </div>
 
-                    <!-- Loading Spinner -->
-                    <div class="loading-spinner" id="loadingSpinner">
-                        <div class="spinner"></div>
-                    </div>
+                    <form id="sortForm" method="GET" action="{{ route('courses') }}">
+                        <select name="sort" class="sort-select" id="sortSelect">
+                            <option value="newest_first" {{ ($filters['sort'] ?? '') == 'newest_first' ? 'selected' : '' }}>Most Recent</option>
+                            <option value="oldest_first" {{ ($filters['sort'] ?? '') == 'oldest_first' ? 'selected' : '' }}>Oldest First</option>
+                            <option value="course_title_az" {{ ($filters['sort'] ?? '') == 'course_title_az' ? 'selected' : '' }}>Course Title (A-Z)</option>
+                            <option value="course_title_za" {{ ($filters['sort'] ?? '') == 'course_title_za' ? 'selected' : '' }}>Course Title (Z-A)</option>
+                        </select>
 
-                    <!-- Courses Container -->
-                    <div id="coursesContainer">
-                        @if($paginatedCourses->count() > 0)
-                            <div class="course-grid">
-                                @foreach($paginatedCourses as $course)
-                                    <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
-                                        @if($course->featured)
-                                            <span class="course-badge popular">Popular</span>
-                                        @elseif($course->price == 0 || ($course->sale_price == 0))
-                                            <span class="course-badge free">Free</span>
-                                        @endif
-                                        
-                                        <div class="course-bookmark">
-                                            <button class="bookmark-btn" data-course-id="{{ $course->id }}">
-                                                <i class="far fa-bookmark"></i>
-                                            </button>
-                                        </div>
-                                        
-                                        <div class="course-thumbnail">
-                                            <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
-                                            <div class="course-overlay">
-                                                <span class="course-preview"><i class="far fa-play-circle"></i> Preview Course</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="course-content">
-                                            <div class="course-meta-top">
-                                                <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
-                                                <div class="course-rating">
-                                                    <span class="stars">
-                                                        @for($i = 1; $i <= 5; $i++)
-                                                            @if($i <= floor($course->average_rating))
-                                                                <i class="fas fa-star"></i>
-                                                            @elseif($i - 0.5 <= $course->average_rating)
-                                                                <i class="fas fa-star-half-alt"></i>
-                                                            @else
-                                                                <i class="far fa-star"></i>
-                                                            @endif
-                                                        @endfor
-                                                    </span>
-                                                    <span class="rating-value">{{ number_format($course->average_rating, 1) }}</span>
-                                                    <span class="rating-count">({{ $course->total_reviews }})</span>
-                                                </div>
-                                            </div>
-                                            
-                                            <h3 class="course-title">
-                                                <a href="{{ route('courses.show', $course->slug) }}">{{ $course->title }}</a>
-                                            </h3>
-                                            
-                                            <p class="course-description">{{ $course->excerpt }}</p>
-                                            
-                                            <div class="course-meta">
-                                                <span><i class="far fa-clock"></i> {{ $course->duration }} hours</span>
-                                                <span><i class="fas fa-signal"></i> {{ $course->level }}</span>
-                                                <span><i class="fas fa-video"></i> {{ $course->total_lessons }} lessons</span>
-                                            </div>
-                                            
-                                            <div class="course-instructor">
-                                                <div class="instructor-avatar">
-                                                    {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
-                                                </div>
-                                                <div class="instructor-info">
-                                                    <span class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</span>
-                                                    <div class="instructor-title">Expert Instructor</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="course-footer">
-                                            <div class="course-price {{ $course->price == 0 ? 'free' : '' }}">
-                                                @if($course->hasDiscount)
-                                                    ${{ number_format($course->sale_price, 2) }}
-                                                    <small>${{ number_format($course->price, 2) }}</small>
-                                                @elseif($course->price > 0)
-                                                    ${{ number_format($course->price, 2) }}
-                                                @else
-                                                    Free
-                                                @endif
-                                                <span class="price-label">one-time payment</span>
-                                            </div>
-                                            <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
-                                                View Details <i class="fas fa-arrow-right"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endforeach
+                        <!-- Preserve other filters -->
+                        @if(!empty($filters['keyword']))
+                        <input type="hidden" name="keyword" value="{{ $filters['keyword'] }}">
+                        @endif
+                        @if(!empty($filters['categories']))
+                        @foreach($filters['categories'] as $category)
+                        <input type="hidden" name="categories[]" value="{{ $category }}">
+                        @endforeach
+                        @endif
+                        @if(!empty($filters['price']))
+                        @foreach($filters['price'] as $price)
+                        <input type="hidden" name="price[]" value="{{ $price }}">
+                        @endforeach
+                        @endif
+                    </form>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                </div>
+
+                <!-- Courses Container -->
+                <div id="coursesContainer">
+                    @if($paginatedCourses->count() > 0)
+                    <div class="course-grid">
+                        @foreach($paginatedCourses as $course)
+                        <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                            @if($course->featured)
+                            <span class="course-badge popular">Popular</span>
+                            @elseif($course->price == 0 || ($course->sale_price == 0))
+                            <span class="course-badge free">Free</span>
+                            @endif
+
+                            <div class="course-bookmark">
+                                <button class="bookmark-btn" data-course-id="{{ $course->id }}">
+                                    <i class="far fa-bookmark"></i>
+                                </button>
                             </div>
 
-                            <!-- Pagination -->
-                            @if($paginatedCourses->hasPages())
-                                <div class="pagination">
-                                    {{ $paginatedCourses->appends(request()->query())->links() }}
+                            <div class="course-thumbnail">
+                                <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
+                                <div class="course-overlay">
+                                    <span class="course-preview"><i class="far fa-play-circle"></i> Preview Course</span>
                                 </div>
-                            @endif
-                        @else
-                            <!-- No Results -->
-                            <div class="no-results" data-aos="fade-up">
-                                <div class="no-results-icon">
-                                    <i class="fas fa-search"></i>
+                            </div>
+
+                            <div class="course-content">
+                                <div class="course-meta-top">
+                                    <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
+                                    <div class="course-rating">
+                                        <span class="stars">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <=floor($course->average_rating))
+                                                <i class="fas fa-star"></i>
+                                                @elseif($i - 0.5 <= $course->average_rating)
+                                                    <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                    <i class="far fa-star"></i>
+                                                    @endif
+                                                    @endfor
+                                        </span>
+                                        <span class="rating-value">{{ number_format($course->average_rating, 1) }}</span>
+                                        <span class="rating-count">({{ $course->total_reviews }})</span>
+                                    </div>
                                 </div>
-                                <h3>No Courses Found</h3>
-                                <p>We couldn't find any courses matching your criteria. Try adjusting your filters.</p>
-                                <a href="{{ route('courses') }}" class="reset-btn">
-                                    <i class="fas fa-redo-alt"></i> Reset All Filters
+
+                                <h3 class="course-title">
+                                    <a href="{{ route('courses.show', $course->slug) }}">{{ $course->title }}</a>
+                                </h3>
+
+                                <p class="course-description">{{ $course->excerpt }}</p>
+
+                                <div class="course-meta">
+                                    <span><i class="far fa-clock"></i> {{ $course->duration }} hours</span>
+                                    <span><i class="fas fa-signal"></i> {{ $course->level }}</span>
+                                    <span><i class="fas fa-video"></i> {{ $course->total_lessons }} lessons</span>
+                                </div>
+
+                                <div class="course-instructor">
+                                    <div class="instructor-avatar">
+                                        {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
+                                    </div>
+                                    <div class="instructor-info">
+                                        <span class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</span>
+                                        <div class="instructor-title">Expert Instructor</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="course-footer">
+                                <div class="course-price {{ $course->is_free ? 'free' : '' }}">
+                                    @if($course->is_free)
+                                    Free
+                                    @elseif($course->has_discount)
+                                    ${{ number_format($course->sale_price, 2) }}
+                                    <small>${{ number_format($course->price, 2) }}</small>
+                                    @else
+                                    ${{ number_format($course->price, 2) }}
+                                    @endif
+                                    <span class="price-label">one-time payment</span>
+                                </div>
+                                <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
+                                    View Details <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
-                        @endif
+                        </div>
+                        @endforeach
                     </div>
+
+                    <!-- Pagination -->
+                    @if($paginatedCourses->hasPages())
+                    <div class="pagination">
+                        {{ $paginatedCourses->appends(request()->query())->links() }}
+                    </div>
+                    @endif
+                    @else
+                    <!-- No Results -->
+                    <div class="no-results" data-aos="fade-up">
+                        <div class="no-results-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>No Courses Found</h3>
+                        <p>We couldn't find any courses matching your criteria. Try adjusting your filters.</p>
+                        <a href="{{ route('courses') }}" class="reset-btn">
+                            <i class="fas fa-redo-alt"></i> Reset All Filters
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection
 
 @push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Mobile filter toggle
-    const filterToggle = document.getElementById('filterToggle');
-    const filterSidebar = document.getElementById('filterSidebar');
-    let filterOverlay = null;
-    
-    if (filterToggle) {
-        filterToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            filterSidebar.classList.toggle('active');
-            
-            if (filterSidebar.classList.contains('active')) {
-                // Create overlay
-                filterOverlay = document.createElement('div');
-                filterOverlay.className = 'filter-overlay';
-                filterOverlay.style.cssText = `
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile filter toggle
+        const filterToggle = document.getElementById('filterToggle');
+        const filterSidebar = document.getElementById('filterSidebar');
+        let filterOverlay = null;
+
+        if (filterToggle) {
+            filterToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                filterSidebar.classList.toggle('active');
+
+                if (filterSidebar.classList.contains('active')) {
+                    // Create overlay
+                    filterOverlay = document.createElement('div');
+                    filterOverlay.className = 'filter-overlay';
+                    filterOverlay.style.cssText = `
                     position: fixed;
                     top: 0;
                     left: 0;
@@ -1130,64 +1132,64 @@ document.addEventListener('DOMContentLoaded', function() {
                     opacity: 0;
                     transition: opacity 0.3s;
                 `;
-                document.body.appendChild(filterOverlay);
-                
-                // Fade in overlay
+                    document.body.appendChild(filterOverlay);
+
+                    // Fade in overlay
+                    setTimeout(() => {
+                        filterOverlay.style.opacity = '1';
+                    }, 10);
+
+                    // Close on overlay click
+                    filterOverlay.addEventListener('click', closeFilterSidebar);
+
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    closeFilterSidebar();
+                }
+            });
+        }
+
+        function closeFilterSidebar() {
+            filterToggle?.classList.remove('active');
+            filterSidebar?.classList.remove('active');
+
+            if (filterOverlay) {
+                filterOverlay.style.opacity = '0';
                 setTimeout(() => {
-                    filterOverlay.style.opacity = '1';
-                }, 10);
-                
-                // Close on overlay click
-                filterOverlay.addEventListener('click', closeFilterSidebar);
-                
-                document.body.style.overflow = 'hidden';
-            } else {
+                    filterOverlay?.remove();
+                    filterOverlay = null;
+                }, 300);
+            }
+
+            document.body.style.overflow = '';
+        }
+
+        // Close filter sidebar on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992 && filterSidebar?.classList.contains('active')) {
                 closeFilterSidebar();
             }
         });
-    }
-    
-    function closeFilterSidebar() {
-        filterToggle?.classList.remove('active');
-        filterSidebar?.classList.remove('active');
-        
-        if (filterOverlay) {
-            filterOverlay.style.opacity = '0';
-            setTimeout(() => {
-                filterOverlay?.remove();
-                filterOverlay = null;
-            }, 300);
-        }
-        
-        document.body.style.overflow = '';
-    }
-    
-    // Close filter sidebar on window resize
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 992 && filterSidebar?.classList.contains('active')) {
-            closeFilterSidebar();
-        }
-    });
-    
-    // Bookmark functionality
-    const bookmarkBtns = document.querySelectorAll('.bookmark-btn');
-    
-    bookmarkBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const courseId = this.dataset.courseId;
-            
-            // Check if user is logged in
-            @auth
+
+        // Bookmark functionality
+        const bookmarkBtns = document.querySelectorAll('.bookmark-btn');
+
+        bookmarkBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const courseId = this.dataset.courseId;
+
+                // Check if user is logged in
+                @auth
                 // Toggle active class
                 this.classList.toggle('active');
-                
+
                 // Update icon
                 const icon = this.querySelector('i');
                 if (this.classList.contains('active')) {
                     icon.classList.remove('far');
                     icon.classList.add('fas');
-                    
+
                     // Here you can make an AJAX call to add to wishlist
                     fetch(`/wishlist/add/${courseId}`, {
                         method: 'POST',
@@ -1196,12 +1198,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             'Accept': 'application/json'
                         }
                     });
-                    
+
                     showNotification('Course added to bookmarks', 'success');
                 } else {
                     icon.classList.remove('fas');
                     icon.classList.add('far');
-                    
+
                     // Here you can make an AJAX call to remove from wishlist
                     fetch(`/wishlist/remove/${courseId}`, {
                         method: 'DELETE',
@@ -1210,21 +1212,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             'Accept': 'application/json'
                         }
                     });
-                    
+
                     showNotification('Course removed from bookmarks', 'info');
                 }
-            @else
+                @else
                 // Redirect to login
                 window.location.href = '{{ route("login") }}';
-            @endauth
+                @endauth
+            });
         });
-    });
-    
-    // Notification function
-    function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.style.cssText = `
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -1236,86 +1238,86 @@ document.addEventListener('DOMContentLoaded', function() {
             z-index: 10000;
             animation: slideIn 0.3s ease;
         `;
-        notification.textContent = message;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
             setTimeout(() => {
-                notification.remove();
-            }, 300);
-        }, 3000);
-    }
-    
-    // Filter handling
-    const filterInputs = document.querySelectorAll('#categoryFilter input, #priceFilter input');
-    const sortSelect = document.getElementById('sortSelect');
-    const searchForm = document.getElementById('searchForm');
-    const sortForm = document.getElementById('sortForm');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const coursesContainer = document.getElementById('coursesContainer');
-    
-    let filterTimeout;
-    
-    function updateCourses() {
-        // Show loading spinner
-        loadingSpinner.classList.add('show');
-        
-        // Collect filter values
-        const categories = [];
-        document.querySelectorAll('#categoryFilter input:checked').forEach(input => {
-            categories.push(input.value);
-        });
-        
-        const prices = [];
-        document.querySelectorAll('#priceFilter input:checked').forEach(input => {
-            prices.push(input.value);
-        });
-        
-        const keyword = document.querySelector('input[name="keyword"]')?.value || '';
-        const sort = sortSelect?.value || 'newest_first';
-        
-        // Build URL with filters
-        const params = new URLSearchParams();
-        
-        if (keyword) params.append('keyword', keyword);
-        if (sort) params.append('sort', sort);
-        categories.forEach(cat => params.append('categories[]', cat));
-        prices.forEach(price => params.append('price[]', price));
-        
-        // Make AJAX request
-        fetch(`{{ route('courses.filter') }}?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                coursesContainer.innerHTML = data.html;
-                // Reinitialize bookmark buttons for new content
-                initializeBookmarkButtons();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Fallback to form submission
-            searchForm?.submit();
-        })
-        .finally(() => {
-            loadingSpinner.classList.remove('show');
-        });
-    }
-    
-    function initializeBookmarkButtons() {
-        document.querySelectorAll('.bookmark-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Add bookmark logic here (same as above)
-                @auth
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Filter handling
+        const filterInputs = document.querySelectorAll('#categoryFilter input, #priceFilter input');
+        const sortSelect = document.getElementById('sortSelect');
+        const searchForm = document.getElementById('searchForm');
+        const sortForm = document.getElementById('sortForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const coursesContainer = document.getElementById('coursesContainer');
+
+        let filterTimeout;
+
+        function updateCourses() {
+            // Show loading spinner
+            loadingSpinner.classList.add('show');
+
+            // Collect filter values
+            const categories = [];
+            document.querySelectorAll('#categoryFilter input:checked').forEach(input => {
+                categories.push(input.value);
+            });
+
+            const prices = [];
+            document.querySelectorAll('#priceFilter input:checked').forEach(input => {
+                prices.push(input.value);
+            });
+
+            const keyword = document.querySelector('input[name="keyword"]')?.value || '';
+            const sort = sortSelect?.value || 'newest_first';
+
+            // Build URL with filters
+            const params = new URLSearchParams();
+
+            if (keyword) params.append('keyword', keyword);
+            if (sort) params.append('sort', sort);
+            categories.forEach(cat => params.append('categories[]', cat));
+            prices.forEach(price => params.append('price[]', price));
+
+            // Make AJAX request
+            fetch(`{{ route('courses.filter') }}?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        coursesContainer.innerHTML = data.html;
+                        // Reinitialize bookmark buttons for new content
+                        initializeBookmarkButtons();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback to form submission
+                    searchForm?.submit();
+                })
+                .finally(() => {
+                    loadingSpinner.classList.remove('show');
+                });
+        }
+
+        function initializeBookmarkButtons() {
+            document.querySelectorAll('.bookmark-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Add bookmark logic here (same as above)
+                    @auth
                     this.classList.toggle('active');
                     const icon = this.querySelector('i');
                     if (this.classList.contains('active')) {
@@ -1327,50 +1329,50 @@ document.addEventListener('DOMContentLoaded', function() {
                         icon.classList.add('far');
                         showNotification('Course removed from bookmarks', 'info');
                     }
-                @else
+                    @else
                     window.location.href = '{{ route("login") }}';
-                @endauth
+                    @endauth
+                });
             });
-        });
-    }
-    
-    // Debounced update function
-    function debounce(func, wait) {
-        return function executedFunction(...args) {
-            const later = () => {
+        }
+
+        // Debounced update function
+        function debounce(func, wait) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(filterTimeout);
+                    func(...args);
+                };
                 clearTimeout(filterTimeout);
-                func(...args);
+                filterTimeout = setTimeout(later, wait);
             };
-            clearTimeout(filterTimeout);
-            filterTimeout = setTimeout(later, wait);
-        };
-    }
-    
-    const debouncedUpdate = debounce(updateCourses, 500);
-    
-    // Event listeners for filters
-    filterInputs.forEach(input => {
-        input.addEventListener('change', debouncedUpdate);
-    });
-    
-    // Sort change
-    if (sortSelect) {
-        sortSelect.addEventListener('change', function() {
-            updateCourses();
+        }
+
+        const debouncedUpdate = debounce(updateCourses, 500);
+
+        // Event listeners for filters
+        filterInputs.forEach(input => {
+            input.addEventListener('change', debouncedUpdate);
         });
-    }
-    
-    // Search form submission
-    if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updateCourses();
-        });
-    }
-    
-    // Add animation styles
-    const style = document.createElement('style');
-    style.textContent = `
+
+        // Sort change
+        if (sortSelect) {
+            sortSelect.addEventListener('change', function() {
+                updateCourses();
+            });
+        }
+
+        // Search form submission
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateCourses();
+            });
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -1393,7 +1395,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     `;
-    document.head.appendChild(style);
-});
+        document.head.appendChild(style);
+    });
 </script>
 @endpush

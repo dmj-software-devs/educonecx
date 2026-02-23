@@ -79,6 +79,23 @@ class Course extends Model
         return $this->hasMany(Section::class)->orderBy('sort_order');
     }
 
+    // Add these methods to your Course model (app/Models/Course.php)
+    public function getIsPaidAttribute()
+    {
+        return !$this->is_free;
+    }
+
+
+    public function getFormattedPriceAttribute()
+    {
+        if ($this->is_free) {
+            return 'Free';
+        }
+
+        $price = $this->current_price;
+        return '$' . number_format($price, 2);
+    }
+
     public function lessons()
     {
         return $this->hasMany(Lesson::class)->orderBy('sort_order');
@@ -192,11 +209,11 @@ class Course extends Model
         if ($this->is_free) {
             return 'Free';
         }
-        
+
         if ($this->has_discount) {
             return '$' . number_format($this->sale_price, 2);
         }
-        
+
         return '$' . number_format($this->price, 2);
     }
 
@@ -205,7 +222,7 @@ class Course extends Model
         if ($this->is_free) {
             return 0;
         }
-        
+
         if ($this->sale_price && $this->discount_start_date && $this->discount_end_date) {
             $now = now();
             if ($now >= $this->discount_start_date && $now <= $this->discount_end_date) {
@@ -220,7 +237,7 @@ class Course extends Model
         if ($this->is_free) {
             return false;
         }
-        
+
         $now = now();
         return $this->sale_price &&
             $this->discount_start_date &&
