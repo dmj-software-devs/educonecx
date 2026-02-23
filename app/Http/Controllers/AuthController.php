@@ -38,13 +38,13 @@ class AuthController extends Controller
 
             // Redirect based on user role
             $user = Auth::user();
-            
+
             if ($user->role === 'admin') {
                 return redirect()->intended(route('admin.dashboard'));
             } elseif ($user->role === 'instructor') {
                 return redirect()->intended(route('instructor.dashboard'));
             }
-            
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -61,6 +61,9 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
+    /**
+     * Handle registration request
+     */
     /**
      * Handle registration request
      */
@@ -91,9 +94,10 @@ class AuthController extends Controller
             'status' => 'active',
         ]);
 
-        Auth::login($user);
+        // Remove this line to prevent auto-login
+        // Auth::login($user);
 
-        // Create welcome notification
+        // Create welcome notification (optional - you might want to move this to after first login)
         $user->notifications()->create([
             'type' => 'welcome',
             'title' => 'Welcome to EDUCONECX!',
@@ -101,7 +105,8 @@ class AuthController extends Controller
             'data' => json_encode(['action' => 'browse_courses', 'url' => route('courses')])
         ]);
 
-        return redirect()->route('dashboard');
+        // Redirect to login page with success message
+        return redirect()->route('login')->with('success', 'Registration successful! Please login to continue.');
     }
 
     /**

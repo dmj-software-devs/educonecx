@@ -283,6 +283,7 @@
             transform: translateX(100%);
             opacity: 0;
         }
+
         to {
             transform: translateX(0);
             opacity: 1;
@@ -313,6 +314,16 @@
             <h1>Welcome back</h1>
             <p>Don't have an account? <a href="{{ route('register') }}">Sign up</a></p>
         </div>
+
+        <!-- Success Message for Registration -->
+        @if(session('success'))
+        <div class="login-page-alert login-page-alert-success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            {{ session('success') }}
+        </div>
+        @endif
 
         @if(session('status'))
         <div class="login-page-alert login-page-alert-success">
