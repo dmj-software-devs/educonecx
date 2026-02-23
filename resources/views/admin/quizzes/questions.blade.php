@@ -1206,9 +1206,448 @@ function deleteQuestion(id) {
 }
 
 function editQuestion(id) {
-    // You would typically load the question data via AJAX here
-    // For now, just show an alert
-    alert('Edit functionality will be implemented with AJAX');
+    // Show modal with loading spinner
+    const modal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
+    document.getElementById('editQuestionContent').innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    modal.show();
+    
+    // Fetch question data
+    fetch(`/admin/quizzes/questions/${id}/edit`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(question => {
+        // Build the edit form
+        const form = buildEditForm(question);
+        document.getElementById('editQuestionContent').innerHTML = form;
+        
+        // Initialize form handlers
+        initializeEditForm(question.id);
+    })
+    .catch(error => {
+        document.getElementById('editQuestionContent').innerHTML = `
+            <div class="alert alert-danger">
+                Error loading question. Please try again.
+            </div>
+        `;
+    });
+}
+
+function buildEditForm(question) {
+    let optionsHtml = '';
+    let blanksHtml = '';
+    
+    // Build options HTML for multiple choice/single choice/true false
+    if (['multiple_choice', 'single_choice', 'true_false'].includes(question.question_type)) {
+        optionsHtml = question.options.map((option, index) => `
+            <div class="option-row" data-index="${index}">
+                <div class="option-drag">
+                    <i class="fas fa-grip-vertical text-muted"></i>
+                </div>
+                <div class="option-content">
+                    <div class="option-input-wrapper">
+                        <input type="text" 
+                               name="options[${index}][text]" 
+                               class="form-control option-input" 
+                               placeholder="Option ${index + 1}"
+                               value="${option.option_text.replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="option-correct">
+                        <div class="form-check">
+                            <input type="checkbox" 
+                                   name="options[${index}][is_correct]" 
+                                   id="option${index}Correct" 
+                                   class="form-check-input" 
+                                   value="1"
+                                   ${option.is_correct ? 'checked' : ''}>
+                            <label class="form-check-label" for="option${index}Correct">
+                                Correct
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="option-remove" onclick="removeOption(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Build fill blanks HTML
+    if (question.question_type === 'fill_blank') {
+        blanksHtml = question.fill_blanks.map((blank, index) => `
+            <div class="blank-row" data-index="${index}">
+                <div class="blank-drag">
+                    <i class="fas fa-grip-vertical text-muted"></i>
+                </div>
+                <div class="blank-content">
+                    <div class="blank-input-wrapper">
+                        <input type="text" 
+                               name="fill_blanks[${index}][answer]" 
+                               class="form-control blank-input" 
+                               placeholder="Answer"
+                               value="${blank.correct_answer.replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="blank-case">
+                        <div class="form-check">
+                            <input type="checkbox" 
+                                   name="fill_blanks[${index}][case_sensitive]" 
+                                   id="blank${index}Case" 
+                                   class="form-check-input" 
+                                   value="1"
+                                   ${blank.case_sensitive ? 'checked' : ''}>
+                            <label class="form-check-label" for="blank${index}Case">
+                                Case Sensitive
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="blank-remove" onclick="removeBlank(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Build the complete form
+    return `
+        <form id="editQuestionForm" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
+            <input type="hidden" name="_method" value="PUT">
+            
+            <!-- Question Type -->
+            <div class="form-group mb-4">
+                <label class="form-label">Question Type</label>
+                <select name="question_type" class="form-select" id="editQuestionType" required>
+                    <option value="multiple_choice" ${question.question_type === 'multiple_choice' ? 'selected' : ''}>Multiple Choice (Select all that apply)</option>
+                    <option value="single_choice" ${question.question_type === 'single_choice' ? 'selected' : ''}>Single Choice (Select one)</option>
+                    <option value="true_false" ${question.question_type === 'true_false' ? 'selected' : ''}>True/False</option>
+                    <option value="fill_blank" ${question.question_type === 'fill_blank' ? 'selected' : ''}>Fill in the Blank</option>
+                    <option value="matching" ${question.question_type === 'matching' ? 'selected' : ''}>Matching</option>
+                    <option value="image_selection" ${question.question_type === 'image_selection' ? 'selected' : ''}>Image Selection</option>
+                </select>
+            </div>
+            
+            <!-- Question Text -->
+            <div class="form-group mb-4">
+                <label class="form-label">Question Text</label>
+                <textarea name="question_text" class="form-control" rows="3" required>${question.question_text.replace(/</g, '&lt;')}</textarea>
+            </div>
+            
+            <!-- Points -->
+            <div class="form-group mb-4">
+                <label class="form-label">Points</label>
+                <input type="number" name="points" class="form-control" value="${question.points}" min="1">
+            </div>
+            
+            <!-- Current Image -->
+            ${question.image ? `
+                <div class="form-group mb-4">
+                    <label class="form-label">Current Image</label>
+                    <div>
+                        <img src="/storage/${question.image}" alt="Question image" style="max-width: 200px; max-height: 150px; border-radius: 8px;">
+                    </div>
+                </div>
+            ` : ''}
+            
+            <!-- New Image -->
+            <div class="form-group mb-4">
+                <label class="form-label">${question.image ? 'Change Image' : 'Image'}</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+            
+            <!-- Options Section -->
+            <div id="editOptionsSection" class="mb-4" style="${question.question_type === 'fill_blank' ? 'display: none;' : 'display: block;'}">
+                <div class="section-label">
+                    <label class="form-label">Answer Options</label>
+                    <span class="badge bg-light text-dark" id="editOptionsCount">${question.options ? question.options.length : 2} options</span>
+                </div>
+                <div id="editOptionsContainer" class="options-container">
+                    ${optionsHtml || `
+                        <div class="option-row" data-index="0">
+                            <div class="option-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
+                            <div class="option-content">
+                                <div class="option-input-wrapper">
+                                    <input type="text" name="options[0][text]" class="form-control option-input" placeholder="Option 1">
+                                </div>
+                                <div class="option-correct">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="options[0][is_correct]" id="option0Correct" class="form-check-input" value="1">
+                                        <label class="form-check-label" for="option0Correct">Correct</label>
+                                    </div>
+                                </div>
+                                <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="option-row" data-index="1">
+                            <div class="option-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
+                            <div class="option-content">
+                                <div class="option-input-wrapper">
+                                    <input type="text" name="options[1][text]" class="form-control option-input" placeholder="Option 2">
+                                </div>
+                                <div class="option-correct">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="options[1][is_correct]" id="option1Correct" class="form-check-input" value="1">
+                                        <label class="form-check-label" for="option1Correct">Correct</label>
+                                    </div>
+                                </div>
+                                <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditOption()">
+                    <i class="fas fa-plus me-1"></i> Add Option
+                </button>
+            </div>
+            
+            <!-- Fill Blanks Section -->
+            <div id="editFillBlanksSection" class="mb-4" style="${question.question_type === 'fill_blank' ? 'display: block;' : 'display: none;'}">
+                <div class="section-label">
+                    <label class="form-label">Correct Answers</label>
+                    <span class="badge bg-light text-dark" id="editBlanksCount">${question.fill_blanks ? question.fill_blanks.length : 1} answers</span>
+                </div>
+                <div id="editBlanksContainer" class="blanks-container">
+                    ${blanksHtml || `
+                        <div class="blank-row" data-index="0">
+                            <div class="blank-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
+                            <div class="blank-content">
+                                <div class="blank-input-wrapper">
+                                    <input type="text" name="fill_blanks[0][answer]" class="form-control blank-input" placeholder="Answer">
+                                </div>
+                                <div class="blank-case">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="fill_blanks[0][case_sensitive]" id="blank0Case" class="form-check-input" value="1">
+                                        <label class="form-check-label" for="blank0Case">Case Sensitive</label>
+                                    </div>
+                                </div>
+                                <button type="button" class="blank-remove" onclick="removeBlank(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditBlank()">
+                    <i class="fas fa-plus me-1"></i> Add Answer
+                </button>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-save me-2"></i>Update Question
+                </button>
+            </div>
+        </form>
+    `;
+}
+
+function initializeEditForm(questionId) {
+    const form = document.getElementById('editQuestionForm');
+    const questionType = document.getElementById('editQuestionType');
+    
+    // Initialize Sortable
+    const optionsContainer = document.getElementById('editOptionsContainer');
+    if (optionsContainer) {
+        new Sortable(optionsContainer, {
+            handle: '.option-drag',
+            animation: 150,
+            onEnd: function() {
+                updateEditOptionsIndices();
+            }
+        });
+    }
+    
+    const blanksContainer = document.getElementById('editBlanksContainer');
+    if (blanksContainer) {
+        new Sortable(blanksContainer, {
+            handle: '.blank-drag',
+            animation: 150,
+            onEnd: function() {
+                updateEditBlanksIndices();
+            }
+        });
+    }
+    
+    // Handle question type change
+    questionType.addEventListener('change', function() {
+        const optionsSection = document.getElementById('editOptionsSection');
+        const blanksSection = document.getElementById('editFillBlanksSection');
+        
+        if (this.value === 'fill_blank') {
+            optionsSection.style.display = 'none';
+            blanksSection.style.display = 'block';
+        } else {
+            optionsSection.style.display = 'block';
+            blanksSection.style.display = 'none';
+        }
+    });
+    
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch(`/admin/quizzes/questions/${questionId}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('editQuestionModal')).hide();
+                
+                // Show success message
+                alert('Question updated successfully!');
+                
+                // Reload the page to show updated question
+                location.reload();
+            }
+        })
+        .catch(error => {
+            alert('Error updating question. Please check the form and try again.');
+        });
+    });
+}
+
+// Helper functions for edit form
+function addEditOption() {
+    const container = document.getElementById('editOptionsContainer');
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'option-row';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="option-drag">
+            <i class="fas fa-grip-vertical text-muted"></i>
+        </div>
+        <div class="option-content">
+            <div class="option-input-wrapper">
+                <input type="text" 
+                       name="options[${index}][text]" 
+                       class="form-control option-input" 
+                       placeholder="Option ${index + 1}">
+            </div>
+            <div class="option-correct">
+                <div class="form-check">
+                    <input type="checkbox" 
+                           name="options[${index}][is_correct]" 
+                           id="option${index}Correct" 
+                           class="form-check-input" 
+                           value="1">
+                    <label class="form-check-label" for="option${index}Correct">
+                        Correct
+                    </label>
+                </div>
+            </div>
+            <button type="button" class="option-remove" onclick="removeOption(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+    document.getElementById('editOptionsCount').textContent = container.children.length + ' options';
+}
+
+function addEditBlank() {
+    const container = document.getElementById('editBlanksContainer');
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'blank-row';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="blank-drag">
+            <i class="fas fa-grip-vertical text-muted"></i>
+        </div>
+        <div class="blank-content">
+            <div class="blank-input-wrapper">
+                <input type="text" 
+                       name="fill_blanks[${index}][answer]" 
+                       class="form-control blank-input" 
+                       placeholder="Answer">
+            </div>
+            <div class="blank-case">
+                <div class="form-check">
+                    <input type="checkbox" 
+                           name="fill_blanks[${index}][case_sensitive]" 
+                           id="blank${index}Case" 
+                           class="form-check-input" 
+                           value="1">
+                    <label class="form-check-label" for="blank${index}Case">
+                        Case Sensitive
+                    </label>
+                </div>
+            </div>
+            <button type="button" class="blank-remove" onclick="removeBlank(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+    document.getElementById('editBlanksCount').textContent = container.children.length + ' answers';
+}
+
+function updateEditOptionsIndices() {
+    const rows = document.querySelectorAll('#editOptionsContainer .option-row');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        const inputs = row.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.name = `options[${index}][text]`;
+        });
+        
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox, cbIndex) => {
+            checkbox.name = `options[${index}][is_correct]`;
+            checkbox.id = `option${index}Correct`;
+            const label = row.querySelector(`label[for="option${cbIndex}Correct"]`);
+            if (label) {
+                label.htmlFor = `option${index}Correct`;
+            }
+        });
+        
+        const placeholder = row.querySelector('input[type="text"]');
+        if (placeholder) {
+            placeholder.placeholder = `Option ${index + 1}`;
+        }
+    });
+}
+
+function updateEditBlanksIndices() {
+    const rows = document.querySelectorAll('#editBlanksContainer .blank-row');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        const inputs = row.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.name = `fill_blanks[${index}][answer]`;
+        });
+        
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach((checkbox, cbIndex) => {
+            checkbox.name = `fill_blanks[${index}][case_sensitive]`;
+            checkbox.id = `blank${index}Case`;
+            const label = row.querySelector(`label[for="blank${cbIndex}Case"]`);
+            if (label) {
+                label.htmlFor = `blank${index}Case`;
+            }
+        });
+    });
 }
 </script>
 @endpush
