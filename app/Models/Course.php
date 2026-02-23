@@ -154,13 +154,17 @@ class Course extends Model
         return '$' . number_format($price, 2);
     }
 
+    // In your Course model, modify the thumbnail_url accessor:
     public function getThumbnailUrlAttribute(): string
     {
         if ($this->thumbnail) {
+            // Check if the path already includes 'public/'
+            if (strpos($this->thumbnail, 'public/') === 0) {
+                return Storage::url(str_replace('public/', '', $this->thumbnail));
+            }
             return Storage::url($this->thumbnail);
         }
-        
-        // Return a default placeholder image if no thumbnail exists
+
         return asset('images/course-placeholder.jpg');
     }
 
@@ -169,7 +173,7 @@ class Course extends Model
         if (isset($this->attributes['excerpt']) && !empty($this->attributes['excerpt'])) {
             return $this->attributes['excerpt'];
         }
-        
+
         return Str::limit(strip_tags($this->description ?? ''), 120, '...');
     }
 
@@ -325,10 +329,10 @@ class Course extends Model
 
     public function scopeSearch($query, $keyword)
     {
-        return $query->where(function($q) use ($keyword) {
+        return $query->where(function ($q) use ($keyword) {
             $q->where('title', 'LIKE', "%{$keyword}%")
-              ->orWhere('description', 'LIKE', "%{$keyword}%")
-              ->orWhere('excerpt', 'LIKE', "%{$keyword}%");
+                ->orWhere('description', 'LIKE', "%{$keyword}%")
+                ->orWhere('excerpt', 'LIKE', "%{$keyword}%");
         });
     }
 
@@ -341,7 +345,7 @@ class Course extends Model
             if (empty($course->slug) && !empty($course->title)) {
                 $course->slug = Str::slug($course->title);
             }
-            
+
             // Auto-calculate is_free based on course_type or price
             if (isset($course->course_type)) {
                 $course->is_free = $course->course_type === 'free';
@@ -354,7 +358,7 @@ class Course extends Model
             if ($course->isDirty('title') && empty($course->slug)) {
                 $course->slug = Str::slug($course->title);
             }
-            
+
             // Auto-calculate is_free based on course_type or price
             if ($course->isDirty('course_type')) {
                 $course->is_free = $course->course_type === 'free';
