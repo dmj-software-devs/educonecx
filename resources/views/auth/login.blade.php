@@ -333,7 +333,7 @@
             {{ session('status') }}
         </div>
         @endif
-
+        <!-- Update the error message section -->
         @if($errors->any())
         <div class="login-page-alert login-page-alert-error">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -341,7 +341,16 @@
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
+
+            @if($errors->first() == 'Please verify your email address before logging in.' && session('unverified_email'))
             {{ $errors->first() }}
+            <a href="{{ route('verification.resend') }}?email={{ session('unverified_email') }}"
+                style="color: #2563eb; text-decoration: underline; margin-left: 5px; display: inline-block;">
+                Resend verification email
+            </a>
+            @else
+            {{ $errors->first() }}
+            @endif
         </div>
         @endif
 

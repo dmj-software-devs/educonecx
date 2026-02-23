@@ -12,6 +12,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\AdminDashboardController; // Renamed Admin Dashboard
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\VerificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,23 +21,18 @@ use Illuminate\Http\Request;
 */
 
 // ==================== EMAIL VERIFICATION ROUTES ====================
+// These routes should be accessible without authentication
+Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    ->name('verification.verify');
+
+Route::get('/email/verification-notification', [VerificationController::class, 'resend'])
+    ->name('verification.resend');
+
+// Email verification notice - requires auth to show
 Route::middleware('auth')->group(function () {
-    // Email verification notice
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
     })->name('verification.notice');
-
-    // Email verification handler
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect('/login')->with('success', 'Email verified successfully! You can now log in.');
-    })->middleware(['signed'])->name('verification.verify');
-
-    // Resend verification email
-    Route::post('/email/verification-notification', function (Request $request) {
-        $request->user()->sendEmailVerificationNotification();
-        return back()->with('success', 'Verification link sent! Please check your email.');
-    })->middleware(['throttle:6,1'])->name('verification.resend');
 });
 
 // ==================== AUTHENTICATION ROUTES ====================
@@ -56,14 +52,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
-// Enrollment routes
-Route::middleware(['auth'])->group(function () {
-    Route::post('/courses/{course}/enroll', [App\Http\Controllers\EnrollmentController::class, 'enroll'])->name('courses.enroll');
-    Route::post('/courses/{course}/enroll-ajax', [App\Http\Controllers\EnrollmentController::class, 'enrollAjax'])->name('courses.enroll.ajax');
-    Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::class, 'learning'])->name('courses.learning');
-    Route::post('/courses/{course}/lessons/{lesson}/progress', [App\Http\Controllers\EnrollmentController::class, 'updateProgress'])->name('courses.progress');
-});
-
 // ==================== AUTHENTICATED USER ROUTES ====================
 Route::middleware('auth')->group(function () {
     // Logout
@@ -77,6 +65,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-courses', [DashboardController::class, 'courses'])->name('my-courses');
     Route::get('/my-quizzes', [DashboardController::class, 'quizzes'])->name('my-quizzes');
     Route::get('/certificates', [DashboardController::class, 'certificates'])->name('certificates');
+
+    // Enrollment routes
+    Route::post('/courses/{course}/enroll', [App\Http\Controllers\EnrollmentController::class, 'enroll'])->name('courses.enroll');
+    Route::post('/courses/{course}/enroll-ajax', [App\Http\Controllers\EnrollmentController::class, 'enrollAjax'])->name('courses.enroll.ajax');
+    Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::class, 'learning'])->name('courses.learning');
+    Route::post('/courses/{course}/lessons/{lesson}/progress', [App\Http\Controllers\EnrollmentController::class, 'updateProgress'])->name('courses.progress');
 
     // Learning Routes
     Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
@@ -159,7 +153,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'questions'])->name('quizzes.questions');
     Route::post('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
     
-    // Question Edit Routes - ADDED THESE TWO LINES
+    // Question Edit Routes
     Route::get('quizzes/questions/{question}/edit', [App\Http\Controllers\Admin\QuizController::class, 'editQuestion'])->name('quizzes.questions.edit');
     Route::put('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
     

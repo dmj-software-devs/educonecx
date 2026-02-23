@@ -29,6 +29,9 @@ class AuthController extends Controller
     /**
      * Handle login request
      */
+    /**
+     * Handle login request
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -43,8 +46,8 @@ class AuthController extends Controller
 
         if ($user && !$user->hasVerifiedEmail()) {
             return back()->withErrors([
-                'email' => 'Please verify your email address before logging in. <a href="' . route('verification.resend') . '?email=' . $user->email . '">Resend verification email</a>',
-            ])->onlyInput('email');
+                'email' => 'Please verify your email address before logging in.',
+            ])->with('unverified_email', $user->email)->onlyInput('email');
         }
 
         if (Auth::attempt($credentials, $remember)) {
@@ -87,6 +90,9 @@ class AuthController extends Controller
     /**
      * Handle registration request
      */
+    /**
+     * Handle registration request
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -114,12 +120,8 @@ class AuthController extends Controller
             'status' => 'active',
         ]);
 
-        // Trigger email verification notification
-        // event(new Registered($user));
-        $user->markEmailAsVerified();
-
-        // Don't log them in
-        // Don't create notification yet (they need to verify email first)
+        // Send email verification notification
+        event(new Registered($user));
 
         // Redirect to login page with verification message
         return redirect()->route('login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
