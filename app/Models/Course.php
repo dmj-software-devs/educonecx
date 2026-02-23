@@ -10,13 +10,37 @@ class Course extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title', 'slug', 'excerpt', 'description', 'thumbnail', 'video_intro',
-        'price', 'sale_price', 'discount_percent', 'discount_start_date', 'discount_end_date',
-        'duration', 'level', 'language', 'prerequisites', 'what_you_will_learn',
-        'requirements', 'target_audience', 'material_includes', 'featured', 'popular',
-        'status', 'published_at', 'created_by', 'category_id',
-        'total_students', 'total_lessons', 'total_quizzes', 'total_duration',
-        'average_rating', 'total_reviews'
+        'title',
+        'slug',
+        'excerpt',
+        'description',
+        'thumbnail',
+        'video_intro',
+        'price',
+        'sale_price',
+        'discount_percent',
+        'discount_start_date',
+        'discount_end_date',
+        'duration',
+        'level',
+        'language',
+        'prerequisites',
+        'what_you_will_learn',
+        'requirements',
+        'target_audience',
+        'material_includes',
+        'featured',
+        'popular',
+        'status',
+        'published_at',
+        'created_by',
+        'category_id',
+        'total_students',
+        'total_lessons',
+        'total_quizzes',
+        'total_duration',
+        'average_rating',
+        'total_reviews'
     ];
 
     protected $casts = [
@@ -67,11 +91,47 @@ class Course extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+
+
+    // Add these helper methods
+    public function getIsEnrolledAttribute()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+
+        return $this->enrollments()
+            ->where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->exists();
+    }
+
+    public function getUserEnrollmentAttribute()
+    {
+        if (!auth()->check()) {
+            return null;
+        }
+
+        return $this->enrollments()
+            ->where('user_id', auth()->id())
+            ->first();
+    }
+
+    public function getUserProgressAttribute()
+    {
+        if (!auth()->check()) {
+            return 0;
+        }
+
+        $enrollment = $this->user_enrollment;
+        return $enrollment ? $enrollment->progress : 0;
+    }
+
     public function students()
     {
         return $this->belongsToMany(User::class, 'enrollments')
-                    ->withPivot('progress', 'completed_at', 'enrollment_date')
-                    ->withTimestamps();
+            ->withPivot('progress', 'completed_at', 'enrollment_date')
+            ->withTimestamps();
     }
 
     public function reviews()
@@ -112,22 +172,22 @@ class Course extends Model
 
     public function scopeFree($query)
     {
-        return $query->where(function($q) {
+        return $query->where(function ($q) {
             $q->where('price', 0)
-              ->orWhere(function($q2) {
-                  $q2->whereNotNull('sale_price')
-                     ->where('sale_price', 0);
-              });
+                ->orWhere(function ($q2) {
+                    $q2->whereNotNull('sale_price')
+                        ->where('sale_price', 0);
+                });
         });
     }
 
     public function scopePaid($query)
     {
         return $query->where('price', '>', 0)
-                     ->where(function($q) {
-                         $q->whereNull('sale_price')
-                           ->orWhere('sale_price', '>', 0);
-                     });
+            ->where(function ($q) {
+                $q->whereNull('sale_price')
+                    ->orWhere('sale_price', '>', 0);
+            });
     }
 
     // Accessors
@@ -145,11 +205,11 @@ class Course extends Model
     public function getHasDiscountAttribute()
     {
         $now = now();
-        return $this->sale_price && 
-               $this->discount_start_date && 
-               $this->discount_end_date &&
-               $now >= $this->discount_start_date && 
-               $now <= $this->discount_end_date;
+        return $this->sale_price &&
+            $this->discount_start_date &&
+            $this->discount_end_date &&
+            $now >= $this->discount_start_date &&
+            $now <= $this->discount_end_date;
     }
 
     public function getDiscountPercentageAttribute()
@@ -174,16 +234,10 @@ class Course extends Model
     {
         $userId = $userId ?? auth()->id();
         if (!$userId) return 0;
-        
+
         $enrollment = $this->enrollments()->where('user_id', $userId)->first();
         return $enrollment ? $enrollment->progress : 0;
     }
 
-    public function getIsEnrolledAttribute($userId = null)
-    {
-        $userId = $userId ?? auth()->id();
-        if (!$userId) return false;
-        
-        return $this->enrollments()->where('user_id', $userId)->exists();
-    }
+   
 }

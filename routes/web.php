@@ -34,6 +34,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
+// Enrollment routes
+Route::middleware(['auth'])->group(function () {
+    Route::post('/courses/{course}/enroll', [App\Http\Controllers\EnrollmentController::class, 'enroll'])->name('courses.enroll');
+    Route::post('/courses/{course}/enroll-ajax', [App\Http\Controllers\EnrollmentController::class, 'enrollAjax'])->name('courses.enroll.ajax');
+    Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::class, 'learning'])->name('courses.learning');
+    Route::post('/courses/{course}/lessons/{lesson}/progress', [App\Http\Controllers\EnrollmentController::class, 'updateProgress'])->name('courses.progress');
+});
+
 // ==================== AUTHENTICATED USER ROUTES ====================
 Route::middleware('auth')->group(function () {
     // Logout

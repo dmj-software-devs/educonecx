@@ -374,7 +374,7 @@
         align-items: center;
         gap: 12px;
         padding: 12px 0;
-        border-bottom: 1px solid rgba(0,0,0,0.05);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .includes-list li:last-child {
@@ -461,6 +461,7 @@
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -514,7 +515,7 @@
         margin-bottom: 15px;
     }
 
-    .course-description ul, 
+    .course-description ul,
     .course-description ol {
         margin-bottom: 20px;
         padding-left: 20px;
@@ -920,7 +921,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.8);
+        background: rgba(0, 0, 0, 0.8);
         z-index: 99999;
         align-items: center;
         justify-content: center;
@@ -946,7 +947,7 @@
         right: 15px;
         width: 40px;
         height: 40px;
-        background: rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.2);
         border: none;
         border-radius: 50%;
         color: var(--white);
@@ -957,7 +958,7 @@
     }
 
     .modal-close:hover {
-        background: rgba(255,255,255,0.3);
+        background: rgba(255, 255, 255, 0.3);
         transform: rotate(90deg);
     }
 
@@ -1032,403 +1033,417 @@
 @endpush
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="course-hero">
-        <div class="course-hero-particles">
-            <div class="course-hero-particle"></div>
-            <div class="course-hero-particle"></div>
-            <div class="course-hero-particle"></div>
-        </div>
+<!-- Hero Section -->
+<section class="course-hero">
+    <div class="course-hero-particles">
+        <div class="course-hero-particle"></div>
+        <div class="course-hero-particle"></div>
+        <div class="course-hero-particle"></div>
+    </div>
 
-        <div class="container">
-            <div class="course-hero-content" data-aos="fade-up">
-                <!-- Breadcrumb -->
-                <div class="course-breadcrumb">
-                    <a href="{{ route('home') }}">Home</a>
-                    <i class="fas fa-chevron-right"></i>
-                    <a href="{{ route('courses') }}">Courses</a>
-                    <i class="fas fa-chevron-right"></i>
-                    @if($course->category)
-                        <a href="{{ route('courses.category', $course->category->slug) }}">{{ $course->category->name }}</a>
-                        <i class="fas fa-chevron-right"></i>
-                    @endif
-                    <span>{{ $course->title }}</span>
-                </div>
+    <div class="container">
+        <div class="course-hero-content" data-aos="fade-up">
+            <!-- Breadcrumb -->
+            <div class="course-breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="{{ route('courses') }}">Courses</a>
+                <i class="fas fa-chevron-right"></i>
+                @if($course->category)
+                <a href="{{ route('courses.category', $course->category->slug) }}">{{ $course->category->name }}</a>
+                <i class="fas fa-chevron-right"></i>
+                @endif
+                <span>{{ $course->title }}</span>
+            </div>
 
-                <!-- Badges -->
-                <div class="course-badge-wrapper">
-                    @if($course->featured)
-                        <span class="course-badge featured">Featured</span>
-                    @endif
-                    @if($course->price == 0 || ($course->sale_price == 0))
-                        <span class="course-badge free">Free Course</span>
-                    @endif
-                    @if($course->level)
-                        <span class="course-badge">{{ $course->level }}</span>
-                    @endif
-                </div>
-
-                <!-- Title -->
-                <h1 class="course-hero-title">{{ $course->title }}</h1>
-
-                <!-- Description -->
-                <p class="course-hero-description">{{ $course->excerpt ?? Str::limit(strip_tags($course->description), 200) }}</p>
-
-                <!-- Meta Info -->
-                <div class="course-meta-list">
-                    <div class="course-meta-item">
-                        <div class="meta-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="meta-content">
-                            <h4>Students Enrolled</h4>
-                            <p>{{ number_format($course->enrollments_count ?? 0) }}+</p>
-                        </div>
-                    </div>
-
-                    <div class="course-meta-item">
-                        <div class="meta-icon">
-                            <i class="far fa-clock"></i>
-                        </div>
-                        <div class="meta-content">
-                            <h4>Duration</h4>
-                            <p>{{ $course->duration ?? 'Self-Paced' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="course-meta-item">
-                        <div class="meta-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <div class="meta-content">
-                            <h4>Lessons</h4>
-                            <p>{{ $course->total_lessons ?? 0 }}</p>
-                        </div>
-                    </div>
-
-                    <div class="course-meta-item">
-                        <div class="meta-icon">
-                            <i class="fas fa-signal"></i>
-                        </div>
-                        <div class="meta-content">
-                            <h4>Level</h4>
-                            <p>{{ $course->level ?? 'All Levels' }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Instructor Mini -->
-                @if($course->instructor)
-                <div class="instructor-mini">
-                    <div class="instructor-mini-avatar">
-                        {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
-                    </div>
-                    <div class="instructor-mini-info">
-                        <h4>Created by</h4>
-                        <p>{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</p>
-                    </div>
-                </div>
+            <!-- Badges -->
+            <div class="course-badge-wrapper">
+                @if($course->featured)
+                <span class="course-badge featured">Featured</span>
+                @endif
+                @if($course->price == 0 || ($course->sale_price == 0))
+                <span class="course-badge free">Free Course</span>
+                @endif
+                @if($course->level)
+                <span class="course-badge">{{ $course->level }}</span>
                 @endif
             </div>
+
+            <!-- Title -->
+            <h1 class="course-hero-title">{{ $course->title }}</h1>
+
+            <!-- Description -->
+            <p class="course-hero-description">{{ $course->excerpt ?? Str::limit(strip_tags($course->description), 200) }}</p>
+
+            <!-- Meta Info -->
+            <div class="course-meta-list">
+                <div class="course-meta-item">
+                    <div class="meta-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="meta-content">
+                        <h4>Students Enrolled</h4>
+                        <p>{{ number_format($course->enrollments_count ?? 0) }}+</p>
+                    </div>
+                </div>
+
+                <div class="course-meta-item">
+                    <div class="meta-icon">
+                        <i class="far fa-clock"></i>
+                    </div>
+                    <div class="meta-content">
+                        <h4>Duration</h4>
+                        <p>{{ $course->duration ?? 'Self-Paced' }}</p>
+                    </div>
+                </div>
+
+                <div class="course-meta-item">
+                    <div class="meta-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div class="meta-content">
+                        <h4>Lessons</h4>
+                        <p>{{ $course->total_lessons ?? 0 }}</p>
+                    </div>
+                </div>
+
+                <div class="course-meta-item">
+                    <div class="meta-icon">
+                        <i class="fas fa-signal"></i>
+                    </div>
+                    <div class="meta-content">
+                        <h4>Level</h4>
+                        <p>{{ $course->level ?? 'All Levels' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instructor Mini -->
+            @if($course->instructor)
+            <div class="instructor-mini">
+                <div class="instructor-mini-avatar">
+                    {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
+                </div>
+                <div class="instructor-mini-info">
+                    <h4>Created by</h4>
+                    <p>{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</p>
+                </div>
+            </div>
+            @endif
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Main Content -->
-    <section class="course-main">
-        <div class="container">
-            <div class="row">
-                <!-- Left Column - Course Content -->
-                <div class="col-lg-8">
-                    <div class="course-content-wrapper" data-aos="fade-right">
-                        <!-- Tabs (removed Reviews tab) -->
-                        <div class="course-tabs">
-                            <button class="tab-btn active" data-tab="overview">Overview</button>
-                            <button class="tab-btn" data-tab="curriculum">Curriculum</button>
-                            <button class="tab-btn" data-tab="instructor">Instructor</button>
-                        </div>
+<!-- Main Content -->
+<section class="course-main">
+    <div class="container">
+        <div class="row">
+            <!-- Left Column - Course Content -->
+            <div class="col-lg-8">
+                <div class="course-content-wrapper" data-aos="fade-right">
+                    <!-- Tabs (removed Reviews tab) -->
+                    <div class="course-tabs">
+                        <button class="tab-btn active" data-tab="overview">Overview</button>
+                        <button class="tab-btn" data-tab="curriculum">Curriculum</button>
+                        <button class="tab-btn" data-tab="instructor">Instructor</button>
+                    </div>
 
-                        <!-- Overview Tab -->
-                        <div class="tab-pane active" id="overview">
-                            <div class="overview-section">
-                                <h2 class="section-title">About This Course</h2>
-                                <div class="course-description">
-                                    {!! $course->description !!}
-                                </div>
-
-                                @if($course->what_you_will_learn)
-                                <div class="learning-outcomes">
-                                    <h3>What You'll Learn</h3>
-                                    <div class="outcomes-grid">
-                                        @foreach(explode("\n", $course->what_you_will_learn) as $outcome)
-                                            @if(trim($outcome))
-                                            <div class="outcome-item">
-                                                <div class="outcome-icon">
-                                                    <i class="fas fa-check"></i>
-                                                </div>
-                                                <div class="outcome-text">{{ trim($outcome) }}</div>
-                                            </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-
-                                @if($course->requirements)
-                                <div class="learning-outcomes">
-                                    <h3>Requirements</h3>
-                                    <div class="outcomes-grid">
-                                        @foreach(explode("\n", $course->requirements) as $requirement)
-                                            @if(trim($requirement))
-                                            <div class="outcome-item">
-                                                <div class="outcome-icon">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </div>
-                                                <div class="outcome-text">{{ trim($requirement) }}</div>
-                                            </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
+                    <!-- Overview Tab -->
+                    <div class="tab-pane active" id="overview">
+                        <div class="overview-section">
+                            <h2 class="section-title">About This Course</h2>
+                            <div class="course-description">
+                                {!! $course->description !!}
                             </div>
-                        </div>
 
-                        <!-- Curriculum Tab -->
-                        <div class="tab-pane" id="curriculum">
-                            <div class="curriculum-section">
-                                <div class="curriculum-header">
-                                    <h2 class="section-title">Course Curriculum</h2>
-                                    <div class="curriculum-stats">
-                                        <span><i class="far fa-file-video"></i> {{ $course->total_lessons ?? 0 }} Lessons</span>
-                                        <span><i class="far fa-clock"></i> {{ $course->total_duration ?? 'Self-Paced' }}</span>
-                                    </div>
-                                </div>
-
-                                @if($course->sections && $course->sections->count() > 0)
-                                    @foreach($course->sections as $sectionIndex => $section)
-                                    <div class="accordion-item">
-                                        <div class="accordion-header" data-section="{{ $sectionIndex }}">
-                                            <h3>{{ $section->title }}</h3>
-                                            <div class="section-meta">
-                                                <span>{{ $section->lessons->count() }} lessons</span>
-                                                <span>{{ $section->duration ?? '' }}</span>
-                                                <i class="fas fa-chevron-down"></i>
-                                            </div>
+                            @if($course->what_you_will_learn)
+                            <div class="learning-outcomes">
+                                <h3>What You'll Learn</h3>
+                                <div class="outcomes-grid">
+                                    @foreach(explode("\n", $course->what_you_will_learn) as $outcome)
+                                    @if(trim($outcome))
+                                    <div class="outcome-item">
+                                        <div class="outcome-icon">
+                                            <i class="fas fa-check"></i>
                                         </div>
-                                        <div class="accordion-content" id="section-{{ $sectionIndex }}">
-                                            @if($section->lessons && $section->lessons->count() > 0)
-                                                @foreach($section->lessons as $lesson)
-                                                <div class="lesson-item">
-                                                    <div class="lesson-icon">
-                                                        @if($lesson->is_free_preview)
-                                                            <i class="fas fa-play-circle"></i>
-                                                        @else
-                                                            <i class="fas fa-lock"></i>
-                                                        @endif
-                                                    </div>
-                                                    <div class="lesson-info">
-                                                        <div class="lesson-title">{{ $lesson->title }}</div>
-                                                        <div class="lesson-meta">
-                                                            <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
-                                                            @if($lesson->is_free_preview)
-                                                                <span class="text-success"><i class="fas fa-unlock-alt"></i> Free Preview</span>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    @if($lesson->is_free_preview)
-                                                        <a href="#" class="lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
-                                                            Preview <i class="fas fa-arrow-right"></i>
-                                                        </a>
-                                                    @else
-                                                        <div class="lesson-locked">
-                                                            <i class="fas fa-lock"></i>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                @endforeach
-                                            @endif
-                                        </div>
+                                        <div class="outcome-text">{{ trim($outcome) }}</div>
                                     </div>
+                                    @endif
                                     @endforeach
-                                @else
-                                    <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Instructor Tab -->
-                        <div class="tab-pane" id="instructor">
-                            @if($course->instructor)
-                            <div class="instructor-profile">
-                                <div class="instructor-avatar-large">
-                                    {{ substr($course->instructor->name, 0, 1) }}
                                 </div>
-                                <div class="instructor-details">
-                                    <h2 class="instructor-name">{{ $course->instructor->name }}</h2>
-                                    <p class="instructor-title">{{ $course->instructor->title ?? 'Expert Instructor' }}</p>
-                                    <div class="instructor-bio">
-                                        {{ $course->instructor->bio ?? 'Experienced professional dedicated to helping students achieve their learning goals.' }}
-                                    </div>
-                                    <div class="instructor-stats">
-                                        <div class="stat-item">
-                                            <div class="stat-value">{{ $course->instructor->courses_count ?? 0 }}</div>
-                                            <div class="stat-label">Courses</div>
+                            </div>
+                            @endif
+
+                            @if($course->requirements)
+                            <div class="learning-outcomes">
+                                <h3>Requirements</h3>
+                                <div class="outcomes-grid">
+                                    @foreach(explode("\n", $course->requirements) as $requirement)
+                                    @if(trim($requirement))
+                                    <div class="outcome-item">
+                                        <div class="outcome-icon">
+                                            <i class="fas fa-check-circle"></i>
                                         </div>
-                                        <div class="stat-item">
-                                            <div class="stat-value">{{ $course->instructor->students_count ?? 0 }}</div>
-                                            <div class="stat-label">Students</div>
-                                        </div>
+                                        <div class="outcome-text">{{ trim($requirement) }}</div>
                                     </div>
-                                    <div class="instructor-social">
-                                        @if($course->instructor->twitter)
-                                        <a href="{{ $course->instructor->twitter }}" class="social-link" target="_blank">
-                                            <i class="fab fa-twitter"></i>
-                                        </a>
-                                        @endif
-                                        @if($course->instructor->linkedin)
-                                        <a href="{{ $course->instructor->linkedin }}" class="social-link" target="_blank">
-                                            <i class="fab fa-linkedin-in"></i>
-                                        </a>
-                                        @endif
-                                        @if($course->instructor->website)
-                                        <a href="{{ $course->instructor->website }}" class="social-link" target="_blank">
-                                            <i class="fas fa-globe"></i>
-                                        </a>
-                                        @endif
-                                    </div>
+                                    @endif
+                                    @endforeach
                                 </div>
                             </div>
                             @endif
                         </div>
                     </div>
 
-                    <!-- Related Courses -->
-                    @if($relatedCourses->count() > 0)
-                    <div class="related-courses" data-aos="fade-up">
-                        <div class="related-header">
-                            <h2 class="related-title">Related Courses</h2>
-                            <a href="{{ route('courses') }}" class="view-all">
-                                View All <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                        <div class="related-grid">
-                            @foreach($relatedCourses as $relatedCourse)
-                            <a href="{{ route('courses.show', $relatedCourse->slug) }}" class="related-course-card">
-                                <div class="related-thumbnail">
-                                    <img src="{{ $relatedCourse->thumbnail_url }}" alt="{{ $relatedCourse->title }}">
+                    <!-- Curriculum Tab -->
+                    <div class="tab-pane" id="curriculum">
+                        <div class="curriculum-section">
+                            <div class="curriculum-header">
+                                <h2 class="section-title">Course Curriculum</h2>
+                                <div class="curriculum-stats">
+                                    <span><i class="far fa-file-video"></i> {{ $course->total_lessons ?? 0 }} Lessons</span>
+                                    <span><i class="far fa-clock"></i> {{ $course->total_duration ?? 'Self-Paced' }}</span>
                                 </div>
-                                <div class="related-content">
-                                    <div class="related-category">{{ $relatedCourse->category->name ?? 'General' }}</div>
-                                    <h3 class="related-title">{{ $relatedCourse->title }}</h3>
-                                    <div class="related-meta">
-                                        <span class="related-price {{ $relatedCourse->price == 0 ? 'free' : '' }}">
-                                            @if($relatedCourse->sale_price && $relatedCourse->sale_price < $relatedCourse->price)
-                                                ${{ number_format($relatedCourse->sale_price, 2) }}
-                                            @elseif($relatedCourse->price > 0)
-                                                ${{ number_format($relatedCourse->price, 2) }}
-                                            @else
-                                                Free
-                                            @endif
-                                        </span>
+                            </div>
+
+                            @if($course->sections && $course->sections->count() > 0)
+                            @foreach($course->sections as $sectionIndex => $section)
+                            <div class="accordion-item">
+                                <div class="accordion-header" data-section="{{ $sectionIndex }}">
+                                    <h3>{{ $section->title }}</h3>
+                                    <div class="section-meta">
+                                        <span>{{ $section->lessons->count() }} lessons</span>
+                                        <span>{{ $section->duration ?? '' }}</span>
+                                        <i class="fas fa-chevron-down"></i>
                                     </div>
                                 </div>
-                            </a>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-                </div>
-
-                <!-- Right Column - Course Sidebar -->
-                <div class="col-lg-4">
-                    <div class="course-sidebar" data-aos="fade-left">
-                        <!-- Course Card -->
-                        <div class="course-card">
-                            <div class="course-thumbnail">
-                                <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
-                                @if($course->video_intro)
-                                <button class="course-preview-btn" id="previewVideo">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                @endif
-                            </div>
-
-                            <div class="course-price-box">
-                                <div class="course-price {{ $course->price == 0 ? 'free' : '' }}">
-                                    @if($course->sale_price && $course->sale_price < $course->price)
-                                        ${{ number_format($course->sale_price, 2) }}
-                                        <small>${{ number_format($course->price, 2) }}</small>
-                                    @elseif($course->price > 0)
-                                        ${{ number_format($course->price, 2) }}
-                                    @else
-                                        Free
+                                <div class="accordion-content" id="section-{{ $sectionIndex }}">
+                                    @if($section->lessons && $section->lessons->count() > 0)
+                                    @foreach($section->lessons as $lesson)
+                                    <div class="lesson-item">
+                                        <div class="lesson-icon">
+                                            @if($lesson->is_free_preview)
+                                            <i class="fas fa-play-circle"></i>
+                                            @else
+                                            <i class="fas fa-lock"></i>
+                                            @endif
+                                        </div>
+                                        <div class="lesson-info">
+                                            <div class="lesson-title">{{ $lesson->title }}</div>
+                                            <div class="lesson-meta">
+                                                <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
+                                                @if($lesson->is_free_preview)
+                                                <span class="text-success"><i class="fas fa-unlock-alt"></i> Free Preview</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @if($lesson->is_free_preview)
+                                        <a href="#" class="lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
+                                            Preview <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                        @else
+                                        <div class="lesson-locked">
+                                            <i class="fas fa-lock"></i>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endforeach
                                     @endif
                                 </div>
-                                <span class="price-label">one-time payment, lifetime access</span>
                             </div>
+                            @endforeach
+                            @else
+                            <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
+                            @endif
+                        </div>
+                    </div>
 
-                            <div class="course-actions">
-                                <a href="#" class="btn-enroll" id="enrollBtn">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    Enroll Now
-                                </a>
-                                <button class="btn-wishlist" id="wishlistBtn">
-                                    <i class="far fa-heart"></i>
-                                    Add to Wishlist
-                                </button>
+                    <!-- Instructor Tab -->
+                    <div class="tab-pane" id="instructor">
+                        @if($course->instructor)
+                        <div class="instructor-profile">
+                            <div class="instructor-avatar-large">
+                                {{ substr($course->instructor->name, 0, 1) }}
                             </div>
+                            <div class="instructor-details">
+                                <h2 class="instructor-name">{{ $course->instructor->name }}</h2>
+                                <p class="instructor-title">{{ $course->instructor->title ?? 'Expert Instructor' }}</p>
+                                <div class="instructor-bio">
+                                    {{ $course->instructor->bio ?? 'Experienced professional dedicated to helping students achieve their learning goals.' }}
+                                </div>
+                                <div class="instructor-stats">
+                                    <div class="stat-item">
+                                        <div class="stat-value">{{ $course->instructor->courses_count ?? 0 }}</div>
+                                        <div class="stat-label">Courses</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">{{ $course->instructor->students_count ?? 0 }}</div>
+                                        <div class="stat-label">Students</div>
+                                    </div>
+                                </div>
+                                <div class="instructor-social">
+                                    @if($course->instructor->twitter)
+                                    <a href="{{ $course->instructor->twitter }}" class="social-link" target="_blank">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    @endif
+                                    @if($course->instructor->linkedin)
+                                    <a href="{{ $course->instructor->linkedin }}" class="social-link" target="_blank">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                    @endif
+                                    @if($course->instructor->website)
+                                    <a href="{{ $course->instructor->website }}" class="social-link" target="_blank">
+                                        <i class="fas fa-globe"></i>
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
 
-                            <div class="course-includes">
-                                <h4>This course includes:</h4>
-                                <ul class="includes-list">
-                                    <li>
-                                        <i class="fas fa-video"></i>
-                                        <span>{{ $course->total_lessons ?? 0 }} on-demand videos</span>
-                                    </li>
-                                    <li>
-                                        <i class="far fa-file"></i>
-                                        <span>{{ $course->total_articles ?? 0 }} articles</span>
-                                    </li>
-                                    <li>
-                                        <i class="fas fa-download"></i>
-                                        <span>{{ $course->total_resources ?? 0 }} downloadable resources</span>
-                                    </li>
-                                    <li>
-                                        <i class="fas fa-infinity"></i>
-                                        <span>Full lifetime access</span>
-                                    </li>
-                                    <li>
-                                        <i class="fas fa-mobile-alt"></i>
-                                        <span>Access on mobile and TV</span>
-                                    </li>
-                                    <li>
-                                        <i class="fas fa-certificate"></i>
-                                        <span>Certificate of completion</span>
-                                    </li>
-                                </ul>
+                <!-- Related Courses -->
+                @if($relatedCourses->count() > 0)
+                <div class="related-courses" data-aos="fade-up">
+                    <div class="related-header">
+                        <h2 class="related-title">Related Courses</h2>
+                        <a href="{{ route('courses') }}" class="view-all">
+                            View All <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                    <div class="related-grid">
+                        @foreach($relatedCourses as $relatedCourse)
+                        <a href="{{ route('courses.show', $relatedCourse->slug) }}" class="related-course-card">
+                            <div class="related-thumbnail">
+                                <img src="{{ $relatedCourse->thumbnail_url }}" alt="{{ $relatedCourse->title }}">
                             </div>
+                            <div class="related-content">
+                                <div class="related-category">{{ $relatedCourse->category->name ?? 'General' }}</div>
+                                <h3 class="related-title">{{ $relatedCourse->title }}</h3>
+                                <div class="related-meta">
+                                    <span class="related-price {{ $relatedCourse->price == 0 ? 'free' : '' }}">
+                                        @if($relatedCourse->sale_price && $relatedCourse->sale_price < $relatedCourse->price)
+                                            ${{ number_format($relatedCourse->sale_price, 2) }}
+                                            @elseif($relatedCourse->price > 0)
+                                            ${{ number_format($relatedCourse->price, 2) }}
+                                            @else
+                                            Free
+                                            @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            <!-- Right Column - Course Sidebar -->
+            <div class="col-lg-4">
+                <div class="course-sidebar" data-aos="fade-left">
+                    <!-- Course Card -->
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
+                            @if($course->video_intro)
+                            <button class="course-preview-btn" id="previewVideo">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            @endif
+                        </div>
+
+                        <div class="course-price-box">
+                            <div class="course-price {{ $course->price == 0 ? 'free' : '' }}">
+                                @if($course->sale_price && $course->sale_price < $course->price)
+                                    ${{ number_format($course->sale_price, 2) }}
+                                    <small>${{ number_format($course->price, 2) }}</small>
+                                    @elseif($course->price > 0)
+                                    ${{ number_format($course->price, 2) }}
+                                    @else
+                                    Free
+                                    @endif
+                            </div>
+                            <span class="price-label">one-time payment, lifetime access</span>
+                        </div>
+
+                        <div class="course-actions">
+                            @auth
+                            @if($course->is_enrolled)
+                            <a href="{{ route('courses.learning', $course->slug) }}" class="btn-enroll" id="continueLearningBtn">
+                                <i class="fas fa-play-circle"></i>
+                                Continue Learning ({{ $course->user_progress }}%)
+                            </a>
+                            @else
+                            <button class="btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
+                                <i class="fas fa-graduation-cap"></i>
+                                Enroll Now
+                            </button>
+                            @endif
+                            @else
+                            <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="btn-enroll">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login to Enroll
+                            </a>
+                            @endauth
+
+                            <button class="btn-wishlist" id="wishlistBtn">
+                                <i class="far fa-heart"></i>
+                                Add to Wishlist
+                            </button>
+                        </div>
+
+                        <div class="course-includes">
+                            <h4>This course includes:</h4>
+                            <ul class="includes-list">
+                                <li>
+                                    <i class="fas fa-video"></i>
+                                    <span>{{ $course->total_lessons ?? 0 }} on-demand videos</span>
+                                </li>
+                                <li>
+                                    <i class="far fa-file"></i>
+                                    <span>{{ $course->total_articles ?? 0 }} articles</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-download"></i>
+                                    <span>{{ $course->total_resources ?? 0 }} downloadable resources</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-infinity"></i>
+                                    <span>Full lifetime access</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-mobile-alt"></i>
+                                    <span>Access on mobile and TV</span>
+                                </li>
+                                <li>
+                                    <i class="fas fa-certificate"></i>
+                                    <span>Certificate of completion</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Video Modal -->
-    <div class="modal" id="videoModal">
-        <div class="modal-content">
-            <button class="modal-close" id="closeModal">&times;</button>
-            <div class="video-container" id="videoContainer">
-                <!-- Video will be inserted here -->
             </div>
         </div>
     </div>
-@endsection
+</section>
 
+<!-- Video Modal -->
+<div class="modal" id="videoModal">
+    <div class="modal-content">
+        <button class="modal-close" id="closeModal">&times;</button>
+        <div class="video-container" id="videoContainer">
+            <!-- Video will be inserted here -->
+        </div>
+    </div>
+</div>
+@endsection
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tab Switching
+    // ========== TAB SWITCHING ==========
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabPanes = document.querySelectorAll('.tab-pane');
 
@@ -1446,17 +1461,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Accordion for curriculum
+    // ========== CURRICULUM ACCORDION ==========
     const accordionHeaders = document.querySelectorAll('.accordion-header');
-    
+
     accordionHeaders.forEach(header => {
         header.addEventListener('click', function() {
             const sectionId = this.dataset.section;
             const content = document.getElementById(`section-${sectionId}`);
-            
+
             // Toggle active class
             this.classList.toggle('active');
-            
+
             // Toggle content
             if (content.classList.contains('show')) {
                 content.classList.remove('show');
@@ -1471,7 +1486,7 @@ document.addEventListener('DOMContentLoaded', function() {
         accordionHeaders[0].click();
     }
 
-    // Video Preview Modal
+    // ========== VIDEO PREVIEW MODAL ==========
     const modal = document.getElementById('videoModal');
     const previewBtn = document.getElementById('previewVideo');
     const closeBtn = document.getElementById('closeModal');
@@ -1481,11 +1496,33 @@ document.addEventListener('DOMContentLoaded', function() {
         previewBtn.addEventListener('click', function(e) {
             e.preventDefault();
             modal.classList.add('show');
-            
-            // You can set the video source here
-            // For example:
-            // videoContainer.innerHTML = '<iframe src="https://www.youtube.com/embed/..." frameborder="0" allowfullscreen></iframe>';
+
+            // Example: If you have a YouTube video URL
+            const videoUrl = this.dataset.video || '{{ $course->video_intro_url ?? "" }}';
+            if (videoUrl) {
+                if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                    // Extract YouTube ID and create embed
+                    const videoId = extractYoutubeId(videoUrl);
+                    if (videoId) {
+                        videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    }
+                } else if (videoUrl.includes('vimeo.com')) {
+                    // Extract Vimeo ID
+                    const vimeoId = videoUrl.split('/').pop();
+                    videoContainer.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allowfullscreen></iframe>`;
+                } else {
+                    // Assume it's a local video file
+                    videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
+                }
+            }
         });
+    }
+
+    // Helper function to extract YouTube ID
+    function extractYoutubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
     }
 
     if (closeBtn) {
@@ -1503,31 +1540,409 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Wishlist functionality (simplified - you'll need to implement the routes)
+    // ========== ENROLLMENT FUNCTIONALITY ==========
+    const enrollBtn = document.getElementById('enrollBtn');
+
+    if (enrollBtn) {
+        enrollBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            @auth
+                const courseId = this.dataset.courseId;
+                const originalText = this.innerHTML;
+
+                // Show loading state
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling...';
+                this.disabled = true;
+
+                // Make AJAX request to enroll
+                fetch(`/courses/${courseId}/enroll-ajax`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification(data.message, 'success');
+
+                        // Change button to continue learning
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url;
+                        }, 1500);
+                    } else {
+                        showNotification(data.message, 'error');
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('An error occurred. Please try again.', 'error');
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                });
+            @else
+                // Redirect to login with return URL
+                window.location.href = '{{ route("login") }}?redirect={{ url()->current() }}';
+            @endauth
+        });
+    }
+
+    // ========== WISHLIST FUNCTIONALITY ==========
     const wishlistBtn = document.getElementById('wishlistBtn');
-    
+
     if (wishlistBtn) {
+        // Check if course is already in wishlist (you'll need to implement this check)
+        @auth
+            // You can add an initial check here
+            // For example, if the course is in wishlist, add 'active' class
+        @endauth
+
         wishlistBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             @auth
+                // Check if user is enrolled (can't wishlist enrolled courses)
+                @if(isset($course) && $course->is_enrolled)
+                    showNotification('You are already enrolled in this course!', 'info');
+                    return;
+                @endif
+
                 this.classList.toggle('active');
                 const icon = this.querySelector('i');
-                
+
                 if (this.classList.contains('active')) {
                     icon.classList.remove('far');
                     icon.classList.add('fas');
-                    alert('Course added to wishlist');
+
+                    // Make AJAX call to add to wishlist
+                    fetch('{{ route("wishlist.add", $course->id) }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Course added to wishlist', 'success');
+                        } else {
+                            showNotification(data.message || 'Error adding to wishlist', 'error');
+                            // Revert if failed
+                            this.classList.remove('active');
+                            icon.classList.remove('fas');
+                            icon.classList.add('far');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Error adding to wishlist', 'error');
+                        // Revert if failed
+                        this.classList.remove('active');
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                    });
                 } else {
                     icon.classList.remove('fas');
                     icon.classList.add('far');
-                    alert('Course removed from wishlist');
+
+                    // Make AJAX call to remove from wishlist
+                    fetch('{{ route("wishlist.remove", $course->id) }}', {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification('Course removed from wishlist', 'info');
+                        } else {
+                            showNotification(data.message || 'Error removing from wishlist', 'error');
+                            // Revert if failed
+                            this.classList.add('active');
+                            icon.classList.remove('far');
+                            icon.classList.add('fas');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Error removing from wishlist', 'error');
+                        // Revert if failed
+                        this.classList.add('active');
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                    });
                 }
             @else
+                // Store the current page in session to redirect back after login
+                sessionStorage.setItem('redirectAfterLogin', window.location.href);
                 window.location.href = '{{ route("login") }}';
             @endauth
         });
     }
+
+    // ========== LESSON PREVIEW FUNCTIONALITY ==========
+    const previewLinks = document.querySelectorAll('.lesson-preview');
+
+    previewLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const videoUrl = this.dataset.video;
+            if (videoUrl && modal) {
+                modal.classList.add('show');
+
+                if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+                    const videoId = extractYoutubeId(videoUrl);
+                    if (videoId) {
+                        videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    }
+                } else {
+                    videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
+                }
+            }
+        });
+    });
+
+    // ========== SHARE COURSE FUNCTIONALITY ==========
+    const shareBtn = document.getElementById('shareCourseBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ $course->title }}',
+                    text: '{{ $course->excerpt ?? "Check out this course on EDUCONECX" }}',
+                    url: window.location.href
+                })
+                .catch(console.error);
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href)
+                    .then(() => showNotification('Course link copied to clipboard!', 'success'))
+                    .catch(() => showNotification('Could not copy link', 'error'));
+            }
+        });
+    }
+
+    // ========== NOTIFICATION SYSTEM ==========
+    function showNotification(message, type = 'success') {
+        // Remove any existing notifications
+        const existingNotifications = document.querySelectorAll('.notification');
+        existingNotifications.forEach(notification => notification.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+
+        // Set styles based on type
+        const colors = {
+            success: '#28a745',
+            error: '#dc3545',
+            info: '#17a2b8',
+            warning: '#ffc107'
+        };
+
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            info: 'fa-info-circle',
+            warning: 'fa-exclamation-triangle'
+        };
+
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: ${colors[type]};
+            color: ${type === 'warning' ? '#212529' : 'white'};
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        `;
+
+        // Add icon
+        const icon = document.createElement('i');
+        icon.className = `fas ${icons[type]}`;
+        notification.appendChild(icon);
+
+        // Add message
+        const textSpan = document.createElement('span');
+        textSpan.textContent = message;
+        notification.appendChild(textSpan);
+
+        document.body.appendChild(notification);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    // ========== LOADING STATES ==========
+    function showLoading(button) {
+        if (button) {
+            button.dataset.originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            button.disabled = true;
+        }
+    }
+
+    function hideLoading(button) {
+        if (button && button.dataset.originalText) {
+            button.innerHTML = button.dataset.originalText;
+            button.disabled = false;
+        }
+    }
+
+    // ========== ADD TO CART FUNCTIONALITY (Optional) ==========
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            @auth
+                @if(isset($course) && !$course->is_enrolled)
+                    const courseId = this.dataset.courseId;
+                    showLoading(this);
+
+                    fetch(`/cart/add/${courseId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        hideLoading(this);
+                        if (data.success) {
+                            showNotification('Course added to cart!', 'success');
+                            // Update cart count in header
+                            const cartCount = document.querySelector('.cart-count');
+                            if (cartCount) {
+                                cartCount.textContent = data.cartCount;
+                            }
+                        } else {
+                            showNotification(data.message || 'Error adding to cart', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading(this);
+                        showNotification('Error adding to cart', 'error');
+                    });
+                @elseif(isset($course) && $course->is_enrolled)
+                    showNotification('You are already enrolled in this course!', 'info');
+                @endif
+            @else
+                window.location.href = '{{ route("login") }}?redirect={{ url()->current() }}';
+            @endauth
+        });
+    }
+
+    // ========== SCROLL TO SECTION ==========
+    const scrollLinks = document.querySelectorAll('a[href^="#"]');
+    scrollLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // ========== ADD ANIMATION STYLES ==========
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .btn-enroll:disabled,
+        .btn-wishlist:disabled,
+        .add-to-cart:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .notification {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .notification i {
+            font-size: 1.2rem;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ========== TRACK USER INTERACTION (Optional) ==========
+    // Track when user views the course
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'view_item', {
+            currency: 'USD',
+            value: {{ $course->price ?? 0 }},
+            items: [{
+                item_id: '{{ $course->id }}',
+                item_name: '{{ $course->title }}',
+                item_category: '{{ $course->category->name ?? "General" }}',
+                price: {{ $course->price ?? 0 }}
+            }]
+        });
+    }
+
+    console.log('Course page JavaScript initialized successfully');
 });
 </script>
 @endpush
