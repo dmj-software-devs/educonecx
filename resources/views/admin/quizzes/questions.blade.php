@@ -54,7 +54,7 @@
 
 <div class="row g-4">
     <!-- Add Question Form Column -->
-    <div class="col-xl-4 col-lg-5">
+    <div class="col-xl-5 col-lg-6">
         <div class="form-card sticky-form">
             <div class="form-card-header">
                 <h5><i class="fas fa-plus-circle me-2"></i>Add New Question</h5>
@@ -94,7 +94,7 @@
                     <!-- Question Type -->
                     <div class="form-group mb-4">
                         <label class="form-label">Question Type <span class="text-danger">*</span></label>
-                        <select name="question_type" class="form-select" id="questionType" required>
+                        <select name="question_type" class="form-select form-select-lg" id="questionType" required>
                             <option value="multiple_choice" {{ old('question_type') == 'multiple_choice' ? 'selected' : '' }}>Multiple Choice (Select all that apply)</option>
                             <option value="single_choice" {{ old('question_type') == 'single_choice' ? 'selected' : '' }}>Single Choice (Select one)</option>
                             <option value="true_false" {{ old('question_type') == 'true_false' ? 'selected' : '' }}>True/False</option>
@@ -107,7 +107,7 @@
                     <!-- Question Text -->
                     <div class="form-group mb-4">
                         <label class="form-label">Question Text <span class="text-danger">*</span></label>
-                        <textarea name="question_text" id="questionText" class="form-control" rows="3" placeholder="Enter your question here..." required>{{ old('question_text') }}</textarea>
+                        <textarea name="question_text" id="questionText" class="form-control form-control-lg" rows="3" placeholder="Enter your question here..." required>{{ old('question_text') }}</textarea>
                         <div class="char-counter"><span id="questionCounter">{{ strlen(old('question_text') ?? '') }}</span>/500</div>
                     </div>
 
@@ -116,7 +116,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="form-label">Points</label>
-                                <input type="number" name="points" id="points" class="form-control" value="{{ old('points', 1) }}" min="1">
+                                <input type="number" name="points" id="points" class="form-control form-control-lg" value="{{ old('points', 1) }}" min="1">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -126,7 +126,7 @@
                                     <input type="file" name="image" id="image" class="file-input" accept="image/*">
                                     <div class="file-input-preview" id="imagePreview">
                                         <i class="fas fa-image"></i>
-                                        <span>Click to upload</span>
+                                        <span>Click to upload image</span>
                                     </div>
                                 </div>
                             </div>
@@ -136,8 +136,8 @@
                     <!-- Options Section (Multiple Choice, Single Choice, True/False) -->
                     <div id="optionsSection" class="mb-4">
                         <div class="section-label">
-                            <label class="form-label">Answer Options</label>
-                            <span class="badge bg-light text-dark" id="optionsCount">2 options</span>
+                            <label class="form-label fw-bold">Answer Options</label>
+                            <span class="badge bg-primary" id="optionsCount">2 options</span>
                         </div>
                         <div id="optionsContainer" class="options-container">
                             @php
@@ -157,7 +157,7 @@
                                         <input type="text" 
                                                name="options[{{ $index }}][text]" 
                                                class="form-control option-input" 
-                                               placeholder="Option {{ $index + 1 }}"
+                                               placeholder="Enter option {{ $index + 1 }}"
                                                value="{{ $option['text'] ?? '' }}">
                                     </div>
                                     <div class="option-correct">
@@ -180,7 +180,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addOption()">
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addOption()">
                             <i class="fas fa-plus me-1"></i> Add Option
                         </button>
                     </div>
@@ -188,8 +188,8 @@
                     <!-- Fill in the Blanks Section -->
                     <div id="fillBlanksSection" style="display: none;" class="mb-4">
                         <div class="section-label">
-                            <label class="form-label">Correct Answers</label>
-                            <span class="badge bg-light text-dark" id="blanksCount">1 answer</span>
+                            <label class="form-label fw-bold">Correct Answers</label>
+                            <span class="badge bg-primary" id="blanksCount">1 answer</span>
                         </div>
                         <div id="fillBlanksContainer" class="blanks-container">
                             @php
@@ -208,7 +208,7 @@
                                         <input type="text" 
                                                name="fill_blanks[{{ $index }}][answer]" 
                                                class="form-control blank-input" 
-                                               placeholder="Answer"
+                                               placeholder="Enter correct answer"
                                                value="{{ $blank['answer'] ?? '' }}">
                                     </div>
                                     <div class="blank-case">
@@ -231,14 +231,14 @@
                             </div>
                             @endforeach
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addFillBlank()">
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addFillBlank()">
                             <i class="fas fa-plus me-1"></i> Add Answer
                         </button>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                    <div class="form-actions mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
                             <i class="fas fa-plus-circle me-2"></i>Add Question
                         </button>
                     </div>
@@ -248,12 +248,12 @@
     </div>
 
     <!-- Questions List Column -->
-    <div class="col-xl-8 col-lg-7">
+    <div class="col-xl-7 col-lg-6">
         <div class="questions-card">
             <div class="questions-card-header">
                 <div>
                     <h5><i class="fas fa-list me-2"></i>Questions List</h5>
-                    <p class="text-muted">{{ $quiz->questions->count() }} total questions</p>
+                    <p class="text-muted mb-0">{{ $quiz->questions->count() }} total questions</p>
                 </div>
                 <div class="questions-stats">
                     <div class="stat">
@@ -342,7 +342,7 @@
 
 <!-- Edit Question Modal -->
 <div class="modal fade" id="editQuestionModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Question</h5>
@@ -364,13 +364,14 @@
 @push('styles')
 <style>
 :root {
-    --primary: #017bfe;
-    --secondary: #6c5ce7;
-    --success: #00b894;
-    --danger: #e74c3c;
-    --warning: #f39c12;
-    --info: #3498db;
-    --dark: #2c3e50;
+    --primary: #4361ee;
+    --secondary: #3f37c9;
+    --success: #4cc9f0;
+    --danger: #f72585;
+    --warning: #f8961e;
+    --info: #4895ef;
+    --dark: #1e1b4b;
+    --light: #f8f9fa;
 }
 
 /* Header Section */
@@ -381,6 +382,10 @@
     margin-bottom: 30px;
     flex-wrap: wrap;
     gap: 20px;
+    background: white;
+    padding: 25px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .header-content h2 {
@@ -388,6 +393,7 @@
     font-weight: 700;
     margin: 0 0 5px;
     color: var(--dark);
+    letter-spacing: -0.02em;
 }
 
 .header-content p {
@@ -402,31 +408,38 @@
 }
 
 .header-actions .btn {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.header-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 /* Info Bar */
 .info-bar {
     background: white;
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 20px;
+    padding: 25px 30px;
     margin-bottom: 30px;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-    gap: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
 
 .info-bar-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
 }
 
 .info-bar-item i {
-    font-size: 2rem;
+    font-size: 2.2rem;
 }
 
 .info-bar-item div {
@@ -436,28 +449,32 @@
 
 .info-bar-item small {
     color: #6c757d;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .info-bar-item strong {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     color: var(--dark);
+    font-weight: 700;
 }
 
 /* Form Card */
 .form-card {
     background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     overflow: hidden;
     position: sticky;
     top: 20px;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .form-card-header {
-    padding: 20px 24px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-bottom: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -465,39 +482,55 @@
 
 .form-card-header h5 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    color: var(--dark);
+    color: white;
+}
+
+.form-card-header .badge {
+    background: rgba(255,255,255,0.2) !important;
+    color: white;
+    font-size: 0.9rem;
+    padding: 8px 12px;
 }
 
 .form-card-body {
-    padding: 24px;
+    padding: 25px;
+    background: white;
 }
 
 /* Form Elements */
 .form-group {
-    margin-bottom: 1rem;
+    margin-bottom: 1.2rem;
 }
 
 .form-label {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 0.9rem;
-    color: #495057;
+    color: var(--dark);
     margin-bottom: 8px;
     display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .form-control, .form-select {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    padding: 10px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 12px 16px;
     font-size: 0.95rem;
     transition: all 0.3s;
+    background: white;
+}
+
+.form-control-lg, .form-select-lg {
+    padding: 14px 18px;
+    font-size: 1rem;
 }
 
 .form-control:focus, .form-select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(1, 123, 254, 0.1);
+    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
     outline: none;
 }
 
@@ -505,7 +538,7 @@
     text-align: right;
     font-size: 0.8rem;
     color: #6c757d;
-    margin-top: 4px;
+    margin-top: 6px;
 }
 
 /* File Input */
@@ -527,23 +560,27 @@
 
 .file-input-preview {
     border: 2px dashed #e9ecef;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 20px;
     text-align: center;
     background: #f8f9fa;
     transition: all 0.3s;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .file-input-preview:hover {
     border-color: var(--primary);
-    background: rgba(1, 123, 254, 0.02);
+    background: rgba(67, 97, 238, 0.02);
 }
 
 .file-input-preview i {
     font-size: 2rem;
     color: var(--primary);
     margin-bottom: 8px;
-    display: block;
 }
 
 .file-input-preview span {
@@ -551,54 +588,103 @@
     font-size: 0.9rem;
 }
 
+.file-input-preview img {
+    max-width: 100%;
+    max-height: 80px;
+    border-radius: 8px;
+}
+
 /* Options Container */
 .options-container, .blanks-container {
-    max-height: 300px;
+    max-height: 350px;
     overflow-y: auto;
-    padding: 4px;
+    padding: 5px;
+    background: #f8f9fa;
+    border-radius: 12px;
 }
 
 .option-row, .blank-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     margin-bottom: 10px;
-    padding: 8px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    padding: 12px;
+    background: white;
+    border-radius: 12px;
     transition: all 0.3s;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .option-row:hover, .blank-row:hover {
-    background: #e9ecef;
+    border-color: var(--primary);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+    transform: translateY(-2px);
 }
 
 .option-drag, .blank-drag {
     cursor: move;
-    padding: 0 4px;
+    padding: 0 8px;
+    color: #adb5bd;
 }
 
 .option-content, .blank-content {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .option-input-wrapper, .blank-input-wrapper {
-    flex: 1;
+    flex: 2;
+    min-width: 200px;
+}
+
+.option-input, .blank-input {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.option-input:focus, .blank-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
 }
 
 .option-correct, .blank-case {
-    min-width: 80px;
+    min-width: 90px;
+}
+
+.form-check {
+    padding-left: 1.8rem;
+}
+
+.form-check-input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.15rem;
+    border: 2px solid #e9ecef;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-label {
+    font-size: 0.9rem;
+    color: #495057;
 }
 
 .option-remove, .blank-remove {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     border: none;
-    background: rgba(231, 76, 60, 0.1);
+    background: rgba(247, 37, 133, 0.1);
     color: var(--danger);
     display: flex;
     align-items: center;
@@ -610,27 +696,64 @@
 .option-remove:hover, .blank-remove:hover {
     background: var(--danger);
     color: white;
+    transform: rotate(90deg);
 }
 
 .section-label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.section-label .badge {
+    font-size: 0.85rem;
+    padding: 6px 12px;
+}
+
+/* Buttons */
+.btn-outline-primary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 10px;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: none;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
 }
 
 /* Questions Card */
 .questions-card {
     background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .questions-card-header {
-    padding: 20px 24px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -640,59 +763,73 @@
 
 .questions-card-header h5 {
     margin: 0 0 4px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--dark);
-}
-
-.questions-card-header p {
-    margin: 0;
-}
-
-.questions-stats {
-    display: flex;
-    gap: 20px;
-}
-
-.questions-stats .stat {
-    text-align: center;
-}
-
-.questions-stats .stat .label {
-    display: block;
-    font-size: 0.75rem;
-    color: #6c757d;
-}
-
-.questions-stats .stat .value {
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--dark);
 }
 
+.questions-card-header p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.questions-stats {
+    display: flex;
+    gap: 25px;
+}
+
+.questions-stats .stat {
+    text-align: center;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.questions-stats .stat .label {
+    display: block;
+    font-size: 0.7rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.questions-stats .stat .value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.2;
+}
+
 /* Questions List */
 .questions-list {
-    padding: 20px;
+    padding: 25px;
+    max-height: 600px;
+    overflow-y: auto;
 }
 
 .question-item {
     display: flex;
-    gap: 12px;
+    gap: 15px;
     padding: 20px;
     background: #f8f9fa;
-    border-radius: 12px;
-    margin-bottom: 16px;
+    border-radius: 16px;
+    margin-bottom: 20px;
     transition: all 0.3s;
+    border: 1px solid #e9ecef;
+    position: relative;
 }
 
 .question-item:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateX(5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary);
 }
 
 .question-drag {
     cursor: move;
-    padding-top: 4px;
+    padding-top: 8px;
+    color: #adb5bd;
 }
 
 .question-content {
@@ -703,7 +840,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     flex-wrap: wrap;
     gap: 10px;
 }
@@ -716,52 +853,58 @@
 
 .question-badges .badge {
     padding: 6px 12px;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border-radius: 8px;
 }
 
 .type-badge {
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .type-multiple_choice {
-    background: rgba(1, 123, 254, 0.1);
+    background: rgba(67, 97, 238, 0.1);
     color: var(--primary);
 }
 
 .type-single_choice {
-    background: rgba(0, 184, 148, 0.1);
+    background: rgba(76, 201, 240, 0.1);
     color: var(--success);
 }
 
 .type-true_false {
-    background: rgba(243, 156, 18, 0.1);
+    background: rgba(248, 150, 30, 0.1);
     color: var(--warning);
 }
 
 .type-fill_blank {
-    background: rgba(108, 92, 231, 0.1);
+    background: rgba(63, 55, 201, 0.1);
     color: var(--secondary);
 }
 
 .question-text {
     font-size: 1rem;
     color: var(--dark);
-    margin-bottom: 12px;
-    line-height: 1.5;
+    margin-bottom: 15px;
+    line-height: 1.6;
+    font-weight: 500;
 }
 
 .question-image {
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
 .question-image img {
     max-width: 200px;
     max-height: 150px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    border: 2px solid white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .question-answers {
@@ -773,46 +916,48 @@
 .answer-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
+    gap: 12px;
+    padding: 10px 15px;
     background: white;
-    border-radius: 6px;
-    border-left: 3px solid transparent;
+    border-radius: 10px;
+    border-left: 4px solid transparent;
+    transition: all 0.3s;
 }
 
 .answer-item.correct {
     border-left-color: var(--success);
-    background: rgba(0, 184, 148, 0.05);
+    background: rgba(76, 201, 240, 0.05);
 }
 
 .answer-marker {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     background: #e9ecef;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     color: #495057;
 }
 
 .answer-text {
     flex: 1;
     font-size: 0.95rem;
+    color: #495057;
 }
 
 /* Action Buttons */
 .question-actions {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .action-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     border: none;
     display: flex;
     align-items: center;
@@ -826,23 +971,25 @@
 }
 
 .edit-btn {
-    background: rgba(1, 123, 254, 0.1);
+    background: rgba(67, 97, 238, 0.1);
     color: var(--primary);
 }
 
 .edit-btn:hover {
     background: var(--primary);
     color: white;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
 }
 
 .delete-btn {
-    background: rgba(231, 76, 60, 0.1);
+    background: rgba(247, 37, 133, 0.1);
     color: var(--danger);
 }
 
 .delete-btn:hover {
     background: var(--danger);
     color: white;
+    box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
 }
 
 /* Empty State */
@@ -852,31 +999,88 @@
 }
 
 .empty-state-icon {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     background: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px;
+    margin: 0 auto 25px;
 }
 
 .empty-state-icon i {
-    font-size: 2.5rem;
+    font-size: 3rem;
     color: #adb5bd;
 }
 
 .empty-state h5 {
     color: var(--dark);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    padding: 20px 25px;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-body {
+    padding: 25px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+    .option-content, .blank-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .option-correct, .blank-case {
+        min-width: auto;
+    }
+}
+
 @media (max-width: 768px) {
     .header-section {
         flex-direction: column;
         align-items: flex-start;
+        padding: 20px;
     }
     
     .header-actions {
@@ -890,6 +1094,11 @@
     .info-bar {
         flex-direction: column;
         align-items: flex-start;
+        padding: 20px;
+    }
+    
+    .info-bar-item {
+        width: 100%;
     }
     
     .form-card {
@@ -902,16 +1111,11 @@
         justify-content: space-around;
     }
     
-    .option-content, .blank-content {
-        flex-wrap: wrap;
+    .questions-card-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
-    .option-correct, .blank-case {
-        min-width: auto;
-    }
-}
-
-@media (max-width: 576px) {
     .question-header {
         flex-direction: column;
         align-items: flex-start;
@@ -921,9 +1125,33 @@
         width: 100%;
         justify-content: flex-end;
     }
+}
+
+@media (max-width: 576px) {
+    .questions-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .questions-stats .stat {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .questions-stats .stat .label {
+        display: inline-block;
+        margin-right: 10px;
+    }
     
     .answer-item {
         flex-wrap: wrap;
+    }
+    
+    .option-remove, .blank-remove {
+        width: 100%;
+        margin-top: 5px;
     }
 }
 </style>
@@ -987,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             imagePreview.innerHTML = `
                 <i class="fas fa-image"></i>
-                <span>Click to upload</span>
+                <span>Click to upload image</span>
             `;
         }
     });
@@ -1062,7 +1290,7 @@ function addOption() {
                 <input type="text" 
                        name="options[${index}][text]" 
                        class="form-control option-input" 
-                       placeholder="Option ${index + 1}">
+                       placeholder="Enter option ${index + 1}">
             </div>
             <div class="option-correct">
                 <div class="form-check">
@@ -1119,7 +1347,7 @@ function updateOptionsIndices() {
         
         const placeholder = row.querySelector('input[type="text"]');
         if (placeholder) {
-            placeholder.placeholder = `Option ${index + 1}`;
+            placeholder.placeholder = `Enter option ${index + 1}`;
         }
     });
 }
@@ -1140,7 +1368,7 @@ function addFillBlank() {
                 <input type="text" 
                        name="fill_blanks[${index}][answer]" 
                        class="form-control blank-input" 
-                       placeholder="Answer">
+                       placeholder="Enter correct answer">
             </div>
             <div class="blank-case">
                 <div class="form-check">
@@ -1258,7 +1486,7 @@ function buildEditForm(question) {
                         <input type="text" 
                                name="options[${index}][text]" 
                                class="form-control option-input" 
-                               placeholder="Option ${index + 1}"
+                               placeholder="Enter option ${index + 1}"
                                value="${option.option_text.replace(/"/g, '&quot;')}">
                     </div>
                     <div class="option-correct">
@@ -1294,7 +1522,7 @@ function buildEditForm(question) {
                         <input type="text" 
                                name="fill_blanks[${index}][answer]" 
                                class="form-control blank-input" 
-                               placeholder="Answer"
+                               placeholder="Enter correct answer"
                                value="${blank.correct_answer.replace(/"/g, '&quot;')}">
                     </div>
                     <div class="blank-case">
@@ -1327,7 +1555,7 @@ function buildEditForm(question) {
             <!-- Question Type -->
             <div class="form-group mb-4">
                 <label class="form-label">Question Type</label>
-                <select name="question_type" class="form-select" id="editQuestionType" required>
+                <select name="question_type" class="form-select form-select-lg" id="editQuestionType" required>
                     <option value="multiple_choice" ${question.question_type === 'multiple_choice' ? 'selected' : ''}>Multiple Choice (Select all that apply)</option>
                     <option value="single_choice" ${question.question_type === 'single_choice' ? 'selected' : ''}>Single Choice (Select one)</option>
                     <option value="true_false" ${question.question_type === 'true_false' ? 'selected' : ''}>True/False</option>
@@ -1340,13 +1568,13 @@ function buildEditForm(question) {
             <!-- Question Text -->
             <div class="form-group mb-4">
                 <label class="form-label">Question Text</label>
-                <textarea name="question_text" class="form-control" rows="3" required>${question.question_text.replace(/</g, '&lt;')}</textarea>
+                <textarea name="question_text" class="form-control form-control-lg" rows="3" required>${question.question_text.replace(/</g, '&lt;')}</textarea>
             </div>
             
             <!-- Points -->
             <div class="form-group mb-4">
                 <label class="form-label">Points</label>
-                <input type="number" name="points" class="form-control" value="${question.points}" min="1">
+                <input type="number" name="points" class="form-control form-control-lg" value="${question.points}" min="1">
             </div>
             
             <!-- Current Image -->
@@ -1354,7 +1582,7 @@ function buildEditForm(question) {
                 <div class="form-group mb-4">
                     <label class="form-label">Current Image</label>
                     <div>
-                        <img src="/storage/${question.image}" alt="Question image" style="max-width: 200px; max-height: 150px; border-radius: 8px;">
+                        <img src="/storage/${question.image}" alt="Question image" style="max-width: 200px; max-height: 150px; border-radius: 12px; border: 2px solid #e9ecef;">
                     </div>
                 </div>
             ` : ''}
@@ -1362,14 +1590,14 @@ function buildEditForm(question) {
             <!-- New Image -->
             <div class="form-group mb-4">
                 <label class="form-label">${question.image ? 'Change Image' : 'Image'}</label>
-                <input type="file" name="image" class="form-control" accept="image/*">
+                <input type="file" name="image" class="form-control form-control-lg" accept="image/*">
             </div>
             
             <!-- Options Section -->
             <div id="editOptionsSection" class="mb-4" style="${question.question_type === 'fill_blank' ? 'display: none;' : 'display: block;'}">
                 <div class="section-label">
-                    <label class="form-label">Answer Options</label>
-                    <span class="badge bg-light text-dark" id="editOptionsCount">${question.options ? question.options.length : 2} options</span>
+                    <label class="form-label fw-bold">Answer Options</label>
+                    <span class="badge bg-primary" id="editOptionsCount">${question.options ? question.options.length : 2} options</span>
                 </div>
                 <div id="editOptionsContainer" class="options-container">
                     ${optionsHtml || `
@@ -1377,7 +1605,7 @@ function buildEditForm(question) {
                             <div class="option-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
                             <div class="option-content">
                                 <div class="option-input-wrapper">
-                                    <input type="text" name="options[0][text]" class="form-control option-input" placeholder="Option 1">
+                                    <input type="text" name="options[0][text]" class="form-control option-input" placeholder="Enter option 1">
                                 </div>
                                 <div class="option-correct">
                                     <div class="form-check">
@@ -1392,7 +1620,7 @@ function buildEditForm(question) {
                             <div class="option-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
                             <div class="option-content">
                                 <div class="option-input-wrapper">
-                                    <input type="text" name="options[1][text]" class="form-control option-input" placeholder="Option 2">
+                                    <input type="text" name="options[1][text]" class="form-control option-input" placeholder="Enter option 2">
                                 </div>
                                 <div class="option-correct">
                                     <div class="form-check">
@@ -1405,7 +1633,7 @@ function buildEditForm(question) {
                         </div>
                     `}
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditOption()">
+                <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addEditOption()">
                     <i class="fas fa-plus me-1"></i> Add Option
                 </button>
             </div>
@@ -1413,8 +1641,8 @@ function buildEditForm(question) {
             <!-- Fill Blanks Section -->
             <div id="editFillBlanksSection" class="mb-4" style="${question.question_type === 'fill_blank' ? 'display: block;' : 'display: none;'}">
                 <div class="section-label">
-                    <label class="form-label">Correct Answers</label>
-                    <span class="badge bg-light text-dark" id="editBlanksCount">${question.fill_blanks ? question.fill_blanks.length : 1} answers</span>
+                    <label class="form-label fw-bold">Correct Answers</label>
+                    <span class="badge bg-primary" id="editBlanksCount">${question.fill_blanks ? question.fill_blanks.length : 1} answers</span>
                 </div>
                 <div id="editBlanksContainer" class="blanks-container">
                     ${blanksHtml || `
@@ -1422,7 +1650,7 @@ function buildEditForm(question) {
                             <div class="blank-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
                             <div class="blank-content">
                                 <div class="blank-input-wrapper">
-                                    <input type="text" name="fill_blanks[0][answer]" class="form-control blank-input" placeholder="Answer">
+                                    <input type="text" name="fill_blanks[0][answer]" class="form-control blank-input" placeholder="Enter correct answer">
                                 </div>
                                 <div class="blank-case">
                                     <div class="form-check">
@@ -1435,14 +1663,14 @@ function buildEditForm(question) {
                         </div>
                     `}
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addEditBlank()">
+                <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addEditBlank()">
                     <i class="fas fa-plus me-1"></i> Add Answer
                 </button>
             </div>
             
             <!-- Submit Button -->
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary w-100">
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary btn-lg w-100">
                     <i class="fas fa-save me-2"></i>Update Question
                 </button>
             </div>
@@ -1541,7 +1769,7 @@ function addEditOption() {
                 <input type="text" 
                        name="options[${index}][text]" 
                        class="form-control option-input" 
-                       placeholder="Option ${index + 1}">
+                       placeholder="Enter option ${index + 1}">
             </div>
             <div class="option-correct">
                 <div class="form-check">
@@ -1580,7 +1808,7 @@ function addEditBlank() {
                 <input type="text" 
                        name="fill_blanks[${index}][answer]" 
                        class="form-control blank-input" 
-                       placeholder="Answer">
+                       placeholder="Enter correct answer">
             </div>
             <div class="blank-case">
                 <div class="form-check">
@@ -1624,7 +1852,7 @@ function updateEditOptionsIndices() {
         
         const placeholder = row.querySelector('input[type="text"]');
         if (placeholder) {
-            placeholder.placeholder = `Option ${index + 1}`;
+            placeholder.placeholder = `Enter option ${index + 1}`;
         }
     });
 }
