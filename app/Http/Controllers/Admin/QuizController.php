@@ -9,6 +9,7 @@ use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+
 class QuizController extends Controller
 {
     public function index()
@@ -163,18 +164,31 @@ class QuizController extends Controller
 
     public function updateQuestion(Request $request, Question $question)
     {
-        $validated = $request->validate([
+        // Base validation rules
+        $rules = [
             'question_text' => 'required',
             'question_type' => 'required|in:multiple_choice,single_choice,true_false,fill_blank,matching,image_selection',
             'points' => 'integer|min:1',
-            'options' => 'required_if:question_type,multiple_choice,single_choice,true_false|array',
-            'options.*.text' => 'required_with:options|string',
-            'options.*.is_correct' => 'sometimes|boolean',
-            'fill_blanks' => 'required_if:question_type,fill_blank|array',
-            'fill_blanks.*.answer' => 'required_with:fill_blanks|string',
-            'fill_blanks.*.case_sensitive' => 'sometimes|boolean',
             'image' => 'nullable|image|max:2048'
-        ]);
+        ];
+
+        // Add conditional validation based on question type
+        if ($request->question_type === 'fill_blank') {
+            $rules['fill_blanks'] = 'required|array|min:1';
+            $rules['fill_blanks.*.answer'] = 'required|string';
+            $rules['fill_blanks.*.case_sensitive'] = 'sometimes|boolean';
+        } else {
+            $rules['options'] = 'required|array|min:2';
+            $rules['options.*.text'] = 'required|string';
+            $rules['options.*.is_correct'] = 'sometimes|boolean';
+
+            // For single choice and true_false, ensure at least one correct answer
+            if (in_array($request->question_type, ['single_choice', 'true_false'])) {
+                $rules['options'] = 'required|array|min:2';
+            }
+        }
+
+        $validated = $request->validate($rules);
 
         // Update question data
         $questionData = [
@@ -222,6 +236,15 @@ class QuizController extends Controller
                     'sort_order' => $index + 1
                 ]);
             }
+        }
+
+        // Clear any other relation data based on question type
+        if ($validated['question_type'] !== 'fill_blank') {
+            // Ensure no fill blanks exist for non-fill-blank questions
+            $question->fillBlanks()->delete();
+        } else {
+            // Ensure no options exist for fill blank questions
+            $question->options()->delete();
         }
 
         if ($request->wantsJson() || $request->ajax()) {

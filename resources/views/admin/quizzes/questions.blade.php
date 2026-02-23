@@ -1186,50 +1186,60 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize question type
     const questionType = document.getElementById('questionType');
-    toggleSections(questionType.value);
-    
-    // Add change event listener
-    questionType.addEventListener('change', function() {
-        toggleSections(this.value);
-    });
+    if (questionType) {
+        toggleSections(questionType.value);
+        
+        // Add change event listener
+        questionType.addEventListener('change', function() {
+            toggleSections(this.value);
+        });
+    }
 
     // Question text counter
     const questionText = document.getElementById('questionText');
-    questionText.addEventListener('input', function() {
-        document.getElementById('questionCounter').textContent = this.value.length;
-    });
+    if (questionText) {
+        questionText.addEventListener('input', function() {
+            document.getElementById('questionCounter').textContent = this.value.length;
+        });
+    }
 
     // Image preview
     const imageInput = document.getElementById('image');
     const imagePreview = document.getElementById('imagePreview');
     
-    imageInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
+    if (imageInput && imagePreview) {
+        imageInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 100px; border-radius: 4px;">
+                    `;
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
                 imagePreview.innerHTML = `
-                    <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 100px; border-radius: 4px;">
+                    <i class="fas fa-image"></i>
+                    <span>Click to upload image</span>
                 `;
             }
-            reader.readAsDataURL(this.files[0]);
-        } else {
-            imagePreview.innerHTML = `
-                <i class="fas fa-image"></i>
-                <span>Click to upload image</span>
-            `;
-        }
-    });
+        });
+    }
 
     // Form submission
     const form = document.getElementById('questionForm');
-    form.addEventListener('submit', function(e) {
-        enableCurrentSectionInputs();
-    });
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            enableCurrentSectionInputs();
+        });
+    }
 });
 
 function toggleSections(type) {
     const optionsSection = document.getElementById('optionsSection');
     const fillBlanksSection = document.getElementById('fillBlanksSection');
+    
+    if (!optionsSection || !fillBlanksSection) return;
     
     // First, disable all inputs in both sections
     disableAllInputs();
@@ -1255,14 +1265,20 @@ function enableOptionsInputs() {
     document.querySelectorAll('.option-input, .option-row input[type="checkbox"]').forEach(input => {
         input.disabled = false;
     });
-    document.getElementById('optionsCount').textContent = document.querySelectorAll('.option-row').length + ' options';
+    const optionsCount = document.getElementById('optionsCount');
+    if (optionsCount) {
+        optionsCount.textContent = document.querySelectorAll('.option-row').length + ' options';
+    }
 }
 
 function enableFillBlanksInputs() {
     document.querySelectorAll('.blank-input, .blank-row input[type="checkbox"]').forEach(input => {
         input.disabled = false;
     });
-    document.getElementById('blanksCount').textContent = document.querySelectorAll('.blank-row').length + ' answers';
+    const blanksCount = document.getElementById('blanksCount');
+    if (blanksCount) {
+        blanksCount.textContent = document.querySelectorAll('.blank-row').length + ' answers';
+    }
 }
 
 function enableCurrentSectionInputs() {
@@ -1276,6 +1292,8 @@ function enableCurrentSectionInputs() {
 
 function addOption() {
     const container = document.getElementById('optionsContainer');
+    if (!container) return;
+    
     const index = container.children.length;
     
     const div = document.createElement('div');
@@ -1316,14 +1334,22 @@ function addOption() {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
     
-    document.getElementById('optionsCount').textContent = container.children.length + ' options';
+    const optionsCount = document.getElementById('optionsCount');
+    if (optionsCount) {
+        optionsCount.textContent = container.children.length + ' options';
+    }
 }
 
 function removeOption(btn) {
     const row = btn.closest('.option-row');
-    row.remove();
-    updateOptionsIndices();
-    document.getElementById('optionsCount').textContent = document.querySelectorAll('.option-row').length + ' options';
+    if (row) {
+        row.remove();
+        updateOptionsIndices();
+        const optionsCount = document.getElementById('optionsCount');
+        if (optionsCount) {
+            optionsCount.textContent = document.querySelectorAll('.option-row').length + ' options';
+        }
+    }
 }
 
 function updateOptionsIndices() {
@@ -1354,6 +1380,8 @@ function updateOptionsIndices() {
 
 function addFillBlank() {
     const container = document.getElementById('fillBlanksContainer');
+    if (!container) return;
+    
     const index = container.children.length;
     
     const div = document.createElement('div');
@@ -1394,14 +1422,22 @@ function addFillBlank() {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
     
-    document.getElementById('blanksCount').textContent = container.children.length + ' answers';
+    const blanksCount = document.getElementById('blanksCount');
+    if (blanksCount) {
+        blanksCount.textContent = container.children.length + ' answers';
+    }
 }
 
 function removeBlank(btn) {
     const row = btn.closest('.blank-row');
-    row.remove();
-    updateBlanksIndices();
-    document.getElementById('blanksCount').textContent = document.querySelectorAll('.blank-row').length + ' answers';
+    if (row) {
+        row.remove();
+        updateBlanksIndices();
+        const blanksCount = document.getElementById('blanksCount');
+        if (blanksCount) {
+            blanksCount.textContent = document.querySelectorAll('.blank-row').length + ' answers';
+        }
+    }
 }
 
 function updateBlanksIndices() {
@@ -1436,7 +1472,11 @@ function deleteQuestion(id) {
 function editQuestion(id) {
     // Show modal with loading spinner
     const modal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
-    document.getElementById('editQuestionContent').innerHTML = `
+    const editContent = document.getElementById('editQuestionContent');
+    
+    if (!editContent) return;
+    
+    editContent.innerHTML = `
         <div class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -1452,18 +1492,25 @@ function editQuestion(id) {
             'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(question => {
         // Build the edit form
         const form = buildEditForm(question);
-        document.getElementById('editQuestionContent').innerHTML = form;
+        editContent.innerHTML = form;
         
         // Initialize form handlers
         initializeEditForm(question.id);
     })
     .catch(error => {
-        document.getElementById('editQuestionContent').innerHTML = `
-            <div class="alert alert-danger">
+        console.error('Error:', error);
+        editContent.innerHTML = `
+            <div class="alert alert-danger m-3">
+                <i class="fas fa-exclamation-circle me-2"></i>
                 Error loading question. Please try again.
             </div>
         `;
@@ -1682,6 +1729,8 @@ function initializeEditForm(questionId) {
     const form = document.getElementById('editQuestionForm');
     const questionType = document.getElementById('editQuestionType');
     
+    if (!form) return;
+    
     // Initialize Sortable
     const optionsContainer = document.getElementById('editOptionsContainer');
     if (optionsContainer) {
@@ -1706,24 +1755,35 @@ function initializeEditForm(questionId) {
     }
     
     // Handle question type change
-    questionType.addEventListener('change', function() {
-        const optionsSection = document.getElementById('editOptionsSection');
-        const blanksSection = document.getElementById('editFillBlanksSection');
-        
-        if (this.value === 'fill_blank') {
-            optionsSection.style.display = 'none';
-            blanksSection.style.display = 'block';
-        } else {
-            optionsSection.style.display = 'block';
-            blanksSection.style.display = 'none';
-        }
-    });
+    if (questionType) {
+        questionType.addEventListener('change', function() {
+            const optionsSection = document.getElementById('editOptionsSection');
+            const blanksSection = document.getElementById('editFillBlanksSection');
+            
+            if (this.value === 'fill_blank') {
+                optionsSection.style.display = 'none';
+                blanksSection.style.display = 'block';
+            } else {
+                optionsSection.style.display = 'block';
+                blanksSection.style.display = 'none';
+            }
+        });
+    }
     
     // Handle form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+        submitBtn.disabled = true;
+        
         const formData = new FormData(this);
+        
+        // Log form data for debugging
+        console.log('Submitting form data...');
         
         fetch(`/admin/quizzes/questions/${questionId}`, {
             method: 'POST',
@@ -1733,28 +1793,119 @@ function initializeEditForm(questionId) {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log('Response data:', data);
+            
             if (data.success) {
                 // Close modal
-                bootstrap.Modal.getInstance(document.getElementById('editQuestionModal')).hide();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editQuestionModal'));
+                if (modal) {
+                    modal.hide();
+                }
                 
                 // Show success message
-                alert('Question updated successfully!');
+                showNotification('Question updated successfully!', 'success');
                 
-                // Reload the page to show updated question
-                location.reload();
+                // Reload the page after a short delay
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                throw new Error(data.message || 'Error updating question');
             }
         })
         .catch(error => {
-            alert('Error updating question. Please check the form and try again.');
+            console.error('Error:', error);
+            
+            // Show error message
+            let errorMessage = 'Error updating question. Please try again.';
+            if (error.errors) {
+                // Handle validation errors
+                errorMessage = Object.values(error.errors).flat().join('\n');
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            showNotification(errorMessage, 'error');
+            
+            // Reset button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         });
+    });
+}
+
+// Helper function to show notifications
+function showNotification(message, type = 'success') {
+    // Remove any existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Add styles for notification
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        padding: 15px 20px;
+        border-radius: 10px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, #00b09b, #96c93d)' : 'linear-gradient(135deg, #ff6b6b, #ee5253)'};
+        color: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+    
+    // Remove on click
+    notification.addEventListener('click', function() {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
     });
 }
 
 // Helper functions for edit form
 function addEditOption() {
     const container = document.getElementById('editOptionsContainer');
+    if (!container) return;
+    
     const index = container.children.length;
     
     const div = document.createElement('div');
@@ -1789,11 +1940,17 @@ function addEditOption() {
         </div>
     `;
     container.appendChild(div);
-    document.getElementById('editOptionsCount').textContent = container.children.length + ' options';
+    
+    const editOptionsCount = document.getElementById('editOptionsCount');
+    if (editOptionsCount) {
+        editOptionsCount.textContent = container.children.length + ' options';
+    }
 }
 
 function addEditBlank() {
     const container = document.getElementById('editBlanksContainer');
+    if (!container) return;
+    
     const index = container.children.length;
     
     const div = document.createElement('div');
@@ -1828,7 +1985,11 @@ function addEditBlank() {
         </div>
     `;
     container.appendChild(div);
-    document.getElementById('editBlanksCount').textContent = container.children.length + ' answers';
+    
+    const editBlanksCount = document.getElementById('editBlanksCount');
+    if (editBlanksCount) {
+        editBlanksCount.textContent = container.children.length + ' answers';
+    }
 }
 
 function updateEditOptionsIndices() {
