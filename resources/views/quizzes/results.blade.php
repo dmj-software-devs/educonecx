@@ -58,9 +58,17 @@
     }
 
     @keyframes results-pop {
-        0% { transform: scale(0); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(0);
+        }
+
+        50% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
 
     .results-icon.passed {
@@ -111,8 +119,15 @@
     }
 
     @keyframes results-pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.05); }
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
     }
 
     .score-circle::before {
@@ -468,11 +483,12 @@
 
     /* Print Styles */
     @media print {
+
         .results-actions,
         .results-btn {
             display: none;
         }
-        
+
         .results-card {
             box-shadow: none;
             border: 1px solid #ddd;
@@ -558,94 +574,94 @@
                 </h2>
 
                 @foreach($quiz->questions as $index => $question)
-                    @php
-                        $answer = $answers[$question->id] ?? null;
-                        $isCorrect = $answer ? $answer->is_correct : false;
-                        $pointsEarned = $answer ? $answer->points_earned : 0;
-                    @endphp
-                    <div class="question-review-item {{ $isCorrect ? 'correct' : ($pointsEarned > 0 ? 'partial' : 'incorrect') }}">
-                        <div class="question-review-header">
-                            <div>
-                                <span class="question-number">Question {{ $index + 1 }}</span>
-                                <span class="question-type">{{ str_replace('_', ' ', ucfirst($question->question_type)) }}</span>
-                            </div>
-                            <span class="question-points {{ $isCorrect ? 'correct' : ($pointsEarned > 0 ? 'partial' : 'incorrect') }}">
-                                {{ $pointsEarned }}/{{ $question->points }} points
-                            </span>
+                @php
+                $answer = $answers[$question->id] ?? null;
+                $isCorrect = $answer ? $answer->is_correct : false;
+                $pointsEarned = $answer ? $answer->points_earned : 0;
+                @endphp
+                <div class="question-review-item {{ $isCorrect ? 'correct' : ($pointsEarned > 0 ? 'partial' : 'incorrect') }}">
+                    <div class="question-review-header">
+                        <div>
+                            <span class="question-number">Question {{ $index + 1 }}</span>
+                            <span class="question-type">{{ str_replace('_', ' ', ucfirst($question->question_type)) }}</span>
                         </div>
-                        
-                        <div class="question-text">{{ $question->question_text }}</div>
-                        
-                        @if($question->image)
-                        <div class="question-image mb-3">
-                            <img src="{{ $question->image_url }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
-                        </div>
-                        @endif
-
-                        @if($answer && $answer->answer_data)
-                        <div class="answer-display">
-                            <div class="answer-label">
-                                <i class="fas fa-user"></i>
-                                Your Answer:
-                            </div>
-                            <div class="answer-value">
-                                @php
-                                    $answerData = json_decode($answer->answer_data, true);
-                                @endphp
-                                @if(is_array($answerData))
-                                    @foreach($answerData as $key => $value)
-                                        @if(is_numeric($key) && strpos($key, 'pair_') === false)
-                                            @php
-                                                $option = $question->options->where('id', $value)->first();
-                                            @endphp
-                                            {{ $option ? $option->option_text : $value }}
-                                        @elseif(strpos($key, 'pair_') === 0)
-                                            {{ $value }}
-                                        @else
-                                            {{ $value }}
-                                        @endif
-                                        @if(!$loop->last), @endif
-                                    @endforeach
-                                @else
-                                    {{ $answerData }}
-                                @endif
-                            </div>
-                        </div>
-                        @endif
-
-                        @if($quiz->show_answers && !$isCorrect)
-                            @if(in_array($question->question_type, ['multiple_choice', 'single_choice', 'true_false']))
-                                @php
-                                    $correctOptions = $question->options->where('is_correct', true);
-                                @endphp
-                                @if($correctOptions->count() > 0)
-                                <div class="answer-display">
-                                    <div class="answer-label">
-                                        <i class="fas fa-check-circle" style="color: var(--results-success);"></i>
-                                        Correct Answer:
-                                    </div>
-                                    <div class="correct-answer">
-                                        @foreach($correctOptions as $option)
-                                            {{ $option->option_text }}@if(!$loop->last), @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-                            @elseif($question->question_type == 'fill_blank' && $question->fillBlanks->count() > 0)
-                                <div class="answer-display">
-                                    <div class="answer-label">
-                                        <i class="fas fa-check-circle" style="color: var(--results-success);"></i>
-                                        Correct Answer:
-                                    </div>
-                                    <div class="correct-answer">
-                                        @foreach($question->fillBlanks as $blank)
-                                            {{ $blank->answer }}@if(!$loop->last) or @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                        @endif
+                        <span class="question-points {{ $isCorrect ? 'correct' : ($pointsEarned > 0 ? 'partial' : 'incorrect') }}">
+                            {{ $pointsEarned }}/{{ $question->points }} points
+                        </span>
                     </div>
+
+                    <div class="question-text">{{ $question->question_text }}</div>
+
+                    @if($question->image)
+                    <div class="question-image mb-3">
+                        <img src="{{ $question->image_url }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                    </div>
+                    @endif
+
+                    @if($answer && $answer->answer_data)
+                    <div class="answer-display">
+                        <div class="answer-label">
+                            <i class="fas fa-user"></i>
+                            Your Answer:
+                        </div>
+                        <div class="answer-value">
+                            @php
+                            $answerData = json_decode($answer->answer_data, true);
+                            @endphp
+                            @if(is_array($answerData))
+                            @foreach($answerData as $key => $value)
+                            @if(is_numeric($key) && strpos($key, 'pair_') === false)
+                            @php
+                            $option = $question->options->where('id', $value)->first();
+                            @endphp
+                            {{ $option ? $option->option_text : $value }}
+                            @elseif(strpos($key, 'pair_') === 0)
+                            {{ $value }}
+                            @else
+                            {{ $value }}
+                            @endif
+                            @if(!$loop->last), @endif
+                            @endforeach
+                            @else
+                            {{ $answerData }}
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($quiz->show_answers && !$isCorrect)
+                    @if(in_array($question->question_type, ['multiple_choice', 'single_choice', 'true_false']))
+                    @php
+                    $correctOptions = $question->options->where('is_correct', true);
+                    @endphp
+                    @if($correctOptions->count() > 0)
+                    <div class="answer-display">
+                        <div class="answer-label">
+                            <i class="fas fa-check-circle" style="color: var(--results-success);"></i>
+                            Correct Answer:
+                        </div>
+                        <div class="correct-answer">
+                            @foreach($correctOptions as $option)
+                            {{ $option->option_text }}@if(!$loop->last), @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    @elseif($question->question_type == 'fill_blank' && $question->fillBlanks->count() > 0)
+                    <div class="answer-display">
+                        <div class="answer-label">
+                            <i class="fas fa-check-circle" style="color: var(--results-success);"></i>
+                            Correct Answer:
+                        </div>
+                        <div class="correct-answer">
+                            @foreach($question->fillBlanks as $blank)
+                            {{ $blank->answer }}@if(!$loop->last) or @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+                    @endif
+                </div>
                 @endforeach
             </div>
             @endif
@@ -653,17 +669,20 @@
             <!-- Action Buttons -->
             <div class="results-actions">
                 @if($quiz->can_attempt)
-                <a href="{{ route('quizzes.start', $quiz->id) }}" class="results-btn primary">
-                    <i class="fas fa-redo"></i>
-                    Try Again
-                </a>
+                <form method="POST" action="{{ route('quizzes.start', $quiz->id) }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="results-btn primary">
+                        <i class="fas fa-redo"></i>
+                        Try Again
+                    </button>
+                </form>
                 @endif
-                
+
                 <a href="{{ route('quiz') }}" class="results-btn secondary">
                     <i class="fas fa-th"></i>
                     More Quizzes
                 </a>
-                
+
                 @if(Auth::user())
                 <a href="{{ route('dashboard') }}" class="results-btn secondary">
                     <i class="fas fa-tachometer-alt"></i>
@@ -683,27 +702,27 @@
             <div style="text-align: center;">
                 <h3 style="font-size: 1.3rem; margin-bottom: 15px;">Share Your Results</h3>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="https://twitter.com/intent/tweet?text=I scored {{ $percentage }}% on the {{ $quiz->title }} quiz at EDUCONECX!&url={{ url()->current() }}" 
-                       target="_blank" 
-                       style="width: 50px; height: 50px; border-radius: 50%; background: #1DA1F2; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
-                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <a href="https://twitter.com/intent/tweet?text=I scored {{ $percentage }}% on the {{ $quiz->title }} quiz at EDUCONECX!&url={{ url()->current() }}"
+                        target="_blank"
+                        style="width: 50px; height: 50px; border-radius: 50%; background: #1DA1F2; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
+                        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <i class="fab fa-twitter"></i>
                     </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}" 
-                       target="_blank"
-                       style="width: 50px; height: 50px; border-radius: 50%; background: #4267B2; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
-                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
+                        target="_blank"
+                        style="width: 50px; height: 50px; border-radius: 50%; background: #4267B2; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
+                        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ url()->current() }}&title={{ $quiz->title }} Results&summary=I scored {{ $percentage }}% on this quiz!" 
-                       target="_blank"
-                       style="width: 50px; height: 50px; border-radius: 50%; background: #0077b5; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
-                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ url()->current() }}&title={{ $quiz->title }} Results&summary=I scored {{ $percentage }}% on this quiz!"
+                        target="_blank"
+                        style="width: 50px; height: 50px; border-radius: 50%; background: #0077b5; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
+                        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
-                    <a href="mailto:?subject=My Quiz Results&body=I scored {{ $percentage }}% on the {{ $quiz->title }} quiz at EDUCONECX. Check it out: {{ url()->current() }}" 
-                       style="width: 50px; height: 50px; border-radius: 50%; background: #D44638; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
-                       onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <a href="mailto:?subject=My Quiz Results&body=I scored {{ $percentage }}% on the {{ $quiz->title }} quiz at EDUCONECX. Check it out: {{ url()->current() }}"
+                        style="width: 50px; height: 50px; border-radius: 50%; background: #D44638; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: transform 0.3s;"
+                        onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                         <i class="fas fa-envelope"></i>
                     </a>
                 </div>
@@ -713,72 +732,74 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Animate stats cards on scroll
-    const statItems = document.querySelectorAll('.results-stat-item');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stats cards on scroll
+        const statItems = document.querySelectorAll('.results-stat-item');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1
         });
-    }, { threshold: 0.1 });
 
-    statItems.forEach((item, index) => {
-        item.style.opacity = '0';
-        item.style.transform = 'translateY(20px)';
-        item.style.transition = 'all 0.5s ease';
-        item.style.transitionDelay = (index * 0.1) + 's';
-        observer.observe(item);
-    });
+        statItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            item.style.transition = 'all 0.5s ease';
+            item.style.transitionDelay = (index * 0.1) + 's';
+            observer.observe(item);
+        });
 
-    // Confetti effect for passed quizzes (optional)
-    @if($passed)
-    // Simple confetti effect
-    const colors = ['#06d6a0', '#4361ee', '#f72585', '#ffd166'];
-    
-    function createConfetti() {
-        for (let i = 0; i < 50; i++) {
-            setTimeout(() => {
-                const confetti = document.createElement('div');
-                confetti.style.position = 'fixed';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.top = '-10px';
-                confetti.style.width = '10px';
-                confetti.style.height = '10px';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.borderRadius = '50%';
-                confetti.style.zIndex = '9999';
-                confetti.style.pointerEvents = 'none';
-                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear`;
-                document.body.appendChild(confetti);
-                
-                setTimeout(() => confetti.remove(), 5000);
-            }, i * 100);
+        // Confetti effect for passed quizzes (optional)
+        @if($passed)
+        // Simple confetti effect
+        const colors = ['#06d6a0', '#4361ee', '#f72585', '#ffd166'];
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.position = 'fixed';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-10px';
+                    confetti.style.width = '10px';
+                    confetti.style.height = '10px';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = '50%';
+                    confetti.style.zIndex = '9999';
+                    confetti.style.pointerEvents = 'none';
+                    confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear`;
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 100);
+            }
         }
-    }
 
-    // Add keyframe animation
-    const style = document.createElement('style');
-    style.textContent = `
+        // Add keyframe animation
+        const style = document.createElement('style');
+        style.textContent = `
         @keyframes confetti-fall {
             to {
                 transform: translateY(100vh) rotate(360deg);
             }
         }
     `;
-    document.head.appendChild(style);
+        document.head.appendChild(style);
 
-    // Trigger confetti after page load
-    setTimeout(createConfetti, 500);
-    @endif
+        // Trigger confetti after page load
+        setTimeout(createConfetti, 500);
+        @endif
 
-    // Print functionality
-    window.print = function() {
-        window.print();
-    };
-});
+        // Print functionality
+        window.print = function() {
+            window.print();
+        };
+    });
 </script>
 @endsection

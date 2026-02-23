@@ -998,7 +998,7 @@
                         <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                             @if($course->featured)
                             <span class="course-badge popular">Popular</span>
-                            @elseif($course->price == 0 || ($course->sale_price == 0))
+                            @elseif($course->is_free)
                             <span class="course-badge free">Free</span>
                             @endif
 
@@ -1021,17 +1021,17 @@
                                     <div class="course-rating">
                                         <span class="stars">
                                             @for($i = 1; $i <= 5; $i++)
-                                                @if($i <=floor($course->average_rating))
+                                                @if($i <=floor($course->average_rating ?? 0))
                                                 <i class="fas fa-star"></i>
-                                                @elseif($i - 0.5 <= $course->average_rating)
+                                                @elseif($i - 0.5 <= ($course->average_rating ?? 0))
                                                     <i class="fas fa-star-half-alt"></i>
                                                     @else
                                                     <i class="far fa-star"></i>
                                                     @endif
                                                     @endfor
                                         </span>
-                                        <span class="rating-value">{{ number_format($course->average_rating, 1) }}</span>
-                                        <span class="rating-count">({{ $course->total_reviews }})</span>
+                                        <span class="rating-value">{{ number_format($course->average_rating ?? 0, 1) }}</span>
+                                        <span class="rating-count">({{ $course->total_reviews ?? 0 }})</span>
                                     </div>
                                 </div>
 
@@ -1042,14 +1042,14 @@
                                 <p class="course-description">{{ $course->excerpt }}</p>
 
                                 <div class="course-meta">
-                                    <span><i class="far fa-clock"></i> {{ $course->duration }} hours</span>
-                                    <span><i class="fas fa-signal"></i> {{ $course->level }}</span>
-                                    <span><i class="fas fa-video"></i> {{ $course->total_lessons }} lessons</span>
+                                    <span><i class="far fa-clock"></i> {{ $course->duration_hours ?? 0 }} hours</span>
+                                    <span><i class="fas fa-signal"></i> {{ ucfirst($course->level ?? 'Beginner') }}</span>
+                                    <span><i class="fas fa-video"></i> {{ $course->total_lessons_count ?? 0 }} lessons</span>
                                 </div>
 
                                 <div class="course-instructor">
                                     <div class="instructor-avatar">
-                                        {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
+                                        {{ substr($course->instructor->name ?? 'ED', 0, 1) }}
                                     </div>
                                     <div class="instructor-info">
                                         <span class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</span>
