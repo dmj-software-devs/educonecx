@@ -597,6 +597,35 @@
         margin-bottom: 30px !important;
     }
 
+    /* Error Alert */
+    .quiz-take-error-alert {
+        background: rgba(239, 71, 111, 0.1);
+        color: var(--quiz-take-danger);
+        padding: 15px 20px;
+        border-radius: var(--quiz-take-radius);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(239, 71, 111, 0.2);
+    }
+
+    .quiz-take-error-alert i {
+        font-size: 1.2rem;
+    }
+
+    .quiz-take-success-alert {
+        background: rgba(6, 214, 160, 0.1);
+        color: var(--quiz-take-success);
+        padding: 15px 20px;
+        border-radius: var(--quiz-take-radius);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid rgba(6, 214, 160, 0.2);
+    }
+
     /* Responsive */
     @media (max-width: 992px) {
         .quiz-take-question-footer {
@@ -648,6 +677,21 @@
 
 <div class="quiz-take-container">
     <div class="container">
+        <!-- Display any session messages -->
+        @if(session('error'))
+        <div class="quiz-take-error-alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+        @endif
+
+        @if(session('success'))
+        <div class="quiz-take-success-alert">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+        @endif
+
         <!-- Quiz Header -->
         <div class="quiz-take-header">
             <div class="row align-items-center">
@@ -691,7 +735,7 @@
 
                 @if($currentQuestion)
                 <div class="quiz-take-question-card">
-                    <form action="{{ route('quizzes.submit', ['quiz' => $quiz, 'attempt' => $attempt]) }}" method="POST" id="quizForm">
+                    <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST" id="quizForm">
                         @csrf
                         
                         <div class="quiz-take-question-header">
@@ -756,6 +800,7 @@
                                                name="answers[{{ $currentQuestion->id }}]" 
                                                id="fill_blank_answer"
                                                placeholder="Type your answer here..."
+                                               value="{{ old('answers.'.$currentQuestion->id) }}"
                                                required>
                                     </div>
                                     @if($currentQuestion->fillBlanks->count() > 1)
@@ -846,7 +891,7 @@
                         <i class="fas fa-check-circle quiz-take-complete-icon"></i>
                         <h2>Quiz Completed!</h2>
                         <p>You have answered all questions. Click below to submit your quiz.</p>
-                        <form action="{{ route('quizzes.submit', ['quiz' => $quiz, 'attempt' => $attempt]) }}" method="POST">
+                        <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST">
                             @csrf
                             <input type="hidden" name="action" value="complete">
                             <button type="submit" class="quiz-take-btn success" style="padding: 15px 40px; font-size: 1.2rem;">
@@ -921,11 +966,14 @@
 
 <!-- Auto-submit when timer expires -->
 @if($remainingTime)
-<form id="timeoutForm" action="{{ route('quizzes.submit', ['quiz' => $quiz, 'attempt' => $attempt]) }}" method="POST" style="display: none;">
+<form id="timeoutForm" action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST" style="display: none;">
     @csrf
     <input type="hidden" name="action" value="timeout">
 </form>
 @endif
+
+<!-- Add CSRF token meta tag for AJAX if needed -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -1002,7 +1050,18 @@ document.addEventListener('DOMContentLoaded', function() {
         quizForm.addEventListener('submit', function(e) {
             const action = e.submitter?.value;
             
-            if (action === 'complete' || action === 'next' && {{ $attempt->answers->count() + 1 }} == {{ $questions->count() }}) {
+            // Check if any answer is selected for required questions
+            const currentQuestionType = '{{ $currentQuestion->question_type ?? '' }}';
+            const isMultipleChoice = currentQuestionType === 'multiple_choice';
+            const isSingleChoice = ['single_choice', 'true_false'].includes(currentQuestionType);
+            
+            if ((isSingleChoice || isMultipleChoice) && !hasSelectedAnswer()) {
+                e.preventDefault();
+                alert('Please select an answer before proceeding.');
+                return false;
+            }
+            
+            if (action === 'complete' || (action === 'next' && {{ $attempt->answers->count() + 1 }} == {{ $questions->count() }})) {
                 if (!confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
                     e.preventDefault();
                     return false;
@@ -1016,6 +1075,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
             }
         });
+    }
+
+    // Helper function to check if any answer is selected
+    function hasSelectedAnswer() {
+        const inputs = document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
+        return inputs.length > 0;
     }
 
     // Question dot navigation (visual only)
@@ -1042,6 +1107,16 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(autoSave, 5000);
         });
+    });
+
+    // Prevent double form submission
+    let formSubmitted = false;
+    quizForm?.addEventListener('submit', function() {
+        if (formSubmitted) {
+            e.preventDefault();
+            return false;
+        }
+        formSubmitted = true;
     });
 });
 </script>
