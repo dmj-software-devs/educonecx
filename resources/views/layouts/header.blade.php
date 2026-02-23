@@ -40,53 +40,57 @@
                         <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}">Blog</a></li>
                         <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}">Our Team</a></li>
                         <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
+
+                        <!-- Quiz Link - Only shown to authenticated users -->
+                        @auth
                         <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}">Quiz</a></li>
+                        @endauth
                     </ul>
                 </nav>
 
                 <!-- Right Section -->
                 <div class="header-right">
                     @auth
-                        <!-- Profile Dropdown (for authenticated users) -->
-                        <div class="profile-dropdown">
-                            <button class="profile-btn">
-                                @if(Auth::user()->avatar)
-                                    <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}">
-                                @else
-                                    <div class="profile-avatar">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                                <span class="profile-name">{{ Auth::user()->name }}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a>
-                                <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a>
-                                <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a>
-                                <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ route('logout') }}" 
-                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
+                    <!-- Profile Dropdown (for authenticated users) -->
+                    <div class="profile-dropdown">
+                        <button class="profile-btn">
+                            @if(Auth::user()->avatar)
+                            <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}">
+                            @else
+                            <div class="profile-avatar">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
+                            @endif
+                            <span class="profile-name">{{ Auth::user()->name }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a>
+                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a>
+                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a>
+                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ route('logout') }}"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
                         </div>
+                    </div>
                     @else
-                        <!-- Login/Register Buttons (for guests) -->
-                        <div class="auth-buttons">
-                            <a href="{{ route('login') }}" class="btn-login">
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span>Login</span>
-                            </a>
-                            <a href="{{ route('register') }}" class="btn-register">
-                                <span>Register</span>
-                                <i class="fas fa-user-plus"></i>
-                            </a>
-                        </div>
+                    <!-- Login/Register Buttons (for guests) -->
+                    <div class="auth-buttons">
+                        <a href="{{ route('login') }}" class="btn-login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                        <a href="{{ route('register') }}" class="btn-register">
+                            <span>Register</span>
+                            <i class="fas fa-user-plus"></i>
+                        </a>
+                    </div>
                     @endauth
 
                     <!-- Mobile Menu Toggle -->
@@ -110,43 +114,47 @@
             <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}">Blog</a></li>
             <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}">Our Team</a></li>
             <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
+
+            <!-- Quiz Link - Only shown to authenticated users in mobile menu -->
+            @auth
             <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}">Quiz</a></li>
+            @endauth
         </ul>
-        
+
         <!-- Mobile Auth Links -->
         @auth
-            <div class="mobile-auth">
-                <div class="mobile-user-info">
-                    @if(Auth::user()->avatar)
-                        <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="mobile-avatar">
-                    @else
-                        <div class="mobile-avatar">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        </div>
-                    @endif
-                    <div class="mobile-user-details">
-                        <span class="mobile-user-name">{{ Auth::user()->name }}</span>
-                        <span class="mobile-user-email">{{ Auth::user()->email }}</span>
-                    </div>
+        <div class="mobile-auth">
+            <div class="mobile-user-info">
+                @if(Auth::user()->avatar)
+                <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="mobile-avatar">
+                @else
+                <div class="mobile-avatar">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
-                <ul class="mobile-nav-menu">
-                    <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a></li>
-                    <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a></li>
-                    <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a></li>
-                    <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a></li>
-                </ul>
+                @endif
+                <div class="mobile-user-details">
+                    <span class="mobile-user-name">{{ Auth::user()->name }}</span>
+                    <span class="mobile-user-email">{{ Auth::user()->email }}</span>
+                </div>
             </div>
+            <ul class="mobile-nav-menu">
+                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a></li>
+                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a></li>
+                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a></li>
+            </ul>
+        </div>
         @else
-            <div class="mobile-auth-buttons">
-                <a href="{{ route('login') }}" class="mobile-btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-                <a href="{{ route('register') }}" class="mobile-btn-register">
-                    <i class="fas fa-user-plus"></i> Register
-                </a>
-            </div>
+        <div class="mobile-auth-buttons">
+            <a href="{{ route('login') }}" class="mobile-btn-login">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="{{ route('register') }}" class="mobile-btn-register">
+                <i class="fas fa-user-plus"></i> Register
+            </a>
+        </div>
         @endauth
-        
+
         <div class="mobile-contact">
             <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> +1 (833) 533-8228</a>
             <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> contact@educonecx.com</a>

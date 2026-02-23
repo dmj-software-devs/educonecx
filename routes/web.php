@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+    //Quiz page for loggedin users
+    Route::get('/crowd-quiz', [PageController::class, 'quiz'])->name('quiz');
+
     // Student Dashboard - Using DashboardController (student)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/my-courses', [DashboardController::class, 'courses'])->name('my-courses');
@@ -78,7 +81,6 @@ Route::get('/neo-ed-tech', [PageController::class, 'neoEdTech'])->name('neo-ed-t
 Route::get('/our-team', [PageController::class, 'ourTeam'])->name('our-team');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
-Route::get('/crowd-quiz', [PageController::class, 'quiz'])->name('quiz');
 Route::get('/membership-pricing', [PageController::class, 'pricing'])->name('pricing');
 Route::get('/faqs', [PageController::class, 'faqs'])->name('faqs');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
