@@ -4,18 +4,18 @@
 
 @section('meta_description', 'Get in touch with EDUCONECX. Have questions about our courses, partnerships, or anything else? Our team is here to help.')
 
-@push('styles')
+@section('content')
 <style>
-    /* Hero Section */
-    .contact-hero {
+    /* Contact Page Specific Styles - Scoped to prevent conflicts */
+    .contact-page-hero {
         position: relative;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 100px 0;
         overflow: hidden;
-        color: var(--white);
+        color: #ffffff;
     }
 
-    .contact-hero-particles {
+    .contact-page-particles {
         position: absolute;
         top: 0;
         left: 0;
@@ -24,37 +24,37 @@
         z-index: 1;
     }
 
-    .contact-hero-particle {
+    .contact-page-particle {
         position: absolute;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
     }
 
-    .contact-hero-particle:nth-child(1) {
+    .contact-page-particle:nth-child(1) {
         width: 300px;
         height: 300px;
         top: -100px;
         right: -100px;
-        animation: float 8s ease-in-out infinite;
+        animation: contact-page-float 8s ease-in-out infinite;
     }
 
-    .contact-hero-particle:nth-child(2) {
+    .contact-page-particle:nth-child(2) {
         width: 200px;
         height: 200px;
         bottom: -50px;
         left: -50px;
-        animation: float 10s ease-in-out infinite reverse;
+        animation: contact-page-float 10s ease-in-out infinite reverse;
     }
 
-    .contact-hero-particle:nth-child(3) {
+    .contact-page-particle:nth-child(3) {
         width: 150px;
         height: 150px;
         top: 30%;
         left: 20%;
-        animation: float 12s ease-in-out infinite;
+        animation: contact-page-float 12s ease-in-out infinite;
     }
 
-    .contact-hero-content {
+    .contact-page-hero-content {
         position: relative;
         z-index: 2;
         text-align: center;
@@ -62,44 +62,46 @@
         margin: 0 auto;
     }
 
-    .contact-hero-badge {
+    .contact-page-hero-badge {
         display: inline-block;
         padding: 8px 20px;
         background: rgba(255, 255, 255, 0.2);
-        border-radius: var(--border-radius-full);
+        border-radius: 9999px;
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 25px;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255, 255, 255, 0.3);
-        animation: fadeInDown 1s ease-out;
+        animation: contact-page-fadeInDown 1s ease-out;
     }
 
-    .contact-hero-title {
-        font-size: clamp(2.5rem, 8vw, 4rem);
-        font-weight: 800;
-        margin-bottom: 20px;
-        line-height: 1.1;
+    .contact-page-hero-title {
+        font-size: clamp(2.5rem, 8vw, 4rem) !important;
+        font-weight: 800 !important;
+        margin-bottom: 20px !important;
+        line-height: 1.1 !important;
         text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        animation: fadeInUp 1s ease-out 0.2s both;
+        animation: contact-page-fadeInUp 1s ease-out 0.2s both;
+        color: #ffffff !important;
     }
 
-    .contact-hero-text {
-        font-size: clamp(1.1rem, 3vw, 1.3rem);
+    .contact-page-hero-text {
+        font-size: clamp(1.1rem, 3vw, 1.3rem) !important;
         opacity: 0.9;
-        line-height: 1.8;
+        line-height: 1.8 !important;
         max-width: 700px;
         margin: 0 auto;
-        animation: fadeInUp 1s ease-out 0.4s both;
+        animation: contact-page-fadeInUp 1s ease-out 0.4s both;
+        color: #ffffff !important;
     }
 
     /* Contact Section */
-    .contact-section {
+    .contact-page-section {
         padding: 80px 0;
-        background: var(--light);
+        background: #f8f9fa;
     }
 
-    .contact-grid {
+    .contact-page-grid {
         display: grid;
         grid-template-columns: 1fr 1.2fr;
         gap: 40px;
@@ -108,323 +110,356 @@
     }
 
     /* Contact Info Cards */
-    .contact-info-wrapper {
+    .contact-page-info-wrapper {
         display: flex;
         flex-direction: column;
         gap: 30px;
     }
 
-    .contact-info-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
+    .contact-page-info-card {
+        background: #ffffff;
+        border-radius: 20px;
         padding: 40px;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         position: relative;
         overflow: hidden;
     }
 
-    .contact-info-card::before {
+    .contact-page-info-card::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         width: 5px;
         height: 100%;
-        background: var(--gradient-1);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
-    .info-icon {
+    .contact-page-info-icon {
         width: 60px;
         height: 60px;
-        background: var(--gradient-1);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 25px;
-        color: var(--white);
+        color: #ffffff;
         font-size: 1.5rem;
     }
 
-    .info-title {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-        color: var(--dark);
+    .contact-page-info-title {
+        font-size: 1.8rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 15px !important;
+        color: #1e1e2f !important;
     }
 
-    .info-subtitle {
-        font-size: 1.1rem;
-        color: var(--primary);
-        margin-bottom: 20px;
-        font-weight: 600;
+    .contact-page-info-description {
+        color: #6c757d !important;
+        line-height: 1.8 !important;
+        margin-bottom: 30px !important;
     }
 
-    .info-description {
-        color: var(--gray);
-        line-height: 1.8;
-        margin-bottom: 30px;
-    }
-
-    .info-list {
+    .contact-page-info-list {
         list-style: none;
         padding: 0;
         margin-bottom: 30px;
     }
 
-    .info-list li {
+    .contact-page-info-list li {
         display: flex;
         align-items: center;
         gap: 15px;
         margin-bottom: 20px;
-        color: var(--gray);
+        color: #6c757d;
         font-size: 1rem;
-        transition: var(--transition);
+        transition: all 0.3s ease;
     }
 
-    .info-list li:hover {
+    .contact-page-info-list li:hover {
         transform: translateX(5px);
     }
 
-    .info-list li i {
+    .contact-page-info-list li i {
         width: 40px;
         height: 40px;
-        background: var(--light);
+        background: #f8f9fa;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--primary);
+        color: #667eea;
         font-size: 1.1rem;
-        transition: var(--transition);
+        transition: all 0.3s ease;
     }
 
-    .info-list li:hover i {
-        background: var(--primary);
-        color: var(--white);
+    .contact-page-info-list li:hover i {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
     }
 
-    .info-list li a {
-        color: var(--gray);
+    .contact-page-info-list li a,
+    .contact-page-info-list li span {
+        color: #6c757d;
         text-decoration: none;
-        transition: color 0.3s;
         flex: 1;
     }
 
-    .info-list li a:hover {
-        color: var(--primary);
+    .contact-page-info-list li a:hover {
+        color: #667eea;
     }
 
-    .info-list li span {
-        flex: 1;
+    .contact-page-info-highlights {
+        margin-top: 20px;
+    }
+
+    .contact-page-info-highlights h4 {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #1e1e2f !important;
+        margin-bottom: 15px !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .contact-page-info-highlights ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .contact-page-info-highlights ul li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        color: #6c757d;
+    }
+
+    .contact-page-info-highlights ul li i {
+        color: #06d6a0;
     }
 
     /* Business Hours */
-    .hours-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
+    .contact-page-hours-card {
+        background: #ffffff;
+        border-radius: 20px;
         padding: 40px;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .hours-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 25px;
-        color: var(--dark);
+    .contact-page-hours-title {
+        font-size: 1.5rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 25px !important;
+        color: #1e1e2f !important;
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .hours-title i {
-        color: var(--primary);
+    .contact-page-hours-title i {
+        color: #667eea;
     }
 
-    .hours-grid {
+    .contact-page-hours-grid {
         display: grid;
         gap: 15px;
     }
 
-    .hours-item {
+    .contact-page-hours-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 12px 0;
-        border-bottom: 1px solid var(--gray-light);
+        border-bottom: 1px solid #e9ecef;
     }
 
-    .hours-item:last-child {
+    .contact-page-hours-item:last-child {
         border-bottom: none;
     }
 
-    .hours-day {
+    .contact-page-hours-day {
         font-weight: 600;
-        color: var(--dark);
+        color: #1e1e2f;
     }
 
-    .hours-time {
-        color: var(--primary);
+    .contact-page-hours-time {
+        color: #667eea;
         font-weight: 500;
     }
 
-    .hours-note {
+    .contact-page-hours-note {
         margin-top: 20px;
         padding: 15px;
-        background: var(--light);
-        border-radius: var(--border-radius-md);
-        color: var(--gray);
+        background: #f8f9fa;
+        border-radius: 12px;
+        color: #6c757d;
         font-size: 0.95rem;
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .hours-note i {
-        color: var(--primary);
+    .contact-page-hours-note i {
+        color: #667eea;
     }
 
     /* Social Links */
-    .social-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
+    .contact-page-social-card {
+        background: #ffffff;
+        border-radius: 20px;
         padding: 30px;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         text-align: center;
     }
 
-    .social-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        color: var(--dark);
+    .contact-page-social-title {
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 20px !important;
+        color: #1e1e2f !important;
     }
 
-    .social-grid {
+    .contact-page-social-grid {
         display: flex;
         justify-content: center;
         gap: 15px;
         flex-wrap: wrap;
     }
 
-    .social-link {
+    .contact-page-social-link {
         width: 50px;
         height: 50px;
-        background: var(--light);
+        background: #f8f9fa;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--primary);
+        color: #667eea;
         font-size: 1.3rem;
-        transition: var(--transition);
+        transition: all 0.3s ease;
         text-decoration: none;
     }
 
-    .social-link:hover {
-        background: var(--primary);
-        color: var(--white);
+    .contact-page-social-link:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
         transform: translateY(-5px);
     }
 
     /* Contact Form */
-    .contact-form-container {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
+    .contact-page-form-container {
+        background: #ffffff;
+        border-radius: 20px;
         padding: 50px;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .form-header {
+    .contact-page-form-header {
         margin-bottom: 35px;
         text-align: center;
     }
 
-    .form-title {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        color: var(--dark);
+    .contact-page-form-title {
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 10px !important;
+        color: #1e1e2f !important;
     }
 
-    .form-subtitle {
-        color: var(--gray);
-        font-size: 1rem;
+    .contact-page-form-subtitle {
+        color: #6c757d !important;
+        font-size: 1rem !important;
     }
 
-    .form-row {
+    .contact-page-form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
+        margin-bottom: 0;
+    }
+
+    .contact-page-form-group {
         margin-bottom: 20px;
+        width: 100%;
     }
 
-    .form-group {
-        margin-bottom: 20px;
+    .contact-page-form-label {
+        display: block !important;
+        margin-bottom: 8px !important;
+        font-weight: 600 !important;
+        color: #1e1e2f !important;
+        font-size: 0.95rem !important;
+        text-align: left !important;
     }
 
-    .form-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: var(--dark);
-        font-size: 0.95rem;
-    }
-
-    .form-label i {
-        color: var(--primary);
+    .contact-page-form-label i {
+        color: #667eea;
         margin-right: 5px;
     }
 
-    .form-label .required {
-        color: var(--danger);
+    .contact-page-form-label .required {
+        color: #ef476f;
         margin-left: 3px;
     }
 
-    .form-control {
-        width: 100%;
-        padding: 14px 18px;
-        border: 2px solid var(--gray-light);
-        border-radius: var(--border-radius-md);
-        font-size: 1rem;
-        transition: var(--transition);
-        background: var(--white);
+    .contact-page-form-control {
+        width: 100% !important;
+        padding: 14px 18px !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+        background: #ffffff !important;
+        color: #1e1e2f !important;
+        height: auto !important;
+        line-height: 1.5 !important;
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+    .contact-page-form-control:focus {
+        outline: none !important;
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1) !important;
     }
 
-    .form-control.is-invalid {
-        border-color: var(--danger);
+    .contact-page-form-control.is-invalid {
+        border-color: #ef476f !important;
     }
 
-    .invalid-feedback {
-        color: var(--danger);
-        font-size: 0.85rem;
-        margin-top: 5px;
+    .contact-page-invalid-feedback {
+        color: #ef476f !important;
+        font-size: 0.85rem !important;
+        margin-top: 5px !important;
         display: flex;
         align-items: center;
         gap: 5px;
     }
 
-    textarea.form-control {
+    textarea.contact-page-form-control {
         resize: vertical;
         min-height: 150px;
     }
 
-    .submit-btn {
-        background: var(--gradient-1);
-        color: var(--white);
-        border: none;
-        padding: 16px 40px;
-        border-radius: var(--border-radius-full);
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
+    select.contact-page-form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 45px !important;
+    }
+
+    .contact-page-submit-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        padding: 16px 40px !important;
+        border-radius: 9999px !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
         width: 100%;
         display: flex;
         align-items: center;
@@ -434,7 +469,7 @@
         overflow: hidden;
     }
 
-    .submit-btn::before {
+    .contact-page-submit-btn::before {
         content: '';
         position: absolute;
         top: 50%;
@@ -447,62 +482,69 @@
         transition: width 0.6s, height 0.6s;
     }
 
-    .submit-btn:hover::before {
+    .contact-page-submit-btn:hover::before {
         width: 300px;
         height: 300px;
     }
 
-    .submit-btn:hover {
+    .contact-page-submit-btn:hover {
         transform: translateY(-3px);
-        box-shadow: var(--shadow-hover);
+        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
     }
 
-    .submit-btn i {
+    .contact-page-submit-btn i {
         font-size: 1rem;
-        transition: var(--transition);
+        transition: transform 0.3s ease;
     }
 
-    .submit-btn:hover i {
+    .contact-page-submit-btn:hover i {
         transform: translateX(5px);
     }
 
+    .contact-page-submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
     /* Success Message */
-    .alert-success {
+    .contact-page-alert-success {
         background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: var(--white);
+        color: #ffffff;
         padding: 20px 30px;
-        border-radius: var(--border-radius-lg);
+        border-radius: 20px;
         margin-bottom: 30px;
         display: flex;
         align-items: center;
         gap: 15px;
-        animation: slideInDown 0.5s ease-out;
-        box-shadow: var(--shadow-lg);
+        animation: contact-page-slideInDown 0.5s ease-out;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     }
 
-    .alert-success i {
+    .contact-page-alert-success i {
         font-size: 2rem;
     }
 
-    .alert-success-content {
+    .contact-page-alert-success-content {
         flex: 1;
     }
 
-    .alert-success-content h4 {
-        font-size: 1.2rem;
-        margin-bottom: 5px;
-        font-weight: 600;
+    .contact-page-alert-success-content h4 {
+        font-size: 1.2rem !important;
+        margin-bottom: 5px !important;
+        font-weight: 600 !important;
+        color: #ffffff !important;
     }
 
-    .alert-success-content p {
+    .contact-page-alert-success-content p {
         opacity: 0.9;
         font-size: 0.95rem;
+        color: #ffffff !important;
     }
 
-    .alert-close {
+    .contact-page-alert-close {
         background: rgba(255, 255, 255, 0.2);
         border: none;
-        color: var(--white);
+        color: #ffffff;
         width: 30px;
         height: 30px;
         border-radius: 50%;
@@ -510,77 +552,63 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: var(--transition);
+        transition: all 0.3s ease;
     }
 
-    .alert-close:hover {
+    .contact-page-alert-close:hover {
         background: rgba(255, 255, 255, 0.3);
         transform: scale(1.1);
     }
 
     /* Map Section */
-    .map-section {
+    .contact-page-map-section {
         padding: 0 0 80px;
-        background: var(--light);
+        background: #f8f9fa;
     }
 
-    .map-container {
+    .contact-page-map-container {
         max-width: 1200px;
         margin: 0 auto;
-        border-radius: var(--border-radius-lg);
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         height: 400px;
     }
 
-    .map-container iframe {
+    .contact-page-map-container iframe {
         width: 100%;
         height: 100%;
         border: none;
     }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .contact-grid {
-            grid-template-columns: 1fr;
-            gap: 30px;
-            padding: 0 20px;
-        }
+    /* Loading Spinner */
+    .contact-page-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: contact-page-spin 0.8s linear infinite;
     }
 
-    @media (max-width: 768px) {
-        .contact-hero {
-            padding: 60px 0;
-        }
-
-        .contact-info-card,
-        .hours-card,
-        .social-card,
-        .contact-form-container {
-            padding: 30px;
-        }
-
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
-
-        .info-title {
-            font-size: 1.5rem;
-        }
-
-        .form-title {
-            font-size: 1.8rem;
-        }
-
-        .map-container {
-            height: 300px;
-            margin: 0 20px;
+    @keyframes contact-page-spin {
+        to {
+            transform: rotate(360deg);
         }
     }
 
     /* Animations */
-    @keyframes fadeInDown {
+    @keyframes contact-page-float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @keyframes contact-page-fadeInDown {
         from {
             opacity: 0;
             transform: translateY(-30px);
@@ -591,7 +619,7 @@
         }
     }
 
-    @keyframes fadeInUp {
+    @keyframes contact-page-fadeInUp {
         from {
             opacity: 0;
             transform: translateY(30px);
@@ -602,7 +630,7 @@
         }
     }
 
-    @keyframes slideInDown {
+    @keyframes contact-page-slideInDown {
         from {
             transform: translateY(-100%);
             opacity: 0;
@@ -613,313 +641,327 @@
         }
     }
 
-    @keyframes slideInLeft {
-        from {
-            transform: translateX(-50px);
-            opacity: 0;
-        }
-        to {
-            transform: translateX(0);
-            opacity: 1;
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .contact-page-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+            padding: 0 20px;
         }
     }
 
-    @keyframes slideInRight {
-        from {
-            transform: translateX(50px);
-            opacity: 0;
+    @media (max-width: 768px) {
+        .contact-page-hero {
+            padding: 60px 0;
         }
-        to {
-            transform: translateX(0);
-            opacity: 1;
+
+        .contact-page-info-card,
+        .contact-page-hours-card,
+        .contact-page-social-card,
+        .contact-page-form-container {
+            padding: 30px;
+        }
+
+        .contact-page-form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .contact-page-info-title {
+            font-size: 1.5rem !important;
+        }
+
+        .contact-page-form-title {
+            font-size: 1.8rem !important;
+        }
+
+        .contact-page-map-container {
+            height: 300px;
+            margin: 0 20px;
         }
     }
 </style>
-@endpush
 
-@section('content')
-    <!-- Hero Section -->
-    <section class="contact-hero">
-        <div class="contact-hero-particles">
-            <div class="contact-hero-particle"></div>
-            <div class="contact-hero-particle"></div>
-            <div class="contact-hero-particle"></div>
-        </div>
-        
-        <div class="container">
-            <div class="contact-hero-content">
-                <span class="contact-hero-badge">Get in Touch</span>
-                <h1 class="contact-hero-title">We're Here to Help</h1>
-                <p class="contact-hero-text">
-                    Have questions about our courses, partnerships, or anything else? 
-                    Our team is ready to assist you.
-                </p>
-            </div>
-        </div>
-    </section>
+<!-- Hero Section -->
+<section class="contact-page-hero">
+    <div class="contact-page-particles">
+        <div class="contact-page-particle"></div>
+        <div class="contact-page-particle"></div>
+        <div class="contact-page-particle"></div>
+    </div>
     
-    <!-- Contact Section -->
-    <section class="contact-section">
-        <div class="container">
-            <!-- Success Message -->
-            @if(session('success'))
-                <div class="alert-success" id="successAlert">
-                    <i class="fas fa-check-circle"></i>
-                    <div class="alert-success-content">
-                        <h4>Message Sent Successfully!</h4>
-                        <p>{{ session('success') }}</p>
-                    </div>
-                    <button class="alert-close" onclick="this.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+    <div class="container">
+        <div class="contact-page-hero-content">
+            <span class="contact-page-hero-badge">Get in Touch</span>
+            <h1 class="contact-page-hero-title">We're Here to Help</h1>
+            <p class="contact-page-hero-text">
+                Have questions about our courses, partnerships, or anything else? 
+                Our team is ready to assist you.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-page-section">
+    <div class="container">
+        <!-- Success Message -->
+        @if(session('success'))
+            <div class="contact-page-alert-success" id="successAlert">
+                <i class="fas fa-check-circle"></i>
+                <div class="contact-page-alert-success-content">
+                    <h4>Message Sent Successfully!</h4>
+                    <p>{{ session('success') }}</p>
                 </div>
-            @endif
-            
-            <div class="contact-grid">
-                <!-- Left Column - Contact Information -->
-                <div class="contact-info-wrapper">
-                    <!-- Main Contact Card -->
-                    <div class="contact-info-card" data-aos="fade-right">
-                        <div class="info-icon">
+                <button class="contact-page-alert-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        @endif
+        
+        <div class="contact-page-grid">
+            <!-- Left Column - Contact Information -->
+            <div class="contact-page-info-wrapper">
+                <!-- Main Contact Card -->
+                <div class="contact-page-info-card" data-aos="fade-right">
+                    <div class="contact-page-info-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h2 class="contact-page-info-title">Let's Connect</h2>
+                    <p class="contact-page-info-description">
+                        Whether you have questions about our courses, want to discuss partnership 
+                        opportunities, or need technical support, our team is ready to assist you.
+                    </p>
+                    
+                    <ul class="contact-page-info-list">
+                        <li>
                             <i class="fas fa-phone-alt"></i>
-                        </div>
-                        <h2 class="info-title">Let's Connect</h2>
-                        <p class="info-description">
-                            Whether you have questions about our courses, want to discuss partnership 
-                            opportunities, or need technical support, our team is ready to assist you.
-                        </p>
-                        
-                        <ul class="info-list">
-                            <li>
-                                <i class="fas fa-phone-alt"></i>
-                                <a href="tel:+18335338228">+1 (833) 533-8228</a>
-                            </li>
-                            <li>
-                                <i class="far fa-envelope"></i>
-                                <a href="mailto:contact@educonecx.com">contact@educonecx.com</a>
-                            </li>
-                            <li>
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>1200 Brickell Ave, Miami, FL 33131, USA</span>
-                            </li>
+                            <a href="tel:+18335338228">+1 (833) 533-8228</a>
+                        </li>
+                        <li>
+                            <i class="far fa-envelope"></i>
+                            <a href="mailto:contact@educonecx.com">contact@educonecx.com</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>1200 Brickell Ave, Miami, FL 33131, USA</span>
+                        </li>
+                    </ul>
+
+                    <div class="contact-page-info-highlights">
+                        <h4><i class="fas fa-star"></i> What You Can Ask Us:</h4>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Course offerings and pricing</li>
+                            <li><i class="fas fa-check-circle"></i> Partnership opportunities</li>
+                            <li><i class="fas fa-check-circle"></i> Technical support</li>
+                            <li><i class="fas fa-check-circle"></i> Billing inquiries</li>
+                            <li><i class="fas fa-check-circle"></i> Schedule a consultation</li>
                         </ul>
+                    </div>
+                </div>
 
-                        <div class="info-highlights">
-                            <h4><i class="fas fa-star"></i> What You Can Ask Us:</h4>
-                            <ul>
-                                <li><i class="fas fa-check-circle"></i> Course offerings and pricing</li>
-                                <li><i class="fas fa-check-circle"></i> Partnership opportunities</li>
-                                <li><i class="fas fa-check-circle"></i> Technical support</li>
-                                <li><i class="fas fa-check-circle"></i> Billing inquiries</li>
-                                <li><i class="fas fa-check-circle"></i> Schedule a consultation</li>
-                            </ul>
+                <!-- Business Hours Card -->
+                <div class="contact-page-hours-card" data-aos="fade-right" data-aos-delay="100">
+                    <h3 class="contact-page-hours-title">
+                        <i class="fas fa-clock"></i>
+                        Business Hours
+                    </h3>
+                    <div class="contact-page-hours-grid">
+                        <div class="contact-page-hours-item">
+                            <span class="contact-page-hours-day">Monday - Friday</span>
+                            <span class="contact-page-hours-time">9:00 AM - 6:00 PM</span>
+                        </div>
+                        <div class="contact-page-hours-item">
+                            <span class="contact-page-hours-day">Saturday</span>
+                            <span class="contact-page-hours-time">10:00 AM - 4:00 PM</span>
+                        </div>
+                        <div class="contact-page-hours-item">
+                            <span class="contact-page-hours-day">Sunday</span>
+                            <span class="contact-page-hours-time">Closed</span>
                         </div>
                     </div>
-
-                    <!-- Business Hours Card -->
-                    <div class="hours-card" data-aos="fade-right" data-aos-delay="100">
-                        <h3 class="hours-title">
-                            <i class="fas fa-clock"></i>
-                            Business Hours
-                        </h3>
-                        <div class="hours-grid">
-                            <div class="hours-item">
-                                <span class="hours-day">Monday - Friday</span>
-                                <span class="hours-time">9:00 AM - 6:00 PM</span>
-                            </div>
-                            <div class="hours-item">
-                                <span class="hours-day">Saturday</span>
-                                <span class="hours-time">10:00 AM - 4:00 PM</span>
-                            </div>
-                            <div class="hours-item">
-                                <span class="hours-day">Sunday</span>
-                                <span class="hours-time">Closed</span>
-                            </div>
-                        </div>
-                        <div class="hours-note">
-                            <i class="fas fa-info-circle"></i>
-                            <span>We respond to all inquiries within 24 hours on business days.</span>
-                        </div>
+                    <div class="contact-page-hours-note">
+                        <i class="fas fa-info-circle"></i>
+                        <span>We respond to all inquiries within 24 hours on business days.</span>
                     </div>
+                </div>
 
-                    <!-- Social Media Card -->
-                    <div class="social-card" data-aos="fade-right" data-aos-delay="200">
-                        <h3 class="social-title">Follow Us</h3>
-                        <div class="social-grid">
-                            <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="social-link">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="https://www.tiktok.com/@educonecx.officia" target="_blank" class="social-link">
-                                <i class="fab fa-tiktok"></i>
-                            </a>
-                            <a href="https://www.instagram.com/educonecx/" target="_blank" class="social-link">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="https://www.youtube.com/@EDUCONECX" target="_blank" class="social-link">
-                                <i class="fab fa-youtube"></i>
-                            </a>
-                            <a href="https://wa.me/18335338228" target="_blank" class="social-link">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
+                <!-- Social Media Card -->
+                <div class="contact-page-social-card" data-aos="fade-right" data-aos-delay="200">
+                    <h3 class="contact-page-social-title">Follow Us</h3>
+                    <div class="contact-page-social-grid">
+                        <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="contact-page-social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@educonecx.officia" target="_blank" class="contact-page-social-link">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="https://www.instagram.com/educonecx/" target="_blank" class="contact-page-social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@EDUCONECX" target="_blank" class="contact-page-social-link">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="https://wa.me/18335338228" target="_blank" class="contact-page-social-link">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Contact Form -->
+            <div class="contact-page-form-container" data-aos="fade-left">
+                <div class="contact-page-form-header">
+                    <h2 class="contact-page-form-title">Send Us a Message</h2>
+                    <p class="contact-page-form-subtitle">We'll get back to you within 24 hours</p>
                 </div>
                 
-                <!-- Right Column - Contact Form -->
-                <div class="contact-form-container" data-aos="fade-left">
-                    <div class="form-header">
-                        <h2 class="form-title">Send Us a Message</h2>
-                        <p class="form-subtitle">We'll get back to you within 24 hours</p>
+                <form action="{{ route('contact.submit') }}" method="POST" id="contactForm">
+                    @csrf
+                    
+                    <div class="contact-page-form-row">
+                        <div class="contact-page-form-group">
+                            <label for="first_name" class="contact-page-form-label">
+                                <i class="fas fa-user"></i> First Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="contact-page-form-control @error('first_name') is-invalid @enderror" 
+                                id="first_name" 
+                                name="first_name" 
+                                placeholder="John"
+                                value="{{ old('first_name') }}"
+                                required
+                            >
+                            @error('first_name')
+                                <div class="contact-page-invalid-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        
+                        <div class="contact-page-form-group">
+                            <label for="last_name" class="contact-page-form-label">
+                                <i class="fas fa-user"></i> Last Name <span class="required">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                class="contact-page-form-control @error('last_name') is-invalid @enderror" 
+                                id="last_name" 
+                                name="last_name" 
+                                placeholder="Doe"
+                                value="{{ old('last_name') }}"
+                                required
+                            >
+                            @error('last_name')
+                                <div class="contact-page-invalid-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
                     
-                    <form action="{{ route('contact.submit') }}" method="POST" id="contactForm">
-                        @csrf
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="first_name" class="form-label">
-                                    <i class="fas fa-user"></i> First Name <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    class="form-control @error('first_name') is-invalid @enderror" 
-                                    id="first_name" 
-                                    name="first_name" 
-                                    placeholder="John"
-                                    value="{{ old('first_name') }}"
-                                    required
-                                >
-                                @error('first_name')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                    <div class="contact-page-form-group">
+                        <label for="email" class="contact-page-form-label">
+                            <i class="fas fa-envelope"></i> Email Address <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="email" 
+                            class="contact-page-form-control @error('email') is-invalid @enderror" 
+                            id="email" 
+                            name="email" 
+                            placeholder="john.doe@example.com"
+                            value="{{ old('email') }}"
+                            required
+                        >
+                        @error('email')
+                            <div class="contact-page-invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $message }}
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="last_name" class="form-label">
-                                    <i class="fas fa-user"></i> Last Name <span class="required">*</span>
-                                </label>
-                                <input 
-                                    type="text" 
-                                    class="form-control @error('last_name') is-invalid @enderror" 
-                                    id="last_name" 
-                                    name="last_name" 
-                                    placeholder="Doe"
-                                    value="{{ old('last_name') }}"
-                                    required
-                                >
-                                @error('last_name')
-                                    <div class="invalid-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                        @enderror
+                    </div>
+                    
+                    <div class="contact-page-form-group">
+                        <label for="phone" class="contact-page-form-label">
+                            <i class="fas fa-phone"></i> Phone Number (Optional)
+                        </label>
+                        <input 
+                            type="tel" 
+                            class="contact-page-form-control @error('phone') is-invalid @enderror" 
+                            id="phone" 
+                            name="phone" 
+                            placeholder="+1 (833) 533-8228"
+                            value="{{ old('phone') }}"
+                        >
+                        @error('phone')
+                            <div class="contact-page-invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $message }}
                             </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email" class="form-label">
-                                <i class="fas fa-envelope"></i> Email Address <span class="required">*</span>
-                            </label>
-                            <input 
-                                type="email" 
-                                class="form-control @error('email') is-invalid @enderror" 
-                                id="email" 
-                                name="email" 
-                                placeholder="john.doe@example.com"
-                                value="{{ old('email') }}"
-                                required
-                            >
-                            @error('email')
-                                <div class="invalid-feedback">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone" class="form-label">
-                                <i class="fas fa-phone"></i> Phone Number (Optional)
-                            </label>
-                            <input 
-                                type="tel" 
-                                class="form-control @error('phone') is-invalid @enderror" 
-                                id="phone" 
-                                name="phone" 
-                                placeholder="+1 (833) 533-8228"
-                                value="{{ old('phone') }}"
-                            >
-                            @error('phone')
-                                <div class="invalid-feedback">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="subject" class="form-label">
-                                <i class="fas fa-tag"></i> Subject (Optional)
-                            </label>
-                            <select class="form-control" id="subject" name="subject">
-                                <option value="">Select a subject</option>
-                                <option value="course-inquiry">Course Inquiry</option>
-                                <option value="partnership">Partnership Opportunity</option>
-                                <option value="technical-support">Technical Support</option>
-                                <option value="billing">Billing Question</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="message" class="form-label">
-                                <i class="fas fa-comment"></i> Message <span class="required">*</span>
-                            </label>
-                            <textarea 
-                                class="form-control @error('message') is-invalid @enderror" 
-                                id="message" 
-                                name="message" 
-                                rows="5" 
-                                placeholder="How can we help you?"
-                                required
-                            >{{ old('message') }}</textarea>
-                            @error('message')
-                                <div class="invalid-feedback">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        
-                        <button type="submit" class="submit-btn" id="submitBtn">
-                            <span>Send Message</span>
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </form>
-                </div>
+                        @enderror
+                    </div>
+                    
+                    <div class="contact-page-form-group">
+                        <label for="subject" class="contact-page-form-label">
+                            <i class="fas fa-tag"></i> Subject (Optional)
+                        </label>
+                        <select class="contact-page-form-control" id="subject" name="subject">
+                            <option value="">Select a subject</option>
+                            <option value="course-inquiry">Course Inquiry</option>
+                            <option value="partnership">Partnership Opportunity</option>
+                            <option value="technical-support">Technical Support</option>
+                            <option value="billing">Billing Question</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="contact-page-form-group">
+                        <label for="message" class="contact-page-form-label">
+                            <i class="fas fa-comment"></i> Message <span class="required">*</span>
+                        </label>
+                        <textarea 
+                            class="contact-page-form-control @error('message') is-invalid @enderror" 
+                            id="message" 
+                            name="message" 
+                            rows="5" 
+                            placeholder="How can we help you?"
+                            required
+                        >{{ old('message') }}</textarea>
+                        @error('message')
+                            <div class="contact-page-invalid-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <button type="submit" class="contact-page-submit-btn" id="submitBtn">
+                        <span>Send Message</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Map Section -->
-    <section class="map-section">
-        <div class="container">
-            <div class="map-container" data-aos="fade-up">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3593.210407431367!2d-80.192964684382!3d25.761989583629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b682b0b1b1b1%3A0x1b1b1b1b1b1b1b1b!2s1200%20Brickell%20Ave%2C%20Miami%2C%20FL%2033131%2C%20USA!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
-                    allowfullscreen="" 
-                    loading="lazy"
-                    title="EDUCONECX Location"
-                ></iframe>
-            </div>
+<!-- Map Section -->
+<section class="contact-page-map-section">
+    <div class="container">
+        <div class="contact-page-map-container" data-aos="fade-up">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3593.210407431367!2d-80.192964684382!3d25.761989583629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b682b0b1b1b1%3A0x1b1b1b1b1b1b1b1b!2s1200%20Brickell%20Ave%2C%20Miami%2C%20FL%2033131%2C%20USA!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
+                allowfullscreen="" 
+                loading="lazy"
+                title="EDUCONECX Location"
+            ></iframe>
         </div>
-    </section>
-@endsection
+    </div>
+</section>
 
-@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('contactForm');
@@ -972,7 +1014,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Form validation enhancement
-    const inputs = form.querySelectorAll('.form-control');
+    const inputs = form.querySelectorAll('.contact-page-form-control');
     inputs.forEach(input => {
         input.addEventListener('blur', function() {
             if (this.hasAttribute('required') && !this.value) {
@@ -997,4 +1039,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
+@endsection
