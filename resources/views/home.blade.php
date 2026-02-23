@@ -668,9 +668,9 @@
                 <a href="{{ route('academy') }}" class="btn btn-primary">
                     <i class="fas fa-graduation-cap"></i> Join Academy
                 </a>
-                <a href="{{ route('neo-ed-tech') }}" class="btn btn-secondary">
+                <!-- <a href="{{ route('neo-ed-tech') }}" class="btn btn-secondary">
                     <i class="fas fa-robot"></i> Explore NEO ED-TECH
-                </a>
+                </a> -->
             </div>
             <div class="hero-stats">
                 <div class="stat-item">
