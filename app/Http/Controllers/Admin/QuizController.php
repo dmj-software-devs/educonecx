@@ -137,4 +137,17 @@ class QuizController extends Controller
         return redirect()->route('admin.quizzes.index')
                         ->with('success', 'Quiz deleted successfully');
     }
+    public function destroyQuestion($id)
+{
+    $question = Question::findOrFail($id);
+    $quiz = $question->quiz;
+    
+    // Delete the question
+    $question->delete();
+    
+    // Update quiz total questions count
+    $quiz->decrement('total_questions');
+    
+    return redirect()->back()->with('success', 'Question deleted successfully');
+}
 }
