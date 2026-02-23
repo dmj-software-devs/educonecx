@@ -4,141 +4,201 @@
 @section('page-title', 'Quiz Questions: ' . $quiz->title)
 
 @section('content')
-<!-- Header Section -->
-<div class="header-section">
-    <div class="header-content">
-        <h2>{{ $quiz->title }}</h2>
-        <p>Manage questions for this quiz</p>
-    </div>
-    <div class="header-actions">
-        <a href="{{ route('admin.quizzes.index') }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Back to Quizzes
-        </a>
-        <a href="{{ route('admin.quizzes.edit', $quiz) }}" class="btn btn-outline-primary">
-            <i class="fas fa-edit"></i> Edit Quiz
-        </a>
-    </div>
-</div>
-
-<!-- Quiz Info Bar -->
-<div class="info-bar">
-    <div class="info-bar-item">
-        <i class="fas fa-puzzle-piece text-primary"></i>
-        <div>
-            <small>Quiz Type</small>
-            <strong>{{ ucfirst($quiz->type) }}</strong>
+<!-- Header Section with Gradient -->
+<div class="header-wrapper">
+    <div class="header-section">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div>
+                <h2>{{ $quiz->title }}</h2>
+                <p><i class="fas fa-file-alt me-2"></i>Manage questions for this quiz</p>
+            </div>
         </div>
-    </div>
-    <div class="info-bar-item">
-        <i class="fas fa-question-circle text-success"></i>
-        <div>
-            <small>Total Questions</small>
-            <strong>{{ $quiz->questions->count() }}</strong>
-        </div>
-    </div>
-    <div class="info-bar-item">
-        <i class="fas fa-star text-warning"></i>
-        <div>
-            <small>Total Points</small>
-            <strong>{{ $quiz->questions->sum('points') }}</strong>
-        </div>
-    </div>
-    <div class="info-bar-item">
-        <i class="fas fa-percent text-info"></i>
-        <div>
-            <small>Pass Percentage</small>
-            <strong>{{ $quiz->pass_percentage ?? 0 }}%</strong>
+        <div class="header-actions">
+            <a href="{{ route('admin.quizzes.index') }}" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left me-2"></i> Back to Quizzes
+            </a>
+            <a href="{{ route('admin.quizzes.edit', $quiz) }}" class="btn btn-light">
+                <i class="fas fa-edit me-2"></i> Edit Quiz
+            </a>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
+<!-- Quiz Info Cards -->
+<div class="info-cards">
+    <div class="info-card info-card-primary">
+        <div class="info-card-icon">
+            <i class="fas fa-puzzle-piece"></i>
+        </div>
+        <div class="info-card-content">
+            <span class="info-card-label">Quiz Type</span>
+            <span class="info-card-value">{{ ucfirst($quiz->type) }}</span>
+        </div>
+    </div>
+    
+    <div class="info-card info-card-success">
+        <div class="info-card-icon">
+            <i class="fas fa-question-circle"></i>
+        </div>
+        <div class="info-card-content">
+            <span class="info-card-label">Total Questions</span>
+            <span class="info-card-value">{{ $quiz->questions->count() }}</span>
+        </div>
+    </div>
+    
+    <div class="info-card info-card-warning">
+        <div class="info-card-icon">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="info-card-content">
+            <span class="info-card-label">Total Points</span>
+            <span class="info-card-value">{{ $quiz->questions->sum('points') }}</span>
+        </div>
+    </div>
+    
+    <div class="info-card info-card-info">
+        <div class="info-card-icon">
+            <i class="fas fa-percent"></i>
+        </div>
+        <div class="info-card-content">
+            <span class="info-card-label">Pass Percentage</span>
+            <span class="info-card-value">{{ $quiz->pass_percentage ?? 0 }}%</span>
+        </div>
+    </div>
+</div>
+
+<div class="content-grid">
     <!-- Add Question Form Column -->
-    <div class="col-xl-5 col-lg-6">
-        <div class="form-card sticky-form">
-            <div class="form-card-header">
-                <h5><i class="fas fa-plus-circle me-2"></i>Add New Question</h5>
-                <span class="badge bg-primary">{{ $quiz->questions->count() + 1 }}</span>
+    <div class="form-column">
+        <div class="form-container">
+            <div class="form-header">
+                <div class="form-header-title">
+                    <i class="fas fa-plus-circle"></i>
+                    <h3>Add New Question</h3>
+                </div>
+                <span class="question-number">{{ $quiz->questions->count() + 1 }}</span>
             </div>
             
-            <div class="form-card-body">
+            <div class="form-body">
                 <form action="{{ route('admin.quizzes.questions.store', $quiz) }}" method="POST" enctype="multipart/form-data" id="questionForm">
                     @csrf
                     
                     @if($errors->any())
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <strong>Please fix the following errors:</strong>
-                            <ul class="mb-0 mt-2">
-                                @foreach($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="alert alert-danger">
+                            <div class="alert-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <strong>Please fix the following errors:</strong>
+                                <ul>
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <button type="button" class="alert-close" data-bs-dismiss="alert">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     @endif
 
                     @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show">
-                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="alert alert-success">
+                            <div class="alert-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                {{ session('success') }}
+                            </div>
+                            <button type="button" class="alert-close" data-bs-dismiss="alert">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     @endif
 
                     @if(session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show">
-                            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <div class="alert alert-error">
+                            <div class="alert-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                {{ session('error') }}
+                            </div>
+                            <button type="button" class="alert-close" data-bs-dismiss="alert">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                     @endif
                     
                     <!-- Question Type -->
-                    <div class="form-group mb-4">
-                        <label class="form-label">Question Type <span class="text-danger">*</span></label>
-                        <select name="question_type" class="form-select form-select-lg" id="questionType" required>
-                            <option value="multiple_choice" {{ old('question_type') == 'multiple_choice' ? 'selected' : '' }}>Multiple Choice (Select all that apply)</option>
-                            <option value="single_choice" {{ old('question_type') == 'single_choice' ? 'selected' : '' }}>Single Choice (Select one)</option>
-                            <option value="true_false" {{ old('question_type') == 'true_false' ? 'selected' : '' }}>True/False</option>
-                            <option value="fill_blank" {{ old('question_type') == 'fill_blank' ? 'selected' : '' }}>Fill in the Blank</option>
-                            <option value="matching" {{ old('question_type') == 'matching' ? 'selected' : '' }}>Matching</option>
-                            <option value="image_selection" {{ old('question_type') == 'image_selection' ? 'selected' : '' }}>Image Selection</option>
-                        </select>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag me-2"></i>Question Type <span class="required">*</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select name="question_type" id="questionType" required>
+                                <option value="multiple_choice" {{ old('question_type') == 'multiple_choice' ? 'selected' : '' }}>Multiple Choice (Select all that apply)</option>
+                                <option value="single_choice" {{ old('question_type') == 'single_choice' ? 'selected' : '' }}>Single Choice (Select one)</option>
+                                <option value="true_false" {{ old('question_type') == 'true_false' ? 'selected' : '' }}>True/False</option>
+                                <option value="fill_blank" {{ old('question_type') == 'fill_blank' ? 'selected' : '' }}>Fill in the Blank</option>
+                                <option value="matching" {{ old('question_type') == 'matching' ? 'selected' : '' }}>Matching</option>
+                                <option value="image_selection" {{ old('question_type') == 'image_selection' ? 'selected' : '' }}>Image Selection</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
                     </div>
 
                     <!-- Question Text -->
-                    <div class="form-group mb-4">
-                        <label class="form-label">Question Text <span class="text-danger">*</span></label>
-                        <textarea name="question_text" id="questionText" class="form-control form-control-lg" rows="3" placeholder="Enter your question here..." required>{{ old('question_text') }}</textarea>
-                        <div class="char-counter"><span id="questionCounter">{{ strlen(old('question_text') ?? '') }}</span>/500</div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-paragraph me-2"></i>Question Text <span class="required">*</span>
+                        </label>
+                        <textarea name="question_text" id="questionText" rows="4" placeholder="Enter your question here..." required>{{ old('question_text') }}</textarea>
+                        <div class="char-counter">
+                            <span id="questionCounter">{{ strlen(old('question_text') ?? '') }}</span>/500 characters
+                        </div>
                     </div>
 
                     <!-- Points & Image Row -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Points</label>
-                                <input type="number" name="points" id="points" class="form-control form-control-lg" value="{{ old('points', 1) }}" min="1">
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label class="form-label">
+                                <i class="fas fa-coins me-2"></i>Points
+                            </label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-star input-icon"></i>
+                                <input type="number" name="points" id="points" value="{{ old('points', 1) }}" min="1">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">Image</label>
-                                <div class="file-input-wrapper">
-                                    <input type="file" name="image" id="image" class="file-input" accept="image/*">
-                                    <div class="file-input-preview" id="imagePreview">
-                                        <i class="fas fa-image"></i>
-                                        <span>Click to upload image</span>
-                                    </div>
+                        
+                        <div class="form-group half">
+                            <label class="form-label">
+                                <i class="fas fa-image me-2"></i>Image
+                            </label>
+                            <div class="file-upload">
+                                <input type="file" name="image" id="image" accept="image/*">
+                                <div class="file-preview" id="imagePreview">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Click to upload image</span>
+                                    <small>PNG, JPG, GIF up to 2MB</small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Options Section (Multiple Choice, Single Choice, True/False) -->
-                    <div id="optionsSection" class="mb-4">
-                        <div class="section-label">
-                            <label class="form-label fw-bold">Answer Options</label>
-                            <span class="badge bg-primary" id="optionsCount">2 options</span>
+                    <!-- Options Section -->
+                    <div id="optionsSection" class="options-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <i class="fas fa-list-ul"></i>
+                                <h4>Answer Options</h4>
+                            </div>
+                            <span class="options-badge" id="optionsCount">2 options</span>
                         </div>
+                        
                         <div id="optionsContainer" class="options-container">
                             @php
                                 $oldOptions = old('options', [
@@ -148,30 +208,27 @@
                             @endphp
                             
                             @foreach($oldOptions as $index => $option)
-                            <div class="option-row" data-index="{{ $index }}">
+                            <div class="option-item" data-index="{{ $index }}">
                                 <div class="option-drag">
-                                    <i class="fas fa-grip-vertical text-muted"></i>
+                                    <i class="fas fa-grip-vertical"></i>
                                 </div>
-                                <div class="option-content">
-                                    <div class="option-input-wrapper">
+                                <div class="option-input-group">
+                                    <div class="option-field">
                                         <input type="text" 
                                                name="options[{{ $index }}][text]" 
-                                               class="form-control option-input" 
+                                               class="option-text" 
                                                placeholder="Enter option {{ $index + 1 }}"
                                                value="{{ $option['text'] ?? '' }}">
                                     </div>
-                                    <div class="option-correct">
-                                        <div class="form-check">
+                                    <div class="option-check">
+                                        <label class="checkbox-label">
                                             <input type="checkbox" 
                                                    name="options[{{ $index }}][is_correct]" 
-                                                   id="option{{ $index }}Correct" 
-                                                   class="form-check-input" 
                                                    value="1"
                                                    {{ isset($option['is_correct']) && $option['is_correct'] ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="option{{ $index }}Correct">
-                                                Correct
-                                            </label>
-                                        </div>
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-text">Correct</span>
+                                        </label>
                                     </div>
                                     <button type="button" class="option-remove" onclick="removeOption(this)">
                                         <i class="fas fa-times"></i>
@@ -180,17 +237,23 @@
                             </div>
                             @endforeach
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addOption()">
-                            <i class="fas fa-plus me-1"></i> Add Option
+                        
+                        <button type="button" class="btn-add" onclick="addOption()">
+                            <i class="fas fa-plus"></i>
+                            Add Option
                         </button>
                     </div>
 
                     <!-- Fill in the Blanks Section -->
-                    <div id="fillBlanksSection" style="display: none;" class="mb-4">
-                        <div class="section-label">
-                            <label class="form-label fw-bold">Correct Answers</label>
-                            <span class="badge bg-primary" id="blanksCount">1 answer</span>
+                    <div id="fillBlanksSection" class="blanks-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <i class="fas fa-pencil-alt"></i>
+                                <h4>Correct Answers</h4>
+                            </div>
+                            <span class="options-badge" id="blanksCount">1 answer</span>
                         </div>
+                        
                         <div id="fillBlanksContainer" class="blanks-container">
                             @php
                                 $oldFillBlanks = old('fill_blanks', [
@@ -199,30 +262,27 @@
                             @endphp
                             
                             @foreach($oldFillBlanks as $index => $blank)
-                            <div class="blank-row" data-index="{{ $index }}">
+                            <div class="blank-item" data-index="{{ $index }}">
                                 <div class="blank-drag">
-                                    <i class="fas fa-grip-vertical text-muted"></i>
+                                    <i class="fas fa-grip-vertical"></i>
                                 </div>
-                                <div class="blank-content">
-                                    <div class="blank-input-wrapper">
+                                <div class="blank-input-group">
+                                    <div class="blank-field">
                                         <input type="text" 
                                                name="fill_blanks[{{ $index }}][answer]" 
-                                               class="form-control blank-input" 
+                                               class="blank-text" 
                                                placeholder="Enter correct answer"
                                                value="{{ $blank['answer'] ?? '' }}">
                                     </div>
                                     <div class="blank-case">
-                                        <div class="form-check">
+                                        <label class="checkbox-label">
                                             <input type="checkbox" 
                                                    name="fill_blanks[{{ $index }}][case_sensitive]" 
-                                                   id="blank{{ $index }}Case" 
-                                                   class="form-check-input" 
                                                    value="1"
                                                    {{ isset($blank['case_sensitive']) && $blank['case_sensitive'] ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="blank{{ $index }}Case">
-                                                Case Sensitive
-                                            </label>
-                                        </div>
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-text">Case Sensitive</span>
+                                        </label>
                                     </div>
                                     <button type="button" class="blank-remove" onclick="removeBlank(this)">
                                         <i class="fas fa-times"></i>
@@ -231,15 +291,18 @@
                             </div>
                             @endforeach
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addFillBlank()">
-                            <i class="fas fa-plus me-1"></i> Add Answer
+                        
+                        <button type="button" class="btn-add" onclick="addFillBlank()">
+                            <i class="fas fa-plus"></i>
+                            Add Answer
                         </button>
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="form-actions mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
-                            <i class="fas fa-plus-circle me-2"></i>Add Question
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-plus-circle"></i>
+                            Add Question
                         </button>
                     </div>
                 </form>
@@ -248,71 +311,79 @@
     </div>
 
     <!-- Questions List Column -->
-    <div class="col-xl-7 col-lg-6">
-        <div class="questions-card">
-            <div class="questions-card-header">
-                <div>
-                    <h5><i class="fas fa-list me-2"></i>Questions List</h5>
-                    <p class="text-muted mb-0">{{ $quiz->questions->count() }} total questions</p>
+    <div class="list-column">
+        <div class="list-container">
+            <div class="list-header">
+                <div class="list-header-left">
+                    <i class="fas fa-list"></i>
+                    <div>
+                        <h3>Questions List</h3>
+                        <p>{{ $quiz->questions->count() }} total questions</p>
+                    </div>
                 </div>
-                <div class="questions-stats">
-                    <div class="stat">
-                        <span class="label">Total Points</span>
-                        <span class="value">{{ $quiz->questions->sum('points') }}</span>
+                <div class="list-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Points</span>
+                        <span class="stat-value">{{ $quiz->questions->sum('points') }}</span>
                     </div>
                 </div>
             </div>
 
             <div class="questions-list">
                 @forelse($quiz->questions as $question)
-                <div class="question-item" id="question-{{ $question->id }}">
-                    <div class="question-drag">
-                        <i class="fas fa-grip-vertical text-muted"></i>
+                <div class="question-card" id="question-{{ $question->id }}">
+                    <div class="question-card-drag">
+                        <i class="fas fa-grip-vertical"></i>
                     </div>
-                    <div class="question-content">
-                        <div class="question-header">
+                    
+                    <div class="question-card-content">
+                        <div class="question-card-header">
                             <div class="question-badges">
-                                <span class="badge bg-primary">Q{{ $loop->iteration }}</span>
-                                <span class="type-badge type-{{ $question->question_type }}">
+                                <span class="badge-number">Q{{ $loop->iteration }}</span>
+                                <span class="badge-type type-{{ $question->question_type }}">
                                     {{ str_replace('_', ' ', ucfirst($question->question_type)) }}
                                 </span>
-                                <span class="badge bg-info">{{ $question->points }} pts</span>
+                                <span class="badge-points">{{ $question->points }} pts</span>
                             </div>
-                            <div class="question-actions">
-                                <button type="button" class="action-btn edit-btn" onclick="editQuestion({{ $question->id }})" title="Edit">
+                            
+                            <div class="question-card-actions">
+                                <button class="action-btn edit" onclick="editQuestion({{ $question->id }})" title="Edit">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button type="button" class="action-btn delete-btn" onclick="deleteQuestion({{ $question->id }})" title="Delete">
+                                <button class="action-btn delete" onclick="deleteQuestion({{ $question->id }})" title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="question-text">
+                        
+                        <div class="question-card-text">
                             {{ $question->question_text }}
                         </div>
+                        
                         @if($question->image)
-                        <div class="question-image">
+                        <div class="question-card-image">
                             <img src="{{ Storage::url($question->image) }}" alt="Question image">
                         </div>
                         @endif
-                        <div class="question-answers">
+                        
+                        <div class="question-card-answers">
                             @if(in_array($question->question_type, ['multiple_choice', 'single_choice', 'true_false']))
                                 @foreach($question->options as $option)
-                                <div class="answer-item {{ $option->is_correct ? 'correct' : '' }}">
-                                    <span class="answer-marker">{{ chr(65 + $loop->index) }}</span>
+                                <div class="answer-row {{ $option->is_correct ? 'correct' : '' }}">
+                                    <span class="answer-letter">{{ chr(65 + $loop->index) }}</span>
                                     <span class="answer-text">{{ $option->option_text }}</span>
                                     @if($option->is_correct)
-                                        <i class="fas fa-check-circle text-success ms-auto"></i>
+                                        <i class="fas fa-check-circle correct-icon"></i>
                                     @endif
                                 </div>
                                 @endforeach
                             @elseif($question->question_type == 'fill_blank')
                                 @foreach($question->fillBlanks as $blank)
-                                <div class="answer-item correct">
-                                    <i class="fas fa-pencil-alt me-2"></i>
+                                <div class="answer-row correct">
+                                    <i class="fas fa-pencil-alt answer-icon"></i>
                                     <span class="answer-text">{{ $blank->correct_answer }}</span>
                                     @if($blank->case_sensitive)
-                                        <span class="badge bg-warning ms-2">Case Sensitive</span>
+                                        <span class="case-badge">Case Sensitive</span>
                                     @endif
                                 </div>
                                 @endforeach
@@ -325,8 +396,8 @@
                     <div class="empty-state-icon">
                         <i class="fas fa-question-circle"></i>
                     </div>
-                    <h5>No Questions Yet</h5>
-                    <p class="text-muted">Start by adding your first question using the form</p>
+                    <h4>No Questions Yet</h4>
+                    <p>Start by adding your first question using the form</p>
                 </div>
                 @endforelse
             </div>
@@ -342,18 +413,21 @@
 
 <!-- Edit Question Modal -->
 <div class="modal fade" id="editQuestionModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Question</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title">
+                    <i class="fas fa-edit me-2"></i>
+                    Edit Question
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body" id="editQuestionContent">
-                <!-- Will be loaded via AJAX -->
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading question...</p>
                 </div>
             </div>
         </div>
@@ -363,43 +437,89 @@
 
 @push('styles')
 <style>
+/* Modern CSS Reset and Variables */
 :root {
     --primary: #4361ee;
+    --primary-dark: #3a56d4;
+    --primary-light: #eef2ff;
     --secondary: #3f37c9;
-    --success: #4cc9f0;
-    --danger: #f72585;
-    --warning: #f8961e;
-    --info: #4895ef;
-    --dark: #1e1b4b;
-    --light: #f8f9fa;
+    --success: #06d6a0;
+    --success-light: #e3fcf5;
+    --danger: #ef476f;
+    --danger-light: #fee9ef;
+    --warning: #ffb703;
+    --warning-light: #fff3d8;
+    --info: #4cc9f0;
+    --info-light: #e1f5fe;
+    --dark: #1e293b;
+    --gray: #64748b;
+    --light: #f8fafc;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
 }
 
-/* Header Section */
+/* Header Wrapper */
+.header-wrapper {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: var(--radius-xl);
+    margin-bottom: 24px;
+    padding: 2px;
+}
+
 .header-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-xl);
+    padding: 24px 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
     flex-wrap: wrap;
     gap: 20px;
-    background: white;
-    padding: 25px 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary-light), var(--white));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--primary);
+    box-shadow: var(--shadow-md);
 }
 
 .header-content h2 {
     font-size: 1.8rem;
     font-weight: 700;
-    margin: 0 0 5px;
+    margin: 0 0 4px;
     color: var(--dark);
-    letter-spacing: -0.02em;
 }
 
 .header-content p {
     margin: 0;
-    color: #6c757d;
+    color: var(--gray);
     font-size: 0.95rem;
+    display: flex;
+    align-items: center;
 }
 
 .header-actions {
@@ -409,145 +529,275 @@
 
 .header-actions .btn {
     padding: 12px 24px;
+    border-radius: var(--radius-md);
     font-weight: 500;
-    border-radius: 12px;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-outline-light {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline-light:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-light {
+    background: white;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-light:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Info Cards */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
     transition: all 0.3s;
 }
 
-.header-actions .btn:hover {
+.info-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md);
 }
 
-/* Info Bar */
-.info-bar {
-    background: white;
-    border-radius: 20px;
-    padding: 25px 30px;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 25px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-}
-
-.info-bar-item {
+.info-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    font-size: 24px;
 }
 
-.info-bar-item i {
-    font-size: 2.2rem;
+.info-card-primary .info-card-icon {
+    background: var(--primary-light);
+    color: var(--primary);
 }
 
-.info-bar-item div {
+.info-card-success .info-card-icon {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.info-card-warning .info-card-icon {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.info-card-info .info-card-icon {
+    background: var(--info-light);
+    color: var(--info);
+}
+
+.info-card-content {
     display: flex;
     flex-direction: column;
 }
 
-.info-bar-item small {
-    color: #6c757d;
-    font-size: 0.85rem;
+.info-card-label {
+    font-size: 0.8rem;
+    color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: 4px;
 }
 
-.info-bar-item strong {
-    font-size: 1.3rem;
-    color: var(--dark);
+.info-card-value {
+    font-size: 1.5rem;
     font-weight: 700;
+    color: var(--dark);
+    line-height: 1.2;
 }
 
-/* Form Card */
-.form-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    overflow: hidden;
+/* Content Grid */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1.8fr;
+    gap: 30px;
+}
+
+/* Form Column */
+.form-column {
     position: sticky;
     top: 20px;
-    border: 1px solid rgba(0,0,0,0.05);
+    align-self: start;
 }
 
-.form-card-header {
-    padding: 20px 25px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    border-bottom: none;
+.form-container {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.form-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 20px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: white;
 }
 
-.form-card-header h5 {
+.form-header-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.form-header-title i {
+    font-size: 24px;
+}
+
+.form-header-title h3 {
     margin: 0;
     font-size: 1.2rem;
     font-weight: 600;
-    color: white;
 }
 
-.form-card-header .badge {
-    background: rgba(255,255,255,0.2) !important;
-    color: white;
-    font-size: 0.9rem;
-    padding: 8px 12px;
+.question-number {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
 }
 
-.form-card-body {
-    padding: 25px;
-    background: white;
+.form-body {
+    padding: 24px;
 }
 
 /* Form Elements */
 .form-group {
-    margin-bottom: 1.2rem;
+    margin-bottom: 24px;
 }
 
 .form-label {
+    display: flex;
+    align-items: center;
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--dark);
     margin-bottom: 8px;
-    display: block;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
 }
 
-.form-control, .form-select {
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
+.form-label i {
+    color: var(--primary);
+}
+
+.required {
+    color: var(--danger);
+    margin-left: 4px;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+select, textarea, input[type="text"], input[type="number"] {
+    width: 100%;
     padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
     font-size: 0.95rem;
     transition: all 0.3s;
-    background: white;
+    background: var(--white);
 }
 
-.form-control-lg, .form-select-lg {
-    padding: 14px 18px;
-    font-size: 1rem;
+select {
+    appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
 }
 
-.form-control:focus, .form-select:focus {
+.select-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    pointer-events: none;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+select:focus, textarea:focus, input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
     outline: none;
+    box-shadow: 0 0 0 4px var(--primary-light);
 }
 
 .char-counter {
     text-align: right;
     font-size: 0.8rem;
-    color: #6c757d;
+    color: var(--gray);
     margin-top: 6px;
 }
 
-/* File Input */
-.file-input-wrapper {
+/* Form Row */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    pointer-events: none;
+}
+
+.input-wrapper input {
+    padding-left: 40px;
+}
+
+/* File Upload */
+.file-upload {
     position: relative;
     cursor: pointer;
 }
 
-.file-input {
+.file-upload input {
     position: absolute;
     top: 0;
     left: 0;
@@ -558,139 +808,229 @@
     z-index: 2;
 }
 
-.file-input-preview {
-    border: 2px dashed #e9ecef;
-    border-radius: 12px;
+.file-preview {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-md);
     padding: 20px;
     text-align: center;
-    background: #f8f9fa;
+    background: var(--light);
     transition: all 0.3s;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
-.file-input-preview:hover {
+.file-preview:hover {
     border-color: var(--primary);
-    background: rgba(67, 97, 238, 0.02);
+    background: var(--primary-light);
 }
 
-.file-input-preview i {
-    font-size: 2rem;
+.file-preview i {
+    font-size: 32px;
     color: var(--primary);
     margin-bottom: 8px;
+    display: block;
 }
 
-.file-input-preview span {
-    color: #6c757d;
-    font-size: 0.9rem;
+.file-preview span {
+    display: block;
+    color: var(--dark);
+    font-weight: 500;
+    margin-bottom: 4px;
 }
 
-.file-input-preview img {
+.file-preview small {
+    color: var(--gray);
+    font-size: 0.75rem;
+}
+
+.file-preview img {
     max-width: 100%;
     max-height: 80px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
 }
 
-/* Options Container */
-.options-container, .blanks-container {
-    max-height: 350px;
-    overflow-y: auto;
-    padding: 5px;
-    background: #f8f9fa;
-    border-radius: 12px;
+/* Options Section - ENHANCED FOR BETTER VISIBILITY */
+.options-section, .blanks-section {
+    background: var(--light);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
 }
 
-.option-row, .blank-row {
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-    padding: 12px;
-    background: white;
-    border-radius: 12px;
-    transition: all 0.3s;
-    border: 1px solid #e9ecef;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    gap: 10px;
 }
 
-.option-row:hover, .blank-row:hover {
+.section-title i {
+    color: var(--primary);
+    font-size: 20px;
+}
+
+.section-title h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.options-badge {
+    background: var(--white);
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary);
+    border: 1px solid var(--border);
+}
+
+.options-container, .blanks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+/* ENHANCED OPTION ITEM - LARGER AND MORE VISIBLE */
+.option-item, .blank-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+}
+
+.option-item:hover, .blank-item:hover {
     border-color: var(--primary);
-    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.1);
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
 
 .option-drag, .blank-drag {
     cursor: move;
-    padding: 0 8px;
-    color: #adb5bd;
+    color: var(--gray);
+    padding: 10px 4px;
+    font-size: 20px;
 }
 
-.option-content, .blank-content {
+.option-input-group, .blank-input-group {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
     flex-wrap: wrap;
 }
 
-.option-input-wrapper, .blank-input-wrapper {
-    flex: 2;
-    min-width: 200px;
+/* ENHANCED OPTION FIELD - MUCH WIDER */
+.option-field, .blank-field {
+    flex: 3;
+    min-width: 350px;
 }
 
-.option-input, .blank-input {
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 0.95rem;
+.option-text, .blank-text {
     width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: var(--white);
 }
 
-.option-input:focus, .blank-input:focus {
+.option-text:focus, .blank-text:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    box-shadow: 0 0 0 4px var(--primary-light);
+    outline: none;
 }
 
-.option-correct, .blank-case {
-    min-width: 90px;
+.option-text::placeholder, .blank-text::placeholder {
+    color: var(--gray);
+    opacity: 0.7;
+    font-size: 0.95rem;
 }
 
-.form-check {
-    padding-left: 1.8rem;
+.option-check, .blank-case {
+    min-width: 120px;
+    padding: 8px 0;
 }
 
-.form-check-input {
-    width: 1.2rem;
-    height: 1.2rem;
-    margin-top: 0.15rem;
-    border: 2px solid #e9ecef;
+/* ENHANCED CHECKBOX */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    padding: 6px 0;
 }
 
-.form-check-input:checked {
-    background-color: var(--primary);
+.checkbox-label input {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    background: var(--white);
+    transition: all 0.2s;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.checkbox-label input:checked + .checkbox-custom {
+    background: var(--primary);
     border-color: var(--primary);
 }
 
-.form-check-label {
-    font-size: 0.9rem;
-    color: #495057;
+.checkbox-label input:checked + .checkbox-custom::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: white;
+    font-size: 14px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
+.checkbox-text {
+    font-size: 1rem;
+    color: var(--dark);
+    font-weight: 500;
+}
+
+/* ENHANCED REMOVE BUTTON */
 .option-remove, .blank-remove {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
     border: none;
-    background: rgba(247, 37, 133, 0.1);
+    background: var(--danger-light);
     color: var(--danger);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s;
+    font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
 .option-remove:hover, .blank-remove:hover {
@@ -699,102 +1039,135 @@
     transform: rotate(90deg);
 }
 
-.section-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.section-label .badge {
-    font-size: 0.85rem;
-    padding: 6px 12px;
-}
-
-/* Buttons */
-.btn-outline-primary {
-    border: 2px solid var(--primary);
+/* Add Button */
+.btn-add {
+    width: 100%;
+    padding: 16px;
+    background: var(--white);
+    border: 2px dashed var(--primary);
+    border-radius: var(--radius-md);
     color: var(--primary);
     font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 10px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.btn-outline-primary:hover {
-    background: var(--primary);
-    color: white;
+.btn-add:hover {
+    background: var(--primary-light);
+    border-style: solid;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+.btn-add i {
+    font-size: 1.2rem;
+}
+
+/* Submit Button */
+.btn-submit {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     border: none;
+    border-radius: var(--radius-md);
+    color: white;
     font-weight: 600;
-    padding: 14px 28px;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: var(--shadow-md);
 }
 
-.btn-primary:hover {
+.btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
+    box-shadow: var(--shadow-lg);
 }
 
-/* Questions Card */
-.questions-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+.btn-submit i {
+    font-size: 1.2rem;
+}
+
+/* List Column */
+.list-column {
+    position: relative;
+}
+
+.list-container {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
 }
 
-.questions-card-header {
-    padding: 20px 25px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-bottom: 1px solid #dee2e6;
+.list-header {
+    background: linear-gradient(135deg, var(--light), var(--white));
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+}
+
+.list-header-left {
+    display: flex;
+    align-items: center;
     gap: 15px;
 }
 
-.questions-card-header h5 {
+.list-header-left i {
+    font-size: 24px;
+    color: var(--primary);
+    background: var(--primary-light);
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.list-header-left h3 {
     margin: 0 0 4px;
     font-size: 1.2rem;
     font-weight: 700;
     color: var(--dark);
 }
 
-.questions-card-header p {
+.list-header-left p {
     margin: 0;
+    color: var(--gray);
     font-size: 0.9rem;
 }
 
-.questions-stats {
-    display: flex;
-    gap: 25px;
-}
-
-.questions-stats .stat {
-    text-align: center;
-    background: white;
+.list-stats {
+    background: var(--white);
     padding: 8px 16px;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
 }
 
-.questions-stats .stat .label {
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
     display: block;
     font-size: 0.7rem;
-    color: #6c757d;
+    color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.questions-stats .stat .value {
+.stat-value {
     font-size: 1.3rem;
     font-weight: 800;
     color: var(--primary);
@@ -803,44 +1176,44 @@
 
 /* Questions List */
 .questions-list {
-    padding: 25px;
-    max-height: 600px;
+    padding: 24px;
+    max-height: 700px;
     overflow-y: auto;
 }
 
-.question-item {
+.question-card {
     display: flex;
-    gap: 15px;
+    gap: 16px;
+    background: var(--light);
+    border-radius: var(--radius-lg);
     padding: 20px;
-    background: #f8f9fa;
-    border-radius: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
     transition: all 0.3s;
-    border: 1px solid #e9ecef;
-    position: relative;
 }
 
-.question-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+.question-card:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
     border-color: var(--primary);
 }
 
-.question-drag {
+.question-card-drag {
+    color: var(--gray);
+    padding-top: 4px;
     cursor: move;
-    padding-top: 8px;
-    color: #adb5bd;
+    font-size: 18px;
 }
 
-.question-content {
+.question-card-content {
     flex: 1;
 }
 
-.question-header {
+.question-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
     gap: 10px;
 }
@@ -851,145 +1224,176 @@
     flex-wrap: wrap;
 }
 
-.question-badges .badge {
-    padding: 6px 12px;
-    font-weight: 600;
-    font-size: 0.75rem;
-    border-radius: 8px;
-}
-
-.type-badge {
+.badge-number {
+    background: var(--primary);
+    color: white;
     padding: 6px 12px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.badge-type {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
 }
 
 .type-multiple_choice {
-    background: rgba(67, 97, 238, 0.1);
+    background: var(--primary-light);
     color: var(--primary);
 }
 
 .type-single_choice {
-    background: rgba(76, 201, 240, 0.1);
+    background: var(--success-light);
     color: var(--success);
 }
 
 .type-true_false {
-    background: rgba(248, 150, 30, 0.1);
+    background: var(--warning-light);
     color: var(--warning);
 }
 
 .type-fill_blank {
-    background: rgba(63, 55, 201, 0.1);
-    color: var(--secondary);
+    background: var(--info-light);
+    color: var(--info);
 }
 
-.question-text {
-    font-size: 1rem;
+.badge-points {
+    background: var(--dark);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.question-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1.1rem;
+}
+
+.action-btn.edit {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.action-btn.edit:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.action-btn.delete {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.action-btn.delete:hover {
+    background: var(--danger);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.question-card-text {
+    font-size: 1.1rem;
     color: var(--dark);
     margin-bottom: 15px;
     line-height: 1.6;
     font-weight: 500;
 }
 
-.question-image {
+.question-card-image {
     margin-bottom: 15px;
 }
 
-.question-image img {
+.question-card-image img {
     max-width: 200px;
     max-height: 150px;
-    border-radius: 12px;
-    border: 2px solid white;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border);
 }
 
-.question-answers {
+.question-card-answers {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
 }
 
-.answer-item {
+.answer-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 15px;
-    background: white;
-    border-radius: 10px;
+    padding: 12px 16px;
+    background: var(--white);
+    border-radius: var(--radius-md);
     border-left: 4px solid transparent;
-    transition: all 0.3s;
+    font-size: 0.95rem;
 }
 
-.answer-item.correct {
+.answer-row.correct {
     border-left-color: var(--success);
-    background: rgba(76, 201, 240, 0.05);
+    background: var(--success-light);
 }
 
-.answer-marker {
+.answer-letter {
     width: 28px;
     height: 28px;
     border-radius: 8px;
-    background: #e9ecef;
+    background: var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    color: #495057;
+    color: var(--dark);
+    flex-shrink: 0;
 }
 
 .answer-text {
     flex: 1;
-    font-size: 0.95rem;
-    color: #495057;
+    font-size: 1rem;
+    color: var(--dark);
+    word-break: break-word;
 }
 
-/* Action Buttons */
-.question-actions {
-    display: flex;
-    gap: 8px;
+.correct-icon {
+    color: var(--success);
+    font-size: 1.2rem;
+    flex-shrink: 0;
 }
 
-.action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    cursor: pointer;
+.answer-icon {
+    color: var(--info);
+    font-size: 1.1rem;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
 }
 
-.action-btn:hover {
-    transform: translateY(-2px);
-}
-
-.edit-btn {
-    background: rgba(67, 97, 238, 0.1);
-    color: var(--primary);
-}
-
-.edit-btn:hover {
-    background: var(--primary);
+.case-badge {
+    background: var(--warning);
     color: white;
-    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-}
-
-.delete-btn {
-    background: rgba(247, 37, 133, 0.1);
-    color: var(--danger);
-}
-
-.delete-btn:hover {
-    background: var(--danger);
-    color: white;
-    box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
 }
 
 /* Empty State */
@@ -1002,56 +1406,163 @@
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    background: #f8f9fa;
+    background: var(--light);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 25px;
+    margin: 0 auto 20px;
 }
 
 .empty-state-icon i {
     font-size: 3rem;
-    color: #adb5bd;
+    color: var(--gray);
 }
 
-.empty-state h5 {
+.empty-state h4 {
     color: var(--dark);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.empty-state p {
+    color: var(--gray);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Alerts */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.alert-success {
+    background: var(--success-light);
+    border-left: 4px solid var(--success);
+    color: var(--success);
+}
+
+.alert-danger {
+    background: var(--danger-light);
+    border-left: 4px solid var(--danger);
+    color: var(--danger);
+}
+
+.alert-error {
+    background: var(--danger-light);
+    border-left: 4px solid var(--danger);
+    color: var(--danger);
+}
+
+.alert-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-content ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 4px;
+    font-size: 1.1rem;
+}
+
+.alert-close:hover {
+    opacity: 1;
 }
 
 /* Modal */
 .modal-content {
-    border-radius: 20px;
     border: none;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
 }
 
 .modal-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
     color: white;
-    border-radius: 20px 20px 0 0;
-    padding: 20px 25px;
+    border: none;
+    padding: 20px 24px;
 }
 
 .modal-header .btn-close {
-    filter: brightness(0) invert(1);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-header .btn-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.2rem;
 }
 
 .modal-body {
-    padding: 25px;
+    padding: 24px;
     max-height: 70vh;
     overflow-y: auto;
 }
 
-/* Scrollbar Styling */
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--light);
     border-radius: 10px;
 }
 
@@ -1065,14 +1576,23 @@
 }
 
 /* Responsive */
+@media (max-width: 1400px) {
+    .option-field, .blank-field {
+        min-width: 280px;
+    }
+}
+
 @media (max-width: 1200px) {
-    .option-content, .blank-content {
-        flex-direction: column;
-        align-items: stretch;
+    .content-grid {
+        grid-template-columns: 1fr;
     }
     
-    .option-correct, .blank-case {
-        min-width: auto;
+    .form-column {
+        position: static;
+    }
+    
+    .option-field, .blank-field {
+        min-width: 250px;
     }
 }
 
@@ -1080,7 +1600,6 @@
     .header-section {
         flex-direction: column;
         align-items: flex-start;
-        padding: 20px;
     }
     
     .header-actions {
@@ -1091,67 +1610,57 @@
         flex: 1;
     }
     
-    .info-bar {
+    .info-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .option-input-group, .blank-input-group {
         flex-direction: column;
-        align-items: flex-start;
-        padding: 20px;
+        align-items: stretch;
     }
     
-    .info-bar-item {
-        width: 100%;
+    .option-field, .blank-field {
+        min-width: 100%;
     }
     
-    .form-card {
-        position: static;
-        margin-bottom: 20px;
+    .option-check, .blank-case {
+        min-width: auto;
     }
     
-    .questions-stats {
-        width: 100%;
-        justify-content: space-around;
-    }
-    
-    .questions-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    
-    .question-header {
+    .question-card-header {
         flex-direction: column;
         align-items: flex-start;
     }
     
-    .question-actions {
+    .question-card-actions {
         width: 100%;
         justify-content: flex-end;
     }
 }
 
 @media (max-width: 576px) {
-    .questions-stats {
+    .question-card {
         flex-direction: column;
-        gap: 10px;
     }
     
-    .questions-stats .stat {
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .question-card-drag {
+        align-self: flex-start;
     }
     
-    .questions-stats .stat .label {
-        display: inline-block;
-        margin-right: 10px;
-    }
-    
-    .answer-item {
+    .answer-row {
         flex-wrap: wrap;
+    }
+    
+    .option-item, .blank-item {
+        padding: 16px;
     }
     
     .option-remove, .blank-remove {
         width: 100%;
-        margin-top: 5px;
     }
 }
 </style>
@@ -1188,8 +1697,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const questionType = document.getElementById('questionType');
     if (questionType) {
         toggleSections(questionType.value);
-        
-        // Add change event listener
         questionType.addEventListener('change', function() {
             toggleSections(this.value);
         });
@@ -1212,15 +1719,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    imagePreview.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 100px; border-radius: 4px;">
-                    `;
+                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                 }
                 reader.readAsDataURL(this.files[0]);
             } else {
                 imagePreview.innerHTML = `
-                    <i class="fas fa-image"></i>
+                    <i class="fas fa-cloud-upload-alt"></i>
                     <span>Click to upload image</span>
+                    <small>PNG, JPG, GIF up to 2MB</small>
                 `;
             }
         });
@@ -1241,7 +1747,6 @@ function toggleSections(type) {
     
     if (!optionsSection || !fillBlanksSection) return;
     
-    // First, disable all inputs in both sections
     disableAllInputs();
     
     if (type === 'fill_blank') {
@@ -1256,28 +1761,28 @@ function toggleSections(type) {
 }
 
 function disableAllInputs() {
-    document.querySelectorAll('.option-input, .option-row input[type="checkbox"], .blank-input, .blank-row input[type="checkbox"]').forEach(input => {
+    document.querySelectorAll('.option-text, .option-item input[type="checkbox"], .blank-text, .blank-item input[type="checkbox"]').forEach(input => {
         input.disabled = true;
     });
 }
 
 function enableOptionsInputs() {
-    document.querySelectorAll('.option-input, .option-row input[type="checkbox"]').forEach(input => {
+    document.querySelectorAll('.option-text, .option-item input[type="checkbox"]').forEach(input => {
         input.disabled = false;
     });
     const optionsCount = document.getElementById('optionsCount');
     if (optionsCount) {
-        optionsCount.textContent = document.querySelectorAll('.option-row').length + ' options';
+        optionsCount.textContent = document.querySelectorAll('.option-item').length + ' options';
     }
 }
 
 function enableFillBlanksInputs() {
-    document.querySelectorAll('.blank-input, .blank-row input[type="checkbox"]').forEach(input => {
+    document.querySelectorAll('.blank-text, .blank-item input[type="checkbox"]').forEach(input => {
         input.disabled = false;
     });
     const blanksCount = document.getElementById('blanksCount');
     if (blanksCount) {
-        blanksCount.textContent = document.querySelectorAll('.blank-row').length + ' answers';
+        blanksCount.textContent = document.querySelectorAll('.blank-item').length + ' answers';
     }
 }
 
@@ -1297,30 +1802,27 @@ function addOption() {
     const index = container.children.length;
     
     const div = document.createElement('div');
-    div.className = 'option-row';
+    div.className = 'option-item';
     div.setAttribute('data-index', index);
     div.innerHTML = `
         <div class="option-drag">
-            <i class="fas fa-grip-vertical text-muted"></i>
+            <i class="fas fa-grip-vertical"></i>
         </div>
-        <div class="option-content">
-            <div class="option-input-wrapper">
+        <div class="option-input-group">
+            <div class="option-field">
                 <input type="text" 
                        name="options[${index}][text]" 
-                       class="form-control option-input" 
+                       class="option-text" 
                        placeholder="Enter option ${index + 1}">
             </div>
-            <div class="option-correct">
-                <div class="form-check">
+            <div class="option-check">
+                <label class="checkbox-label">
                     <input type="checkbox" 
                            name="options[${index}][is_correct]" 
-                           id="option${index}Correct" 
-                           class="form-check-input" 
                            value="1">
-                    <label class="form-check-label" for="option${index}Correct">
-                        Correct
-                    </label>
-                </div>
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Correct</span>
+                </label>
             </div>
             <button type="button" class="option-remove" onclick="removeOption(this)">
                 <i class="fas fa-times"></i>
@@ -1329,7 +1831,6 @@ function addOption() {
     `;
     container.appendChild(div);
     
-    // Enable inputs if needed
     if (document.getElementById('questionType').value !== 'fill_blank') {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
@@ -1341,19 +1842,19 @@ function addOption() {
 }
 
 function removeOption(btn) {
-    const row = btn.closest('.option-row');
+    const row = btn.closest('.option-item');
     if (row) {
         row.remove();
         updateOptionsIndices();
         const optionsCount = document.getElementById('optionsCount');
         if (optionsCount) {
-            optionsCount.textContent = document.querySelectorAll('.option-row').length + ' options';
+            optionsCount.textContent = document.querySelectorAll('.option-item').length + ' options';
         }
     }
 }
 
 function updateOptionsIndices() {
-    const rows = document.querySelectorAll('#optionsContainer .option-row');
+    const rows = document.querySelectorAll('#optionsContainer .option-item');
     rows.forEach((row, index) => {
         row.setAttribute('data-index', index);
         const inputs = row.querySelectorAll('input[type="text"]');
@@ -1385,30 +1886,27 @@ function addFillBlank() {
     const index = container.children.length;
     
     const div = document.createElement('div');
-    div.className = 'blank-row';
+    div.className = 'blank-item';
     div.setAttribute('data-index', index);
     div.innerHTML = `
         <div class="blank-drag">
-            <i class="fas fa-grip-vertical text-muted"></i>
+            <i class="fas fa-grip-vertical"></i>
         </div>
-        <div class="blank-content">
-            <div class="blank-input-wrapper">
+        <div class="blank-input-group">
+            <div class="blank-field">
                 <input type="text" 
                        name="fill_blanks[${index}][answer]" 
-                       class="form-control blank-input" 
+                       class="blank-text" 
                        placeholder="Enter correct answer">
             </div>
             <div class="blank-case">
-                <div class="form-check">
+                <label class="checkbox-label">
                     <input type="checkbox" 
                            name="fill_blanks[${index}][case_sensitive]" 
-                           id="blank${index}Case" 
-                           class="form-check-input" 
                            value="1">
-                    <label class="form-check-label" for="blank${index}Case">
-                        Case Sensitive
-                    </label>
-                </div>
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Case Sensitive</span>
+                </label>
             </div>
             <button type="button" class="blank-remove" onclick="removeBlank(this)">
                 <i class="fas fa-times"></i>
@@ -1417,7 +1915,6 @@ function addFillBlank() {
     `;
     container.appendChild(div);
     
-    // Enable inputs if needed
     if (document.getElementById('questionType').value === 'fill_blank') {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
@@ -1429,19 +1926,19 @@ function addFillBlank() {
 }
 
 function removeBlank(btn) {
-    const row = btn.closest('.blank-row');
+    const row = btn.closest('.blank-item');
     if (row) {
         row.remove();
         updateBlanksIndices();
         const blanksCount = document.getElementById('blanksCount');
         if (blanksCount) {
-            blanksCount.textContent = document.querySelectorAll('.blank-row').length + ' answers';
+            blanksCount.textContent = document.querySelectorAll('.blank-item').length + ' answers';
         }
     }
 }
 
 function updateBlanksIndices() {
-    const rows = document.querySelectorAll('#fillBlanksContainer .blank-row');
+    const rows = document.querySelectorAll('#fillBlanksContainer .blank-item');
     rows.forEach((row, index) => {
         row.setAttribute('data-index', index);
         const inputs = row.querySelectorAll('input[type="text"]');
@@ -1470,22 +1967,19 @@ function deleteQuestion(id) {
 }
 
 function editQuestion(id) {
-    // Show modal with loading spinner
     const modal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
     const editContent = document.getElementById('editQuestionContent');
     
     if (!editContent) return;
     
     editContent.innerHTML = `
-        <div class="text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading question...</p>
         </div>
     `;
     modal.show();
     
-    // Fetch question data
     fetch(`/admin/quizzes/questions/${id}/edit`, {
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -1493,23 +1987,18 @@ function editQuestion(id) {
         }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
+        if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
     })
     .then(question => {
-        // Build the edit form
         const form = buildEditForm(question);
         editContent.innerHTML = form;
-        
-        // Initialize form handlers
         initializeEditForm(question.id);
     })
     .catch(error => {
         console.error('Error:', error);
         editContent.innerHTML = `
-            <div class="alert alert-danger m-3">
+            <div class="alert alert-danger">
                 <i class="fas fa-exclamation-circle me-2"></i>
                 Error loading question. Please try again.
             </div>
@@ -1521,33 +2010,29 @@ function buildEditForm(question) {
     let optionsHtml = '';
     let blanksHtml = '';
     
-    // Build options HTML for multiple choice/single choice/true false
     if (['multiple_choice', 'single_choice', 'true_false'].includes(question.question_type)) {
         optionsHtml = question.options.map((option, index) => `
-            <div class="option-row" data-index="${index}">
+            <div class="option-item" data-index="${index}">
                 <div class="option-drag">
-                    <i class="fas fa-grip-vertical text-muted"></i>
+                    <i class="fas fa-grip-vertical"></i>
                 </div>
-                <div class="option-content">
-                    <div class="option-input-wrapper">
+                <div class="option-input-group">
+                    <div class="option-field">
                         <input type="text" 
                                name="options[${index}][text]" 
-                               class="form-control option-input" 
+                               class="option-text" 
                                placeholder="Enter option ${index + 1}"
                                value="${option.option_text.replace(/"/g, '&quot;')}">
                     </div>
-                    <div class="option-correct">
-                        <div class="form-check">
+                    <div class="option-check">
+                        <label class="checkbox-label">
                             <input type="checkbox" 
                                    name="options[${index}][is_correct]" 
-                                   id="option${index}Correct" 
-                                   class="form-check-input" 
                                    value="1"
                                    ${option.is_correct ? 'checked' : ''}>
-                            <label class="form-check-label" for="option${index}Correct">
-                                Correct
-                            </label>
-                        </div>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Correct</span>
+                        </label>
                     </div>
                     <button type="button" class="option-remove" onclick="removeOption(this)">
                         <i class="fas fa-times"></i>
@@ -1557,33 +2042,29 @@ function buildEditForm(question) {
         `).join('');
     }
     
-    // Build fill blanks HTML
     if (question.question_type === 'fill_blank') {
         blanksHtml = question.fill_blanks.map((blank, index) => `
-            <div class="blank-row" data-index="${index}">
+            <div class="blank-item" data-index="${index}">
                 <div class="blank-drag">
-                    <i class="fas fa-grip-vertical text-muted"></i>
+                    <i class="fas fa-grip-vertical"></i>
                 </div>
-                <div class="blank-content">
-                    <div class="blank-input-wrapper">
+                <div class="blank-input-group">
+                    <div class="blank-field">
                         <input type="text" 
                                name="fill_blanks[${index}][answer]" 
-                               class="form-control blank-input" 
+                               class="blank-text" 
                                placeholder="Enter correct answer"
                                value="${blank.correct_answer.replace(/"/g, '&quot;')}">
                     </div>
                     <div class="blank-case">
-                        <div class="form-check">
+                        <label class="checkbox-label">
                             <input type="checkbox" 
                                    name="fill_blanks[${index}][case_sensitive]" 
-                                   id="blank${index}Case" 
-                                   class="form-check-input" 
                                    value="1"
                                    ${blank.case_sensitive ? 'checked' : ''}>
-                            <label class="form-check-label" for="blank${index}Case">
-                                Case Sensitive
-                            </label>
-                        </div>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Case Sensitive</span>
+                        </label>
                     </div>
                     <button type="button" class="blank-remove" onclick="removeBlank(this)">
                         <i class="fas fa-times"></i>
@@ -1593,132 +2074,143 @@ function buildEditForm(question) {
         `).join('');
     }
     
-    // Build the complete form
     return `
         <form id="editQuestionForm" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
             <input type="hidden" name="_method" value="PUT">
             
-            <!-- Question Type -->
-            <div class="form-group mb-4">
+            <div class="form-group">
                 <label class="form-label">Question Type</label>
-                <select name="question_type" class="form-select form-select-lg" id="editQuestionType" required>
-                    <option value="multiple_choice" ${question.question_type === 'multiple_choice' ? 'selected' : ''}>Multiple Choice (Select all that apply)</option>
-                    <option value="single_choice" ${question.question_type === 'single_choice' ? 'selected' : ''}>Single Choice (Select one)</option>
-                    <option value="true_false" ${question.question_type === 'true_false' ? 'selected' : ''}>True/False</option>
-                    <option value="fill_blank" ${question.question_type === 'fill_blank' ? 'selected' : ''}>Fill in the Blank</option>
-                    <option value="matching" ${question.question_type === 'matching' ? 'selected' : ''}>Matching</option>
-                    <option value="image_selection" ${question.question_type === 'image_selection' ? 'selected' : ''}>Image Selection</option>
-                </select>
+                <div class="select-wrapper">
+                    <select name="question_type" class="form-select" id="editQuestionType" required>
+                        <option value="multiple_choice" ${question.question_type === 'multiple_choice' ? 'selected' : ''}>Multiple Choice</option>
+                        <option value="single_choice" ${question.question_type === 'single_choice' ? 'selected' : ''}>Single Choice</option>
+                        <option value="true_false" ${question.question_type === 'true_false' ? 'selected' : ''}>True/False</option>
+                        <option value="fill_blank" ${question.question_type === 'fill_blank' ? 'selected' : ''}>Fill in the Blank</option>
+                    </select>
+                    <i class="fas fa-chevron-down select-arrow"></i>
+                </div>
             </div>
             
-            <!-- Question Text -->
-            <div class="form-group mb-4">
+            <div class="form-group">
                 <label class="form-label">Question Text</label>
-                <textarea name="question_text" class="form-control form-control-lg" rows="3" required>${question.question_text.replace(/</g, '&lt;')}</textarea>
+                <textarea name="question_text" class="form-control" rows="3" required>${question.question_text.replace(/</g, '&lt;')}</textarea>
             </div>
             
-            <!-- Points -->
-            <div class="form-group mb-4">
+            <div class="form-group">
                 <label class="form-label">Points</label>
-                <input type="number" name="points" class="form-control form-control-lg" value="${question.points}" min="1">
+                <div class="input-wrapper">
+                    <i class="fas fa-star input-icon"></i>
+                    <input type="number" name="points" value="${question.points}" min="1">
+                </div>
             </div>
             
-            <!-- Current Image -->
             ${question.image ? `
-                <div class="form-group mb-4">
+                <div class="form-group">
                     <label class="form-label">Current Image</label>
-                    <div>
-                        <img src="/storage/${question.image}" alt="Question image" style="max-width: 200px; max-height: 150px; border-radius: 12px; border: 2px solid #e9ecef;">
+                    <div class="current-image">
+                        <img src="/storage/${question.image}" alt="Question image">
                     </div>
                 </div>
             ` : ''}
             
-            <!-- New Image -->
-            <div class="form-group mb-4">
+            <div class="form-group">
                 <label class="form-label">${question.image ? 'Change Image' : 'Image'}</label>
-                <input type="file" name="image" class="form-control form-control-lg" accept="image/*">
+                <div class="file-upload">
+                    <input type="file" name="image" accept="image/*">
+                    <div class="file-preview">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload image</span>
+                        <small>PNG, JPG, GIF up to 2MB</small>
+                    </div>
+                </div>
             </div>
             
-            <!-- Options Section -->
-            <div id="editOptionsSection" class="mb-4" style="${question.question_type === 'fill_blank' ? 'display: none;' : 'display: block;'}">
-                <div class="section-label">
-                    <label class="form-label fw-bold">Answer Options</label>
-                    <span class="badge bg-primary" id="editOptionsCount">${question.options ? question.options.length : 2} options</span>
+            <div id="editOptionsSection" class="options-section" style="${question.question_type === 'fill_blank' ? 'display: none;' : 'display: block;'}">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-list-ul"></i>
+                        <h4>Answer Options</h4>
+                    </div>
+                    <span class="options-badge" id="editOptionsCount">${question.options ? question.options.length : 2} options</span>
                 </div>
                 <div id="editOptionsContainer" class="options-container">
                     ${optionsHtml || `
-                        <div class="option-row" data-index="0">
-                            <div class="option-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
-                            <div class="option-content">
-                                <div class="option-input-wrapper">
-                                    <input type="text" name="options[0][text]" class="form-control option-input" placeholder="Enter option 1">
+                        <div class="option-item" data-index="0">
+                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="option-input-group">
+                                <div class="option-field">
+                                    <input type="text" name="options[0][text]" class="option-text" placeholder="Enter option 1">
                                 </div>
-                                <div class="option-correct">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="options[0][is_correct]" id="option0Correct" class="form-check-input" value="1">
-                                        <label class="form-check-label" for="option0Correct">Correct</label>
-                                    </div>
+                                <div class="option-check">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="options[0][is_correct]" value="1">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">Correct</span>
+                                    </label>
                                 </div>
                                 <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
-                        <div class="option-row" data-index="1">
-                            <div class="option-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
-                            <div class="option-content">
-                                <div class="option-input-wrapper">
-                                    <input type="text" name="options[1][text]" class="form-control option-input" placeholder="Enter option 2">
+                        <div class="option-item" data-index="1">
+                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="option-input-group">
+                                <div class="option-field">
+                                    <input type="text" name="options[1][text]" class="option-text" placeholder="Enter option 2">
                                 </div>
-                                <div class="option-correct">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="options[1][is_correct]" id="option1Correct" class="form-check-input" value="1">
-                                        <label class="form-check-label" for="option1Correct">Correct</label>
-                                    </div>
+                                <div class="option-check">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="options[1][is_correct]" value="1">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">Correct</span>
+                                    </label>
                                 </div>
                                 <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
                     `}
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addEditOption()">
-                    <i class="fas fa-plus me-1"></i> Add Option
+                <button type="button" class="btn-add" onclick="addEditOption()">
+                    <i class="fas fa-plus"></i> Add Option
                 </button>
             </div>
             
-            <!-- Fill Blanks Section -->
-            <div id="editFillBlanksSection" class="mb-4" style="${question.question_type === 'fill_blank' ? 'display: block;' : 'display: none;'}">
-                <div class="section-label">
-                    <label class="form-label fw-bold">Correct Answers</label>
-                    <span class="badge bg-primary" id="editBlanksCount">${question.fill_blanks ? question.fill_blanks.length : 1} answers</span>
+            <div id="editFillBlanksSection" class="blanks-section" style="${question.question_type === 'fill_blank' ? 'display: block;' : 'display: none;'}">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-pencil-alt"></i>
+                        <h4>Correct Answers</h4>
+                    </div>
+                    <span class="options-badge" id="editBlanksCount">${question.fill_blanks ? question.fill_blanks.length : 1} answers</span>
                 </div>
                 <div id="editBlanksContainer" class="blanks-container">
                     ${blanksHtml || `
-                        <div class="blank-row" data-index="0">
-                            <div class="blank-drag"><i class="fas fa-grip-vertical text-muted"></i></div>
-                            <div class="blank-content">
-                                <div class="blank-input-wrapper">
-                                    <input type="text" name="fill_blanks[0][answer]" class="form-control blank-input" placeholder="Enter correct answer">
+                        <div class="blank-item" data-index="0">
+                            <div class="blank-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="blank-input-group">
+                                <div class="blank-field">
+                                    <input type="text" name="fill_blanks[0][answer]" class="blank-text" placeholder="Enter correct answer">
                                 </div>
                                 <div class="blank-case">
-                                    <div class="form-check">
-                                        <input type="checkbox" name="fill_blanks[0][case_sensitive]" id="blank0Case" class="form-check-input" value="1">
-                                        <label class="form-check-label" for="blank0Case">Case Sensitive</label>
-                                    </div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="fill_blanks[0][case_sensitive]" value="1">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">Case Sensitive</span>
+                                    </label>
                                 </div>
                                 <button type="button" class="blank-remove" onclick="removeBlank(this)"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
                     `}
                 </div>
-                <button type="button" class="btn btn-sm btn-outline-primary mt-3" onclick="addEditBlank()">
-                    <i class="fas fa-plus me-1"></i> Add Answer
+                <button type="button" class="btn-add" onclick="addEditBlank()">
+                    <i class="fas fa-plus"></i> Add Answer
                 </button>
             </div>
             
-            <!-- Submit Button -->
-            <div class="form-actions mt-4">
-                <button type="submit" class="btn btn-primary btn-lg w-100">
-                    <i class="fas fa-save me-2"></i>Update Question
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Update Question
                 </button>
             </div>
         </form>
@@ -1731,15 +2223,12 @@ function initializeEditForm(questionId) {
     
     if (!form) return;
     
-    // Initialize Sortable
     const optionsContainer = document.getElementById('editOptionsContainer');
     if (optionsContainer) {
         new Sortable(optionsContainer, {
             handle: '.option-drag',
             animation: 150,
-            onEnd: function() {
-                updateEditOptionsIndices();
-            }
+            onEnd: updateEditOptionsIndices
         });
     }
     
@@ -1748,13 +2237,10 @@ function initializeEditForm(questionId) {
         new Sortable(blanksContainer, {
             handle: '.blank-drag',
             animation: 150,
-            onEnd: function() {
-                updateEditBlanksIndices();
-            }
+            onEnd: updateEditBlanksIndices
         });
     }
     
-    // Handle question type change
     if (questionType) {
         questionType.addEventListener('change', function() {
             const optionsSection = document.getElementById('editOptionsSection');
@@ -1770,20 +2256,15 @@ function initializeEditForm(questionId) {
         });
     }
     
-    // Handle form submission
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Show loading state
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
         submitBtn.disabled = true;
         
         const formData = new FormData(this);
-        
-        // Log form data for debugging
-        console.log('Submitting form data...');
         
         fetch(`/admin/quizzes/questions/${questionId}`, {
             method: 'POST',
@@ -1794,29 +2275,19 @@ function initializeEditForm(questionId) {
             }
         })
         .then(response => {
-            console.log('Response status:', response.status);
             if (!response.ok) {
                 return response.json().then(err => { throw err; });
             }
             return response.json();
         })
         .then(data => {
-            console.log('Response data:', data);
-            
             if (data.success) {
-                // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editQuestionModal'));
-                if (modal) {
-                    modal.hide();
-                }
+                if (modal) modal.hide();
                 
-                // Show success message
                 showNotification('Question updated successfully!', 'success');
                 
-                // Reload the page after a short delay
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
+                setTimeout(() => location.reload(), 1500);
             } else {
                 throw new Error(data.message || 'Error updating question');
             }
@@ -1824,10 +2295,8 @@ function initializeEditForm(questionId) {
         .catch(error => {
             console.error('Error:', error);
             
-            // Show error message
             let errorMessage = 'Error updating question. Please try again.';
             if (error.errors) {
-                // Handle validation errors
                 errorMessage = Object.values(error.errors).flat().join('\n');
             } else if (error.message) {
                 errorMessage = error.message;
@@ -1835,39 +2304,34 @@ function initializeEditForm(questionId) {
             
             showNotification(errorMessage, 'error');
             
-            // Reset button state
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         });
     });
 }
 
-// Helper function to show notifications
 function showNotification(message, type = 'success') {
-    // Remove any existing notifications
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(notification => notification.remove());
     
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
         <div class="notification-content">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
             <span>${message}</span>
         </div>
     `;
     
-    // Add styles for notification
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
         z-index: 9999;
         min-width: 300px;
-        padding: 15px 20px;
+        padding: 16px 20px;
         border-radius: 10px;
-        background: ${type === 'success' ? 'linear-gradient(135deg, #00b09b, #96c93d)' : 'linear-gradient(135deg, #ff6b6b, #ee5253)'};
+        background: ${type === 'success' ? 'linear-gradient(135deg, #06d6a0, #05b586)' : 'linear-gradient(135deg, #ef476f, #d63e62)'};
         color: white;
         box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         transform: translateX(400px);
@@ -1879,29 +2343,21 @@ function showNotification(message, type = 'success') {
     
     document.body.appendChild(notification);
     
-    // Animate in
     setTimeout(() => {
         notification.style.transform = 'translateX(0)';
     }, 100);
     
-    // Auto remove after 3 seconds
     setTimeout(() => {
         notification.style.transform = 'translateX(400px)';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        setTimeout(() => notification.remove(), 300);
     }, 3000);
     
-    // Remove on click
     notification.addEventListener('click', function() {
         notification.style.transform = 'translateX(400px)';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        setTimeout(() => notification.remove(), 300);
     });
 }
 
-// Helper functions for edit form
 function addEditOption() {
     const container = document.getElementById('editOptionsContainer');
     if (!container) return;
@@ -1909,30 +2365,27 @@ function addEditOption() {
     const index = container.children.length;
     
     const div = document.createElement('div');
-    div.className = 'option-row';
+    div.className = 'option-item';
     div.setAttribute('data-index', index);
     div.innerHTML = `
         <div class="option-drag">
-            <i class="fas fa-grip-vertical text-muted"></i>
+            <i class="fas fa-grip-vertical"></i>
         </div>
-        <div class="option-content">
-            <div class="option-input-wrapper">
+        <div class="option-input-group">
+            <div class="option-field">
                 <input type="text" 
                        name="options[${index}][text]" 
-                       class="form-control option-input" 
+                       class="option-text" 
                        placeholder="Enter option ${index + 1}">
             </div>
-            <div class="option-correct">
-                <div class="form-check">
+            <div class="option-check">
+                <label class="checkbox-label">
                     <input type="checkbox" 
                            name="options[${index}][is_correct]" 
-                           id="option${index}Correct" 
-                           class="form-check-input" 
                            value="1">
-                    <label class="form-check-label" for="option${index}Correct">
-                        Correct
-                    </label>
-                </div>
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Correct</span>
+                </label>
             </div>
             <button type="button" class="option-remove" onclick="removeOption(this)">
                 <i class="fas fa-times"></i>
@@ -1954,30 +2407,27 @@ function addEditBlank() {
     const index = container.children.length;
     
     const div = document.createElement('div');
-    div.className = 'blank-row';
+    div.className = 'blank-item';
     div.setAttribute('data-index', index);
     div.innerHTML = `
         <div class="blank-drag">
-            <i class="fas fa-grip-vertical text-muted"></i>
+            <i class="fas fa-grip-vertical"></i>
         </div>
-        <div class="blank-content">
-            <div class="blank-input-wrapper">
+        <div class="blank-input-group">
+            <div class="blank-field">
                 <input type="text" 
                        name="fill_blanks[${index}][answer]" 
-                       class="form-control blank-input" 
+                       class="blank-text" 
                        placeholder="Enter correct answer">
             </div>
             <div class="blank-case">
-                <div class="form-check">
+                <label class="checkbox-label">
                     <input type="checkbox" 
                            name="fill_blanks[${index}][case_sensitive]" 
-                           id="blank${index}Case" 
-                           class="form-check-input" 
                            value="1">
-                    <label class="form-check-label" for="blank${index}Case">
-                        Case Sensitive
-                    </label>
-                </div>
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Case Sensitive</span>
+                </label>
             </div>
             <button type="button" class="blank-remove" onclick="removeBlank(this)">
                 <i class="fas fa-times"></i>
@@ -1993,7 +2443,7 @@ function addEditBlank() {
 }
 
 function updateEditOptionsIndices() {
-    const rows = document.querySelectorAll('#editOptionsContainer .option-row');
+    const rows = document.querySelectorAll('#editOptionsContainer .option-item');
     rows.forEach((row, index) => {
         row.setAttribute('data-index', index);
         const inputs = row.querySelectorAll('input[type="text"]');
@@ -2019,7 +2469,7 @@ function updateEditOptionsIndices() {
 }
 
 function updateEditBlanksIndices() {
-    const rows = document.querySelectorAll('#editBlanksContainer .blank-row');
+    const rows = document.querySelectorAll('#editBlanksContainer .blank-item');
     rows.forEach((row, index) => {
         row.setAttribute('data-index', index);
         const inputs = row.querySelectorAll('input[type="text"]');
