@@ -1403,13 +1403,13 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="{{ route('quizzes.results', ['quiz' => $attempt->quiz->id ?? '#', 'attempt' => $attempt->id ?? '#']) }}" 
+                                            <a href="{{ route('quizzes.results', ['quiz' => $attempt->quiz->id, 'attempt' => $attempt->id]) }}" 
                                                class="action-btn">
                                                 <i class="fas fa-eye"></i>
                                                 View
                                             </a>
                                             @if(!$attempt->passed)
-                                                <a href="{{ route('quizzes.take', $attempt->quiz->id ?? '#') }}" 
+                                                <a href="{{ route('quizzes.take', ['quiz' => $attempt->quiz->id, 'attempt' => $attempt->id]) }}" 
                                                    class="retry-btn">
                                                     <i class="fas fa-redo-alt"></i>
                                                     Retry
