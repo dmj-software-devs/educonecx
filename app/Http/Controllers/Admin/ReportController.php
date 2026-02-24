@@ -39,10 +39,10 @@ class ReportController extends Controller
 
         // Daily sales
         $dailySales = Order::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as count'),
-                DB::raw('SUM(total) as total')
-            )
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as count'),
+            DB::raw('SUM(total) as total')
+        )
             ->whereBetween('created_at', [$startDate, $endDate])
             ->where('payment_status', 'paid')
             ->groupBy('date')
@@ -63,8 +63,13 @@ class ReportController extends Controller
             ->get();
 
         return view('admin.reports.sales', compact(
-            'startDate', 'endDate', 'totalRevenue', 'totalOrders',
-            'averageOrderValue', 'dailySales', 'topCourses'
+            'startDate',
+            'endDate',
+            'totalRevenue',
+            'totalOrders',
+            'averageOrderValue',
+            'dailySales',
+            'topCourses'
         ));
     }
 
@@ -86,17 +91,17 @@ class ReportController extends Controller
 
         // Active students (with enrollments in last 30 days)
         $activeStudents = User::where('role', 'student')
-            ->whereHas('enrollments', function($q) {
+            ->whereHas('enrollments', function ($q) {
                 $q->where('last_accessed', '>=', now()->subDays(30));
             })
             ->count();
 
         // Student growth by month
         $studentGrowth = User::select(
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('COUNT(*) as count')
-            )
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
             ->where('role', 'student')
             ->groupBy('year', 'month')
             ->orderBy('year', 'desc')
@@ -116,8 +121,13 @@ class ReportController extends Controller
             ->get();
 
         return view('admin.reports.students', compact(
-            'startDate', 'endDate', 'newStudents', 'totalStudents',
-            'activeStudents', 'studentGrowth', 'topStudents'
+            'startDate',
+            'endDate',
+            'newStudents',
+            'totalStudents',
+            'activeStudents',
+            'studentGrowth',
+            'topStudents'
         ));
     }
 
@@ -146,18 +156,23 @@ class ReportController extends Controller
             ->get();
 
         // Highest rated courses
-        $topRatedCourses = Course::select('courses.*')
-            ->selectRaw('AVG(reviews.rating) as avg_rating')
-            ->join('reviews', 'courses.id', '=', 'reviews.course_id')
-            ->where('reviews.status', 'approved')
-            ->groupBy('courses.id')
-            ->orderBy('avg_rating', 'desc')
+        $topRatedCourses = Course::withAvg(['reviews' => function ($query) {
+            $query->where('status', 'approved');
+        }], 'rating')
+            ->where('status', 'published')
+            ->having('reviews_avg_rating', '>', 0)
+            ->orderBy('reviews_avg_rating', 'desc')
             ->take(10)
             ->get();
 
         return view('admin.reports.courses', compact(
-            'startDate', 'endDate', 'totalCourses', 'totalEnrollments',
-            'averageRating', 'popularCourses', 'topRatedCourses'
+            'startDate',
+            'endDate',
+            'totalCourses',
+            'totalEnrollments',
+            'averageRating',
+            'popularCourses',
+            'topRatedCourses'
         ));
     }
 
@@ -192,9 +207,9 @@ class ReportController extends Controller
             ->groupBy('quizzes.id')
             ->having('attempts', '>', 0)
             ->get()
-            ->map(function($quiz) {
-                $quiz->pass_rate = $quiz->attempts > 0 
-                    ? round(($quiz->passes / $quiz->attempts) * 100, 2) 
+            ->map(function ($quiz) {
+                $quiz->pass_rate = $quiz->attempts > 0
+                    ? round(($quiz->passes / $quiz->attempts) * 100, 2)
                     : 0;
                 return $quiz;
             })
@@ -202,8 +217,13 @@ class ReportController extends Controller
             ->take(10);
 
         return view('admin.reports.quizzes', compact(
-            'startDate', 'endDate', 'totalQuizzes', 'totalAttempts',
-            'averageScore', 'popularQuizzes', 'quizPassRates'
+            'startDate',
+            'endDate',
+            'totalQuizzes',
+            'totalAttempts',
+            'averageScore',
+            'popularQuizzes',
+            'quizPassRates'
         ));
     }
 
@@ -214,7 +234,7 @@ class ReportController extends Controller
     {
         // Implement export functionality (CSV, PDF, Excel)
         // This would use packages like maatwebsite/excel or barryvdh/laravel-dompdf
-        
+
         return back()->with('info', 'Export functionality coming soon.');
     }
 }
