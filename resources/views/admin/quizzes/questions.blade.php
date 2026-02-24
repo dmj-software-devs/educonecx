@@ -386,6 +386,11 @@
                             <span class="options-badge" id="matchingCount">2 pairs</span>
                         </div>
                         
+                        <div class="info-message">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Define the matching pairs below. Each pair consists of a left item and its corresponding right item. All pairs are considered correct matches.</span>
+                        </div>
+                        
                         <div id="matchingPairsContainer" class="matching-container">
                             @php
                                 $oldMatchingPairs = old('matching_pairs', [
@@ -408,7 +413,7 @@
                                                value="{{ $pair['left'] ?? '' }}">
                                     </div>
                                     <div class="matching-arrow">
-                                        <i class="fas fa-arrows-alt-h"></i>
+                                        <i class="fas fa-long-arrow-alt-right"></i>
                                     </div>
                                     <div class="matching-right">
                                         <input type="text" 
@@ -416,6 +421,10 @@
                                                class="matching-right-input" 
                                                placeholder="Right item (e.g., Capital)"
                                                value="{{ $pair['right'] ?? '' }}">
+                                    </div>
+                                    <div class="matching-badge correct">
+                                        <i class="fas fa-check-circle"></i>
+                                        <span>Correct Pair</span>
                                     </div>
                                     <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
                                         <i class="fas fa-times"></i>
@@ -427,8 +436,13 @@
                         
                         <button type="button" class="btn-add" onclick="addMatchingPair()">
                             <i class="fas fa-plus"></i>
-                            Add Pair
+                            Add Matching Pair
                         </button>
+                        
+                        <div class="matching-note">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Note: For matching questions, all defined pairs are considered correct. Students will need to match each left item with its correct right item.</span>
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
@@ -606,6 +620,100 @@
 
 @push('styles')
 <style>
+/* Matching Section Enhancements */
+.info-message {
+    background: var(--info-light);
+    border-left: 4px solid var(--info);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--info);
+    font-size: 0.9rem;
+}
+
+.info-message i {
+    font-size: 1.2rem;
+}
+
+.matching-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--success-light);
+    color: var(--success);
+    border: 1px solid var(--success);
+    white-space: nowrap;
+}
+
+.matching-badge i {
+    font-size: 0.9rem;
+}
+
+.matching-badge.correct {
+    background: var(--success-light);
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.matching-arrow i {
+    color: var(--primary);
+    font-size: 1.4rem;
+}
+
+.matching-note {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: var(--light);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--gray);
+    font-size: 0.85rem;
+    border: 1px dashed var(--border);
+}
+
+.matching-note i {
+    color: var(--warning);
+    font-size: 1rem;
+}
+
+.matching-input-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.matching-left, .matching-right {
+    flex: 2;
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .matching-input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .matching-arrow {
+        transform: rotate(90deg);
+        align-self: center;
+    }
+    
+    .matching-badge {
+        align-self: flex-start;
+    }
+}
+
 /* Modern CSS Reset and Variables */
 :root {
     --primary: #4361ee;
@@ -2779,16 +2887,20 @@ function addMatchingPair() {
                 <input type="text" 
                        name="matching_pairs[${index}][left]" 
                        class="matching-left-input" 
-                       placeholder="Left item">
+                       placeholder="Left item (e.g., Country)">
             </div>
             <div class="matching-arrow">
-                <i class="fas fa-arrows-alt-h"></i>
+                <i class="fas fa-long-arrow-alt-right"></i>
             </div>
             <div class="matching-right">
                 <input type="text" 
                        name="matching_pairs[${index}][right]" 
                        class="matching-right-input" 
-                       placeholder="Right item">
+                       placeholder="Right item (e.g., Capital)">
+            </div>
+            <div class="matching-badge correct">
+                <i class="fas fa-check-circle"></i>
+                <span>Correct Pair</span>
             </div>
             <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
                 <i class="fas fa-times"></i>
@@ -2805,11 +2917,13 @@ function addMatchingPair() {
 }
 
 function removeMatchingPair(btn) {
-    const row = btn.closest('.matching-item');
-    if (row) {
-        row.remove();
-        updateMatchingIndices();
-        updateMatchingCount();
+    if (confirm('Are you sure you want to remove this matching pair?')) {
+        const row = btn.closest('.matching-item');
+        if (row) {
+            row.remove();
+            updateMatchingIndices();
+            updateMatchingCount();
+        }
     }
 }
 
@@ -2821,11 +2935,13 @@ function updateMatchingIndices() {
         const leftInput = row.querySelector('.matching-left-input');
         if (leftInput) {
             leftInput.name = `matching_pairs[${index}][left]`;
+            leftInput.placeholder = `Left item ${index + 1}`;
         }
         
         const rightInput = row.querySelector('.matching-right-input');
         if (rightInput) {
             rightInput.name = `matching_pairs[${index}][right]`;
+            rightInput.placeholder = `Right item ${index + 1}`;
         }
     });
 }
@@ -2833,7 +2949,8 @@ function updateMatchingIndices() {
 function updateMatchingCount() {
     const matchingCount = document.getElementById('matchingCount');
     if (matchingCount) {
-        matchingCount.textContent = document.querySelectorAll('#matchingPairsContainer .matching-item').length + ' pairs';
+        const count = document.querySelectorAll('#matchingPairsContainer .matching-item').length;
+        matchingCount.textContent = count + ' ' + (count === 1 ? 'pair' : 'pairs');
     }
 }
 
@@ -3099,18 +3216,22 @@ function buildEditForm(question) {
                         <input type="text" 
                                name="matching_pairs[${index}][left]" 
                                class="matching-left-input" 
-                               placeholder="Left item"
+                               placeholder="Left item ${index + 1}"
                                value="${(pair.left_item || '').replace(/"/g, '&quot;')}">
                     </div>
                     <div class="matching-arrow">
-                        <i class="fas fa-arrows-alt-h"></i>
+                        <i class="fas fa-long-arrow-alt-right"></i>
                     </div>
                     <div class="matching-right">
                         <input type="text" 
                                name="matching_pairs[${index}][right]" 
                                class="matching-right-input" 
-                               placeholder="Right item"
+                               placeholder="Right item ${index + 1}"
                                value="${(pair.right_item || '').replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="matching-badge correct">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Correct Pair</span>
                     </div>
                     <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
                         <i class="fas fa-times"></i>
@@ -3360,6 +3481,11 @@ function buildEditForm(question) {
             </div>
             
             <div id="editMatchingSection" class="matching-section" style="${question.question_type === 'matching' ? 'display: block;' : 'display: none;'}">
+                <div class="info-message">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Define the matching pairs below. Each pair consists of a left item and its corresponding right item. All pairs are considered correct matches.</span>
+                </div>
+                
                 <div class="section-header">
                     <div class="section-title">
                         <i class="fas fa-link"></i>
@@ -3373,11 +3499,15 @@ function buildEditForm(question) {
                             <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
                             <div class="matching-input-group">
                                 <div class="matching-left">
-                                    <input type="text" name="matching_pairs[0][left]" class="matching-left-input" placeholder="Left item">
+                                    <input type="text" name="matching_pairs[0][left]" class="matching-left-input" placeholder="Left item 1">
                                 </div>
-                                <div class="matching-arrow"><i class="fas fa-arrows-alt-h"></i></div>
+                                <div class="matching-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
                                 <div class="matching-right">
-                                    <input type="text" name="matching_pairs[0][right]" class="matching-right-input" placeholder="Right item">
+                                    <input type="text" name="matching_pairs[0][right]" class="matching-right-input" placeholder="Right item 1">
+                                </div>
+                                <div class="matching-badge correct">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Correct Pair</span>
                                 </div>
                                 <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
                             </div>
@@ -3386,11 +3516,15 @@ function buildEditForm(question) {
                             <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
                             <div class="matching-input-group">
                                 <div class="matching-left">
-                                    <input type="text" name="matching_pairs[1][left]" class="matching-left-input" placeholder="Left item">
+                                    <input type="text" name="matching_pairs[1][left]" class="matching-left-input" placeholder="Left item 2">
                                 </div>
-                                <div class="matching-arrow"><i class="fas fa-arrows-alt-h"></i></div>
+                                <div class="matching-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
                                 <div class="matching-right">
-                                    <input type="text" name="matching_pairs[1][right]" class="matching-right-input" placeholder="Right item">
+                                    <input type="text" name="matching_pairs[1][right]" class="matching-right-input" placeholder="Right item 2">
+                                </div>
+                                <div class="matching-badge correct">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Correct Pair</span>
                                 </div>
                                 <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
                             </div>
@@ -3398,8 +3532,13 @@ function buildEditForm(question) {
                     `}
                 </div>
                 <button type="button" class="btn-add" onclick="addEditMatchingPair()">
-                    <i class="fas fa-plus"></i> Add Pair
+                    <i class="fas fa-plus"></i> Add Matching Pair
                 </button>
+                
+                <div class="matching-note">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Note: For matching questions, all defined pairs are considered correct. Students will need to match each left item with its correct right item.</span>
+                </div>
             </div>
             
             <div class="form-actions">
@@ -3709,16 +3848,20 @@ function addEditMatchingPair() {
                 <input type="text" 
                        name="matching_pairs[${index}][left]" 
                        class="matching-left-input" 
-                       placeholder="Left item">
+                       placeholder="Left item ${index + 1}">
             </div>
             <div class="matching-arrow">
-                <i class="fas fa-arrows-alt-h"></i>
+                <i class="fas fa-long-arrow-alt-right"></i>
             </div>
             <div class="matching-right">
                 <input type="text" 
                        name="matching_pairs[${index}][right]" 
                        class="matching-right-input" 
-                       placeholder="Right item">
+                       placeholder="Right item ${index + 1}">
+            </div>
+            <div class="matching-badge correct">
+                <i class="fas fa-check-circle"></i>
+                <span>Correct Pair</span>
             </div>
             <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
                 <i class="fas fa-times"></i>
@@ -3809,11 +3952,13 @@ function updateEditMatchingIndices() {
         const leftInput = row.querySelector('.matching-left-input');
         if (leftInput) {
             leftInput.name = `matching_pairs[${index}][left]`;
+            leftInput.placeholder = `Left item ${index + 1}`;
         }
         
         const rightInput = row.querySelector('.matching-right-input');
         if (rightInput) {
             rightInput.name = `matching_pairs[${index}][right]`;
+            rightInput.placeholder = `Right item ${index + 1}`;
         }
     });
 }
