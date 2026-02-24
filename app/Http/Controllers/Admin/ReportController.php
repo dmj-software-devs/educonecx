@@ -199,12 +199,13 @@ class ReportController extends Controller
             ->get();
 
         // Quizzes with highest pass rates
-        $quizPassRates = Quiz::select('quizzes.*')
-            ->selectRaw('COUNT(quiz_attempts.id) as attempts')
-            ->selectRaw('SUM(CASE WHEN quiz_attempts.passed = 1 THEN 1 ELSE 0 END) as passes')
-            ->leftJoin('quiz_attempts', 'quizzes.id', '=', 'quiz_attempts.quiz_id')
-            ->where('quiz_attempts.status', 'completed')
-            ->groupBy('quizzes.id')
+        $quizPassRates = Quiz::withCount(['attempts as attempts' => function ($query) {
+            $query->where('status', 'completed');
+        }])
+            ->withCount(['attempts as passes' => function ($query) {
+                $query->where('status', 'completed')
+                    ->where('passed', 1);
+            }])
             ->having('attempts', '>', 0)
             ->get()
             ->map(function ($quiz) {
@@ -214,7 +215,8 @@ class ReportController extends Controller
                 return $quiz;
             })
             ->sortByDesc('pass_rate')
-            ->take(10);
+            ->take(10)
+            ->values();
 
         return view('admin.reports.quizzes', compact(
             'startDate',
