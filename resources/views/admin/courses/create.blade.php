@@ -47,7 +47,8 @@
                             value="{{ old('title') }}"
                             placeholder="e.g., Complete Web Development Bootcamp 2024"
                             required
-                            maxlength="100">
+                            maxlength="100"
+                            id="titleInput">
                         @error('title')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -84,11 +85,103 @@
                             class="form-control @error('description') is-invalid @enderror"
                             rows="6"
                             placeholder="Provide a detailed description of your course. Include what students will learn, prerequisites, and any other important information..."
-                            required>{{ old('description') }}</textarea>
+                            required
+                            id="descriptionInput">{{ old('description') }}</textarea>
                         @error('description')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <div class="char-counter"><span id="descCounter">0</span>/5000</div>
+                    </div>
+                </div>
+
+                <!-- Excerpt -->
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label">Excerpt (Short Description)</label>
+                        <textarea name="excerpt" class="form-control" rows="3" maxlength="500" placeholder="A brief summary of your course (max 500 characters)">{{ old('excerpt') }}</textarea>
+                        <div class="char-counter"><span id="excerptCounter">0</span>/500</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Content Details Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h3>Course Details</h3>
+                    <p>What students will learn and need</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- What You'll Learn -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">What You'll Learn</label>
+                        <textarea name="what_you_will_learn" class="form-control" rows="5" placeholder="Enter each learning outcome on a new line&#10;e.g.:&#10;• Build complete web applications&#10;• Master PHP and Laravel&#10;• Deploy applications to production">{{ old('what_you_will_learn') }}</textarea>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Enter each point on a new line. Bullet points will be added automatically.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prerequisites -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Prerequisites</label>
+                        <textarea name="prerequisites" class="form-control" rows="5" placeholder="What students need to know before taking this course&#10;e.g.:&#10;• Basic HTML knowledge&#10;• Familiarity with CSS&#10;• JavaScript fundamentals">{{ old('prerequisites') }}</textarea>
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> Enter each prerequisite on a new line.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Requirements -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Requirements</label>
+                        <textarea name="requirements" class="form-control" rows="4" placeholder="Technical requirements, software, etc.&#10;e.g.:&#10;• Computer with 8GB RAM&#10;• Internet connection&#10;• Code editor (VS Code recommended)">{{ old('requirements') }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Target Audience -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Target Audience</label>
+                        <textarea name="target_audience" class="form-control" rows="4" placeholder="Who is this course for?&#10;e.g.:&#10;• Beginner developers&#10;• Career switchers&#10;• Self-taught programmers">{{ old('target_audience') }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Material Includes -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Material Includes</label>
+                        <textarea name="material_includes" class="form-control" rows="4" placeholder="What's included&#10;e.g.:&#10;• 20 hours on-demand video&#10;• 15 articles&#10;• 10 downloadable resources">{{ old('material_includes') }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Language -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">Language</label>
+                        <input type="text" name="language" class="form-control" value="{{ old('language', 'English') }}" placeholder="e.g., English, Spanish">
+                    </div>
+                </div>
+
+                <!-- Level -->
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">Course Level</label>
+                        <select name="level" class="form-select">
+                            <option value="beginner" {{ old('level') == 'beginner' ? 'selected' : '' }}>Beginner</option>
+                            <option value="intermediate" {{ old('level') == 'intermediate' ? 'selected' : '' }}>Intermediate</option>
+                            <option value="advanced" {{ old('level') == 'advanced' ? 'selected' : '' }}>Advanced</option>
+                            <option value="all-levels" {{ old('level') == 'all-levels' ? 'selected' : '' }}>All Levels</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -173,7 +266,21 @@
                         @error('sale_price')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-hint">Leave empty if no discount</div>
+                    </div>
+                </div>
+
+                <!-- Discount Period -->
+                <div class="col-md-6" id="discountStartField">
+                    <div class="form-group">
+                        <label class="form-label">Discount Start Date</label>
+                        <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date') }}">
+                    </div>
+                </div>
+
+                <div class="col-md-6" id="discountEndField">
+                    <div class="form-group">
+                        <label class="form-label">Discount End Date</label>
+                        <input type="datetime-local" name="discount_end_date" class="form-control" value="{{ old('discount_end_date') }}">
                     </div>
                 </div>
             </div>
@@ -194,18 +301,20 @@
             <div class="row g-4">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <label class="form-label">Course Thumbnail</label>
+                        <label class="form-label">Course Thumbnail <span class="text-danger">*</span></label>
                         <div class="upload-area" id="thumbnailUpload">
                             <input type="file"
                                 name="thumbnail"
                                 id="thumbnailInput"
-                                class="upload-input"
-                                accept="image/jpeg,image/png,image/webp">
+                                class="upload-input @error('thumbnail') is-invalid @enderror"
+                                accept="image/jpeg,image/png,image/jpg,image/webp"
+                                required>
                             <div class="upload-content">
                                 <i class="fas fa-cloud-upload-alt upload-icon"></i>
                                 <h5>Upload Thumbnail</h5>
                                 <p class="upload-text">Drag & drop or click to browse</p>
                                 <p class="upload-hint">Recommended: 1280x720px (16:9), max 2MB</p>
+                                <p class="upload-hint">Formats: JPG, PNG, WEBP</p>
                             </div>
                             <div class="upload-preview" id="thumbnailPreview" style="display: none;">
                                 <img src="" alt="Thumbnail preview">
@@ -227,13 +336,13 @@
                             <input type="file"
                                 name="video_intro"
                                 id="videoInput"
-                                class="upload-input"
+                                class="upload-input @error('video_intro') is-invalid @enderror"
                                 accept="video/mp4,video/webm">
                             <div class="upload-content">
                                 <i class="fas fa-video upload-icon"></i>
                                 <h5>Upload Intro Video</h5>
                                 <p class="upload-text">MP4, WebM (max 50MB)</p>
-                                <p class="upload-hint">A short preview of your course</p>
+                                <p class="upload-hint">A short preview of your course (30-60 seconds recommended)</p>
                             </div>
                         </div>
                         @error('video_intro')
@@ -257,7 +366,7 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="form-label">
                             Status <span class="text-danger">*</span>
@@ -277,7 +386,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label class="form-label">Tags</label>
                         <select name="tags[]" class="tag-select" multiple>
@@ -294,35 +403,18 @@
                     </div>
                 </div>
 
-                <div class="col-12">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <label class="form-label">Course Level</label>
-                        <div class="level-options">
-                            <label class="level-option">
-                                <input type="radio" name="level" value="beginner" {{ old('level') == 'beginner' ? 'checked' : '' }}>
-                                <div class="level-content">
-                                    <i class="fas fa-seedling"></i>
-                                    <span>Beginner</span>
-                                    <small>No prior knowledge needed</small>
-                                </div>
-                            </label>
-                            <label class="level-option">
-                                <input type="radio" name="level" value="intermediate" {{ old('level') == 'intermediate' ? 'checked' : '' }}>
-                                <div class="level-content">
-                                    <i class="fas fa-tree"></i>
-                                    <span>Intermediate</span>
-                                    <small>Basic knowledge required</small>
-                                </div>
-                            </label>
-                            <label class="level-option">
-                                <input type="radio" name="level" value="advanced" {{ old('level') == 'advanced' ? 'checked' : '' }}>
-                                <div class="level-content">
-                                    <i class="fas fa-mountain"></i>
-                                    <span>Advanced</span>
-                                    <small>Expert level content</small>
-                                </div>
-                            </label>
-                        </div>
+                        <label class="form-label">Instructor</label>
+                        <select name="instructor_id" class="form-select">
+                            <option value="{{ auth()->id() }}" selected>{{ auth()->user()->name }} (You)</option>
+                            @if(auth()->user()->isAdmin() && isset($instructors))
+                                @foreach($instructors as $instructor)
+                                <option value="{{ $instructor->id }}">{{ $instructor->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <div class="form-hint">Select the course instructor</div>
                     </div>
                 </div>
 
@@ -348,6 +440,47 @@
             </div>
         </div>
 
+        <!-- SEO Section -->
+        <div class="form-section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div>
+                    <h3>SEO Settings</h3>
+                    <p>Optimize your course for search engines</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label">SEO Title</label>
+                        <input type="text" name="seo_title" class="form-control" value="{{ old('seo_title') }}" maxlength="255" placeholder="Custom title for search engines">
+                        <div class="char-counter"><span id="seoTitleCounter">0</span>/255</div>
+                        <div class="form-hint">Leave empty to use course title</div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label">SEO Description</label>
+                        <textarea name="seo_description" class="form-control" rows="3" maxlength="500" placeholder="Meta description for search engines">{{ old('seo_description') }}</textarea>
+                        <div class="char-counter"><span id="seoDescCounter">0</span>/500</div>
+                        <div class="form-hint">Leave empty to use course excerpt or description</div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="form-label">SEO Keywords</label>
+                        <input type="text" name="seo_keywords" class="form-control" value="{{ old('seo_keywords') }}" placeholder="course, learning, education, web development, ...">
+                        <div class="form-hint">Separate keywords with commas</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Form Actions -->
         <div class="form-actions">
             <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='{{ route('admin.courses.index') }}'">
@@ -358,7 +491,7 @@
                     <i class="fas fa-save"></i> Create Course
                 </button>
                 <button type="submit" name="save_and_continue" value="1" class="btn btn-outline-primary">
-                    <i class="fas fa-edit"></i> Save & Continue
+                    <i class="fas fa-edit"></i> Save & Continue Editing
                 </button>
             </div>
         </div>
@@ -368,6 +501,16 @@
 
 @push('styles')
 <style>
+    :root {
+        --primary: #017bfe;
+        --secondary: #6c5ce7;
+        --success: #00b894;
+        --danger: #e74c3c;
+        --warning: #f39c12;
+        --info: #3498db;
+        --dark: #2c3e50;
+    }
+
     /* Header Section */
     .header-section {
         display: flex;
@@ -382,7 +525,7 @@
         font-size: 1.8rem;
         font-weight: 700;
         margin: 0 0 5px;
-        color: #2c3e50;
+        color: var(--dark);
     }
 
     .header-content p {
@@ -444,7 +587,7 @@
         font-size: 1.2rem;
         font-weight: 600;
         margin: 0 0 4px;
-        color: #2c3e50;
+        color: var(--dark);
     }
 
     .section-header p {
@@ -534,6 +677,10 @@
         transition: all 0.3s;
         background: #f8f9fa;
         cursor: pointer;
+        min-height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .upload-area:hover {
@@ -561,7 +708,7 @@
         font-size: 1.1rem;
         font-weight: 600;
         margin: 0 0 8px;
-        color: #2c3e50;
+        color: var(--dark);
     }
 
     .upload-text {
@@ -607,6 +754,7 @@
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s;
+        z-index: 10;
     }
 
     .remove-upload:hover {
@@ -614,55 +762,55 @@
         transform: scale(1.1);
     }
 
-    /* Level Options */
-    .level-options {
+    /* Course Type Options */
+    .course-type-options {
         display: flex;
         gap: 15px;
         flex-wrap: wrap;
     }
 
-    .level-option {
+    .type-option {
         flex: 1;
-        min-width: 150px;
+        min-width: 200px;
         cursor: pointer;
     }
 
-    .level-option input[type="radio"] {
+    .type-option input[type="radio"] {
         display: none;
     }
 
-    .level-content {
-        padding: 16px;
-        border: 1px solid #e9ecef;
+    .type-content {
+        padding: 20px;
+        border: 2px solid #e9ecef;
         border-radius: 12px;
         text-align: center;
         transition: all 0.3s;
     }
 
-    .level-content i {
-        font-size: 1.5rem;
-        color: #6c757d;
-        margin-bottom: 8px;
-    }
-
-    .level-content span {
-        display: block;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 4px;
-    }
-
-    .level-content small {
-        color: #6c757d;
-        font-size: 0.8rem;
-    }
-
-    .level-option input[type="radio"]:checked+.level-content {
+    .type-option input[type="radio"]:checked+.type-content {
         border-color: var(--primary);
         background: rgba(1, 123, 254, 0.02);
     }
 
-    .level-option input[type="radio"]:checked+.level-content i {
+    .type-content i {
+        font-size: 2rem;
+        color: #6c757d;
+        margin-bottom: 10px;
+    }
+
+    .type-content span {
+        display: block;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 5px;
+    }
+
+    .type-content small {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+
+    .type-option input[type="radio"]:checked+.type-content i {
         color: var(--primary);
     }
 
@@ -698,14 +846,6 @@
     .form-check:hover {
         background: #f8f9fa;
         border-color: #dee2e6;
-    }
-
-    .form-check-input:checked+.form-check-label {
-        color: var(--primary);
-    }
-
-    .form-check-input:checked~.form-check-label {
-        color: var(--primary);
     }
 
     /* Form Actions */
@@ -769,7 +909,7 @@
             gap: 10px;
         }
 
-        .level-options {
+        .course-type-options {
             flex-direction: column;
         }
 
@@ -802,85 +942,55 @@
         .form-check {
             padding: 12px;
         }
-    }
 
-    /* Course Type Options */
-    .course-type-options {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .type-option {
-        flex: 1;
-        min-width: 200px;
-        cursor: pointer;
-    }
-
-    .type-option input[type="radio"] {
-        display: none;
-    }
-
-    .type-content {
-        padding: 20px;
-        border: 2px solid #e9ecef;
-        border-radius: 12px;
-        text-align: center;
-        transition: all 0.3s;
-    }
-
-    .type-option input[type="radio"]:checked+.type-content {
-        border-color: var(--primary);
-        background: rgba(1, 123, 254, 0.02);
-    }
-
-    .type-content i {
-        font-size: 2rem;
-        color: #6c757d;
-        margin-bottom: 10px;
-    }
-
-    .type-content span {
-        display: block;
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 5px;
-    }
-
-    .type-content small {
-        color: #6c757d;
-        font-size: 0.85rem;
-    }
-
-    .type-option input[type="radio"]:checked+.type-content i {
-        color: var(--primary);
+        .type-option {
+            min-width: 100%;
+        }
     }
 </style>
 @endpush
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize select2 for tags
-        $('.tag-select').select2({
-            placeholder: 'Select tags',
-            allowClear: true,
-            width: '100%',
-            tags: false
-        });
+        if ($.fn.select2) {
+            $('.tag-select').select2({
+                placeholder: 'Select tags',
+                allowClear: true,
+                width: '100%',
+                tags: false
+            });
+        }
 
         // Character counters
-        $('input[name="title"]').on('input', function() {
+        $('#titleInput').on('input', function() {
             $('#titleCounter').text($(this).val().length);
         });
 
-        $('textarea[name="description"]').on('input', function() {
+        $('#descriptionInput').on('input', function() {
             $('#descCounter').text($(this).val().length);
         });
 
+        $('textarea[name="excerpt"]').on('input', function() {
+            $('#excerptCounter').text($(this).val().length);
+        });
+
+        $('input[name="seo_title"]').on('input', function() {
+            $('#seoTitleCounter').text($(this).val().length);
+        });
+
+        $('textarea[name="seo_description"]').on('input', function() {
+            $('#seoDescCounter').text($(this).val().length);
+        });
+
         // Initialize counters with old values if any
-        $('#titleCounter').text($('input[name="title"]').val().length);
-        $('#descCounter').text($('textarea[name="description"]').val().length);
+        $('#titleCounter').text($('#titleInput').val().length);
+        $('#descCounter').text($('#descriptionInput').val().length);
+        $('#excerptCounter').text($('textarea[name="excerpt"]').val().length);
+        $('#seoTitleCounter').text($('input[name="seo_title"]').val().length);
+        $('#seoDescCounter').text($('textarea[name="seo_description"]').val().length);
 
         // Form validation
         $('.course-form').on('submit', function(e) {
@@ -888,54 +998,66 @@
             let errors = [];
 
             // Title validation
-            const title = $('input[name="title"]').val();
+            const title = $('#titleInput').val();
             if (!title || title.length < 5) {
                 isValid = false;
                 errors.push('Title must be at least 5 characters');
-                $('input[name="title"]').addClass('is-invalid');
+                $('#titleInput').addClass('is-invalid');
             } else {
-                $('input[name="title"]').removeClass('is-invalid');
+                $('#titleInput').removeClass('is-invalid');
             }
 
             // Description validation
-            const description = $('textarea[name="description"]').val();
+            const description = $('#descriptionInput').val();
             if (!description || description.length < 50) {
                 isValid = false;
                 errors.push('Description must be at least 50 characters');
-                $('textarea[name="description"]').addClass('is-invalid');
+                $('#descriptionInput').addClass('is-invalid');
             } else {
-                $('textarea[name="description"]').removeClass('is-invalid');
+                $('#descriptionInput').removeClass('is-invalid');
             }
 
-            // Price validation
-            const price = parseFloat($('input[name="price"]').val());
-            if (!price || price < 0) {
+            // Thumbnail validation
+            const thumbnail = $('#thumbnailInput').val();
+            if (!thumbnail && !$('#thumbnailPreview').is(':visible')) {
                 isValid = false;
-                errors.push('Price must be a positive number');
-                $('input[name="price"]').addClass('is-invalid');
+                errors.push('Course thumbnail is required');
+                $('#thumbnailUpload').addClass('border-danger');
             } else {
-                $('input[name="price"]').removeClass('is-invalid');
+                $('#thumbnailUpload').removeClass('border-danger');
             }
 
-            // Sale price validation (if provided)
-            const salePrice = parseFloat($('input[name="sale_price"]').val());
-            if (salePrice && salePrice > price) {
-                isValid = false;
-                errors.push('Sale price cannot be greater than regular price');
-                $('input[name="sale_price"]').addClass('is-invalid');
-            } else {
-                $('input[name="sale_price"]').removeClass('is-invalid');
+            // Price validation for paid courses
+            if ($('#typePaid').is(':checked')) {
+                const price = parseFloat($('#priceInput').val());
+                if (!price || price <= 0) {
+                    isValid = false;
+                    errors.push('Price must be a positive number for paid courses');
+                    $('#priceInput').addClass('is-invalid');
+                } else {
+                    $('#priceInput').removeClass('is-invalid');
+                }
+
+                // Sale price validation (if provided)
+                const salePrice = parseFloat($('#salePriceInput').val());
+                if (salePrice && salePrice > price) {
+                    isValid = false;
+                    errors.push('Sale price cannot be greater than regular price');
+                    $('#salePriceInput').addClass('is-invalid');
+                } else {
+                    $('#salePriceInput').removeClass('is-invalid');
+                }
             }
 
             if (!isValid) {
                 e.preventDefault();
-                let errorHtml = '<div class="alert alert-danger alert-dismissible fade show">';
+                let errorHtml = '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
                 errorHtml += '<strong>Please fix the following errors:</strong><ul>';
                 errors.forEach(error => {
                     errorHtml += '<li>' + error + '</li>';
                 });
                 errorHtml += '</ul>';
-                errorHtml += '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+                errorHtml += '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
                 errorHtml += '</div>';
 
                 $('.form-wrapper').prepend(errorHtml);
@@ -952,6 +1074,21 @@
     $('#thumbnailInput').on('change', function() {
         const file = this.files[0];
         if (file) {
+            // Check file size
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File size must be less than 2MB');
+                this.value = '';
+                return;
+            }
+
+            // Check file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a valid image file (JPG, PNG, WEBP)');
+                this.value = '';
+                return;
+            }
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 $('#thumbnailPreview img').attr('src', e.target.result);
@@ -972,6 +1109,21 @@
     $('#videoInput').on('change', function() {
         const file = this.files[0];
         if (file) {
+            // Check file size
+            if (file.size > 50 * 1024 * 1024) {
+                alert('File size must be less than 50MB');
+                this.value = '';
+                return;
+            }
+
+            // Check file type
+            const validTypes = ['video/mp4', 'video/webm'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please upload a valid video file (MP4, WebM)');
+                this.value = '';
+                return;
+            }
+
             const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
             $('#videoUpload .upload-content h5').text('Selected: ' + file.name);
             $('#videoUpload .upload-content p:first').text(sizeMB + 'MB');
@@ -988,18 +1140,24 @@
         const isFree = document.getElementById('typeFree').checked;
         const priceField = document.getElementById('priceField');
         const salePriceField = document.getElementById('salePriceField');
+        const discountStartField = document.getElementById('discountStartField');
+        const discountEndField = document.getElementById('discountEndField');
         const priceInput = document.getElementById('priceInput');
         const salePriceInput = document.getElementById('salePriceInput');
 
         if (isFree) {
             priceField.style.display = 'none';
             salePriceField.style.display = 'none';
+            discountStartField.style.display = 'none';
+            discountEndField.style.display = 'none';
             priceInput.removeAttribute('required');
             priceInput.value = '';
             salePriceInput.value = '';
         } else {
             priceField.style.display = 'block';
             salePriceField.style.display = 'block';
+            discountStartField.style.display = 'block';
+            discountEndField.style.display = 'block';
             priceInput.setAttribute('required', 'required');
         }
     }
@@ -1010,5 +1168,25 @@
 
     // Initialize on page load
     togglePriceFields();
+
+    // Warn before leaving if changes made
+    let formChanged = false;
+    $('.course-form input, .course-form textarea, .course-form select').on('change', function() {
+        formChanged = true;
+    });
+
+    $('.course-form .tag-select').on('change', function() {
+        formChanged = true;
+    });
+
+    $(window).on('beforeunload', function() {
+        if (formChanged) {
+            return 'You have unsaved changes. Are you sure you want to leave?';
+        }
+    });
+
+    $('.course-form').on('submit', function() {
+        formChanged = false;
+    });
 </script>
 @endpush

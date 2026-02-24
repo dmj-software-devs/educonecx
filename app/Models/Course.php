@@ -20,11 +20,10 @@ class Course extends Model
         'video_intro',
         'price',
         'sale_price',
-        'is_free',
-        'course_type',
-        'discount_percent',
         'discount_start_date',
         'discount_end_date',
+        'is_free',
+        'course_type',
         'duration',
         'level',
         'language',
@@ -44,7 +43,10 @@ class Course extends Model
         'total_quizzes',
         'total_duration',
         'average_rating',
-        'total_reviews'
+        'total_reviews',
+        'seo_title',
+        'seo_description',
+        'seo_keywords'
     ];
 
     protected $casts = [
@@ -57,22 +59,27 @@ class Course extends Model
         'discount_end_date' => 'datetime',
         'published_at' => 'datetime',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
+        'total_students' => 'integer',
+        'total_lessons' => 'integer',
+        'total_quizzes' => 'integer',
+        'total_duration' => 'integer',
+        'average_rating' => 'float',
+        'total_reviews' => 'integer'
     ];
 
     protected $appends = [
         'thumbnail_url',
-        'excerpt',
-        'is_paid',
-        'formatted_price',
-        'display_price',
+        'video_intro_url',
         'current_price',
         'has_discount',
         'discount_percentage',
-        'video_intro_url',
-        'duration_hours',
-        'total_lessons_count',
-        'average_rating_formatted'
+        'formatted_duration',
+        'is_paid',
+        'instructor_name',
+        'category_name',
+        'rating_stars',
+        'total_enrollments'
     ];
 
     // Relationships
@@ -114,23 +121,23 @@ class Course extends Model
     public function students()
     {
         return $this->belongsToMany(User::class, 'enrollments')
-            ->withPivot('progress', 'completed_at', 'enrollment_date')
+            ->withPivot('progress', 'completed_at', 'enrollment_date', 'expiry_date')
             ->withTimestamps();
     }
 
-    public function reviews()
+    public function ratings()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(CourseRating::class);
     }
 
-    public function orderItems()
+    public function approvedRatings()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->ratings()->where('is_approved', true);
     }
 
-    public function wishlistedBy()
+    public function lessonProgress()
     {
-        return $this->belongsToMany(User::class, 'wishlist')->withTimestamps();
+        return $this->hasMany(LessonProgress::class);
     }
 
     public function certificates()
@@ -139,88 +146,17 @@ class Course extends Model
     }
 
     // Accessors
-    public function getIsPaidAttribute(): bool
-    {
-        return !$this->is_free;
-    }
-
-    public function getFormattedPriceAttribute(): string
-    {
-        if ($this->is_free) {
-            return 'Free';
-        }
-
-        $price = $this->current_price;
-        return '$' . number_format($price, 2);
-    }
-
-    // In your Course model, modify the thumbnail_url accessor:
     public function getThumbnailUrlAttribute(): string
     {
         if ($this->thumbnail) {
-            // Check if the path already includes 'public/'
-            if (strpos($this->thumbnail, 'public/') === 0) {
-                return Storage::url(str_replace('public/', '', $this->thumbnail));
-            }
             return Storage::url($this->thumbnail);
         }
-
         return asset('images/course-placeholder.jpg');
     }
 
-    public function getExcerptAttribute(): string
+    public function getVideoIntroUrlAttribute(): ?string
     {
-        if (isset($this->attributes['excerpt']) && !empty($this->attributes['excerpt'])) {
-            return $this->attributes['excerpt'];
-        }
-
-        return Str::limit(strip_tags($this->description ?? ''), 120, '...');
-    }
-
-    public function getIsEnrolledAttribute(): bool
-    {
-        if (!auth()->check()) {
-            return false;
-        }
-
-        return $this->enrollments()
-            ->where('user_id', auth()->id())
-            ->where('status', 'active')
-            ->exists();
-    }
-
-    public function getUserEnrollmentAttribute()
-    {
-        if (!auth()->check()) {
-            return null;
-        }
-
-        return $this->enrollments()
-            ->where('user_id', auth()->id())
-            ->first();
-    }
-
-    public function getUserProgressAttribute(): int
-    {
-        if (!auth()->check()) {
-            return 0;
-        }
-
-        $enrollment = $this->user_enrollment;
-        return $enrollment ? $enrollment->progress : 0;
-    }
-
-    public function getDisplayPriceAttribute(): string
-    {
-        if ($this->is_free) {
-            return 'Free';
-        }
-
-        if ($this->has_discount) {
-            return '$' . number_format($this->sale_price, 2);
-        }
-
-        return '$' . number_format($this->price, 2);
+        return $this->video_intro ? Storage::url($this->video_intro) : null;
     }
 
     public function getCurrentPriceAttribute(): float
@@ -229,27 +165,25 @@ class Course extends Model
             return 0;
         }
 
-        if ($this->sale_price && $this->discount_start_date && $this->discount_end_date) {
-            $now = now();
-            if ($now >= $this->discount_start_date && $now <= $this->discount_end_date) {
-                return (float) $this->sale_price;
-            }
+        if ($this->has_discount) {
+            return (float) $this->sale_price;
         }
+
         return (float) $this->price;
     }
 
     public function getHasDiscountAttribute(): bool
     {
-        if ($this->is_free) {
+        if ($this->is_free || !$this->sale_price) {
             return false;
         }
 
         $now = now();
-        return $this->sale_price &&
-            $this->discount_start_date &&
-            $this->discount_end_date &&
-            $now >= $this->discount_start_date &&
-            $now <= $this->discount_end_date;
+        if ($this->discount_start_date && $this->discount_end_date) {
+            return $now >= $this->discount_start_date && $now <= $this->discount_end_date;
+        }
+
+        return false;
     }
 
     public function getDiscountPercentageAttribute(): int
@@ -260,41 +194,67 @@ class Course extends Model
         return (int) round((($this->price - $this->sale_price) / $this->price) * 100);
     }
 
-    public function getVideoIntroUrlAttribute(): ?string
+    public function getFormattedDurationAttribute(): string
     {
-        return $this->video_intro ? Storage::url($this->video_intro) : null;
+        if (!$this->total_duration) {
+            return 'N/A';
+        }
+
+        $hours = floor($this->total_duration / 3600);
+        $minutes = floor(($this->total_duration % 3600) / 60);
+
+        if ($hours > 0) {
+            return $hours . 'h ' . $minutes . 'm';
+        }
+        return $minutes . ' minutes';
     }
 
-    public function getDurationHoursAttribute(): float
+    public function getIsPaidAttribute(): bool
     {
-        // Calculate total duration from lessons in hours
-        $totalMinutes = $this->lessons()->sum('duration');
-        return round($totalMinutes / 60, 1);
+        return !$this->is_free;
     }
 
-    public function getTotalLessonsCountAttribute(): int
+    public function getInstructorNameAttribute(): string
     {
-        return $this->lessons()->count();
+        return $this->instructor ? $this->instructor->name : 'Unknown Instructor';
     }
 
-    public function getAverageRatingFormattedAttribute(): string
+    public function getCategoryNameAttribute(): string
     {
-        return number_format($this->average_rating ?? 0, 1);
+        return $this->category ? $this->category->name : 'Uncategorized';
     }
 
-    public function getProgressForUserAttribute($userId = null): int
+    public function getRatingStarsAttribute(): array
     {
-        $userId = $userId ?? auth()->id();
-        if (!$userId) return 0;
+        $stars = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $stars[] = [
+                'filled' => $i <= round($this->average_rating ?? 0),
+                'value' => $i
+            ];
+        }
+        return $stars;
+    }
 
-        $enrollment = $this->enrollments()->where('user_id', $userId)->first();
-        return $enrollment ? $enrollment->progress : 0;
+    public function getTotalEnrollmentsAttribute(): int
+    {
+        return $this->enrollments()->count();
     }
 
     // Scopes
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
+    }
+
+    public function scopeDraft($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->where('status', 'archived');
     }
 
     public function scopeFeatured($query)
@@ -336,34 +296,115 @@ class Course extends Model
         });
     }
 
+    public function scopeWithFilters($query, array $filters)
+    {
+        if (!empty($filters['search'])) {
+            $query->search($filters['search']);
+        }
+
+        if (!empty($filters['category'])) {
+            $query->byCategory($filters['category']);
+        }
+
+        if (!empty($filters['level'])) {
+            $query->byLevel($filters['level']);
+        }
+
+        if (!empty($filters['price'])) {
+            if ($filters['price'] === 'free') {
+                $query->free();
+            } elseif ($filters['price'] === 'paid') {
+                $query->paid();
+            }
+        }
+
+        if (!empty($filters['sort'])) {
+            switch ($filters['sort']) {
+                case 'latest':
+                    $query->latest();
+                    break;
+                case 'oldest':
+                    $query->oldest();
+                    break;
+                case 'price_low':
+                    $query->orderByRaw('CASE WHEN is_free = 1 THEN 0 ELSE COALESCE(sale_price, price) END ASC');
+                    break;
+                case 'price_high':
+                    $query->orderByRaw('CASE WHEN is_free = 1 THEN 0 ELSE COALESCE(sale_price, price) END DESC');
+                    break;
+                case 'popular':
+                    $query->orderBy('total_students', 'desc');
+                    break;
+                case 'rated':
+                    $query->orderBy('average_rating', 'desc');
+                    break;
+            }
+        }
+
+        return $query;
+    }
+
+    // Methods
+    public function updateStats()
+    {
+        $this->total_lessons = $this->lessons()->count();
+        $this->total_duration = $this->lessons()->sum('video_duration');
+        $this->total_students = $this->enrollments()->count();
+        $this->average_rating = $this->approvedRatings()->avg('rating') ?? 0;
+        $this->total_reviews = $this->approvedRatings()->count();
+        $this->save();
+    }
+
+    public function isEnrolled($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return false;
+
+        return $this->enrollments()
+            ->where('user_id', $userId)
+            ->where('status', 'active')
+            ->exists();
+    }
+
+    public function getUserProgress($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return 0;
+
+        $completedLessons = LessonProgress::where('user_id', $userId)
+            ->where('course_id', $this->id)
+            ->where('status', 'completed')
+            ->count();
+
+        if ($this->total_lessons == 0) return 0;
+
+        return round(($completedLessons / $this->total_lessons) * 100);
+    }
+
     // Boot method
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($course) {
-            if (empty($course->slug) && !empty($course->title)) {
+            if (empty($course->slug)) {
                 $course->slug = Str::slug($course->title);
-            }
-
-            // Auto-calculate is_free based on course_type or price
-            if (isset($course->course_type)) {
-                $course->is_free = $course->course_type === 'free';
-            } elseif (isset($course->price)) {
-                $course->is_free = $course->price == 0;
             }
         });
 
         static::updating(function ($course) {
-            if ($course->isDirty('title') && empty($course->slug)) {
+            if ($course->isDirty('title')) {
                 $course->slug = Str::slug($course->title);
             }
+        });
 
-            // Auto-calculate is_free based on course_type or price
-            if ($course->isDirty('course_type')) {
-                $course->is_free = $course->course_type === 'free';
-            } elseif ($course->isDirty('price')) {
-                $course->is_free = $course->price == 0;
+        static::deleting(function ($course) {
+            // Delete related files
+            if ($course->thumbnail) {
+                Storage::disk('public')->delete($course->thumbnail);
+            }
+            if ($course->video_intro) {
+                Storage::disk('public')->delete($course->video_intro);
             }
         });
     }

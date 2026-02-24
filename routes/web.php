@@ -141,7 +141,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('courses/{course}/lessons', [App\Http\Controllers\Admin\CourseController::class, 'storeLesson'])->name('courses.lessons.store');
     Route::put('courses/lessons/{lesson}', [App\Http\Controllers\Admin\CourseController::class, 'updateLesson'])->name('courses.lessons.update');
     Route::delete('courses/lessons/{lesson}', [App\Http\Controllers\Admin\CourseController::class, 'destroyLesson'])->name('courses.lessons.destroy');
-
+    Route::post('courses/{course}/clone', [App\Http\Controllers\Admin\CourseController::class, 'clone'])->name('courses.clone');
+    // Add this route for getting lesson data via AJAX
+    Route::get('courses/lessons/{lesson}/edit-data', [App\Http\Controllers\Admin\CourseController::class, 'editLessonData'])->name('courses.lessons.edit-data');
+    // Reordering
+    Route::post('courses/sections/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderSections'])->name('courses.sections.reorder');
+    Route::post('courses/lessons/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderLessons'])->name('courses.lessons.reorder');
     // Sections Management
     Route::post('courses/{course}/sections', [App\Http\Controllers\Admin\CourseController::class, 'storeSection'])->name('courses.sections.store');
     Route::put('courses/sections/{section}', [App\Http\Controllers\Admin\CourseController::class, 'updateSection'])->name('courses.sections.update');

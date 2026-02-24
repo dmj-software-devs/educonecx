@@ -10,8 +10,12 @@ class Section extends Model
     use HasFactory;
 
     protected $fillable = [
-        'course_id', 'title', 'description', 'sort_order', 
-        'total_items', 'total_duration'
+        'course_id',
+        'title',
+        'description',
+        'sort_order',
+        'total_items',
+        'total_duration'
     ];
 
     protected $casts = [
@@ -20,6 +24,12 @@ class Section extends Model
         'total_duration' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
+    ];
+
+    protected $appends = [
+        'duration_formatted',
+        'lessons_count',
+        'published_lessons_count'
     ];
 
     // Relationships
@@ -33,26 +43,62 @@ class Section extends Model
         return $this->hasMany(Lesson::class)->orderBy('sort_order');
     }
 
-    public function quizzes()
+    public function publishedLessons()
     {
-        return $this->hasMany(Quiz::class);
+        return $this->lessons()->where('status', 'published');
     }
 
     // Accessors
-    public function getPublishedLessonsAttribute()
-    {
-        return $this->lessons()->where('status', 'published')->get();
-    }
-
     public function getDurationFormattedAttribute()
     {
-        $hours = floor($this->total_duration / 60);
-        $minutes = $this->total_duration % 60;
-        
+        if (!$this->total_duration) {
+            return '0 min';
+        }
+
+        $hours = floor($this->total_duration / 3600);
+        $minutes = floor(($this->total_duration % 3600) / 60);
+
         if ($hours > 0) {
             return $hours . 'h ' . $minutes . 'm';
         }
-        
         return $minutes . ' min';
+    }
+
+    public function getLessonsCountAttribute()
+    {
+        return $this->lessons()->count();
+    }
+
+    public function getPublishedLessonsCountAttribute()
+    {
+        return $this->publishedLessons()->count();
+    }
+
+    // Methods
+    public function updateStats()
+    {
+        $this->total_items = $this->lessons()->count();
+        $this->total_duration = $this->lessons()->sum('video_duration');
+        $this->save();
+
+        // Update course stats
+        if ($this->course) {
+            $this->course->total_lessons = $this->course->sections->sum('total_items');
+            $this->course->total_duration = $this->course->sections->sum('total_duration');
+            $this->course->save();
+        }
+    }
+
+    // Boot method
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($section) {
+            // Delete all lessons in this section
+            foreach ($section->lessons as $lesson) {
+                $lesson->delete();
+            }
+        });
     }
 }
