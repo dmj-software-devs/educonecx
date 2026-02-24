@@ -10,12 +10,20 @@ class Question extends Model
     use HasFactory;
 
     protected $fillable = [
-        'quiz_id', 'question_text', 'question_type', 'image', 'audio_file',
-        'video_file', 'points', 'sort_order', 'explanation'
+        'quiz_id',
+        'question_text',
+        'question_type',
+        'image',
+        'audio_file',
+        'video_file',
+        'points',
+        'sort_order',
+        'explanation'
     ];
 
     protected $casts = [
         'points' => 'integer',
+        'sort_order' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
@@ -74,10 +82,16 @@ class Question extends Model
             case 'single_choice':
             case 'true_false':
                 return $this->correct_options->pluck('option_text')->implode(', ');
-            
+
             case 'fill_blank':
-                return $this->fillBlanks->pluck('correct_answer')->implode(', ');
-            
+                return $this->fillBlanks->pluck('correct_answer')->implode(' OR ');
+
+            case 'matching':
+                return $this->matchingPairs->count() . ' pairs';
+
+            case 'image_selection':
+                return $this->correct_options->pluck('option_text')->implode(', ');
+
             default:
                 return 'See answer key';
         }
@@ -88,17 +102,20 @@ class Question extends Model
         switch ($this->question_type) {
             case 'multiple_choice':
                 return $this->validateMultipleChoice($answer);
-            
+
             case 'single_choice':
             case 'true_false':
                 return $this->validateSingleChoice($answer);
-            
+
             case 'fill_blank':
                 return $this->validateFillBlank($answer);
-            
+
             case 'matching':
                 return $this->validateMatching($answer);
-            
+
+            case 'image_selection':
+                return $this->validateImageSelection($answer);
+
             default:
                 return false;
         }
@@ -107,15 +124,15 @@ class Question extends Model
     protected function validateMultipleChoice($selectedOptions)
     {
         $correctOptions = $this->options()->where('is_correct', true)->pluck('id')->toArray();
-        
+
         if (!is_array($selectedOptions)) {
             return false;
         }
-        
+
         $selected = array_map('intval', $selectedOptions);
         sort($selected);
         sort($correctOptions);
-        
+
         return $selected == $correctOptions;
     }
 
@@ -129,19 +146,19 @@ class Question extends Model
     {
         $answer = trim($answer);
         $blanks = $this->fillBlanks;
-        
+
         foreach ($blanks as $blank) {
             if ($blank->case_sensitive) {
                 if ($blank->correct_answer === $answer) {
                     return true;
                 }
             } else {
-                if (strtolower($blank->correct_answer) === strtolower($answer)) {
+                if (strtolower(trim($blank->correct_answer)) === strtolower($answer)) {
                     return true;
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -149,7 +166,7 @@ class Question extends Model
     {
         $pairs = $this->matchingPairs;
         $correct = true;
-        
+
         foreach ($pairs as $pair) {
             $key = 'pair_' . $pair->id;
             if (!isset($matches[$key]) || $matches[$key] !== $pair->right_item) {
@@ -157,7 +174,22 @@ class Question extends Model
                 break;
             }
         }
-        
+
         return $correct;
+    }
+
+    protected function validateImageSelection($selectedOptions)
+    {
+        $correctOptions = $this->options()->where('is_correct', true)->pluck('id')->toArray();
+
+        if (!is_array($selectedOptions)) {
+            $selectedOptions = [$selectedOptions];
+        }
+
+        $selected = array_map('intval', $selectedOptions);
+        sort($selected);
+        sort($correctOptions);
+
+        return $selected == $correctOptions;
     }
 }

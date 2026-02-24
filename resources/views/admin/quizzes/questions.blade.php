@@ -156,10 +156,18 @@
                         <label class="form-label">
                             <i class="fas fa-paragraph me-2"></i>Question Text <span class="required">*</span>
                         </label>
-                        <textarea name="question_text" id="questionText" rows="4" placeholder="Enter your question here..." required>{{ old('question_text') }}</textarea>
+                        <textarea name="question_text" id="questionText" rows="3" placeholder="Enter your question here..." required>{{ old('question_text') }}</textarea>
                         <div class="char-counter">
                             <span id="questionCounter">{{ strlen(old('question_text') ?? '') }}</span>/500 characters
                         </div>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-info-circle me-2"></i>Explanation (Optional)
+                        </label>
+                        <textarea name="explanation" id="explanation" rows="2" placeholder="Explain why the answer is correct...">{{ old('explanation') }}</textarea>
                     </div>
 
                     <!-- Points & Image Row -->
@@ -176,7 +184,7 @@
                         
                         <div class="form-group half">
                             <label class="form-label">
-                                <i class="fas fa-image me-2"></i>Image
+                                <i class="fas fa-image me-2"></i>Question Image
                             </label>
                             <div class="file-upload">
                                 <input type="file" name="image" id="image" accept="image/*">
@@ -189,7 +197,7 @@
                         </div>
                     </div>
 
-                    <!-- Options Section -->
+                    <!-- Options Section (for Multiple Choice, Single Choice, True/False) -->
                     <div id="optionsSection" class="options-section">
                         <div class="section-header">
                             <div class="section-title">
@@ -241,6 +249,72 @@
                         <button type="button" class="btn-add" onclick="addOption()">
                             <i class="fas fa-plus"></i>
                             Add Option
+                        </button>
+                    </div>
+
+                    <!-- Image Selection Section -->
+                    <div id="imageSelectionSection" class="image-selection-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <i class="fas fa-images"></i>
+                                <h4>Image Options</h4>
+                            </div>
+                            <span class="options-badge" id="imageOptionsCount">2 images</span>
+                        </div>
+                        
+                        <div id="imageOptionsContainer" class="image-options-container">
+                            @php
+                                $oldImageOptions = old('options', [
+                                    ['text' => '', 'is_correct' => false],
+                                    ['text' => '', 'is_correct' => false]
+                                ]);
+                            @endphp
+                            
+                            @foreach($oldImageOptions as $index => $option)
+                            <div class="image-option-item" data-index="{{ $index }}">
+                                <div class="option-drag">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </div>
+                                <div class="image-option-content">
+                                    <div class="image-upload-box">
+                                        <input type="file" 
+                                               name="options[{{ $index }}][image]" 
+                                               class="image-option-input" 
+                                               accept="image/*"
+                                               onchange="previewImageOption(this, {{ $index }})">
+                                        <div class="image-preview-box" id="imagePreview{{ $index }}">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                            <span>Upload Image</span>
+                                        </div>
+                                    </div>
+                                    <div class="image-option-details">
+                                        <input type="text" 
+                                               name="options[{{ $index }}][text]" 
+                                               class="image-option-text" 
+                                               placeholder="Alt text / Label"
+                                               value="{{ $option['text'] ?? '' }}">
+                                        <div class="image-option-check">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" 
+                                                       name="options[{{ $index }}][is_correct]" 
+                                                       value="1"
+                                                       {{ isset($option['is_correct']) && $option['is_correct'] ? 'checked' : '' }}>
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-text">Correct</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="option-remove" onclick="removeImageOption(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        
+                        <button type="button" class="btn-add" onclick="addImageOption()">
+                            <i class="fas fa-plus"></i>
+                            Add Image Option
                         </button>
                     </div>
 
@@ -298,6 +372,61 @@
                         </button>
                     </div>
 
+                    <!-- Matching Section -->
+                    <div id="matchingSection" class="matching-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <i class="fas fa-link"></i>
+                                <h4>Matching Pairs</h4>
+                            </div>
+                            <span class="options-badge" id="matchingCount">2 pairs</span>
+                        </div>
+                        
+                        <div id="matchingPairsContainer" class="matching-container">
+                            @php
+                                $oldMatchingPairs = old('matching_pairs', [
+                                    ['left' => '', 'right' => ''],
+                                    ['left' => '', 'right' => '']
+                                ]);
+                            @endphp
+                            
+                            @foreach($oldMatchingPairs as $index => $pair)
+                            <div class="matching-item" data-index="{{ $index }}">
+                                <div class="matching-drag">
+                                    <i class="fas fa-grip-vertical"></i>
+                                </div>
+                                <div class="matching-input-group">
+                                    <div class="matching-left">
+                                        <input type="text" 
+                                               name="matching_pairs[{{ $index }}][left]" 
+                                               class="matching-left-input" 
+                                               placeholder="Left item (e.g., Country)"
+                                               value="{{ $pair['left'] ?? '' }}">
+                                    </div>
+                                    <div class="matching-arrow">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                    <div class="matching-right">
+                                        <input type="text" 
+                                               name="matching_pairs[{{ $index }}][right]" 
+                                               class="matching-right-input" 
+                                               placeholder="Right item (e.g., Capital)"
+                                               value="{{ $pair['right'] ?? '' }}">
+                                    </div>
+                                    <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        
+                        <button type="button" class="btn-add" onclick="addMatchingPair()">
+                            <i class="fas fa-plus"></i>
+                            Add Pair
+                        </button>
+                    </div>
+
                     <!-- Submit Button -->
                     <div class="form-actions">
                         <button type="submit" class="btn-submit">
@@ -329,9 +458,9 @@
                 </div>
             </div>
 
-            <div class="questions-list">
+            <div class="questions-list" id="questionsList">
                 @forelse($quiz->questions as $question)
-                <div class="question-card" id="question-{{ $question->id }}">
+                <div class="question-card" id="question-{{ $question->id }}" data-id="{{ $question->id }}" data-order="{{ $question->sort_order }}">
                     <div class="question-card-drag">
                         <i class="fas fa-grip-vertical"></i>
                     </div>
@@ -360,6 +489,12 @@
                             {{ $question->question_text }}
                         </div>
                         
+                        @if($question->explanation)
+                        <div class="question-explanation">
+                            <i class="fas fa-info-circle"></i> {{ $question->explanation }}
+                        </div>
+                        @endif
+                        
                         @if($question->image)
                         <div class="question-card-image">
                             <img src="{{ Storage::url($question->image) }}" alt="Question image">
@@ -377,16 +512,46 @@
                                     @endif
                                 </div>
                                 @endforeach
+                            
+                            @elseif($question->question_type == 'image_selection')
+                                <div class="image-options-grid">
+                                    @foreach($question->options as $option)
+                                    <div class="image-option-preview {{ $option->is_correct ? 'correct' : '' }}">
+                                        @if($option->image)
+                                            <img src="{{ Storage::url($option->image) }}" alt="{{ $option->option_text }}">
+                                        @else
+                                            <div class="no-image">{{ $option->option_text }}</div>
+                                        @endif
+                                        @if($option->is_correct)
+                                            <div class="correct-badge"><i class="fas fa-check-circle"></i></div>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                </div>
+                            
                             @elseif($question->question_type == 'fill_blank')
                                 @foreach($question->fillBlanks as $blank)
                                 <div class="answer-row correct">
                                     <i class="fas fa-pencil-alt answer-icon"></i>
-                                    <span class="answer-text">{{ $blank->correct_answer }}</span>
+                                    <span class="answer-text">"{{ $blank->correct_answer }}"</span>
                                     @if($blank->case_sensitive)
                                         <span class="case-badge">Case Sensitive</span>
                                     @endif
                                 </div>
                                 @endforeach
+                            
+                            @elseif($question->question_type == 'matching')
+                                <div class="matching-pairs-preview">
+                                    <table class="matching-table">
+                                        @foreach($question->matchingPairs as $pair)
+                                        <tr>
+                                            <td class="left-item">{{ $pair->left_item }}</td>
+                                            <td class="arrow"><i class="fas fa-arrow-right"></i></td>
+                                            <td class="right-item">{{ $pair->right_item }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </table>
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -413,7 +578,7 @@
 
 <!-- Edit Question Modal -->
 <div class="modal fade" id="editQuestionModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
@@ -751,6 +916,10 @@ select {
 
 textarea {
     resize: vertical;
+    min-height: 60px;
+}
+
+textarea#questionText {
     min-height: 100px;
 }
 
@@ -847,8 +1016,8 @@ select:focus, textarea:focus, input:focus {
     border-radius: var(--radius-sm);
 }
 
-/* Options Section - ENHANCED FOR BETTER VISIBILITY */
-.options-section, .blanks-section {
+/* Options Section */
+.options-section, .blanks-section, .image-selection-section, .matching-section {
     background: var(--light);
     border-radius: var(--radius-lg);
     padding: 24px;
@@ -891,7 +1060,7 @@ select:focus, textarea:focus, input:focus {
     border: 1px solid var(--border);
 }
 
-.options-container, .blanks-container {
+.options-container, .blanks-container, .image-options-container, .matching-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -901,7 +1070,7 @@ select:focus, textarea:focus, input:focus {
     padding: 8px;
 }
 
-/* ENHANCED OPTION ITEM - LARGER AND MORE VISIBLE */
+/* Option Items */
 .option-item, .blank-item {
     display: flex;
     align-items: flex-start;
@@ -920,7 +1089,7 @@ select:focus, textarea:focus, input:focus {
     transform: translateY(-2px);
 }
 
-.option-drag, .blank-drag {
+.option-drag, .blank-drag, .matching-drag {
     cursor: move;
     color: var(--gray);
     padding: 10px 4px;
@@ -935,7 +1104,6 @@ select:focus, textarea:focus, input:focus {
     flex-wrap: wrap;
 }
 
-/* ENHANCED OPTION FIELD - MUCH WIDER */
 .option-field, .blank-field {
     flex: 3;
     min-width: 350px;
@@ -957,18 +1125,12 @@ select:focus, textarea:focus, input:focus {
     outline: none;
 }
 
-.option-text::placeholder, .blank-text::placeholder {
-    color: var(--gray);
-    opacity: 0.7;
-    font-size: 0.95rem;
-}
-
 .option-check, .blank-case {
     min-width: 120px;
     padding: 8px 0;
 }
 
-/* ENHANCED CHECKBOX */
+/* Checkbox */
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -1016,8 +1178,8 @@ select:focus, textarea:focus, input:focus {
     font-weight: 500;
 }
 
-/* ENHANCED REMOVE BUTTON */
-.option-remove, .blank-remove {
+/* Remove Buttons */
+.option-remove, .blank-remove, .matching-remove {
     width: 40px;
     height: 40px;
     border-radius: var(--radius-md);
@@ -1033,7 +1195,7 @@ select:focus, textarea:focus, input:focus {
     flex-shrink: 0;
 }
 
-.option-remove:hover, .blank-remove:hover {
+.option-remove:hover, .blank-remove:hover, .matching-remove:hover {
     background: var(--danger);
     color: white;
     transform: rotate(90deg);
@@ -1261,6 +1423,16 @@ select:focus, textarea:focus, input:focus {
     color: var(--info);
 }
 
+.type-matching {
+    background: var(--secondary);
+    color: white;
+}
+
+.type-image_selection {
+    background: var(--info);
+    color: white;
+}
+
 .badge-points {
     background: var(--dark);
     color: white;
@@ -1316,6 +1488,16 @@ select:focus, textarea:focus, input:focus {
     margin-bottom: 15px;
     line-height: 1.6;
     font-weight: 500;
+}
+
+.question-explanation {
+    background: var(--info-light);
+    color: var(--info);
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    border-left: 4px solid var(--info);
 }
 
 .question-card-image {
@@ -1393,6 +1575,287 @@ select:focus, textarea:focus, input:focus {
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* Image Selection Grid */
+.image-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.image-option-preview {
+    position: relative;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid var(--border);
+    aspect-ratio: 1;
+}
+
+.image-option-preview.correct {
+    border-color: var(--success);
+}
+
+.image-option-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-option-preview .no-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--light);
+    color: var(--gray);
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 8px;
+}
+
+.image-option-preview .correct-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--success);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+/* Matching Preview */
+.matching-pairs-preview {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.matching-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.matching-table tr {
+    border-bottom: 1px solid var(--border);
+}
+
+.matching-table tr:last-child {
+    border-bottom: none;
+}
+
+.matching-table td {
+    padding: 12px;
+}
+
+.matching-table .left-item {
+    font-weight: 600;
+    color: var(--primary);
+    width: 40%;
+}
+
+.matching-table .arrow {
+    text-align: center;
+    color: var(--gray);
+    width: 10%;
+}
+
+.matching-table .right-item {
+    color: var(--dark);
+    width: 50%;
+}
+
+/* Image Selection Form */
+.image-selection-section {
+    background: var(--light);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.image-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.image-option-item {
+    display: flex;
+    gap: 16px;
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    transition: all 0.3s;
+}
+
+.image-option-item:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.image-option-content {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.image-upload-box {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    cursor: pointer;
+}
+
+.image-upload-box input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.image-preview-box {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--light);
+    transition: all 0.3s;
+    overflow: hidden;
+}
+
+.image-preview-box:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.image-preview-box i {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.image-preview-box span {
+    font-size: 0.8rem;
+    color: var(--gray);
+    text-align: center;
+    padding: 0 8px;
+}
+
+.image-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-option-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 200px;
+}
+
+.image-option-text {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+}
+
+.image-option-check {
+    display: flex;
+    align-items: center;
+}
+
+/* Matching Form */
+.matching-section {
+    background: var(--light);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.matching-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.matching-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--white);
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    transition: all 0.3s;
+}
+
+.matching-item:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+}
+
+.matching-input-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.matching-left, .matching-right {
+    flex: 1;
+    min-width: 200px;
+}
+
+.matching-left-input, .matching-right-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+}
+
+.matching-left-input:focus, .matching-right-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-light);
+    outline: none;
+}
+
+.matching-arrow {
+    color: var(--primary);
+    font-size: 20px;
     flex-shrink: 0;
 }
 
@@ -1555,6 +2018,18 @@ select:focus, textarea:focus, input:focus {
     to { transform: rotate(360deg); }
 }
 
+/* Current Image in Edit Modal */
+.current-image {
+    margin-bottom: 15px;
+}
+
+.current-image img {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--border);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
@@ -1640,6 +2115,30 @@ select:focus, textarea:focus, input:focus {
         width: 100%;
         justify-content: flex-end;
     }
+    
+    .image-option-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .image-upload-box {
+        width: 100%;
+        height: 150px;
+    }
+    
+    .matching-input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .matching-arrow {
+        transform: rotate(90deg);
+        align-self: center;
+    }
+    
+    .matching-left, .matching-right {
+        min-width: 100%;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1655,11 +2154,11 @@ select:focus, textarea:focus, input:focus {
         flex-wrap: wrap;
     }
     
-    .option-item, .blank-item {
+    .option-item, .blank-item, .image-option-item, .matching-item {
         padding: 16px;
     }
     
-    .option-remove, .blank-remove {
+    .option-remove, .blank-remove, .matching-remove {
         width: 100%;
     }
 }
@@ -1669,8 +2168,11 @@ select:focus, textarea:focus, input:focus {
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
+// Global counters
 let optionCount = {{ count(old('options', [['text' => ''], ['text' => '']])) }};
+let imageOptionCount = {{ count(old('options', [['text' => ''], ['text' => '']])) }};
 let fillBlankCount = {{ count(old('fill_blanks', [['answer' => '']])) }};
+let matchingPairCount = {{ count(old('matching_pairs', [['left' => '', 'right' => ''], ['left' => '', 'right' => '']])) }};
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize Sortable for options
@@ -1683,6 +2185,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Initialize Sortable for image options
+    const imageOptionsContainer = document.getElementById('imageOptionsContainer');
+    if (imageOptionsContainer) {
+        new Sortable(imageOptionsContainer, {
+            handle: '.option-drag',
+            animation: 150,
+            onEnd: updateImageOptionsIndices
+        });
+    }
+    
     // Initialize Sortable for blanks
     const blanksContainer = document.getElementById('fillBlanksContainer');
     if (blanksContainer) {
@@ -1690,6 +2202,28 @@ document.addEventListener('DOMContentLoaded', function() {
             handle: '.blank-drag',
             animation: 150,
             onEnd: updateBlanksIndices
+        });
+    }
+    
+    // Initialize Sortable for matching pairs
+    const matchingContainer = document.getElementById('matchingPairsContainer');
+    if (matchingContainer) {
+        new Sortable(matchingContainer, {
+            handle: '.matching-drag',
+            animation: 150,
+            onEnd: updateMatchingIndices
+        });
+    }
+    
+    // Initialize Sortable for questions list
+    const questionsList = document.getElementById('questionsList');
+    if (questionsList) {
+        new Sortable(questionsList, {
+            handle: '.question-card-drag',
+            animation: 150,
+            onEnd: function() {
+                updateQuestionsOrder();
+            }
         });
     }
     
@@ -1743,25 +2277,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function toggleSections(type) {
     const optionsSection = document.getElementById('optionsSection');
+    const imageSelectionSection = document.getElementById('imageSelectionSection');
     const fillBlanksSection = document.getElementById('fillBlanksSection');
+    const matchingSection = document.getElementById('matchingSection');
     
-    if (!optionsSection || !fillBlanksSection) return;
+    if (!optionsSection || !fillBlanksSection || !matchingSection || !imageSelectionSection) return;
     
+    // Hide all sections
+    optionsSection.style.display = 'none';
+    imageSelectionSection.style.display = 'none';
+    fillBlanksSection.style.display = 'none';
+    matchingSection.style.display = 'none';
+    
+    // Disable all inputs
     disableAllInputs();
     
-    if (type === 'fill_blank') {
-        optionsSection.style.display = 'none';
-        fillBlanksSection.style.display = 'block';
-        enableFillBlanksInputs();
-    } else {
-        optionsSection.style.display = 'block';
-        fillBlanksSection.style.display = 'none';
-        enableOptionsInputs();
+    // Show and enable appropriate section
+    switch(type) {
+        case 'fill_blank':
+            fillBlanksSection.style.display = 'block';
+            enableFillBlanksInputs();
+            break;
+        case 'matching':
+            matchingSection.style.display = 'block';
+            enableMatchingInputs();
+            break;
+        case 'image_selection':
+            imageSelectionSection.style.display = 'block';
+            enableImageOptionsInputs();
+            break;
+        default: // multiple_choice, single_choice, true_false
+            optionsSection.style.display = 'block';
+            enableOptionsInputs();
+            break;
     }
 }
 
 function disableAllInputs() {
-    document.querySelectorAll('.option-text, .option-item input[type="checkbox"], .blank-text, .blank-item input[type="checkbox"]').forEach(input => {
+    document.querySelectorAll('.option-text, .option-item input[type="checkbox"], .blank-text, .blank-item input[type="checkbox"], .matching-left-input, .matching-right-input, .image-option-text, .image-option-input, .image-option-item input[type="checkbox"]').forEach(input => {
         input.disabled = true;
     });
 }
@@ -1770,31 +2323,49 @@ function enableOptionsInputs() {
     document.querySelectorAll('.option-text, .option-item input[type="checkbox"]').forEach(input => {
         input.disabled = false;
     });
-    const optionsCount = document.getElementById('optionsCount');
-    if (optionsCount) {
-        optionsCount.textContent = document.querySelectorAll('.option-item').length + ' options';
-    }
+    updateOptionsCount();
+}
+
+function enableImageOptionsInputs() {
+    document.querySelectorAll('.image-option-text, .image-option-input, .image-option-item input[type="checkbox"]').forEach(input => {
+        input.disabled = false;
+    });
+    updateImageOptionsCount();
 }
 
 function enableFillBlanksInputs() {
     document.querySelectorAll('.blank-text, .blank-item input[type="checkbox"]').forEach(input => {
         input.disabled = false;
     });
-    const blanksCount = document.getElementById('blanksCount');
-    if (blanksCount) {
-        blanksCount.textContent = document.querySelectorAll('.blank-item').length + ' answers';
-    }
+    updateBlanksCount();
+}
+
+function enableMatchingInputs() {
+    document.querySelectorAll('.matching-left-input, .matching-right-input').forEach(input => {
+        input.disabled = false;
+    });
+    updateMatchingCount();
 }
 
 function enableCurrentSectionInputs() {
     const type = document.getElementById('questionType').value;
-    if (type === 'fill_blank') {
-        enableFillBlanksInputs();
-    } else {
-        enableOptionsInputs();
+    switch(type) {
+        case 'fill_blank':
+            enableFillBlanksInputs();
+            break;
+        case 'matching':
+            enableMatchingInputs();
+            break;
+        case 'image_selection':
+            enableImageOptionsInputs();
+            break;
+        default:
+            enableOptionsInputs();
+            break;
     }
 }
 
+// Option functions
 function addOption() {
     const container = document.getElementById('optionsContainer');
     if (!container) return;
@@ -1831,14 +2402,11 @@ function addOption() {
     `;
     container.appendChild(div);
     
-    if (document.getElementById('questionType').value !== 'fill_blank') {
+    if (!['fill_blank', 'matching', 'image_selection'].includes(document.getElementById('questionType').value)) {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
     
-    const optionsCount = document.getElementById('optionsCount');
-    if (optionsCount) {
-        optionsCount.textContent = container.children.length + ' options';
-    }
+    updateOptionsCount();
 }
 
 function removeOption(btn) {
@@ -1846,10 +2414,7 @@ function removeOption(btn) {
     if (row) {
         row.remove();
         updateOptionsIndices();
-        const optionsCount = document.getElementById('optionsCount');
-        if (optionsCount) {
-            optionsCount.textContent = document.querySelectorAll('.option-item').length + ' options';
-        }
+        updateOptionsCount();
     }
 }
 
@@ -1863,13 +2428,8 @@ function updateOptionsIndices() {
         });
         
         const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach((checkbox, cbIndex) => {
+        checkboxes.forEach(checkbox => {
             checkbox.name = `options[${index}][is_correct]`;
-            checkbox.id = `option${index}Correct`;
-            const label = row.querySelector(`label[for="option${cbIndex}Correct"]`);
-            if (label) {
-                label.htmlFor = `option${index}Correct`;
-            }
         });
         
         const placeholder = row.querySelector('input[type="text"]');
@@ -1879,6 +2439,131 @@ function updateOptionsIndices() {
     });
 }
 
+function updateOptionsCount() {
+    const optionsCount = document.getElementById('optionsCount');
+    if (optionsCount) {
+        optionsCount.textContent = document.querySelectorAll('#optionsContainer .option-item').length + ' options';
+    }
+}
+
+// Image Option functions
+function addImageOption() {
+    const container = document.getElementById('imageOptionsContainer');
+    if (!container) return;
+    
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'image-option-item';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="option-drag">
+            <i class="fas fa-grip-vertical"></i>
+        </div>
+        <div class="image-option-content">
+            <div class="image-upload-box">
+                <input type="file" 
+                       name="options[${index}][image]" 
+                       class="image-option-input" 
+                       accept="image/*"
+                       onchange="previewImageOption(this, ${index})">
+                <div class="image-preview-box" id="imagePreview${index}">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload Image</span>
+                </div>
+            </div>
+            <div class="image-option-details">
+                <input type="text" 
+                       name="options[${index}][text]" 
+                       class="image-option-text" 
+                       placeholder="Alt text / Label">
+                <div class="image-option-check">
+                    <label class="checkbox-label">
+                        <input type="checkbox" 
+                               name="options[${index}][is_correct]" 
+                               value="1">
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">Correct</span>
+                    </label>
+                </div>
+            </div>
+            <button type="button" class="option-remove" onclick="removeImageOption(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+    
+    if (document.getElementById('questionType').value === 'image_selection') {
+        div.querySelectorAll('input').forEach(input => input.disabled = false);
+    }
+    
+    updateImageOptionsCount();
+}
+
+function removeImageOption(btn) {
+    const row = btn.closest('.image-option-item');
+    if (row) {
+        row.remove();
+        updateImageOptionsIndices();
+        updateImageOptionsCount();
+    }
+}
+
+function updateImageOptionsIndices() {
+    const rows = document.querySelectorAll('#imageOptionsContainer .image-option-item');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        
+        const fileInput = row.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.name = `options[${index}][image]`;
+            fileInput.setAttribute('onchange', `previewImageOption(this, ${index})`);
+        }
+        
+        const textInput = row.querySelector('.image-option-text');
+        if (textInput) {
+            textInput.name = `options[${index}][text]`;
+        }
+        
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            checkbox.name = `options[${index}][is_correct]`;
+        }
+        
+        const previewBox = row.querySelector('.image-preview-box');
+        if (previewBox) {
+            previewBox.id = `imagePreview${index}`;
+        }
+    });
+}
+
+function updateImageOptionsCount() {
+    const imageOptionsCount = document.getElementById('imageOptionsCount');
+    if (imageOptionsCount) {
+        imageOptionsCount.textContent = document.querySelectorAll('#imageOptionsContainer .image-option-item').length + ' images';
+    }
+}
+
+function previewImageOption(input, index) {
+    const previewBox = document.getElementById(`imagePreview${index}`);
+    if (!previewBox) return;
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewBox.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        previewBox.innerHTML = `
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>Upload Image</span>
+        `;
+    }
+}
+
+// Fill Blank functions
 function addFillBlank() {
     const container = document.getElementById('fillBlanksContainer');
     if (!container) return;
@@ -1919,10 +2604,7 @@ function addFillBlank() {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
     
-    const blanksCount = document.getElementById('blanksCount');
-    if (blanksCount) {
-        blanksCount.textContent = container.children.length + ' answers';
-    }
+    updateBlanksCount();
 }
 
 function removeBlank(btn) {
@@ -1930,10 +2612,7 @@ function removeBlank(btn) {
     if (row) {
         row.remove();
         updateBlanksIndices();
-        const blanksCount = document.getElementById('blanksCount');
-        if (blanksCount) {
-            blanksCount.textContent = document.querySelectorAll('.blank-item').length + ' answers';
-        }
+        updateBlanksCount();
     }
 }
 
@@ -1941,23 +2620,143 @@ function updateBlanksIndices() {
     const rows = document.querySelectorAll('#fillBlanksContainer .blank-item');
     rows.forEach((row, index) => {
         row.setAttribute('data-index', index);
-        const inputs = row.querySelectorAll('input[type="text"]');
-        inputs.forEach(input => {
-            input.name = `fill_blanks[${index}][answer]`;
-        });
         
-        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach((checkbox, cbIndex) => {
+        const textInput = row.querySelector('.blank-text');
+        if (textInput) {
+            textInput.name = `fill_blanks[${index}][answer]`;
+        }
+        
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox) {
             checkbox.name = `fill_blanks[${index}][case_sensitive]`;
-            checkbox.id = `blank${index}Case`;
-            const label = row.querySelector(`label[for="blank${cbIndex}Case"]`);
-            if (label) {
-                label.htmlFor = `blank${index}Case`;
-            }
-        });
+        }
     });
 }
 
+function updateBlanksCount() {
+    const blanksCount = document.getElementById('blanksCount');
+    if (blanksCount) {
+        blanksCount.textContent = document.querySelectorAll('#fillBlanksContainer .blank-item').length + ' answers';
+    }
+}
+
+// Matching functions
+function addMatchingPair() {
+    const container = document.getElementById('matchingPairsContainer');
+    if (!container) return;
+    
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'matching-item';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="matching-drag">
+            <i class="fas fa-grip-vertical"></i>
+        </div>
+        <div class="matching-input-group">
+            <div class="matching-left">
+                <input type="text" 
+                       name="matching_pairs[${index}][left]" 
+                       class="matching-left-input" 
+                       placeholder="Left item">
+            </div>
+            <div class="matching-arrow">
+                <i class="fas fa-arrows-alt-h"></i>
+            </div>
+            <div class="matching-right">
+                <input type="text" 
+                       name="matching_pairs[${index}][right]" 
+                       class="matching-right-input" 
+                       placeholder="Right item">
+            </div>
+            <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+    
+    if (document.getElementById('questionType').value === 'matching') {
+        div.querySelectorAll('input').forEach(input => input.disabled = false);
+    }
+    
+    updateMatchingCount();
+}
+
+function removeMatchingPair(btn) {
+    const row = btn.closest('.matching-item');
+    if (row) {
+        row.remove();
+        updateMatchingIndices();
+        updateMatchingCount();
+    }
+}
+
+function updateMatchingIndices() {
+    const rows = document.querySelectorAll('#matchingPairsContainer .matching-item');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        
+        const leftInput = row.querySelector('.matching-left-input');
+        if (leftInput) {
+            leftInput.name = `matching_pairs[${index}][left]`;
+        }
+        
+        const rightInput = row.querySelector('.matching-right-input');
+        if (rightInput) {
+            rightInput.name = `matching_pairs[${index}][right]`;
+        }
+    });
+}
+
+function updateMatchingCount() {
+    const matchingCount = document.getElementById('matchingCount');
+    if (matchingCount) {
+        matchingCount.textContent = document.querySelectorAll('#matchingPairsContainer .matching-item').length + ' pairs';
+    }
+}
+
+// Questions order
+function updateQuestionsOrder() {
+    const questions = document.querySelectorAll('#questionsList .question-card');
+    const orderData = [];
+    
+    questions.forEach((question, index) => {
+        const id = question.getAttribute('data-id');
+        orderData.push({
+            id: id,
+            sort_order: index + 1
+        });
+        
+        // Update question number badge
+        const badge = question.querySelector('.badge-number');
+        if (badge) {
+            badge.textContent = 'Q' + (index + 1);
+        }
+    });
+    
+    // Send to server
+    fetch('{{ route("admin.quizzes.questions.reorder") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ questions: orderData })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Questions reordered successfully', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error reordering questions:', error);
+    });
+}
+
+// Delete question
 function deleteQuestion(id) {
     if (confirm('Are you sure you want to delete this question? This action cannot be undone.')) {
         const form = document.getElementById('deleteForm');
@@ -1966,6 +2765,7 @@ function deleteQuestion(id) {
     }
 }
 
+// Edit question
 function editQuestion(id) {
     const modal = new bootstrap.Modal(document.getElementById('editQuestionModal'));
     const editContent = document.getElementById('editQuestionContent');
@@ -1987,20 +2787,31 @@ function editQuestion(id) {
         }
     })
     .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(JSON.stringify(err));
+            }).catch(() => {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            });
+        }
         return response.json();
     })
     .then(question => {
+        console.log('Question data loaded:', question); // Debug log
         const form = buildEditForm(question);
         editContent.innerHTML = form;
         initializeEditForm(question.id);
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Detailed error:', error);
         editContent.innerHTML = `
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-circle me-2"></i>
-                Error loading question. Please try again.
+                <div>
+                    <strong>Error loading question:</strong>
+                    <p>${error.message}</p>
+                    <p class="mt-2 small">Please check the console for more details.</p>
+                </div>
             </div>
         `;
     });
@@ -2008,10 +2819,17 @@ function editQuestion(id) {
 
 function buildEditForm(question) {
     let optionsHtml = '';
+    let imageOptionsHtml = '';
     let blanksHtml = '';
+    let matchingHtml = '';
+    
+    // Add null checks for all arrays
+    const options = question.options || [];
+    const fillBlanks = question.fill_blanks || [];
+    const matchingPairs = question.matching_pairs || [];
     
     if (['multiple_choice', 'single_choice', 'true_false'].includes(question.question_type)) {
-        optionsHtml = question.options.map((option, index) => `
+        optionsHtml = options.map((option, index) => `
             <div class="option-item" data-index="${index}">
                 <div class="option-drag">
                     <i class="fas fa-grip-vertical"></i>
@@ -2022,7 +2840,7 @@ function buildEditForm(question) {
                                name="options[${index}][text]" 
                                class="option-text" 
                                placeholder="Enter option ${index + 1}"
-                               value="${option.option_text.replace(/"/g, '&quot;')}">
+                               value="${(option.option_text || '').replace(/"/g, '&quot;')}">
                     </div>
                     <div class="option-check">
                         <label class="checkbox-label">
@@ -2042,8 +2860,51 @@ function buildEditForm(question) {
         `).join('');
     }
     
+    if (question.question_type === 'image_selection') {
+        imageOptionsHtml = options.map((option, index) => `
+            <div class="image-option-item" data-index="${index}">
+                <div class="option-drag">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="image-option-content">
+                    <div class="image-upload-box">
+                        <input type="file" 
+                               name="options[${index}][image]" 
+                               class="image-option-input" 
+                               accept="image/*"
+                               onchange="previewImageOption(this, ${index})">
+                        <div class="image-preview-box" id="editImagePreview${index}">
+                            ${option.image ? `<img src="/storage/${option.image}" alt="Preview">` : '<i class="fas fa-cloud-upload-alt"></i><span>Upload Image</span>'}
+                        </div>
+                        ${option.image ? `<input type="hidden" name="options[${index}][existing_image]" value="${option.image}">` : ''}
+                    </div>
+                    <div class="image-option-details">
+                        <input type="text" 
+                               name="options[${index}][text]" 
+                               class="image-option-text" 
+                               placeholder="Alt text / Label"
+                               value="${(option.option_text || '').replace(/"/g, '&quot;')}">
+                        <div class="image-option-check">
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       name="options[${index}][is_correct]" 
+                                       value="1"
+                                       ${option.is_correct ? 'checked' : ''}>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Correct</span>
+                            </label>
+                        </div>
+                    </div>
+                    <button type="button" class="option-remove" onclick="removeImageOption(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
     if (question.question_type === 'fill_blank') {
-        blanksHtml = question.fill_blanks.map((blank, index) => `
+        blanksHtml = fillBlanks.map((blank, index) => `
             <div class="blank-item" data-index="${index}">
                 <div class="blank-drag">
                     <i class="fas fa-grip-vertical"></i>
@@ -2054,7 +2915,7 @@ function buildEditForm(question) {
                                name="fill_blanks[${index}][answer]" 
                                class="blank-text" 
                                placeholder="Enter correct answer"
-                               value="${blank.correct_answer.replace(/"/g, '&quot;')}">
+                               value="${(blank.correct_answer || '').replace(/"/g, '&quot;')}">
                     </div>
                     <div class="blank-case">
                         <label class="checkbox-label">
@@ -2067,6 +2928,38 @@ function buildEditForm(question) {
                         </label>
                     </div>
                     <button type="button" class="blank-remove" onclick="removeBlank(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    if (question.question_type === 'matching') {
+        matchingHtml = matchingPairs.map((pair, index) => `
+            <div class="matching-item" data-index="${index}">
+                <div class="matching-drag">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="matching-input-group">
+                    <div class="matching-left">
+                        <input type="text" 
+                               name="matching_pairs[${index}][left]" 
+                               class="matching-left-input" 
+                               placeholder="Left item"
+                               value="${(pair.left_item || '').replace(/"/g, '&quot;')}">
+                    </div>
+                    <div class="matching-arrow">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </div>
+                    <div class="matching-right">
+                        <input type="text" 
+                               name="matching_pairs[${index}][right]" 
+                               class="matching-right-input" 
+                               placeholder="Right item"
+                               value="${(pair.right_item || '').replace(/"/g, '&quot;')}">
+                    </div>
+                    <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -2087,6 +2980,8 @@ function buildEditForm(question) {
                         <option value="single_choice" ${question.question_type === 'single_choice' ? 'selected' : ''}>Single Choice</option>
                         <option value="true_false" ${question.question_type === 'true_false' ? 'selected' : ''}>True/False</option>
                         <option value="fill_blank" ${question.question_type === 'fill_blank' ? 'selected' : ''}>Fill in the Blank</option>
+                        <option value="matching" ${question.question_type === 'matching' ? 'selected' : ''}>Matching</option>
+                        <option value="image_selection" ${question.question_type === 'image_selection' ? 'selected' : ''}>Image Selection</option>
                     </select>
                     <i class="fas fa-chevron-down select-arrow"></i>
                 </div>
@@ -2094,14 +2989,19 @@ function buildEditForm(question) {
             
             <div class="form-group">
                 <label class="form-label">Question Text</label>
-                <textarea name="question_text" class="form-control" rows="3" required>${question.question_text.replace(/</g, '&lt;')}</textarea>
+                <textarea name="question_text" class="form-control" rows="3" required>${(question.question_text || '').replace(/</g, '&lt;')}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Explanation</label>
+                <textarea name="explanation" class="form-control" rows="2">${(question.explanation || '').replace(/</g, '&lt;')}</textarea>
             </div>
             
             <div class="form-group">
                 <label class="form-label">Points</label>
                 <div class="input-wrapper">
                     <i class="fas fa-star input-icon"></i>
-                    <input type="number" name="points" value="${question.points}" min="1">
+                    <input type="number" name="points" value="${question.points || 1}" min="1">
                 </div>
             </div>
             
@@ -2126,13 +3026,13 @@ function buildEditForm(question) {
                 </div>
             </div>
             
-            <div id="editOptionsSection" class="options-section" style="${question.question_type === 'fill_blank' ? 'display: none;' : 'display: block;'}">
+            <div id="editOptionsSection" class="options-section" style="${!['fill_blank', 'matching', 'image_selection'].includes(question.question_type) ? 'display: block;' : 'display: none;'}">
                 <div class="section-header">
                     <div class="section-title">
                         <i class="fas fa-list-ul"></i>
                         <h4>Answer Options</h4>
                     </div>
-                    <span class="options-badge" id="editOptionsCount">${question.options ? question.options.length : 2} options</span>
+                    <span class="options-badge" id="editOptionsCount">${options.length || 2} options</span>
                 </div>
                 <div id="editOptionsContainer" class="options-container">
                     ${optionsHtml || `
@@ -2175,13 +3075,76 @@ function buildEditForm(question) {
                 </button>
             </div>
             
+            <div id="editImageSelectionSection" class="image-selection-section" style="${question.question_type === 'image_selection' ? 'display: block;' : 'display: none;'}">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-images"></i>
+                        <h4>Image Options</h4>
+                    </div>
+                    <span class="options-badge" id="editImageOptionsCount">${options.length || 2} images</span>
+                </div>
+                <div id="editImageOptionsContainer" class="image-options-container">
+                    ${imageOptionsHtml || `
+                        <div class="image-option-item" data-index="0">
+                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="image-option-content">
+                                <div class="image-upload-box">
+                                    <input type="file" name="options[0][image]" class="image-option-input" accept="image/*" onchange="previewImageOption(this, 0)">
+                                    <div class="image-preview-box" id="editImagePreview0">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Upload Image</span>
+                                    </div>
+                                </div>
+                                <div class="image-option-details">
+                                    <input type="text" name="options[0][text]" class="image-option-text" placeholder="Alt text / Label">
+                                    <div class="image-option-check">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="options[0][is_correct]" value="1">
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-text">Correct</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="button" class="option-remove" onclick="removeImageOption(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="image-option-item" data-index="1">
+                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="image-option-content">
+                                <div class="image-upload-box">
+                                    <input type="file" name="options[1][image]" class="image-option-input" accept="image/*" onchange="previewImageOption(this, 1)">
+                                    <div class="image-preview-box" id="editImagePreview1">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Upload Image</span>
+                                    </div>
+                                </div>
+                                <div class="image-option-details">
+                                    <input type="text" name="options[1][text]" class="image-option-text" placeholder="Alt text / Label">
+                                    <div class="image-option-check">
+                                        <label class="checkbox-label">
+                                            <input type="checkbox" name="options[1][is_correct]" value="1">
+                                            <span class="checkbox-custom"></span>
+                                            <span class="checkbox-text">Correct</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="button" class="option-remove" onclick="removeImageOption(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                <button type="button" class="btn-add" onclick="addEditImageOption()">
+                    <i class="fas fa-plus"></i> Add Image Option
+                </button>
+            </div>
+            
             <div id="editFillBlanksSection" class="blanks-section" style="${question.question_type === 'fill_blank' ? 'display: block;' : 'display: none;'}">
                 <div class="section-header">
                     <div class="section-title">
                         <i class="fas fa-pencil-alt"></i>
                         <h4>Correct Answers</h4>
                     </div>
-                    <span class="options-badge" id="editBlanksCount">${question.fill_blanks ? question.fill_blanks.length : 1} answers</span>
+                    <span class="options-badge" id="editBlanksCount">${fillBlanks.length || 1} answers</span>
                 </div>
                 <div id="editBlanksContainer" class="blanks-container">
                     ${blanksHtml || `
@@ -2208,6 +3171,49 @@ function buildEditForm(question) {
                 </button>
             </div>
             
+            <div id="editMatchingSection" class="matching-section" style="${question.question_type === 'matching' ? 'display: block;' : 'display: none;'}">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-link"></i>
+                        <h4>Matching Pairs</h4>
+                    </div>
+                    <span class="options-badge" id="editMatchingCount">${matchingPairs.length || 2} pairs</span>
+                </div>
+                <div id="editMatchingContainer" class="matching-container">
+                    ${matchingHtml || `
+                        <div class="matching-item" data-index="0">
+                            <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="matching-input-group">
+                                <div class="matching-left">
+                                    <input type="text" name="matching_pairs[0][left]" class="matching-left-input" placeholder="Left item">
+                                </div>
+                                <div class="matching-arrow"><i class="fas fa-arrows-alt-h"></i></div>
+                                <div class="matching-right">
+                                    <input type="text" name="matching_pairs[0][right]" class="matching-right-input" placeholder="Right item">
+                                </div>
+                                <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="matching-item" data-index="1">
+                            <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="matching-input-group">
+                                <div class="matching-left">
+                                    <input type="text" name="matching_pairs[1][left]" class="matching-left-input" placeholder="Left item">
+                                </div>
+                                <div class="matching-arrow"><i class="fas fa-arrows-alt-h"></i></div>
+                                <div class="matching-right">
+                                    <input type="text" name="matching_pairs[1][right]" class="matching-right-input" placeholder="Right item">
+                                </div>
+                                <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    `}
+                </div>
+                <button type="button" class="btn-add" onclick="addEditMatchingPair()">
+                    <i class="fas fa-plus"></i> Add Pair
+                </button>
+            </div>
+            
             <div class="form-actions">
                 <button type="submit" class="btn-submit">
                     <i class="fas fa-save"></i> Update Question
@@ -2216,13 +3222,13 @@ function buildEditForm(question) {
         </form>
     `;
 }
-
 function initializeEditForm(questionId) {
     const form = document.getElementById('editQuestionForm');
     const questionType = document.getElementById('editQuestionType');
     
     if (!form) return;
     
+    // Initialize Sortable for edit options
     const optionsContainer = document.getElementById('editOptionsContainer');
     if (optionsContainer) {
         new Sortable(optionsContainer, {
@@ -2232,6 +3238,17 @@ function initializeEditForm(questionId) {
         });
     }
     
+    // Initialize Sortable for edit image options
+    const imageOptionsContainer = document.getElementById('editImageOptionsContainer');
+    if (imageOptionsContainer) {
+        new Sortable(imageOptionsContainer, {
+            handle: '.option-drag',
+            animation: 150,
+            onEnd: updateEditImageOptionsIndices
+        });
+    }
+    
+    // Initialize Sortable for edit blanks
     const blanksContainer = document.getElementById('editBlanksContainer');
     if (blanksContainer) {
         new Sortable(blanksContainer, {
@@ -2241,17 +3258,36 @@ function initializeEditForm(questionId) {
         });
     }
     
+    // Initialize Sortable for edit matching
+    const matchingContainer = document.getElementById('editMatchingContainer');
+    if (matchingContainer) {
+        new Sortable(matchingContainer, {
+            handle: '.matching-drag',
+            animation: 150,
+            onEnd: updateEditMatchingIndices
+        });
+    }
+    
     if (questionType) {
         questionType.addEventListener('change', function() {
             const optionsSection = document.getElementById('editOptionsSection');
+            const imageSection = document.getElementById('editImageSelectionSection');
             const blanksSection = document.getElementById('editFillBlanksSection');
+            const matchingSection = document.getElementById('editMatchingSection');
+            
+            optionsSection.style.display = 'none';
+            imageSection.style.display = 'none';
+            blanksSection.style.display = 'none';
+            matchingSection.style.display = 'none';
             
             if (this.value === 'fill_blank') {
-                optionsSection.style.display = 'none';
                 blanksSection.style.display = 'block';
+            } else if (this.value === 'matching') {
+                matchingSection.style.display = 'block';
+            } else if (this.value === 'image_selection') {
+                imageSection.style.display = 'block';
             } else {
                 optionsSection.style.display = 'block';
-                blanksSection.style.display = 'none';
             }
         });
     }
@@ -2310,54 +3346,7 @@ function initializeEditForm(questionId) {
     });
 }
 
-function showNotification(message, type = 'success') {
-    const existingNotifications = document.querySelectorAll('.notification');
-    existingNotifications.forEach(notification => notification.remove());
-    
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        padding: 16px 20px;
-        border-radius: 10px;
-        background: ${type === 'success' ? 'linear-gradient(135deg, #06d6a0, #05b586)' : 'linear-gradient(135deg, #ef476f, #d63e62)'};
-        color: white;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    setTimeout(() => {
-        notification.style.transform = 'translateX(400px)';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-    
-    notification.addEventListener('click', function() {
-        notification.style.transform = 'translateX(400px)';
-        setTimeout(() => notification.remove(), 300);
-    });
-}
-
+// Edit form helper functions
 function addEditOption() {
     const container = document.getElementById('editOptionsContainer');
     if (!container) return;
@@ -2397,6 +3386,59 @@ function addEditOption() {
     const editOptionsCount = document.getElementById('editOptionsCount');
     if (editOptionsCount) {
         editOptionsCount.textContent = container.children.length + ' options';
+    }
+}
+
+function addEditImageOption() {
+    const container = document.getElementById('editImageOptionsContainer');
+    if (!container) return;
+    
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'image-option-item';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="option-drag">
+            <i class="fas fa-grip-vertical"></i>
+        </div>
+        <div class="image-option-content">
+            <div class="image-upload-box">
+                <input type="file" 
+                       name="options[${index}][image]" 
+                       class="image-option-input" 
+                       accept="image/*"
+                       onchange="previewImageOption(this, ${index})">
+                <div class="image-preview-box" id="editImagePreview${index}">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <span>Upload Image</span>
+                </div>
+            </div>
+            <div class="image-option-details">
+                <input type="text" 
+                       name="options[${index}][text]" 
+                       class="image-option-text" 
+                       placeholder="Alt text / Label">
+                <div class="image-option-check">
+                    <label class="checkbox-label">
+                        <input type="checkbox" 
+                               name="options[${index}][is_correct]" 
+                               value="1">
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">Correct</span>
+                    </label>
+                </div>
+            </div>
+            <button type="button" class="option-remove" onclick="removeImageOption(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+    
+    const editImageOptionsCount = document.getElementById('editImageOptionsCount');
+    if (editImageOptionsCount) {
+        editImageOptionsCount.textContent = container.children.length + ' images';
     }
 }
 
@@ -2442,6 +3484,48 @@ function addEditBlank() {
     }
 }
 
+function addEditMatchingPair() {
+    const container = document.getElementById('editMatchingContainer');
+    if (!container) return;
+    
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'matching-item';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="matching-drag">
+            <i class="fas fa-grip-vertical"></i>
+        </div>
+        <div class="matching-input-group">
+            <div class="matching-left">
+                <input type="text" 
+                       name="matching_pairs[${index}][left]" 
+                       class="matching-left-input" 
+                       placeholder="Left item">
+            </div>
+            <div class="matching-arrow">
+                <i class="fas fa-arrows-alt-h"></i>
+            </div>
+            <div class="matching-right">
+                <input type="text" 
+                       name="matching_pairs[${index}][right]" 
+                       class="matching-right-input" 
+                       placeholder="Right item">
+            </div>
+            <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+    
+    const editMatchingCount = document.getElementById('editMatchingCount');
+    if (editMatchingCount) {
+        editMatchingCount.textContent = container.children.length + ' pairs';
+    }
+}
+
 function updateEditOptionsIndices() {
     const rows = document.querySelectorAll('#editOptionsContainer .option-item');
     rows.forEach((row, index) => {
@@ -2452,13 +3536,8 @@ function updateEditOptionsIndices() {
         });
         
         const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach((checkbox, cbIndex) => {
+        checkboxes.forEach(checkbox => {
             checkbox.name = `options[${index}][is_correct]`;
-            checkbox.id = `option${index}Correct`;
-            const label = row.querySelector(`label[for="option${cbIndex}Correct"]`);
-            if (label) {
-                label.htmlFor = `option${index}Correct`;
-            }
         });
         
         const placeholder = row.querySelector('input[type="text"]');
@@ -2468,24 +3547,114 @@ function updateEditOptionsIndices() {
     });
 }
 
+function updateEditImageOptionsIndices() {
+    const rows = document.querySelectorAll('#editImageOptionsContainer .image-option-item');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        
+        const fileInput = row.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.name = `options[${index}][image]`;
+            fileInput.setAttribute('onchange', `previewImageOption(this, ${index})`);
+        }
+        
+        const textInput = row.querySelector('.image-option-text');
+        if (textInput) {
+            textInput.name = `options[${index}][text]`;
+        }
+        
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            checkbox.name = `options[${index}][is_correct]`;
+        }
+        
+        const previewBox = row.querySelector('.image-preview-box');
+        if (previewBox) {
+            previewBox.id = `editImagePreview${index}`;
+        }
+    });
+}
+
 function updateEditBlanksIndices() {
     const rows = document.querySelectorAll('#editBlanksContainer .blank-item');
     rows.forEach((row, index) => {
         row.setAttribute('data-index', index);
-        const inputs = row.querySelectorAll('input[type="text"]');
-        inputs.forEach(input => {
-            input.name = `fill_blanks[${index}][answer]`;
-        });
         
-        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach((checkbox, cbIndex) => {
+        const textInput = row.querySelector('.blank-text');
+        if (textInput) {
+            textInput.name = `fill_blanks[${index}][answer]`;
+        }
+        
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        if (checkbox) {
             checkbox.name = `fill_blanks[${index}][case_sensitive]`;
-            checkbox.id = `blank${index}Case`;
-            const label = row.querySelector(`label[for="blank${cbIndex}Case"]`);
-            if (label) {
-                label.htmlFor = `blank${index}Case`;
-            }
-        });
+        }
+    });
+}
+
+function updateEditMatchingIndices() {
+    const rows = document.querySelectorAll('#editMatchingContainer .matching-item');
+    rows.forEach((row, index) => {
+        row.setAttribute('data-index', index);
+        
+        const leftInput = row.querySelector('.matching-left-input');
+        if (leftInput) {
+            leftInput.name = `matching_pairs[${index}][left]`;
+        }
+        
+        const rightInput = row.querySelector('.matching-right-input');
+        if (rightInput) {
+            rightInput.name = `matching_pairs[${index}][right]`;
+        }
+    });
+}
+
+// Notification function
+function showNotification(message, type = 'success') {
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        padding: 16px 20px;
+        border-radius: 10px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, #06d6a0, #05b586)' : 'linear-gradient(135deg, #ef476f, #d63e62)'};
+        color: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+    
+    notification.addEventListener('click', function() {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => notification.remove(), 300);
     });
 }
 </script>
