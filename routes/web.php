@@ -260,6 +260,20 @@ Route::get('/test-url', function(Request $request) {
         'full_success_url' => route('stripe.success', [], true),
     ]);
 });
+
+// Add to routes/web.php
+Route::get('/stripe/success-test', function(Request $request) {
+    return response()->json([
+        'route_exists' => true,
+        'session_id' => $request->get('session_id'),
+        'url' => $request->fullUrl(),
+        'routes' => collect(Route::getRoutes())->map(function($route) {
+            return $route->uri();
+        })->filter(function($uri) {
+            return str_contains($uri, 'stripe');
+        })->values()
+    ]);
+})->name('stripe.success.test');
 // ==================== FALLBACK ROUTE ====================
 // Route::fallback(function () {
 //     return view('errors.404');

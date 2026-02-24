@@ -126,16 +126,15 @@ class PaymentController extends Controller
                 ]);
             } else {
                 DB::rollBack();
-                
+
                 return response()->json([
                     'success' => false,
                     'error' => 'Payment failed. Please try again.'
                 ], 400);
             }
-
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'error' => 'Payment processing failed: ' . $e->getMessage()
