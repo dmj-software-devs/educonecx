@@ -233,6 +233,8 @@
                                             <input type="checkbox" 
                                                    name="options[{{ $index }}][is_correct]" 
                                                    value="1"
+                                                   class="correct-checkbox"
+                                                   data-option-index="{{ $index }}"
                                                    {{ isset($option['is_correct']) && $option['is_correct'] ? 'checked' : '' }}>
                                             <span class="checkbox-custom"></span>
                                             <span class="checkbox-text">Correct</span>
@@ -298,6 +300,8 @@
                                                 <input type="checkbox" 
                                                        name="options[{{ $index }}][is_correct]" 
                                                        value="1"
+                                                       class="correct-checkbox"
+                                                       data-option-index="{{ $index }}"
                                                        {{ isset($option['is_correct']) && $option['is_correct'] ? 'checked' : '' }}>
                                                 <span class="checkbox-custom"></span>
                                                 <span class="checkbox-text">Correct</span>
@@ -2236,6 +2240,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Initialize correct checkbox listeners for single choice
+    initializeCorrectCheckboxListeners();
+
     // Question text counter
     const questionText = document.getElementById('questionText');
     if (questionText) {
@@ -2275,6 +2282,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Smart checkbox handling for single choice
+function initializeCorrectCheckboxListeners() {
+    const questionType = document.getElementById('questionType');
+    const optionsContainer = document.getElementById('optionsContainer');
+    
+    if (optionsContainer) {
+        // Remove existing listeners and add new ones
+        optionsContainer.querySelectorAll('.correct-checkbox').forEach(checkbox => {
+            checkbox.removeEventListener('change', handleCorrectCheckboxChange);
+            checkbox.addEventListener('change', handleCorrectCheckboxChange);
+        });
+    }
+}
+
+function handleCorrectCheckboxChange(e) {
+    const questionType = document.getElementById('questionType').value;
+    
+    // Only apply single selection logic for single_choice and true_false
+    if (questionType === 'single_choice' || questionType === 'true_false') {
+        if (e.target.checked) {
+            // Uncheck all other checkboxes
+            const allCheckboxes = document.querySelectorAll('#optionsContainer .correct-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                if (checkbox !== e.target) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+    }
+}
+
 function toggleSections(type) {
     const optionsSection = document.getElementById('optionsSection');
     const imageSelectionSection = document.getElementById('imageSelectionSection');
@@ -2306,11 +2344,74 @@ function toggleSections(type) {
             imageSelectionSection.style.display = 'block';
             enableImageOptionsInputs();
             break;
-        default: // multiple_choice, single_choice, true_false
+        case 'true_false':
+            optionsSection.style.display = 'block';
+            enableOptionsInputs();
+            // Set default True/False options
+            setupTrueFalseOptions();
+            break;
+        default: // multiple_choice, single_choice
             optionsSection.style.display = 'block';
             enableOptionsInputs();
             break;
     }
+    
+    // Reinitialize checkbox listeners
+    initializeCorrectCheckboxListeners();
+}
+
+function setupTrueFalseOptions() {
+    const container = document.getElementById('optionsContainer');
+    if (!container) return;
+    
+    // Clear existing options
+    container.innerHTML = '';
+    
+    // Add True option
+    addTrueFalseOption('True', 0);
+    
+    // Add False option
+    addTrueFalseOption('False', 1);
+    
+    updateOptionsCount();
+}
+
+function addTrueFalseOption(text, index) {
+    const container = document.getElementById('optionsContainer');
+    
+    const div = document.createElement('div');
+    div.className = 'option-item';
+    div.setAttribute('data-index', index);
+    div.innerHTML = `
+        <div class="option-drag">
+            <i class="fas fa-grip-vertical"></i>
+        </div>
+        <div class="option-input-group">
+            <div class="option-field">
+                <input type="text" 
+                       name="options[${index}][text]" 
+                       class="option-text" 
+                       placeholder="Enter option ${index + 1}"
+                       value="${text}"
+                       readonly>
+            </div>
+            <div class="option-check">
+                <label class="checkbox-label">
+                    <input type="checkbox" 
+                           name="options[${index}][is_correct]" 
+                           value="1"
+                           class="correct-checkbox"
+                           data-option-index="${index}">
+                    <span class="checkbox-custom"></span>
+                    <span class="checkbox-text">Correct</span>
+                </label>
+            </div>
+            <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
 }
 
 function disableAllInputs() {
@@ -2390,7 +2491,9 @@ function addOption() {
                 <label class="checkbox-label">
                     <input type="checkbox" 
                            name="options[${index}][is_correct]" 
-                           value="1">
+                           value="1"
+                           class="correct-checkbox"
+                           data-option-index="${index}">
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-text">Correct</span>
                 </label>
@@ -2406,10 +2509,21 @@ function addOption() {
         div.querySelectorAll('input').forEach(input => input.disabled = false);
     }
     
+    // Add event listener for the new checkbox
+    const newCheckbox = div.querySelector('.correct-checkbox');
+    newCheckbox.addEventListener('change', handleCorrectCheckboxChange);
+    
     updateOptionsCount();
 }
 
 function removeOption(btn) {
+    const questionType = document.getElementById('questionType').value;
+    
+    // Don't allow removal for true/false questions
+    if (questionType === 'true_false') {
+        return;
+    }
+    
     const row = btn.closest('.option-item');
     if (row) {
         row.remove();
@@ -2425,11 +2539,15 @@ function updateOptionsIndices() {
         const inputs = row.querySelectorAll('input[type="text"]');
         inputs.forEach(input => {
             input.name = `options[${index}][text]`;
+            if (document.getElementById('questionType').value !== 'true_false') {
+                input.readOnly = false;
+            }
         });
         
         const checkboxes = row.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.name = `options[${index}][is_correct]`;
+            checkbox.setAttribute('data-option-index', index);
         });
         
         const placeholder = row.querySelector('input[type="text"]');
@@ -2481,7 +2599,9 @@ function addImageOption() {
                     <label class="checkbox-label">
                         <input type="checkbox" 
                                name="options[${index}][is_correct]" 
-                               value="1">
+                               value="1"
+                               class="correct-checkbox"
+                               data-option-index="${index}">
                         <span class="checkbox-custom"></span>
                         <span class="checkbox-text">Correct</span>
                     </label>
@@ -2797,10 +2917,11 @@ function editQuestion(id) {
         return response.json();
     })
     .then(question => {
-        console.log('Question data loaded:', question); // Debug log
+        console.log('Question data loaded:', question);
         const form = buildEditForm(question);
         editContent.innerHTML = form;
         initializeEditForm(question.id);
+        initializeEditCorrectCheckboxListeners();
     })
     .catch(error => {
         console.error('Detailed error:', error);
@@ -2815,6 +2936,33 @@ function editQuestion(id) {
             </div>
         `;
     });
+}
+
+function initializeEditCorrectCheckboxListeners() {
+    const questionType = document.getElementById('editQuestionType');
+    const optionsContainer = document.getElementById('editOptionsContainer');
+    
+    if (optionsContainer && questionType && (questionType.value === 'single_choice' || questionType.value === 'true_false')) {
+        optionsContainer.querySelectorAll('.correct-checkbox').forEach(checkbox => {
+            checkbox.removeEventListener('change', handleEditCorrectCheckboxChange);
+            checkbox.addEventListener('change', handleEditCorrectCheckboxChange);
+        });
+    }
+}
+
+function handleEditCorrectCheckboxChange(e) {
+    const questionType = document.getElementById('editQuestionType').value;
+    
+    if (questionType === 'single_choice' || questionType === 'true_false') {
+        if (e.target.checked) {
+            const allCheckboxes = document.querySelectorAll('#editOptionsContainer .correct-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                if (checkbox !== e.target) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+    }
 }
 
 function buildEditForm(question) {
@@ -2840,19 +2988,22 @@ function buildEditForm(question) {
                                name="options[${index}][text]" 
                                class="option-text" 
                                placeholder="Enter option ${index + 1}"
-                               value="${(option.option_text || '').replace(/"/g, '&quot;')}">
+                               value="${(option.option_text || '').replace(/"/g, '&quot;')}"
+                               ${question.question_type === 'true_false' ? 'readonly' : ''}>
                     </div>
                     <div class="option-check">
                         <label class="checkbox-label">
                             <input type="checkbox" 
                                    name="options[${index}][is_correct]" 
                                    value="1"
+                                   class="correct-checkbox"
+                                   data-option-index="${index}"
                                    ${option.is_correct ? 'checked' : ''}>
                             <span class="checkbox-custom"></span>
                             <span class="checkbox-text">Correct</span>
                         </label>
                     </div>
-                    <button type="button" class="option-remove" onclick="removeOption(this)">
+                    <button type="button" class="option-remove" onclick="removeOption(this)" ${question.question_type === 'true_false' ? 'style="opacity: 0.5; pointer-events: none;"' : ''}>
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -2889,6 +3040,8 @@ function buildEditForm(question) {
                                 <input type="checkbox" 
                                        name="options[${index}][is_correct]" 
                                        value="1"
+                                       class="correct-checkbox"
+                                       data-option-index="${index}"
                                        ${option.is_correct ? 'checked' : ''}>
                                 <span class="checkbox-custom"></span>
                                 <span class="checkbox-text">Correct</span>
@@ -3035,7 +3188,40 @@ function buildEditForm(question) {
                     <span class="options-badge" id="editOptionsCount">${options.length || 2} options</span>
                 </div>
                 <div id="editOptionsContainer" class="options-container">
-                    ${optionsHtml || `
+                    ${optionsHtml || (question.question_type === 'true_false' ? `
+                        <div class="option-item" data-index="0">
+                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="option-input-group">
+                                <div class="option-field">
+                                    <input type="text" name="options[0][text]" class="option-text" value="True" readonly>
+                                </div>
+                                <div class="option-check">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">Correct</span>
+                                    </label>
+                                </div>
+                                <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="option-item" data-index="1">
+                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="option-input-group">
+                                <div class="option-field">
+                                    <input type="text" name="options[1][text]" class="option-text" value="False" readonly>
+                                </div>
+                                <div class="option-check">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
+                                        <span class="checkbox-custom"></span>
+                                        <span class="checkbox-text">Correct</span>
+                                    </label>
+                                </div>
+                                <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    ` : (optionsHtml || `
                         <div class="option-item" data-index="0">
                             <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
                             <div class="option-input-group">
@@ -3044,7 +3230,7 @@ function buildEditForm(question) {
                                 </div>
                                 <div class="option-check">
                                     <label class="checkbox-label">
-                                        <input type="checkbox" name="options[0][is_correct]" value="1">
+                                        <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
                                         <span class="checkbox-custom"></span>
                                         <span class="checkbox-text">Correct</span>
                                     </label>
@@ -3060,7 +3246,7 @@ function buildEditForm(question) {
                                 </div>
                                 <div class="option-check">
                                     <label class="checkbox-label">
-                                        <input type="checkbox" name="options[1][is_correct]" value="1">
+                                        <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
                                         <span class="checkbox-custom"></span>
                                         <span class="checkbox-text">Correct</span>
                                     </label>
@@ -3068,11 +3254,13 @@ function buildEditForm(question) {
                                 <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
-                    `}
+                    `))}
                 </div>
-                <button type="button" class="btn-add" onclick="addEditOption()">
-                    <i class="fas fa-plus"></i> Add Option
-                </button>
+                ${question.question_type !== 'true_false' ? `
+                    <button type="button" class="btn-add" onclick="addEditOption()">
+                        <i class="fas fa-plus"></i> Add Option
+                    </button>
+                ` : ''}
             </div>
             
             <div id="editImageSelectionSection" class="image-selection-section" style="${question.question_type === 'image_selection' ? 'display: block;' : 'display: none;'}">
@@ -3099,7 +3287,7 @@ function buildEditForm(question) {
                                     <input type="text" name="options[0][text]" class="image-option-text" placeholder="Alt text / Label">
                                     <div class="image-option-check">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="options[0][is_correct]" value="1">
+                                            <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
                                             <span class="checkbox-custom"></span>
                                             <span class="checkbox-text">Correct</span>
                                         </label>
@@ -3122,7 +3310,7 @@ function buildEditForm(question) {
                                     <input type="text" name="options[1][text]" class="image-option-text" placeholder="Alt text / Label">
                                     <div class="image-option-check">
                                         <label class="checkbox-label">
-                                            <input type="checkbox" name="options[1][is_correct]" value="1">
+                                            <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
                                             <span class="checkbox-custom"></span>
                                             <span class="checkbox-text">Correct</span>
                                         </label>
@@ -3222,6 +3410,7 @@ function buildEditForm(question) {
         </form>
     `;
 }
+
 function initializeEditForm(questionId) {
     const form = document.getElementById('editQuestionForm');
     const questionType = document.getElementById('editQuestionType');
@@ -3288,6 +3477,13 @@ function initializeEditForm(questionId) {
                 imageSection.style.display = 'block';
             } else {
                 optionsSection.style.display = 'block';
+            }
+            
+            // Reinitialize checkbox listeners for single choice
+            if (this.value === 'single_choice' || this.value === 'true_false') {
+                setTimeout(() => {
+                    initializeEditCorrectCheckboxListeners();
+                }, 100);
             }
         });
     }
@@ -3371,7 +3567,9 @@ function addEditOption() {
                 <label class="checkbox-label">
                     <input type="checkbox" 
                            name="options[${index}][is_correct]" 
-                           value="1">
+                           value="1"
+                           class="correct-checkbox"
+                           data-option-index="${index}">
                     <span class="checkbox-custom"></span>
                     <span class="checkbox-text">Correct</span>
                 </label>
@@ -3386,6 +3584,13 @@ function addEditOption() {
     const editOptionsCount = document.getElementById('editOptionsCount');
     if (editOptionsCount) {
         editOptionsCount.textContent = container.children.length + ' options';
+    }
+    
+    // Add event listener for single choice
+    const questionType = document.getElementById('editQuestionType');
+    if (questionType && (questionType.value === 'single_choice' || questionType.value === 'true_false')) {
+        const newCheckbox = div.querySelector('.correct-checkbox');
+        newCheckbox.addEventListener('change', handleEditCorrectCheckboxChange);
     }
 }
 
@@ -3423,7 +3628,9 @@ function addEditImageOption() {
                     <label class="checkbox-label">
                         <input type="checkbox" 
                                name="options[${index}][is_correct]" 
-                               value="1">
+                               value="1"
+                               class="correct-checkbox"
+                               data-option-index="${index}">
                         <span class="checkbox-custom"></span>
                         <span class="checkbox-text">Correct</span>
                     </label>
@@ -3538,6 +3745,7 @@ function updateEditOptionsIndices() {
         const checkboxes = row.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
             checkbox.name = `options[${index}][is_correct]`;
+            checkbox.setAttribute('data-option-index', index);
         });
         
         const placeholder = row.querySelector('input[type="text"]');
@@ -3566,6 +3774,7 @@ function updateEditImageOptionsIndices() {
         const checkbox = row.querySelector('input[type="checkbox"]');
         if (checkbox) {
             checkbox.name = `options[${index}][is_correct]`;
+            checkbox.setAttribute('data-option-index', index);
         }
         
         const previewBox = row.querySelector('.image-preview-box');
