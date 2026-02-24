@@ -232,10 +232,28 @@ class ReportController extends Controller
     /**
      * Export report.
      */
+    // In App\Http\Controllers\Admin\ReportController.php
     public function export($type, $format)
     {
-        // Implement export functionality (CSV, PDF, Excel)
-        // This would use packages like maatwebsite/excel or barryvdh/laravel-dompdf
+        switch ($type) {
+            case 'analytics':
+                // Redirect to analytics export or handle here
+                return app(AdminDashboardController::class)->export(request());
+            case 'sales':
+                // Handle sales export
+                break;
+            case 'students':
+                // Handle students export
+                break;
+            case 'courses':
+                // Handle courses export
+                break;
+            case 'quizzes':
+                // Handle quizzes export
+                break;
+            default:
+                return back()->with('error', 'Invalid export type');
+        }
 
         return back()->with('info', 'Export functionality coming soon.');
     }

@@ -11,6 +11,7 @@ use App\Models\Review;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminDashboardController extends Controller
 {
@@ -173,9 +174,13 @@ class AdminDashboardController extends Controller
     /**
      * Show analytics page
      */
-    public function analytics()
+    public function analytics(Request $request)
     {
-        // Get detailed analytics data
+        // Get date range from request or use defaults
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfMonth();
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now()->endOfMonth();
+
+        // Your existing queries
         $usersByRole = User::select('role', DB::raw('COUNT(*) as count'))
             ->groupBy('role')
             ->get();
@@ -198,7 +203,7 @@ class AdminDashboardController extends Controller
             DB::raw('SUM(total) as total')
         )
             ->where('payment_status', 'paid')
-            ->where('created_at', '>=', now()->subMonths(12))
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('year', 'month')
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
@@ -211,13 +216,156 @@ class AdminDashboardController extends Controller
             ->take(10)
             ->get();
 
+        // NEW: Add summary stats
+        $totalRevenue = Order::where('payment_status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('total');
+
+        $totalOrders = Order::where('payment_status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $newUsers = User::whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
+        $completions = Enrollment::whereNotNull('completed_at')
+            ->whereBetween('updated_at', [$startDate, $endDate])
+            ->count();
+
+        // NEW: Add completion rates data
+        $completionRates = Course::select(
+            'courses.id',
+            'courses.title',
+            DB::raw('COUNT(enrollments.id) as total_enrollments'),
+            DB::raw('SUM(CASE WHEN enrollments.completed_at IS NOT NULL THEN 1 ELSE 0 END) as completions')
+        )
+            ->leftJoin('enrollments', 'courses.id', '=', 'enrollments.course_id')
+            ->groupBy('courses.id', 'courses.title')
+            ->orderBy('completions', 'desc')
+            ->having('total_enrollments', '>', 0)
+            ->take(10)
+            ->get();
+
+        // NEW: Add user growth data for chart
+        $userGrowth = User::select(
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as total')
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get();
+
         return view('admin.analytics', compact(
             'usersByRole',
             'coursesByLevel',
             'coursesByStatus',
             'ordersByStatus',
             'monthlyRevenue',
-            'popularCategories'
+            'popularCategories',
+            // New variables
+            'totalRevenue',
+            'totalOrders',
+            'newUsers',
+            'completions',
+            'completionRates',
+            'userGrowth',
+            'startDate',
+            'endDate'
         ));
+    }
+
+    // In App\Http\Controllers\Admin\AdminDashboardController.php
+
+    /**
+     * Export analytics data as CSV
+     */
+    public function export(Request $request)
+    {
+        // Get date range from request or use defaults
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now()->startOfMonth();
+        $endDate = $request->end_date ? Carbon::parse($request->end_date) : now()->endOfMonth();
+
+        // Get data for export
+        $usersByRole = User::select('role', DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('role')
+            ->get();
+
+        $coursesByLevel = Course::select('level', DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('level')
+            ->get();
+
+        $ordersByStatus = Order::select('payment_status', DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('payment_status')
+            ->get();
+
+        $monthlyRevenue = Order::select(
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+            DB::raw('SUM(total) as total')
+        )
+            ->where('payment_status', 'paid')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Generate CSV
+        $filename = "analytics-export-{$startDate->format('Y-m-d')}-{$endDate->format('Y-m-d')}.csv";
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($usersByRole, $coursesByLevel, $ordersByStatus, $monthlyRevenue, $startDate, $endDate) {
+            $file = fopen('php://output', 'w');
+
+            // Add header
+            fputcsv($file, ['Analytics Export', $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d')]);
+            fputcsv($file, []); // Empty line
+
+            // Users by Role
+            fputcsv($file, ['USERS BY ROLE']);
+            fputcsv($file, ['Role', 'Count']);
+            foreach ($usersByRole as $item) {
+                fputcsv($file, [$item->role, $item->count]);
+            }
+            fputcsv($file, []); // Empty line
+
+            // Courses by Level
+            fputcsv($file, ['COURSES BY LEVEL']);
+            fputcsv($file, ['Level', 'Count']);
+            foreach ($coursesByLevel as $item) {
+                fputcsv($file, [$item->level, $item->count]);
+            }
+            fputcsv($file, []); // Empty line
+
+            // Orders by Status
+            fputcsv($file, ['ORDERS BY STATUS']);
+            fputcsv($file, ['Status', 'Count']);
+            foreach ($ordersByStatus as $item) {
+                fputcsv($file, [$item->payment_status, $item->count]);
+            }
+            fputcsv($file, []); // Empty line
+
+            // Monthly Revenue
+            fputcsv($file, ['MONTHLY REVENUE']);
+            fputcsv($file, ['Month', 'Revenue']);
+            foreach ($monthlyRevenue as $item) {
+                fputcsv($file, [$item->month, '$' . number_format($item->total, 2)]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
