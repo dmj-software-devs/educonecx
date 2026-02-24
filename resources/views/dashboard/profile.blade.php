@@ -4,78 +4,44 @@
 
 @section('meta_description', 'Manage your profile information, update your avatar, change password, and customize your account settings on EDUCONECX.')
 
-@push('styles')
+@section('content')
 <style>
-    /* Profile Container */
-    .profile-container {
-        padding: 40px 0;
-        background: var(--light);
+    /* Profile Page Specific Styles - Scoped to prevent conflicts */
+    .profile-page-section {
         min-height: calc(100vh - 400px);
+        background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);
+        padding: 40px 20px;
+        font-family: 'Inter', sans-serif;
     }
 
-    /* Page Header */
-    .page-header {
-        margin-bottom: 30px;
+    .profile-page-container {
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
+        gap: 30px;
     }
 
-    .page-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .page-title i {
-        color: var(--primary);
-        font-size: 2rem;
-    }
-
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: var(--white);
-        color: var(--dark);
-        border-radius: var(--border-radius-full);
-        text-decoration: none;
-        font-weight: 500;
-        transition: var(--transition);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .back-btn:hover {
-        background: var(--primary);
-        color: var(--white);
-        transform: translateX(-5px);
-    }
-
-    /* Profile Card */
-    .profile-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-lg);
+    /* Sidebar Styles */
+    .profile-page-sidebar {
+        width: 280px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
         overflow: hidden;
-        position: sticky;
-        top: 100px;
+        height: fit-content;
+        border: 1px solid #e9ecef;
+        flex-shrink: 0;
     }
 
-    .profile-cover {
+    .profile-page-cover {
         height: 120px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         position: relative;
         overflow: hidden;
     }
 
-    .profile-cover::before {
+    .profile-page-cover::before {
         content: '';
         position: absolute;
         top: -50%;
@@ -84,10 +50,10 @@
         height: 200px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
-        animation: float 8s ease-in-out infinite;
+        animation: profile-page-float 8s ease-in-out infinite;
     }
 
-    .profile-cover::after {
+    .profile-page-cover::after {
         content: '';
         position: absolute;
         bottom: -50%;
@@ -96,10 +62,10 @@
         height: 150px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
-        animation: float 6s ease-in-out infinite reverse;
+        animation: profile-page-float 6s ease-in-out infinite reverse;
     }
 
-    .profile-avatar-wrapper {
+    .profile-page-avatar-section {
         position: relative;
         margin-top: -60px;
         padding: 0 20px;
@@ -108,42 +74,43 @@
         z-index: 2;
     }
 
-    .profile-avatar {
+    .profile-page-avatar-wrapper {
         width: 120px;
         height: 120px;
         border-radius: 50%;
-        border: 4px solid var(--white);
-        box-shadow: var(--shadow-lg);
-        background: var(--white);
+        border: 4px solid white;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background: white;
         overflow: hidden;
         position: relative;
         cursor: pointer;
-        transition: var(--transition);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .profile-avatar:hover {
+    .profile-page-avatar-wrapper:hover {
         transform: scale(1.05);
     }
 
-    .profile-avatar img {
+    .profile-page-avatar-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .avatar-placeholder {
+    .profile-page-avatar-placeholder {
         width: 100%;
         height: 100%;
-        background: var(--gradient-1);
-        color: var(--white);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 3rem;
-        font-weight: 600;
+        font-weight: 700;
+        text-transform: uppercase;
     }
 
-    .avatar-overlay {
+    .profile-page-avatar-overlay {
         position: absolute;
         top: 0;
         left: 0;
@@ -154,903 +121,1447 @@
         align-items: center;
         justify-content: center;
         opacity: 0;
-        transition: var(--transition);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
     }
 
-    .profile-avatar:hover .avatar-overlay {
+    .profile-page-avatar-wrapper:hover .profile-page-avatar-overlay {
         opacity: 1;
     }
 
-    .avatar-overlay i {
-        color: var(--white);
+    .profile-page-avatar-overlay i {
+        color: white;
         font-size: 1.5rem;
     }
 
-    .profile-info {
+    .profile-page-info {
         padding: 20px;
         text-align: center;
-        border-bottom: 1px solid var(--gray-light);
+        border-bottom: 1px solid #e9ecef;
     }
 
-    .profile-name {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin-bottom: 5px;
+    .profile-page-name {
+        font-size: 1.3rem !important;
+        font-weight: 800 !important;
+        color: #1f2937 !important;
+        margin: 0 0 5px 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
+        background: none !important;
+        -webkit-text-fill-color: #1f2937 !important;
     }
 
-    .profile-email {
-        color: var(--gray);
-        font-size: 0.95rem;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
+    .profile-page-email {
+        color: #6b7280 !important;
+        font-size: 0.9rem !important;
+        margin: 0 0 15px 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
     }
 
-    .profile-email i {
-        color: var(--primary);
+    .profile-page-email i {
+        color: #4361ee !important;
+        font-size: 0.85rem !important;
     }
 
-    .profile-badge {
-        display: inline-block;
-        padding: 5px 15px;
-        background: var(--light);
-        border-radius: var(--border-radius-full);
-        font-size: 0.8rem;
-        color: var(--primary);
-        font-weight: 600;
+    .profile-page-badge {
+        display: inline-block !important;
+        padding: 6px 16px !important;
+        background: linear-gradient(145deg, #f8f9fa, #e9ecef) !important;
+        border-radius: 9999px !important;
+        font-size: 0.8rem !important;
+        color: #4361ee !important;
+        font-weight: 700 !important;
+        border: 1px solid #e9ecef !important;
     }
 
-    .profile-stats {
+    .profile-page-badge i {
+        margin-right: 5px !important;
+    }
+
+    .profile-page-stats {
         display: flex;
         justify-content: space-around;
         padding: 20px;
-        border-bottom: 1px solid var(--gray-light);
+        border-bottom: 1px solid #e9ecef;
+        background: linear-gradient(145deg, #fafafa, #ffffff);
     }
 
-    .stat-item {
+    .profile-page-stat-item {
         text-align: center;
     }
 
-    .stat-value {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-        margin-bottom: 5px;
+    .profile-page-stat-value {
+        font-size: 1.5rem !important;
+        font-weight: 800 !important;
+        color: #4361ee !important;
+        margin: 0 0 5px 0 !important;
+        line-height: 1 !important;
     }
 
-    .stat-label {
-        color: var(--gray);
-        font-size: 0.85rem;
+    .profile-page-stat-label {
+        color: #6b7280 !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
     }
 
-    .profile-menu {
+    /* Avatar Upload */
+    .profile-page-avatar-upload {
+        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px;
+        border: 2px dashed #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .profile-page-avatar-upload:hover {
+        border-color: #4361ee;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    }
+
+    .profile-page-file-input {
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .profile-page-file-input input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .profile-page-file-label {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        padding: 12px !important;
+        background: white !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        color: #6b7280 !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 1 !important;
+        margin: 0 !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-file-label:hover {
+        border-color: #4361ee !important;
+        color: #4361ee !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .profile-page-file-label i {
+        font-size: 1.1rem !important;
+    }
+
+    .profile-page-upload-btn {
+        width: 100% !important;
+        padding: 12px !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-upload-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 20px 40px rgba(67, 97, 238, 0.15) !important;
+    }
+
+    .profile-page-upload-btn i {
+        transition: transform 0.3s ease !important;
+    }
+
+    .profile-page-upload-btn:hover i {
+        transform: translateY(-2px) !important;
+    }
+
+    .profile-page-upload-note {
+        font-size: 0.75rem !important;
+        color: #6b7280 !important;
+        margin-top: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+    }
+
+    .profile-page-upload-note i {
+        color: #4361ee !important;
+    }
+
+    /* Profile Menu */
+    .profile-page-menu {
         padding: 15px;
     }
 
-    .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 15px;
-        border-radius: var(--border-radius-md);
-        color: var(--gray);
-        text-decoration: none;
-        transition: var(--transition);
-        margin-bottom: 5px;
+    .profile-page-menu-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 15px !important;
+        border-radius: 12px !important;
+        color: #6b7280 !important;
+        text-decoration: none !important;
+        transition: all 0.3s ease !important;
+        margin-bottom: 5px !important;
+        cursor: pointer !important;
+        position: relative !important;
+        overflow: hidden !important;
+        font-size: 0.95rem !important;
     }
 
-    .menu-item i {
+    .profile-page-menu-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .profile-page-menu-item:hover::before {
+        transform: scaleY(1);
+    }
+
+    .profile-page-menu-item i {
         width: 20px;
-        color: var(--primary);
+        color: #4361ee;
+        transition: all 0.3s ease;
     }
 
-    .menu-item:hover {
-        background: var(--light);
-        color: var(--primary);
+    .profile-page-menu-item:hover {
+        background: linear-gradient(145deg, #f8f9fa, #ffffff);
+        color: #4361ee;
         transform: translateX(5px);
     }
 
-    .menu-item.active {
-        background: var(--gradient-1);
-        color: var(--white);
+    .profile-page-menu-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .menu-item.active i {
-        color: var(--white);
+    .profile-page-menu-item.active::before {
+        display: none;
+    }
+
+    .profile-page-menu-item.active i {
+        color: white;
+    }
+
+    /* Main Content */
+    .profile-page-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* Page Header */
+    .profile-page-header {
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .profile-page-title {
+        font-size: 2rem !important;
+        font-weight: 800 !important;
+        color: #1f2937 !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+
+    .profile-page-title i {
+        width: 50px !important;
+        height: 50px !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1.5rem !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .profile-page-back-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 12px 25px !important;
+        background: white !important;
+        color: #1f2937 !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 9999px !important;
+        text-decoration: none !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-back-btn:hover {
+        background: #4361ee !important;
+        color: white !important;
+        border-color: transparent !important;
+        transform: translateX(-5px) !important;
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.2) !important;
+    }
+
+    .profile-page-back-btn i {
+        transition: transform 0.3s ease !important;
+    }
+
+    .profile-page-back-btn:hover i {
+        transform: translateX(-3px) !important;
     }
 
     /* Form Cards */
-    .form-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-lg);
+    .profile-page-form-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e9ecef;
         overflow: hidden;
         margin-bottom: 30px;
     }
 
-    .form-header {
+    .profile-page-form-header {
         padding: 20px 25px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-bottom: 1px solid var(--gray-light);
+        background: linear-gradient(145deg, #ffffff, #fafafa);
+        border-bottom: 1px solid #e9ecef;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
     }
 
-    .form-header i {
+    .profile-page-form-header i {
         width: 40px;
         height: 40px;
-        background: var(--gradient-1);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--white);
+        color: white;
         font-size: 1.2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
 
-    .form-header h3 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--dark);
-        margin: 0;
+    .profile-page-form-header h3 {
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        color: #1f2937 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: none !important;
     }
 
-    .form-body {
+    .profile-page-form-body {
         padding: 30px;
     }
 
     /* Form Grid */
-    .form-grid {
+    .profile-page-form-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         margin-bottom: 20px;
     }
 
-    .form-group {
+    .profile-page-form-group {
         margin-bottom: 20px;
     }
 
-    .form-group.full-width {
+    .profile-page-full-width {
         grid-column: span 2;
     }
 
-    .form-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: var(--dark);
-        font-size: 0.95rem;
+    .profile-page-form-label {
+        display: block !important;
+        margin: 0 0 8px 0 !important;
+        padding: 0 !important;
+        font-weight: 700 !important;
+        color: #1f2937 !important;
+        font-size: 0.95rem !important;
+        text-align: left !important;
+        line-height: 1.5 !important;
     }
 
-    .form-label i {
-        color: var(--primary);
-        margin-right: 8px;
+    .profile-page-form-label i {
+        color: #4361ee !important;
+        margin-right: 8px !important;
+        width: 16px !important;
     }
 
-    .form-control {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid var(--gray-light);
-        border-radius: var(--border-radius-md);
-        font-size: 0.95rem;
-        transition: var(--transition);
-        background: var(--white);
+    .profile-page-input {
+        width: 100% !important;
+        padding: 12px 15px !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 12px !important;
+        font-size: 0.95rem !important;
+        transition: all 0.3s ease !important;
+        background: white !important;
+        color: #1f2937 !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+    .profile-page-input:focus {
+        outline: none !important;
+        border-color: #4361ee !important;
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1) !important;
     }
 
-    .form-control.is-invalid {
-        border-color: var(--danger);
+    .profile-page-input.is-invalid {
+        border-color: #ef476f !important;
     }
 
-    .invalid-feedback {
-        color: var(--danger);
-        font-size: 0.85rem;
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
+    textarea.profile-page-input {
+        resize: vertical;
+        min-height: 100px;
     }
 
-    /* Avatar Upload Form */
-    .avatar-upload {
-        background: var(--light);
-        border-radius: var(--border-radius-lg);
-        padding: 20px;
-        margin: 20px;
-        border: 2px dashed var(--gray-light);
-        transition: var(--transition);
+    select.profile-page-input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 16px;
+        padding-right: 45px;
     }
 
-    .avatar-upload:hover {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    }
-
-    .file-input {
+    .profile-page-input-group {
         position: relative;
-        margin-bottom: 15px;
-    }
-
-    .file-input input {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-    }
-
-    .file-label {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 15px;
-        background: var(--white);
-        border: 2px solid var(--gray-light);
-        border-radius: var(--border-radius-md);
-        font-weight: 500;
-        color: var(--gray);
-        transition: var(--transition);
-        cursor: pointer;
     }
 
-    .file-label:hover {
-        border-color: var(--primary);
-        color: var(--primary);
+    .profile-page-input-group .profile-page-input {
+        padding-right: 45px;
     }
 
-    .file-label i {
-        font-size: 1.2rem;
+    .profile-page-toggle-password {
+        position: absolute !important;
+        right: 12px !important;
+        background: none !important;
+        border: none !important;
+        color: #6b7280 !important;
+        cursor: pointer !important;
+        padding: 5px !important;
+        transition: color 0.3s ease !important;
+        font-size: 1rem !important;
     }
 
-    .upload-btn {
-        width: 100%;
-        padding: 12px;
-        background: var(--gradient-1);
-        color: var(--white);
-        border: none;
-        border-radius: var(--border-radius-md);
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+    .profile-page-toggle-password:hover {
+        color: #4361ee !important;
     }
 
-    .upload-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
+    .profile-page-error-feedback {
+        color: #ef476f !important;
+        font-size: 0.85rem !important;
+        margin-top: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 5px !important;
     }
 
-    /* Form Actions */
-    .form-actions {
-        display: flex;
-        gap: 15px;
-        justify-content: flex-end;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid var(--gray-light);
-    }
-
-    .btn-primary {
-        padding: 12px 30px;
-        background: var(--gradient-1);
-        color: var(--white);
-        border: none;
-        border-radius: var(--border-radius-full);
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .btn-secondary {
-        padding: 12px 30px;
-        background: transparent;
-        color: var(--gray);
-        border: 2px solid var(--gray-light);
-        border-radius: var(--border-radius-full);
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-secondary:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    .btn-warning {
-        padding: 12px 30px;
-        background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
-        color: var(--white);
-        border: none;
-        border-radius: var(--border-radius-full);
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-warning:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+    .profile-page-error-feedback i {
+        font-size: 0.8rem !important;
     }
 
     /* Alert Messages */
-    .alert {
-        padding: 15px 20px;
-        border-radius: var(--border-radius-md);
+    .profile-page-alert {
+        padding: 16px 20px;
+        border-radius: 16px;
         margin-bottom: 25px;
         display: flex;
         align-items: center;
         gap: 12px;
-        animation: slideInDown 0.5s ease-out;
+        animation: profile-page-slideInDown 0.5s ease-out;
+        border: 1px solid transparent;
     }
 
-    .alert-success {
-        background: #f0fdf4;
-        color: var(--success);
-        border: 1px solid #dcfce7;
+    .profile-page-alert-success {
+        background: rgba(6, 214, 160, 0.1);
+        color: #06d6a0;
+        border-color: rgba(6, 214, 160, 0.2);
     }
 
-    .alert-danger {
-        background: #fef2f2;
-        color: var(--danger);
-        border: 1px solid #fee2e2;
+    .profile-page-alert-danger {
+        background: rgba(239, 71, 111, 0.1);
+        color: #ef476f;
+        border-color: rgba(239, 71, 111, 0.2);
     }
 
-    .alert i {
+    .profile-page-alert i {
         font-size: 1.2rem;
     }
 
-    .alert-content {
+    .profile-page-alert-content {
         flex: 1;
     }
 
-    .alert-content h4 {
-        font-weight: 600;
+    .profile-page-alert-content h4 {
+        font-weight: 700;
+        margin: 0 0 5px 0;
+        font-size: 1rem;
+    }
+
+    .profile-page-alert-content p {
+        font-size: 0.95rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .profile-page-alert-content ul {
+        margin: 8px 0 0 0;
+        padding-left: 20px;
+    }
+
+    .profile-page-alert-content li {
         margin-bottom: 3px;
     }
 
-    .alert-content p {
-        font-size: 0.95rem;
-        opacity: 0.9;
-    }
-
-    .alert-close {
+    .profile-page-alert-close {
         background: none;
         border: none;
         color: currentColor;
         cursor: pointer;
         opacity: 0.5;
-        transition: var(--transition);
+        transition: all 0.3s ease;
+        padding: 5px;
     }
 
-    .alert-close:hover {
+    .profile-page-alert-close:hover {
         opacity: 1;
     }
 
-    /* Password Strength */
-    .password-strength {
-        margin-top: 8px;
+    /* Form Actions */
+    .profile-page-form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
     }
 
-    .strength-meter {
+    .profile-page-btn-primary {
+        padding: 12px 30px !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 9999px !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-btn-primary:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 20px 40px rgba(67, 97, 238, 0.15) !important;
+    }
+
+    .profile-page-btn-primary i {
+        transition: transform 0.3s ease !important;
+    }
+
+    .profile-page-btn-primary:hover i {
+        transform: translateX(3px) !important;
+    }
+
+    .profile-page-btn-secondary {
+        padding: 12px 30px !important;
+        background: transparent !important;
+        color: #6b7280 !important;
+        border: 2px solid #e9ecef !important;
+        border-radius: 9999px !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-btn-secondary:hover {
+        border-color: #4361ee !important;
+        color: #4361ee !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .profile-page-btn-warning {
+        padding: 12px 30px !important;
+        background: linear-gradient(145deg, #f72585, #b5179e) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 9999px !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-btn-warning:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 20px 40px rgba(247, 37, 133, 0.2) !important;
+    }
+
+    .profile-page-btn-warning i {
+        transition: transform 0.3s ease !important;
+    }
+
+    .profile-page-btn-warning:hover i {
+        transform: rotate(20deg) !important;
+    }
+
+    /* Password Strength */
+    .profile-page-password-strength {
+        margin-top: 12px;
+    }
+
+    .profile-page-strength-meter {
         display: flex;
         gap: 5px;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
 
-    .strength-segment {
+    .profile-page-strength-segment {
         height: 4px;
         flex: 1;
-        background: var(--gray-light);
-        border-radius: 2px;
-        transition: var(--transition);
+        background: #e9ecef;
+        border-radius: 9999px;
+        transition: all 0.3s ease;
     }
 
-    .strength-segment.active {
-        background: var(--success);
+    .profile-page-strength-segment.active.weak {
+        background: #ef476f !important;
     }
 
-    .strength-segment.active.weak {
-        background: var(--danger);
+    .profile-page-strength-segment.active.medium {
+        background: #ffd166 !important;
     }
 
-    .strength-segment.active.medium {
-        background: var(--warning);
+    .profile-page-strength-segment.active.strong {
+        background: #06d6a0 !important;
     }
 
-    .strength-segment.active.strong {
-        background: var(--success);
+    .profile-page-strength-text {
+        font-size: 0.8rem !important;
+        color: #6b7280 !important;
+        font-weight: 600 !important;
     }
 
-    .strength-text {
-        font-size: 0.8rem;
-        color: var(--gray);
+    /* Checkbox Styles */
+    .profile-page-checkbox {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 10px !important;
+        background: linear-gradient(145deg, #f8f9fa, #ffffff) !important;
+        border-radius: 12px !important;
+        border: 1px solid #e9ecef !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        margin: 0 !important;
     }
 
-    /* Responsive */
+    .profile-page-checkbox:hover {
+        border-color: #4361ee !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .profile-page-checkbox input[type="checkbox"] {
+        width: 20px !important;
+        height: 20px !important;
+        margin: 2px 0 0 0 !important;
+        accent-color: #4361ee !important;
+        cursor: pointer !important;
+        flex-shrink: 0;
+    }
+
+    .profile-page-checkbox span {
+        font-weight: 600 !important;
+        color: #1f2937 !important;
+        display: block !important;
+        margin-bottom: 3px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .profile-page-checkbox small {
+        color: #6b7280 !important;
+        font-size: 0.8rem !important;
+        display: block !important;
+        font-weight: normal !important;
+    }
+
+    /* Animations */
+    @keyframes profile-page-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @keyframes profile-page-slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes profile-page-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Ripple Effect */
+    .profile-page-ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.5);
+        transform: scale(0);
+        animation: profile-page-ripple-animation 0.6s linear;
+        pointer-events: none;
+    }
+
+    @keyframes profile-page-ripple-animation {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    /* Loading Spinner */
+    .profile-page-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #ffffff;
+        animation: profile-page-spin 0.8s linear infinite;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .profile-page-section {
+            padding: 30px 20px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .profile-page-container {
+            flex-direction: column;
+        }
+        
+        .profile-page-sidebar {
+            width: 100%;
+        }
+        
+        .profile-page-title {
+            font-size: 1.8rem !important;
+        }
+
+        .profile-page-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-page-full-width {
+            grid-column: span 1;
+        }
+    }
+
     @media (max-width: 768px) {
-        .page-header {
+        .profile-page-header {
             flex-direction: column;
             align-items: flex-start;
         }
 
-        .form-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .form-group.full-width {
-            grid-column: span 1;
-        }
-
-        .form-actions {
+        .profile-page-form-actions {
             flex-direction: column;
         }
 
-        .btn-primary, .btn-secondary, .btn-warning {
+        .profile-page-btn-primary,
+        .profile-page-btn-secondary,
+        .profile-page-btn-warning {
             width: 100%;
             justify-content: center;
         }
+
+        .profile-page-form-body {
+            padding: 20px;
+        }
+
+        .profile-page-stats {
+            padding: 15px;
+        }
+
+        .profile-page-stat-value {
+            font-size: 1.3rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .profile-page-section {
+            padding: 20px 15px;
+        }
+
+        .profile-page-title {
+            font-size: 1.5rem !important;
+        }
+
+        .profile-page-title i {
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 1.2rem !important;
+        }
+
+        .profile-page-back-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .profile-page-name {
+            font-size: 1.2rem !important;
+        }
+
+        .profile-page-avatar-wrapper {
+            width: 100px;
+            height: 100px;
+        }
+
+        .profile-page-avatar-placeholder {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Utility Classes */
+    .profile-page-position-relative {
+        position: relative;
+    }
+    
+    .profile-page-overflow-hidden {
+        overflow: hidden;
+    }
+    
+    .profile-page-text-center {
+        text-align: center;
+    }
+    
+    .profile-page-small {
+        font-size: 0.85rem !important;
+    }
+    
+    .profile-page-text-muted {
+        color: #6b7280 !important;
+    }
+    
+    .profile-page-mt-2 {
+        margin-top: 8px !important;
+    }
+    
+    .profile-page-mb-0 {
+        margin-bottom: 0 !important;
     }
 </style>
-@endpush
 
-@section('content')
-    <!-- Profile Container -->
-    <div class="profile-container">
-        <div class="container">
+<section class="profile-page-section">
+    <div class="profile-page-container">
+        <!-- Profile Sidebar -->
+        <aside class="profile-page-sidebar">
+            <div class="profile-page-cover"></div>
+            
+            <div class="profile-page-avatar-section">
+                <div class="profile-page-avatar-wrapper" onclick="document.getElementById('avatarInput').click()">
+                    @if(Auth::user()->avatar)
+                        <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="profile-page-avatar-image">
+                    @else
+                        <div class="profile-page-avatar-placeholder">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <div class="profile-page-avatar-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-page-info">
+                <h2 class="profile-page-name">{{ Auth::user()->name }}</h2>
+                <p class="profile-page-email">
+                    <i class="fas fa-envelope"></i>
+                    {{ Auth::user()->email }}
+                </p>
+                <span class="profile-page-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    Member since {{ \Carbon\Carbon::parse(Auth::user()->created_at ?? now())->format('M Y') }}
+                </span>
+            </div>
+
+            <div class="profile-page-stats">
+                <div class="profile-page-stat-item">
+                    <div class="profile-page-stat-value">{{ $stats['courses_completed'] ?? 0 }}</div>
+                    <div class="profile-page-stat-label">Completed</div>
+                </div>
+                <div class="profile-page-stat-item">
+                    <div class="profile-page-stat-value">{{ $stats['certificates'] ?? 0 }}</div>
+                    <div class="profile-page-stat-label">Certificates</div>
+                </div>
+                <div class="profile-page-stat-item">
+                    <div class="profile-page-stat-value">{{ $stats['quizzes_taken'] ?? 0 }}</div>
+                    <div class="profile-page-stat-label">Quizzes</div>
+                </div>
+            </div>
+
+            <!-- Avatar Upload Form -->
+            <div class="profile-page-avatar-upload">
+                <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
+                    @csrf
+                    <div class="profile-page-file-input">
+                        <input type="file" name="avatar" id="avatarInput" accept="image/*" onchange="previewAvatar(this)">
+                        <label for="avatarInput" class="profile-page-file-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Choose New Avatar
+                        </label>
+                    </div>
+                    <button type="submit" class="profile-page-upload-btn" id="uploadBtn" style="display: none;">
+                        <i class="fas fa-upload"></i>
+                        Upload Avatar
+                    </button>
+                </form>
+                <div class="profile-page-upload-note">
+                    <i class="fas fa-info-circle"></i>
+                    Max size: 2MB. Supported: JPG, PNG, GIF
+                </div>
+            </div>
+
+            <!-- Quick Menu -->
+            <div class="profile-page-menu">
+                <a href="#profile-info" class="profile-page-menu-item active" onclick="smoothScroll('profile-info')">
+                    <i class="fas fa-user"></i>
+                    <span>Profile Information</span>
+                </a>
+                <a href="#change-password" class="profile-page-menu-item" onclick="smoothScroll('change-password')">
+                    <i class="fas fa-lock"></i>
+                    <span>Change Password</span>
+                </a>
+                <a href="#notification-settings" class="profile-page-menu-item" onclick="smoothScroll('notification-settings')">
+                    <i class="fas fa-bell"></i>
+                    <span>Notification Settings</span>
+                </a>
+                <a href="#privacy-settings" class="profile-page-menu-item" onclick="smoothScroll('privacy-settings')">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Privacy Settings</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="profile-page-main">
             <!-- Page Header -->
-            <div class="page-header" data-aos="fade-up">
-                <h1 class="page-title">
+            <div class="profile-page-header">
+                <h1 class="profile-page-title">
                     <i class="fas fa-user-circle"></i>
                     My Profile
                 </h1>
                 
-                <a href="{{ route('dashboard') }}" class="back-btn">
+                <a href="{{ route('dashboard') }}" class="profile-page-back-btn">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
             </div>
 
-            <div class="row">
-                <!-- Profile Sidebar -->
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                    <div class="profile-card" data-aos="fade-right">
-                        <div class="profile-cover"></div>
-                        
-                        <div class="profile-avatar-wrapper">
-                            <div class="profile-avatar" onclick="document.getElementById('avatarInput').click()">
-                                @if(Auth::user()->avatar)
-                                    <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}">
-                                @else
-                                    <div class="avatar-placeholder">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                    </div>
-                                @endif
-                                <div class="avatar-overlay">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="profile-info">
-                            <h2 class="profile-name">{{ Auth::user()->name }}</h2>
-                            <p class="profile-email">
-                                <i class="fas fa-envelope"></i>
-                                {{ Auth::user()->email }}
-                            </p>
-                            <span class="profile-badge">
-                                <i class="fas fa-certificate"></i>
-                                Member since {{ \Carbon\Carbon::parse(Auth::user()->created_at ?? now())->format('M Y') }}
-                            </span>
-                        </div>
-
-                        <div class="profile-stats">
-                            <div class="stat-item">
-                                <div class="stat-value">{{ $stats['courses_completed'] ?? 0 }}</div>
-                                <div class="stat-label">Completed</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">{{ $stats['certificates'] ?? 0 }}</div>
-                                <div class="stat-label">Certificates</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value">{{ $stats['quizzes_taken'] ?? 0 }}</div>
-                                <div class="stat-label">Quizzes</div>
-                            </div>
-                        </div>
-
-                        <!-- Avatar Upload Form -->
-                        <div class="avatar-upload">
-                            <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
-                                @csrf
-                                <div class="file-input">
-                                    <input type="file" name="avatar" id="avatarInput" accept="image/*" onchange="previewAvatar(this)">
-                                    <label for="avatarInput" class="file-label">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        Choose New Avatar
-                                    </label>
-                                </div>
-                                <button type="submit" class="upload-btn" id="uploadBtn" style="display: none;">
-                                    <i class="fas fa-upload"></i>
-                                    Upload Avatar
-                                </button>
-                            </form>
-                            <p class="text-muted small mt-2 mb-0">
-                                <i class="fas fa-info-circle"></i>
-                                Max file size: 2MB. Supported: JPG, PNG, GIF
-                            </p>
-                        </div>
-
-                        <!-- Quick Menu -->
-                        <div class="profile-menu">
-                            <a href="#profile-info" class="menu-item active" onclick="smoothScroll('profile-info')">
-                                <i class="fas fa-user"></i>
-                                Profile Information
-                            </a>
-                            <a href="#change-password" class="menu-item" onclick="smoothScroll('change-password')">
-                                <i class="fas fa-lock"></i>
-                                Change Password
-                            </a>
-                            <a href="#notification-settings" class="menu-item" onclick="smoothScroll('notification-settings')">
-                                <i class="fas fa-bell"></i>
-                                Notification Settings
-                            </a>
-                            <a href="#privacy-settings" class="menu-item" onclick="smoothScroll('privacy-settings')">
-                                <i class="fas fa-shield-alt"></i>
-                                Privacy Settings
-                            </a>
-                        </div>
+            <!-- Success/Error Messages -->
+            @if(session('success'))
+                <div class="profile-page-alert profile-page-alert-success" id="successAlert">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="profile-page-alert-content">
+                        <p>{{ session('success') }}</p>
                     </div>
+                    <button class="profile-page-alert-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="profile-page-alert profile-page-alert-danger" id="errorAlert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div class="profile-page-alert-content">
+                        <h4>Please fix the following errors:</h4>
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <button class="profile-page-alert-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            @endif
+
+            <!-- Profile Information Form -->
+            <div id="profile-info" class="profile-page-form-card">
+                <div class="profile-page-form-header">
+                    <i class="fas fa-user-edit"></i>
+                    <h3>Profile Information</h3>
                 </div>
 
-                <!-- Main Content -->
-                <div class="col-lg-8">
-                    <!-- Success/Error Messages -->
-                    @if(session('success'))
-                        <div class="alert alert-success" id="successAlert">
-                            <i class="fas fa-check-circle"></i>
-                            <div class="alert-content">
-                                <p>{{ session('success') }}</p>
+                <div class="profile-page-form-body">
+                    <form action="{{ route('profile.update') }}" method="POST" id="profileForm">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="profile-page-form-grid">
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-user"></i>
+                                    First Name
+                                </label>
+                                <input type="text" 
+                                       name="first_name" 
+                                       class="profile-page-input @error('first_name') is-invalid @enderror" 
+                                       value="{{ old('first_name', Auth::user()->first_name) }}" 
+                                       required>
+                                @error('first_name')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
-                            <button class="alert-close" onclick="this.parentElement.remove()">
-                                <i class="fas fa-times"></i>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-user"></i>
+                                    Last Name
+                                </label>
+                                <input type="text" 
+                                       name="last_name" 
+                                       class="profile-page-input @error('last_name') is-invalid @enderror" 
+                                       value="{{ old('last_name', Auth::user()->last_name) }}" 
+                                       required>
+                                @error('last_name')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group profile-page-full-width">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Address
+                                </label>
+                                <input type="email" 
+                                       name="email" 
+                                       class="profile-page-input @error('email') is-invalid @enderror" 
+                                       value="{{ old('email', Auth::user()->email) }}" 
+                                       required>
+                                @error('email')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-phone"></i>
+                                    Phone Number
+                                </label>
+                                <input type="tel" 
+                                       name="phone" 
+                                       class="profile-page-input @error('phone') is-invalid @enderror" 
+                                       value="{{ old('phone', Auth::user()->phone) }}"
+                                       placeholder="+1 (555) 000-0000">
+                                @error('phone')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Address
+                                </label>
+                                <input type="text" 
+                                       name="address" 
+                                       class="profile-page-input @error('address') is-invalid @enderror" 
+                                       value="{{ old('address', Auth::user()->address) }}"
+                                       placeholder="Street address">
+                                @error('address')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-city"></i>
+                                    City
+                                </label>
+                                <input type="text" 
+                                       name="city" 
+                                       class="profile-page-input @error('city') is-invalid @enderror" 
+                                       value="{{ old('city', Auth::user()->city) }}">
+                                @error('city')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-map"></i>
+                                    State
+                                </label>
+                                <input type="text" 
+                                       name="state" 
+                                       class="profile-page-input @error('state') is-invalid @enderror" 
+                                       value="{{ old('state', Auth::user()->state) }}">
+                                @error('state')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-mail-bulk"></i>
+                                    Postal Code
+                                </label>
+                                <input type="text" 
+                                       name="postal_code" 
+                                       class="profile-page-input @error('postal_code') is-invalid @enderror" 
+                                       value="{{ old('postal_code', Auth::user()->postal_code) }}">
+                                @error('postal_code')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-globe"></i>
+                                    Country
+                                </label>
+                                <select name="country" class="profile-page-input @error('country') is-invalid @enderror">
+                                    <option value="">Select Country</option>
+                                    <option value="US" {{ (old('country', Auth::user()->country) == 'US') ? 'selected' : '' }}>United States</option>
+                                    <option value="CA" {{ (old('country', Auth::user()->country) == 'CA') ? 'selected' : '' }}>Canada</option>
+                                    <option value="UK" {{ (old('country', Auth::user()->country) == 'UK') ? 'selected' : '' }}>United Kingdom</option>
+                                    <option value="AU" {{ (old('country', Auth::user()->country) == 'AU') ? 'selected' : '' }}>Australia</option>
+                                    <option value="IN" {{ (old('country', Auth::user()->country) == 'IN') ? 'selected' : '' }}>India</option>
+                                </select>
+                                @error('country')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="profile-page-form-group profile-page-full-width">
+                                <label class="profile-page-form-label">
+                                    <i class="fas fa-align-left"></i>
+                                    Bio
+                                </label>
+                                <textarea name="bio" 
+                                          class="profile-page-input @error('bio') is-invalid @enderror" 
+                                          rows="4" 
+                                          placeholder="Tell us a little about yourself...">{{ old('bio', Auth::user()->bio) }}</textarea>
+                                @error('bio')
+                                    <div class="profile-page-error-feedback">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="profile-page-form-actions">
+                            <button type="reset" class="profile-page-btn-secondary" onclick="resetForm('profileForm')">
+                                <i class="fas fa-undo"></i>
+                                Reset
+                            </button>
+                            <button type="submit" class="profile-page-btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Changes
                             </button>
                         </div>
-                    @endif
-
-                    @if($errors->any())
-                        <div class="alert alert-danger" id="errorAlert">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <div class="alert-content">
-                                <h4>Please fix the following errors:</h4>
-                                <ul style="margin-top: 5px; padding-left: 20px;">
-                                    @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            <button class="alert-close" onclick="this.parentElement.remove()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    @endif
-
-                    <!-- Profile Information Form -->
-                    <div id="profile-info" class="form-card" data-aos="fade-up">
-                        <div class="form-header">
-                            <i class="fas fa-user-edit"></i>
-                            <h3>Profile Information</h3>
-                        </div>
-
-                        <div class="form-body">
-                            <form action="{{ route('profile.update') }}" method="POST" id="profileForm">
-                                @csrf
-                                @method('PUT')
-
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-user"></i>
-                                            First Name
-                                        </label>
-                                        <input type="text" 
-                                               name="first_name" 
-                                               class="form-control @error('first_name') is-invalid @enderror" 
-                                               value="{{ old('first_name', Auth::user()->first_name) }}" 
-                                               required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-user"></i>
-                                            Last Name
-                                        </label>
-                                        <input type="text" 
-                                               name="last_name" 
-                                               class="form-control @error('last_name') is-invalid @enderror" 
-                                               value="{{ old('last_name', Auth::user()->last_name) }}" 
-                                               required>
-                                    </div>
-
-                                    <div class="form-group full-width">
-                                        <label class="form-label">
-                                            <i class="fas fa-envelope"></i>
-                                            Email Address
-                                        </label>
-                                        <input type="email" 
-                                               name="email" 
-                                               class="form-control @error('email') is-invalid @enderror" 
-                                               value="{{ old('email', Auth::user()->email) }}" 
-                                               required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-phone"></i>
-                                            Phone Number
-                                        </label>
-                                        <input type="tel" 
-                                               name="phone" 
-                                               class="form-control @error('phone') is-invalid @enderror" 
-                                               value="{{ old('phone', Auth::user()->phone) }}"
-                                               placeholder="+1 (555) 000-0000">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            Address
-                                        </label>
-                                        <input type="text" 
-                                               name="address" 
-                                               class="form-control @error('address') is-invalid @enderror" 
-                                               value="{{ old('address', Auth::user()->address) }}"
-                                               placeholder="Street address">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-city"></i>
-                                            City
-                                        </label>
-                                        <input type="text" 
-                                               name="city" 
-                                               class="form-control @error('city') is-invalid @enderror" 
-                                               value="{{ old('city', Auth::user()->city) }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-map"></i>
-                                            State
-                                        </label>
-                                        <input type="text" 
-                                               name="state" 
-                                               class="form-control @error('state') is-invalid @enderror" 
-                                               value="{{ old('state', Auth::user()->state) }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-mail-bulk"></i>
-                                            Postal Code
-                                        </label>
-                                        <input type="text" 
-                                               name="postal_code" 
-                                               class="form-control @error('postal_code') is-invalid @enderror" 
-                                               value="{{ old('postal_code', Auth::user()->postal_code) }}">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-globe"></i>
-                                            Country
-                                        </label>
-                                        <select name="country" class="form-control @error('country') is-invalid @enderror">
-                                            <option value="">Select Country</option>
-                                            <option value="US" {{ (old('country', Auth::user()->country) == 'US') ? 'selected' : '' }}>United States</option>
-                                            <option value="CA" {{ (old('country', Auth::user()->country) == 'CA') ? 'selected' : '' }}>Canada</option>
-                                            <option value="UK" {{ (old('country', Auth::user()->country) == 'UK') ? 'selected' : '' }}>United Kingdom</option>
-                                            <option value="AU" {{ (old('country', Auth::user()->country) == 'AU') ? 'selected' : '' }}>Australia</option>
-                                            <!-- Add more countries as needed -->
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group full-width">
-                                        <label class="form-label">
-                                            <i class="fas fa-align-left"></i>
-                                            Bio
-                                        </label>
-                                        <textarea name="bio" 
-                                                  class="form-control @error('bio') is-invalid @enderror" 
-                                                  rows="4" 
-                                                  placeholder="Tell us a little about yourself...">{{ old('bio', Auth::user()->bio) }}</textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="reset" class="btn-secondary" onclick="resetForm('profileForm')">
-                                        <i class="fas fa-undo"></i>
-                                        Reset
-                                    </button>
-                                    <button type="submit" class="btn-primary">
-                                        <i class="fas fa-save"></i>
-                                        Save Changes
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Change Password Form -->
-                    <div id="change-password" class="form-card" data-aos="fade-up">
-                        <div class="form-header">
-                            <i class="fas fa-lock"></i>
-                            <h3>Change Password</h3>
-                        </div>
-
-                        <div class="form-body">
-                            <form action="{{ route('profile.password') }}" method="POST" id="passwordForm">
-                                @csrf
-
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="fas fa-key"></i>
-                                        Current Password
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="password" 
-                                               name="current_password" 
-                                               class="form-control @error('current_password') is-invalid @enderror" 
-                                               id="current_password"
-                                               required>
-                                        <button type="button" class="toggle-password" onclick="togglePassword('current_password')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="fas fa-lock"></i>
-                                        New Password
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="password" 
-                                               name="new_password" 
-                                               class="form-control @error('new_password') is-invalid @enderror" 
-                                               id="new_password"
-                                               oninput="checkPasswordStrength(this.value)"
-                                               required>
-                                        <button type="button" class="toggle-password" onclick="togglePassword('new_password')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Password Strength Meter -->
-                                    <div class="password-strength" id="passwordStrength">
-                                        <div class="strength-meter">
-                                            <div class="strength-segment" id="strength1"></div>
-                                            <div class="strength-segment" id="strength2"></div>
-                                            <div class="strength-segment" id="strength3"></div>
-                                            <div class="strength-segment" id="strength4"></div>
-                                        </div>
-                                        <span class="strength-text" id="strengthText">Enter a password</span>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-label">
-                                        <i class="fas fa-lock"></i>
-                                        Confirm New Password
-                                    </label>
-                                    <div class="input-group">
-                                        <input type="password" 
-                                               name="new_password_confirmation" 
-                                               class="form-control" 
-                                               id="new_password_confirmation"
-                                               required>
-                                        <button type="button" class="toggle-password" onclick="togglePassword('new_password_confirmation')">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="reset" class="btn-secondary" onclick="resetForm('passwordForm')">
-                                        <i class="fas fa-undo"></i>
-                                        Reset
-                                    </button>
-                                    <button type="submit" class="btn-warning">
-                                        <i class="fas fa-sync-alt"></i>
-                                        Change Password
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-
-                    <!-- Notification Settings (Optional) -->
-                    <div id="notification-settings" class="form-card" data-aos="fade-up">
-                        <div class="form-header">
-                            <i class="fas fa-bell"></i>
-                            <h3>Notification Settings</h3>
-                        </div>
-
-                        <div class="form-body">
-                            <form action="#" method="POST">
-                                @csrf
-
-                                <div class="form-group">
-                                    <label class="form-check">
-                                        <input type="checkbox" name="email_notifications" {{ Auth::user()->email_notifications ? 'checked' : '' }}>
-                                        <span>Email Notifications</span>
-                                        <small class="text-muted d-block">Receive updates about new courses and promotions</small>
-                                    </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-check">
-                                        <input type="checkbox" name="course_updates" {{ Auth::user()->course_updates ? 'checked' : '' }}>
-                                        <span>Course Updates</span>
-                                        <small class="text-muted d-block">Get notified when your courses have new content</small>
-                                    </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="form-check">
-                                        <input type="checkbox" name="achievement_alerts" {{ Auth::user()->achievement_alerts ? 'checked' : '' }}>
-                                        <span>Achievement Alerts</span>
-                                        <small class="text-muted d-block">Celebrate when you earn new certificates</small>
-                                    </label>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="submit" class="btn-primary">
-                                        <i class="fas fa-save"></i>
-                                        Save Preferences
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
-        </div>
-    </div>
 
-    @push('scripts')
-    <script>
+            <!-- Change Password Form -->
+            <div id="change-password" class="profile-page-form-card">
+                <div class="profile-page-form-header">
+                    <i class="fas fa-lock"></i>
+                    <h3>Change Password</h3>
+                </div>
+
+                <div class="profile-page-form-body">
+                    <form action="{{ route('profile.password') }}" method="POST" id="passwordForm">
+                        @csrf
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-form-label">
+                                <i class="fas fa-key"></i>
+                                Current Password
+                            </label>
+                            <div class="profile-page-input-group">
+                                <input type="password" 
+                                       name="current_password" 
+                                       class="profile-page-input @error('current_password') is-invalid @enderror" 
+                                       id="current_password"
+                                       required>
+                                <button type="button" class="profile-page-toggle-password" onclick="togglePassword('current_password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            @error('current_password')
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-form-label">
+                                <i class="fas fa-lock"></i>
+                                New Password
+                            </label>
+                            <div class="profile-page-input-group">
+                                <input type="password" 
+                                       name="new_password" 
+                                       class="profile-page-input @error('new_password') is-invalid @enderror" 
+                                       id="new_password"
+                                       oninput="checkPasswordStrength(this.value)"
+                                       required>
+                                <button type="button" class="profile-page-toggle-password" onclick="togglePassword('new_password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Password Strength Meter -->
+                            <div class="profile-page-password-strength" id="passwordStrength">
+                                <div class="profile-page-strength-meter">
+                                    <div class="profile-page-strength-segment" id="strength1"></div>
+                                    <div class="profile-page-strength-segment" id="strength2"></div>
+                                    <div class="profile-page-strength-segment" id="strength3"></div>
+                                    <div class="profile-page-strength-segment" id="strength4"></div>
+                                </div>
+                                <span class="profile-page-strength-text" id="strengthText">Enter a password</span>
+                            </div>
+                            @error('new_password')
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-form-label">
+                                <i class="fas fa-lock"></i>
+                                Confirm New Password
+                            </label>
+                            <div class="profile-page-input-group">
+                                <input type="password" 
+                                       name="new_password_confirmation" 
+                                       class="profile-page-input" 
+                                       id="new_password_confirmation"
+                                       required>
+                                <button type="button" class="profile-page-toggle-password" onclick="togglePassword('new_password_confirmation')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="profile-page-form-actions">
+                            <button type="reset" class="profile-page-btn-secondary" onclick="resetForm('passwordForm')">
+                                <i class="fas fa-undo"></i>
+                                Reset
+                            </button>
+                            <button type="submit" class="profile-page-btn-warning">
+                                <i class="fas fa-sync-alt"></i>
+                                Change Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div id="notification-settings" class="profile-page-form-card">
+                <div class="profile-page-form-header">
+                    <i class="fas fa-bell"></i>
+                    <h3>Notification Settings</h3>
+                </div>
+
+                <div class="profile-page-form-body">
+                    <form action="#" method="POST" id="notificationForm">
+                        @csrf
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-checkbox">
+                                <input type="checkbox" name="email_notifications" {{ Auth::user()->email_notifications ? 'checked' : '' }}>
+                                <span>
+                                    Email Notifications
+                                    <small>Receive updates about new courses and promotions</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-checkbox">
+                                <input type="checkbox" name="course_updates" {{ Auth::user()->course_updates ? 'checked' : '' }}>
+                                <span>
+                                    Course Updates
+                                    <small>Get notified when your courses have new content</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-checkbox">
+                                <input type="checkbox" name="achievement_alerts" {{ Auth::user()->achievement_alerts ? 'checked' : '' }}>
+                                <span>
+                                    Achievement Alerts
+                                    <small>Celebrate when you earn new certificates</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="profile-page-form-actions">
+                            <button type="submit" class="profile-page-btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Privacy Settings -->
+            <div id="privacy-settings" class="profile-page-form-card">
+                <div class="profile-page-form-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Privacy Settings</h3>
+                </div>
+
+                <div class="profile-page-form-body">
+                    <form action="#" method="POST" id="privacyForm">
+                        @csrf
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-checkbox">
+                                <input type="checkbox" name="public_profile" {{ Auth::user()->public_profile ? 'checked' : '' }}>
+                                <span>
+                                    Public Profile
+                                    <small>Allow others to view your profile and achievements</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-checkbox">
+                                <input type="checkbox" name="show_activity" {{ Auth::user()->show_activity ? 'checked' : '' }}>
+                                <span>
+                                    Show Activity
+                                    <small>Display your learning activity on your profile</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="profile-page-form-group">
+                            <label class="profile-page-checkbox">
+                                <input type="checkbox" name="show_certificates" {{ Auth::user()->show_certificates ? 'checked' : '' }}>
+                                <span>
+                                    Show Certificates
+                                    <small>Display your earned certificates publicly</small>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="profile-page-form-actions">
+                            <button type="submit" class="profile-page-btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Preferences
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Toggle password visibility
-        function togglePassword(fieldId) {
+        window.togglePassword = function(fieldId) {
             const field = document.getElementById(fieldId);
             const icon = event.currentTarget.querySelector('i');
             
@@ -1063,10 +1574,10 @@
                 icon.classList.remove('fa-eye-slash');
                 icon.classList.add('fa-eye');
             }
-        }
+        };
 
         // Password strength checker
-        function checkPasswordStrength(password) {
+        window.checkPasswordStrength = function(password) {
             if (!password) {
                 resetStrengthMeter();
                 return;
@@ -1117,10 +1628,10 @@
             
             const messages = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
             strengthText.textContent = messages[score];
-        }
+        };
 
         function resetStrengthMeter() {
-            const strengthSegments = document.querySelectorAll('.strength-segment');
+            const strengthSegments = document.querySelectorAll('.profile-page-strength-segment');
             const strengthText = document.getElementById('strengthText');
             
             strengthSegments.forEach(segment => {
@@ -1131,7 +1642,7 @@
         }
 
         // Avatar preview
-        function previewAvatar(input) {
+        window.previewAvatar = function(input) {
             const uploadBtn = document.getElementById('uploadBtn');
             if (input.files && input.files[0]) {
                 uploadBtn.style.display = 'flex';
@@ -1142,10 +1653,10 @@
                 };
                 reader.readAsDataURL(input.files[0]);
             }
-        }
+        };
 
         // Smooth scroll to sections
-        function smoothScroll(targetId) {
+        window.smoothScroll = function(targetId) {
             const target = document.querySelector(targetId);
             if (target) {
                 target.scrollIntoView({
@@ -1153,22 +1664,49 @@
                     block: 'start'
                 });
             }
-        }
+        };
 
         // Reset form
-        function resetForm(formId) {
+        window.resetForm = function(formId) {
             document.getElementById(formId).reset();
-        }
+        };
 
         // Auto-hide alerts after 5 seconds
         setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
+            const alerts = document.querySelectorAll('.profile-page-alert');
             alerts.forEach(alert => {
                 alert.style.transition = 'opacity 0.5s ease';
                 alert.style.opacity = '0';
                 setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
+
+        // Ripple effect on buttons
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const ripple = document.createElement('span');
+            const rect = button.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = event.clientX - rect.left - size / 2;
+            const y = event.clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.className = 'profile-page-ripple';
+            
+            button.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        }
+
+        const buttons = document.querySelectorAll('.profile-page-btn-primary, .profile-page-btn-secondary, .profile-page-btn-warning, .profile-page-upload-btn, .profile-page-back-btn, .profile-page-file-label');
+        buttons.forEach(button => {
+            button.classList.add('profile-page-position-relative', 'profile-page-overflow-hidden');
+            button.addEventListener('click', createRipple);
+        });
 
         // Animation on scroll
         const observerOptions = {
@@ -1186,7 +1724,7 @@
         }, observerOptions);
 
         // Observe form cards
-        document.querySelectorAll('.form-card').forEach(card => {
+        document.querySelectorAll('.profile-page-form-card').forEach(card => {
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
             card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
@@ -1196,7 +1734,7 @@
         // Active menu item on scroll
         window.addEventListener('scroll', function() {
             const sections = ['profile-info', 'change-password', 'notification-settings', 'privacy-settings'];
-            const menuItems = document.querySelectorAll('.menu-item');
+            const menuItems = document.querySelectorAll('.profile-page-menu-item');
             
             let current = '';
             
@@ -1217,6 +1755,31 @@
                 }
             });
         });
-    </script>
-    @endpush
+
+        // Form loading state
+        document.getElementById('profileForm')?.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="profile-page-spinner"></span> Saving...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+
+        document.getElementById('passwordForm')?.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="profile-page-spinner"></span> Changing...';
+            submitBtn.disabled = true;
+        });
+    });
+
+    // Prevent double submission
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+</script>
 @endsection
