@@ -378,7 +378,7 @@
         color: var(--dark);
     }
 
-    /* Services Section */
+    /* Services Section - UPDATED FOR BETTER ALIGNMENT */
     .services-section {
         padding: 80px 0;
         background: var(--light);
@@ -386,7 +386,7 @@
 
     .services-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         margin-top: 50px;
     }
@@ -398,6 +398,8 @@
         box-shadow: var(--shadow-sm);
         transition: var(--transition);
         height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .service-card:hover {
@@ -411,6 +413,10 @@
         padding: 30px;
         position: relative;
         overflow: hidden;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .service-header::before {
@@ -437,6 +443,7 @@
         margin-bottom: 10px;
         position: relative;
         z-index: 1;
+        line-height: 1.3;
     }
 
     .service-header p {
@@ -448,41 +455,65 @@
 
     .service-body {
         padding: 30px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     .service-features {
         list-style: none;
         margin-bottom: 25px;
+        flex: 1;
     }
 
     .service-features li {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 10px;
-        margin-bottom: 12px;
+        margin-bottom: 15px;
         color: var(--gray);
+        font-size: 0.95rem;
+        line-height: 1.4;
     }
 
     .service-features li i {
         color: var(--success);
         font-size: 1rem;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+
+    .service-features li span {
+        flex: 1;
     }
 
     .service-btn {
         display: inline-block;
-        padding: 10px 25px;
+        padding: 12px 25px;
         background: var(--gradient-1);
         color: var(--white);
         border-radius: var(--border-radius-full);
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         transition: var(--transition);
+        text-align: center;
+        margin-top: auto;
+        align-self: flex-start;
     }
 
     .service-btn:hover {
         transform: translateX(5px);
         box-shadow: var(--shadow-md);
         color: var(--white);
+    }
+
+    .service-btn i {
+        margin-left: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    .service-btn:hover i {
+        transform: translateX(5px);
     }
 
     /* Team Section */
@@ -661,10 +692,17 @@
     }
 
     /* Responsive */
+    @media (max-width: 1200px) {
+        .services-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
     @media (max-width: 992px) {
 
         .mission-grid,
-        .story-grid {
+        .story-grid,
+        .neo-grid {
             grid-template-columns: 1fr;
             gap: 40px;
         }
@@ -679,6 +717,10 @@
 
         .mission-stats {
             justify-content: center;
+        }
+
+        .neo-features {
+            grid-template-columns: repeat(2, 1fr);
         }
     }
 
@@ -698,6 +740,10 @@
 
         .about-cta-buttons .btn {
             min-width: 150px;
+        }
+
+        .neo-features {
+            grid-template-columns: 1fr;
         }
     }
 </style>
@@ -888,7 +934,7 @@
     </div>
 </section>
 
-<!-- Services Section -->
+<!-- Services Section - IMPROVED WITH PROPERLY ALIGNED CARDS -->
 <section class="services-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
@@ -911,11 +957,11 @@
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
-                        <li><i class="fas fa-check-circle"></i> English, French, Spanish & Haitian Creole</li>
-                        <li><i class="fas fa-check-circle"></i> Professional & everyday communication</li>
-                        <li><i class="fas fa-check-circle"></i> AI-powered speaking practice</li>
-                        <li><i class="fas fa-check-circle"></i> Cultural context integration</li>
-                        <li><i class="fas fa-check-circle"></i> Progress tracking & certification</li>
+                        <li><i class="fas fa-check-circle"></i> <span>English, French, Spanish & Haitian Creole</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Professional & everyday communication</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>AI-powered speaking practice</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Cultural context integration</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Progress tracking & certification</span></li>
                     </ul>
                     <a href="{{ route('courses') }}" class="service-btn">Explore Programs <i class="fas fa-arrow-right"></i></a>
                 </div>
@@ -932,11 +978,11 @@
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
-                        <li><i class="fas fa-check-circle"></i> Communication skills mastery</li>
-                        <li><i class="fas fa-check-circle"></i> Customer engagement strategies</li>
-                        <li><i class="fas fa-check-circle"></i> Remote work readiness</li>
-                        <li><i class="fas fa-check-circle"></i> Conflict resolution techniques</li>
-                        <li><i class="fas fa-check-circle"></i> Industry certification</li>
+                        <li><i class="fas fa-check-circle"></i> <span>Communication skills mastery</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Customer engagement strategies</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Remote work readiness</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Conflict resolution techniques</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Industry certification</span></li>
                     </ul>
                     <a href="{{ route('courses') }}" class="service-btn">Start Training <i class="fas fa-arrow-right"></i></a>
                 </div>
@@ -953,11 +999,11 @@
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
-                        <li><i class="fas fa-check-circle"></i> E-commerce fundamentals</li>
-                        <li><i class="fas fa-check-circle"></i> Digital marketing strategies</li>
-                        <li><i class="fas fa-check-circle"></i> AI integration for business</li>
-                        <li><i class="fas fa-check-circle"></i> Freelancing mastery</li>
-                        <li><i class="fas fa-check-circle"></i> Business planning & execution</li>
+                        <li><i class="fas fa-check-circle"></i> <span>E-commerce fundamentals</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Digital marketing strategies</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>AI integration for business</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Freelancing mastery</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Business planning & execution</span></li>
                     </ul>
                     <a href="{{ route('courses') }}" class="service-btn">Learn More <i class="fas fa-arrow-right"></i></a>
                 </div>
@@ -1110,17 +1156,6 @@
 
     .neo-badge span {
         font-weight: 600;
-    }
-
-    @media (max-width: 992px) {
-        .neo-grid {
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        .neo-features {
-            grid-template-columns: 1fr;
-        }
     }
 </style>
 
