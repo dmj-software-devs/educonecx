@@ -241,8 +241,8 @@
                                             <i class="fas fa-book"></i>
                                         </div>
                                     @endif
-                                    <div>
-                                        <a href="{{ route('admin.courses.edit', $course->id) }}" class="fw-semibold text-dark">
+                                    <div class="course-title-wrapper">
+                                        <a href="{{ route('admin.courses.edit', $course->id) }}" class="fw-semibold text-dark course-title-link">
                                             {{ Str::limit($course->title, 30) }}
                                         </a>
                                     </div>
@@ -306,8 +306,8 @@
                                             <i class="fas fa-book"></i>
                                         </div>
                                     @endif
-                                    <div>
-                                        <a href="{{ route('admin.courses.edit', $course->id) }}" class="fw-semibold text-dark">
+                                    <div class="course-title-wrapper">
+                                        <a href="{{ route('admin.courses.edit', $course->id) }}" class="fw-semibold text-dark course-title-link">
                                             {{ Str::limit($course->title, 30) }}
                                         </a>
                                     </div>
@@ -361,15 +361,15 @@
                         </div>
                     </div>
                     <div class="recent-item-content">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="mb-1">{{ $user->name }}</h6>
-                                <p class="text-muted small mb-1">{{ $user->email }}</p>
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div class="user-info-wrapper">
+                                <h6 class="mb-1 user-name">{{ $user->name }}</h6>
+                                <p class="text-muted small mb-1 user-email">{{ $user->email }}</p>
                                 <span class="badge bg-{{ $user->role === 'admin' ? 'danger' : ($user->role === 'instructor' ? 'success' : 'info') }} bg-opacity-10 text-{{ $user->role === 'admin' ? 'danger' : ($user->role === 'instructor' ? 'success' : 'info') }}">
                                     {{ ucfirst($user->role) }}
                                 </span>
                             </div>
-                            <small class="text-muted">{{ $user->created_at->diffForHumans() }}</small>
+                            <small class="text-muted time-badge">{{ $user->created_at->diffForHumans() }}</small>
                         </div>
                     </div>
                 </div>
@@ -401,22 +401,22 @@
                         </div>
                     </div>
                     <div class="recent-item-content">
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                             <div>
                                 <h6 class="mb-1">
-                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="text-dark">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="text-dark order-number">
                                         {{ $order->order_number }}
                                     </a>
                                 </h6>
-                                <p class="text-muted small mb-1">{{ $order->user->name ?? 'N/A' }}</p>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="fw-semibold">${{ number_format($order->total, 2) }}</span>
+                                <p class="text-muted small mb-1 user-name">{{ $order->user->name ?? 'N/A' }}</p>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="fw-semibold order-amount">${{ number_format($order->total, 2) }}</span>
                                     <span class="badge bg-{{ $order->status_color }} bg-opacity-10 text-{{ $order->status_color }}">
                                         {{ ucfirst($order->payment_status) }}
                                     </span>
                                 </div>
                             </div>
-                            <small class="text-muted">{{ $order->created_at->diffForHumans() }}</small>
+                            <small class="text-muted time-badge">{{ $order->created_at->diffForHumans() }}</small>
                         </div>
                     </div>
                 </div>
@@ -448,13 +448,13 @@
                         </div>
                     </div>
                     <div class="recent-item-content">
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
                             <div>
-                                <h6 class="mb-1">{{ $review->user->name }}</h6>
-                                <p class="text-muted small mb-1">
+                                <h6 class="mb-1 user-name">{{ $review->user->name }}</h6>
+                                <p class="text-muted small mb-1 course-name">
                                     on <span class="fw-semibold">{{ Str::limit($review->course->title, 20) }}</span>
                                 </p>
-                                <div class="d-flex align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
                                     <div class="rating-stars">
                                         @for($i = 1; $i <= 5; $i++)
                                             @if($i <= $review->rating)
@@ -464,10 +464,10 @@
                                             @endif
                                         @endfor
                                     </div>
-                                    <span class="fw-semibold">{{ $review->rating }}/5</span>
+                                    <span class="fw-semibold rating-value">{{ $review->rating }}/5</span>
                                 </div>
                             </div>
-                            <small class="text-muted">{{ $review->created_at->diffForHumans() }}</small>
+                            <small class="text-muted time-badge">{{ $review->created_at->diffForHumans() }}</small>
                         </div>
                         @if($review->content)
                         <p class="review-excerpt mt-2">"{{ Str::limit($review->content, 60) }}"</p>
@@ -488,6 +488,17 @@
 
 @push('styles')
 <style>
+:root {
+    --primary: #017bfe;
+    --secondary: #6c5ce7;
+    --success: #00b894;
+    --info: #3498db;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --dark: #2c3e50;
+    --light: #f8f9fa;
+}
+
 /* Welcome Section */
 .welcome-section {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -801,6 +812,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .data-card-header h5 {
@@ -815,8 +828,14 @@
 }
 
 /* Table Styles */
+.table-responsive {
+    margin: 0 -12px;
+    padding: 0 12px;
+}
+
 .table {
     margin: 0;
+    min-width: 600px;
 }
 
 .table thead th {
@@ -828,6 +847,7 @@
     letter-spacing: 0.5px;
     color: #6c757d;
     padding: 12px;
+    white-space: nowrap;
 }
 
 .table tbody td {
@@ -841,6 +861,7 @@
     height: 40px;
     border-radius: 8px;
     object-fit: cover;
+    flex-shrink: 0;
 }
 
 .course-thumbnail-placeholder {
@@ -852,6 +873,20 @@
     align-items: center;
     justify-content: center;
     color: #adb5bd;
+    flex-shrink: 0;
+}
+
+.course-title-wrapper {
+    min-width: 0;
+    flex: 1;
+}
+
+.course-title-link {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
 }
 
 /* Recent List */
@@ -893,6 +928,52 @@
     min-width: 0;
 }
 
+.user-info-wrapper {
+    min-width: 0;
+    flex: 1;
+}
+
+.user-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+}
+
+.order-number {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+    display: block;
+}
+
+.order-amount {
+    white-space: nowrap;
+}
+
+.course-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+}
+
+.rating-value {
+    white-space: nowrap;
+}
+
+.time-badge {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 .review-excerpt {
     font-size: 0.9rem;
     color: #6c757d;
@@ -901,18 +982,23 @@
     background: #f8f9fa;
     padding: 8px 12px;
     border-radius: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .rating-stars {
     display: inline-flex;
     gap: 2px;
     font-size: 0.85rem;
+    white-space: nowrap;
 }
 
 /* Badge Styles */
 .badge {
     font-weight: 500;
     padding: 4px 8px;
+    white-space: nowrap;
 }
 
 /* Responsive */
@@ -922,12 +1008,17 @@
         align-items: flex-start;
     }
     
+    .welcome-content h2 {
+        font-size: 1.4rem;
+    }
+    
     .welcome-actions {
         width: 100%;
+        flex-direction: column;
     }
     
     .welcome-actions .btn {
-        flex: 1;
+        width: 100%;
     }
     
     .stats-card {
@@ -948,13 +1039,37 @@
         align-items: flex-start;
         gap: 12px;
     }
+    
+    .data-card-header .btn {
+        width: 100%;
+    }
+    
+    .recent-item {
+        flex-direction: column;
+    }
+    
+    .recent-item-avatar {
+        align-self: flex-start;
+    }
+    
+    .user-email {
+        max-width: 100%;
+    }
+    
+    .order-number {
+        max-width: 100%;
+    }
+    
+    .course-name {
+        max-width: 100%;
+    }
+    
+    .course-title-link {
+        max-width: 150px;
+    }
 }
 
 @media (max-width: 576px) {
-    .welcome-content h2 {
-        font-size: 1.4rem;
-    }
-    
     .metric-card {
         padding: 12px;
     }
@@ -969,13 +1084,23 @@
         font-size: 1.1rem;
     }
     
-    .recent-item {
-        flex-direction: column;
+    .course-title-link {
+        max-width: 120px;
     }
     
-    .recent-item-avatar {
-        align-self: flex-start;
+    .table tbody td {
+        padding: 12px 8px;
     }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+}
+
+/* Tooltip for truncated text */
+[title] {
+    cursor: help;
 }
 </style>
 @endpush
