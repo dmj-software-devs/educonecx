@@ -152,11 +152,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('quizzes', App\Http\Controllers\Admin\QuizController::class);
     Route::get('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'questions'])->name('quizzes.questions');
     Route::post('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
-    
+
     // Question Edit Routes
     Route::get('quizzes/questions/{question}/edit', [App\Http\Controllers\Admin\QuizController::class, 'editQuestion'])->name('quizzes.questions.edit');
     Route::put('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
-    
+
     Route::delete('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
     Route::post('quizzes/questions/reorder', [App\Http\Controllers\Admin\QuizController::class, 'reorderQuestions'])->name('quizzes.questions.reorder');
 
@@ -205,6 +205,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Admin Profile
     Route::get('profile', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile');
     Route::put('profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [App\Http\Controllers\Admin\ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::post('/profile/change-password', [App\Http\Controllers\Admin\ProfileController::class, 'changePassword'])->name('profile.password');
 
     // Search
     Route::get('search', [App\Http\Controllers\Admin\SearchController::class, 'index'])->name('search');
@@ -251,8 +253,8 @@ Route::post('/stripe/webhook', [App\Http\Controllers\StripePaymentController::cl
     ->name('stripe.webhook');
 
 
-    // Add this route temporarily
-Route::get('/test-url', function(Request $request) {
+// Add this route temporarily
+Route::get('/test-url', function (Request $request) {
     return response()->json([
         'app_url_config' => config('app.url'),
         'request_url' => $request->getSchemeAndHttpHost(),
@@ -262,14 +264,14 @@ Route::get('/test-url', function(Request $request) {
 });
 
 // Add to routes/web.php
-Route::get('/stripe/success-test', function(Request $request) {
+Route::get('/stripe/success-test', function (Request $request) {
     return response()->json([
         'route_exists' => true,
         'session_id' => $request->get('session_id'),
         'url' => $request->fullUrl(),
-        'routes' => collect(Route::getRoutes())->map(function($route) {
+        'routes' => collect(Route::getRoutes())->map(function ($route) {
             return $route->uri();
-        })->filter(function($uri) {
+        })->filter(function ($uri) {
             return str_contains($uri, 'stripe');
         })->values()
     ]);
