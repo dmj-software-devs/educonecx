@@ -137,6 +137,38 @@
         color: var(--quiz-take-gray);
     }
 
+    /* Language Selector */
+    .quiz-take-language-selector {
+        background: var(--quiz-take-white);
+        border-radius: var(--quiz-take-radius-full);
+        padding: 5px;
+        display: inline-flex;
+        gap: 5px;
+        box-shadow: var(--quiz-take-shadow);
+        margin-left: 15px;
+    }
+
+    .quiz-take-language-btn {
+        padding: 8px 20px;
+        border: none;
+        border-radius: var(--quiz-take-radius-full);
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--quiz-take-transition);
+        background: transparent;
+        color: var(--quiz-take-gray);
+    }
+
+    .quiz-take-language-btn:hover {
+        background: var(--quiz-take-light);
+    }
+
+    .quiz-take-language-btn.active {
+        background: var(--quiz-take-gradient);
+        color: var(--quiz-take-white);
+    }
+
     /* Question Card */
     .quiz-take-question-card {
         background: var(--quiz-take-white);
@@ -408,6 +440,35 @@
         font-weight: 500;
     }
 
+    /* Translation Loading */
+    .quiz-take-translation-loading {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--quiz-take-primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: var(--quiz-take-radius-full);
+        box-shadow: var(--quiz-take-shadow);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .quiz-take-translation-loading.show {
+        display: flex;
+    }
+
+    .quiz-take-translation-loading i {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
     /* Question Footer */
     .quiz-take-question-footer {
         margin-top: 35px;
@@ -672,11 +733,24 @@
         .quiz-take-complete-card {
             padding: 40px 20px;
         }
+
+        .quiz-take-language-selector {
+            margin-left: 0;
+            margin-top: 15px;
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
 <div class="quiz-take-container">
     <div class="container">
+        <!-- Translation Loading Indicator -->
+        <div class="quiz-take-translation-loading" id="translationLoading">
+            <i class="fas fa-spinner"></i>
+            <span>Translating...</span>
+        </div>
+
         <!-- Display any session messages -->
         @if(session('error'))
         <div class="quiz-take-error-alert">
@@ -696,13 +770,22 @@
         <div class="quiz-take-header">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <h1>{{ $quiz->title }}</h1>
+                    <h1 id="quizTitle" data-original="{{ $quiz->title }}">{{ $quiz->title }}</h1>
                     <p class="text-muted">
                         <i class="fas fa-question-circle me-2"></i>
-                        Question {{ $attempt->answers->count() + 1 }} of {{ $questions->count() }}
+                        <span id="questionCountText" data-original="Question {{ $attempt->answers->count() + 1 }} of {{ $questions->count() }}">
+                            Question {{ $attempt->answers->count() + 1 }} of {{ $questions->count() }}
+                        </span>
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
+                    <!-- Language Selector -->
+                    <div class="quiz-take-language-selector">
+                        <button class="quiz-take-language-btn active" onclick="changeLanguage('en')" id="langEn">English</button>
+                        <button class="quiz-take-language-btn" onclick="changeLanguage('es')" id="langEs">Español</button>
+                        <button class="quiz-take-language-btn" onclick="changeLanguage('fr')" id="langFr">Français</button>
+                    </div>
+                    
                     @if($remainingTime)
                     <div class="quiz-take-timer {{ $remainingTime < 300 ? 'warning' : '' }}" id="timer" data-remaining="{{ $remainingTime }}">
                         <i class="far fa-clock"></i>
@@ -718,8 +801,8 @@
                             <div class="quiz-take-progress-fill" style="width: {{ $progress }}%;"></div>
                         </div>
                         <div class="quiz-take-progress-stats">
-                            <span>{{ $attempt->answers->count() }} answered</span>
-                            <span>{{ $questions->count() - $attempt->answers->count() }} remaining</span>
+                            <span id="answeredCount" data-original="{{ $attempt->answers->count() }} answered">{{ $attempt->answers->count() }} answered</span>
+                            <span id="remainingCount" data-original="{{ $questions->count() - $attempt->answers->count() }} remaining">{{ $questions->count() - $attempt->answers->count() }} remaining</span>
                         </div>
                     </div>
                 </div>
@@ -739,17 +822,22 @@
                         @csrf
                         
                         <div class="quiz-take-question-header">
-                            <span class="quiz-take-question-badge">
+                            <span class="quiz-take-question-badge" id="questionType" data-original="{{ str_replace('_', ' ', ucfirst($currentQuestion->question_type)) }}">
                                 {{ str_replace('_', ' ', ucfirst($currentQuestion->question_type)) }}
                             </span>
                             <span class="quiz-take-question-points">
                                 <i class="fas fa-star me-1"></i>
-                                {{ $currentQuestion->points }} points
+                                <span id="questionPoints" data-original="{{ $currentQuestion->points }} points">{{ $currentQuestion->points }} points</span>
                             </span>
                         </div>
 
                         <div class="quiz-take-question-content">
-                            <h3 class="quiz-take-question-text">{{ $currentQuestion->question_text }}</h3>
+                            <h3 class="quiz-take-question-text" 
+                                id="questionText" 
+                                data-question-id="{{ $currentQuestion->id }}"
+                                data-original="{{ $currentQuestion->question_text }}">
+                                {{ $currentQuestion->question_text }}
+                            </h3>
 
                             @if($currentQuestion->image)
                             <div class="quiz-take-question-image">
@@ -759,7 +847,7 @@
 
                             <!-- Multiple Choice / Single Choice / True False Options -->
                             @if(in_array($currentQuestion->question_type, ['multiple_choice', 'single_choice', 'true_false']))
-                                <div class="quiz-take-options-list">
+                                <div class="quiz-take-options-list" id="optionsList">
                                     @foreach($currentQuestion->options as $option)
                                     <div class="quiz-take-option-item" onclick="selectOption(this, '{{ $option->id }}')">
                                         <div class="form-check">
@@ -783,7 +871,11 @@
                                                         <img src="{{ $option->image_url }}" alt="Option image">
                                                     </div>
                                                 @endif
-                                                <span class="quiz-take-option-text">{{ $option->option_text }}</span>
+                                                <span class="quiz-take-option-text option-text" 
+                                                      data-option-id="{{ $option->id }}"
+                                                      data-original="{{ $option->option_text }}">
+                                                    {{ $option->option_text }}
+                                                </span>
                                             </label>
                                         </div>
                                     </div>
@@ -804,7 +896,7 @@
                                                required>
                                     </div>
                                     @if($currentQuestion->fillBlanks->count() > 1)
-                                        <small>
+                                        <small id="fillBlankHint" data-original="Any of the correct answers will be accepted.">
                                             <i class="fas fa-info-circle"></i>
                                             Any of the correct answers will be accepted.
                                         </small>
@@ -815,7 +907,7 @@
                             <!-- Matching -->
                             @if($currentQuestion->question_type == 'matching')
                                 <div class="quiz-take-matching">
-                                    <div class="quiz-take-matching-instruction">
+                                    <div class="quiz-take-matching-instruction" id="matchingInstruction" data-original="Match the items from the left column with the right column">
                                         <i class="fas fa-arrows-alt-h"></i>
                                         Match the items from the left column with the right column
                                     </div>
@@ -824,16 +916,26 @@
                                     <div class="quiz-take-matching-row">
                                         <div class="row align-items-center">
                                             <div class="col-md-5">
-                                                <div class="quiz-take-matching-left">{{ $pair->left_item }}</div>
+                                                <div class="quiz-take-matching-left matching-left-item" 
+                                                     data-pair-id="{{ $pair->id }}"
+                                                     data-original="{{ $pair->left_item }}">
+                                                    {{ $pair->left_item }}
+                                                </div>
                                             </div>
                                             <div class="col-md-2 quiz-take-matching-arrow">
                                                 <i class="fas fa-arrow-right"></i>
                                             </div>
                                             <div class="col-md-5">
-                                                <select class="quiz-take-matching-select" name="answers[{{ $currentQuestion->id }}][pair_{{ $pair->id }}]" required>
-                                                    <option value="">Select match</option>
+                                                <select class="quiz-take-matching-select matching-select" 
+                                                        name="answers[{{ $currentQuestion->id }}][pair_{{ $pair->id }}]" 
+                                                        required>
+                                                    <option value="" data-original="Select match">Select match</option>
                                                     @foreach($currentQuestion->matchingPairs->shuffle() as $rightItem)
-                                                        <option value="{{ $rightItem->right_item }}">{{ $rightItem->right_item }}</option>
+                                                        <option value="{{ $rightItem->right_item }}" 
+                                                                data-original="{{ $rightItem->right_item }}"
+                                                                class="matching-option">
+                                                            {{ $rightItem->right_item }}
+                                                        </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -856,7 +958,11 @@
                                                    style="display: none;">
                                             @if($option->image)
                                                 <img src="{{ $option->image_url }}" alt="{{ $option->option_text }}">
-                                                <p>{{ $option->option_text }}</p>
+                                                <p class="image-option-text" 
+                                                   data-option-id="{{ $option->id }}"
+                                                   data-original="{{ $option->option_text }}">
+                                                    {{ $option->option_text }}
+                                                </p>
                                             @endif
                                         </div>
                                         @endforeach
@@ -866,20 +972,20 @@
                         </div>
 
                         <div class="quiz-take-question-footer">
-                            <button type="submit" name="action" value="next" class="quiz-take-btn primary">
+                            <button type="submit" name="action" value="next" class="quiz-take-btn primary" id="nextBtn">
                                 @if($attempt->answers->count() + 1 == $questions->count())
-                                    <span>Submit Quiz</span>
+                                    <span id="submitText" data-original="Submit Quiz">Submit Quiz</span>
                                     <i class="fas fa-check-circle"></i>
                                 @else
-                                    <span>Next Question</span>
+                                    <span id="nextText" data-original="Next Question">Next Question</span>
                                     <i class="fas fa-arrow-right"></i>
                                 @endif
                             </button>
                             
                             @if($attempt->answers->count() > 0)
-                            <button type="submit" name="action" value="previous" class="quiz-take-btn secondary">
+                            <button type="submit" name="action" value="previous" class="quiz-take-btn secondary" id="previousBtn">
                                 <i class="fas fa-arrow-left"></i>
-                                <span>Previous</span>
+                                <span id="previousText" data-original="Previous">Previous</span>
                             </button>
                             @endif
                         </div>
@@ -889,14 +995,14 @@
                     <!-- Quiz Complete -->
                     <div class="quiz-take-complete-card">
                         <i class="fas fa-check-circle quiz-take-complete-icon"></i>
-                        <h2>Quiz Completed!</h2>
-                        <p>You have answered all questions. Click below to submit your quiz.</p>
+                        <h2 id="completeTitle" data-original="Quiz Completed!">Quiz Completed!</h2>
+                        <p id="completeMessage" data-original="You have answered all questions. Click below to submit your quiz.">You have answered all questions. Click below to submit your quiz.</p>
                         <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST">
                             @csrf
                             <input type="hidden" name="action" value="complete">
-                            <button type="submit" class="quiz-take-btn success" style="padding: 15px 40px; font-size: 1.2rem;">
+                            <button type="submit" class="quiz-take-btn success" style="padding: 15px 40px; font-size: 1.2rem;" id="submitQuizBtn">
                                 <i class="fas fa-check-circle me-2"></i>
-                                Submit Quiz
+                                <span data-original="Submit Quiz">Submit Quiz</span>
                             </button>
                         </form>
                     </div>
@@ -908,7 +1014,7 @@
                 <div class="quiz-take-navigator-card">
                     <h5 class="quiz-take-navigator-title">
                         <i class="fas fa-th"></i>
-                        Question Navigator
+                        <span id="navigatorTitle" data-original="Question Navigator">Question Navigator</span>
                     </h5>
                     <div class="quiz-take-question-grid">
                         @foreach($questions as $index => $question)
@@ -927,35 +1033,35 @@
                 <div class="quiz-take-info-card">
                     <h5 class="quiz-take-navigator-title">
                         <i class="fas fa-info-circle"></i>
-                        Quiz Information
+                        <span id="infoTitle" data-original="Quiz Information">Quiz Information</span>
                     </h5>
                     <ul class="quiz-take-info-list">
                         <li>
                             <i class="fas fa-clock"></i>
-                            <span>Time Remaining:</span>
-                            <strong>{{ $remainingTime ? gmdate('H:i:s', $remainingTime) : 'No limit' }}</strong>
+                            <span id="timeRemainingLabel" data-original="Time Remaining:">Time Remaining:</span>
+                            <strong id="timeRemainingValue">{{ $remainingTime ? gmdate('H:i:s', $remainingTime) : 'No limit' }}</strong>
                         </li>
                         <li>
                             <i class="fas fa-question-circle"></i>
-                            <span>Questions Answered:</span>
-                            <strong>{{ $attempt->answers->count() }}/{{ $questions->count() }}</strong>
+                            <span id="questionsAnsweredLabel" data-original="Questions Answered:">Questions Answered:</span>
+                            <strong id="questionsAnsweredValue">{{ $attempt->answers->count() }}/{{ $questions->count() }}</strong>
                         </li>
                         <li>
                             <i class="fas fa-star"></i>
-                            <span>Total Points:</span>
-                            <strong>{{ $questions->sum('points') }}</strong>
+                            <span id="totalPointsLabel" data-original="Total Points:">Total Points:</span>
+                            <strong id="totalPointsValue">{{ $questions->sum('points') }}</strong>
                         </li>
                         @if($quiz->pass_percentage)
                         <li>
                             <i class="fas fa-trophy"></i>
-                            <span>Passing Score:</span>
-                            <strong>{{ $quiz->pass_percentage }}%</strong>
+                            <span id="passingScoreLabel" data-original="Passing Score:">Passing Score:</span>
+                            <strong id="passingScoreValue">{{ $quiz->pass_percentage }}%</strong>
                         </li>
                         @endif
                         <li>
                             <i class="fas fa-redo"></i>
-                            <span>Attempt:</span>
-                            <strong>#{{ $attempt->attempt_number }}</strong>
+                            <span id="attemptLabel" data-original="Attempt:">Attempt:</span>
+                            <strong id="attemptValue">#{{ $attempt->attempt_number }}</strong>
                         </li>
                     </ul>
                 </div>
@@ -976,7 +1082,22 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
+// Translation API endpoint (proxy through Laravel)
+const TRANSLATE_API_URL = "{{ route('translate') }}";
+
+// Current language (default: English)
+let currentLanguage = 'en';
+
+// Cache for translations
+const translationCache = new Map();
+
+// Store original texts for all translatable elements
+const translatableElements = [];
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize translatable elements
+    initializeTranslatableElements();
+    
     // Timer functionality
     @if($remainingTime)
     let remainingSeconds = {{ $remainingTime }};
@@ -1119,5 +1240,222 @@ document.addEventListener('DOMContentLoaded', function() {
         formSubmitted = true;
     });
 });
+
+// Initialize all translatable elements
+function initializeTranslatableElements() {
+    // Clear the array
+    translatableElements.length = 0;
+    
+    // Helper function to add element
+    function addElement(id) {
+        const el = document.getElementById(id);
+        if (el && el.dataset.original) {
+            translatableElements.push({
+                element: el,
+                original: el.dataset.original
+            });
+        }
+    }
+    
+    // Add all elements with data-original attributes
+    addElement('quizTitle');
+    addElement('questionCountText');
+    addElement('questionText');
+    addElement('questionType');
+    addElement('questionPoints');
+    addElement('fillBlankHint');
+    addElement('matchingInstruction');
+    addElement('navigatorTitle');
+    addElement('infoTitle');
+    addElement('timeRemainingLabel');
+    addElement('questionsAnsweredLabel');
+    addElement('totalPointsLabel');
+    addElement('passingScoreLabel');
+    addElement('attemptLabel');
+    addElement('answeredCount');
+    addElement('remainingCount');
+    addElement('completeTitle');
+    addElement('completeMessage');
+    addElement('nextText');
+    addElement('previousText');
+    addElement('submitText');
+    
+    // Add option texts
+    document.querySelectorAll('.option-text').forEach(el => {
+        if (el.dataset.original) {
+            translatableElements.push({
+                element: el,
+                original: el.dataset.original
+            });
+        }
+    });
+    
+    // Add matching left items
+    document.querySelectorAll('.matching-left-item').forEach(el => {
+        if (el.dataset.original) {
+            translatableElements.push({
+                element: el,
+                original: el.dataset.original
+            });
+        }
+    });
+    
+    // Add matching options
+    document.querySelectorAll('.matching-option').forEach(el => {
+        if (el.dataset.original) {
+            translatableElements.push({
+                element: el,
+                original: el.dataset.original
+            });
+        }
+    });
+    
+    // Add image option texts
+    document.querySelectorAll('.image-option-text').forEach(el => {
+        if (el.dataset.original) {
+            translatableElements.push({
+                element: el,
+                original: el.dataset.original
+            });
+        }
+    });
+    
+    // Add submit button span
+    const submitBtnSpan = document.querySelector('#submitQuizBtn span');
+    if (submitBtnSpan && submitBtnSpan.dataset.original) {
+        translatableElements.push({
+            element: submitBtnSpan,
+            original: submitBtnSpan.dataset.original
+        });
+    }
+}
+
+// Change language function
+async function changeLanguage(lang) {
+    if (lang === currentLanguage) return;
+    
+    console.log('Changing language from', currentLanguage, 'to', lang);
+    
+    // Get loading indicator
+    const loadingEl = document.getElementById('translationLoading');
+    if (loadingEl) {
+        loadingEl.classList.add('show');
+    }
+    
+    try {
+        // Update active button state
+        document.querySelectorAll('.quiz-take-language-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`lang${lang.toUpperCase()}`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        
+        console.log('Elements to translate:', translatableElements.length);
+        
+        // Translate all elements
+        for (const item of translatableElements) {
+            if (item.element) {
+                try {
+                    console.log('Translating:', item.original);
+                    const translated = await translateText(item.original, currentLanguage, lang);
+                    console.log('Translated to:', translated);
+                    
+                    // Simple approach: just update the text content of the element
+                    // This will work for elements that don't have complex HTML inside
+                    if (item.element.tagName === 'SPAN' || 
+                        item.element.tagName === 'H1' || 
+                        item.element.tagName === 'H2' || 
+                        item.element.tagName === 'H3' || 
+                        item.element.tagName === 'P' || 
+                        item.element.tagName === 'SMALL' ||
+                        item.element.tagName === 'OPTION') {
+                        item.element.textContent = translated;
+                    }
+                } catch (error) {
+                    console.error('Translation error for element:', error);
+                }
+            }
+        }
+        
+        // Update current language
+        currentLanguage = lang;
+        console.log('Language changed to', lang);
+        
+    } catch (error) {
+        console.error('Translation error:', error);
+        alert('Translation failed. Please try again.');
+    } finally {
+        // Hide loading indicator
+        if (loadingEl) {
+            loadingEl.classList.remove('show');
+        }
+    }
+}
+
+// Translate text using the Laravel proxy
+async function translateText(text, sourceLang, targetLang) {
+    // Check cache first
+    const cacheKey = `${text}_${sourceLang}_${targetLang}`;
+    if (translationCache.has(cacheKey)) {
+        console.log('Using cached translation for:', text);
+        return translationCache.get(cacheKey);
+    }
+    
+    // Don't translate if source and target are the same
+    if (sourceLang === targetLang) return text;
+    
+    // Don't translate empty or very short texts
+    if (!text || text.trim().length < 2) return text;
+    
+    try {
+        console.log('Fetching translation from API:', {text, sourceLang, targetLang});
+        
+        const response = await fetch(TRANSLATE_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                q: text,
+                source: sourceLang,
+                target: targetLang
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Translation failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('API response:', data);
+        
+        const translatedText = data.translatedText || text;
+        
+        // Cache the result
+        translationCache.set(cacheKey, translatedText);
+        
+        return translatedText;
+    } catch (error) {
+        console.error('Translation error:', error);
+        return text; // Return original text on error
+    }
+}
+
+// Function to update translations when navigating to next/previous question
+function updateQuestionTranslations() {
+    console.log('Updating question translations');
+    // Re-initialize translatable elements
+    initializeTranslatableElements();
+    
+    // Translate to current language if not English
+    if (currentLanguage !== 'en') {
+        changeLanguage(currentLanguage);
+    }
+}
+
+// Call this after loading new question via AJAX
+window.updateQuestionTranslations = updateQuestionTranslations;
 </script>
+
 @endsection

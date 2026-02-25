@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminDashboardController; // Renamed Admin Dashbo
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\TranslationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,7 @@ Route::middleware('auth')->group(function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 });
-
+Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate'])->name('translate');
 // ==================== AUTHENTICATION ROUTES ====================
 Route::middleware('guest')->group(function () {
     // Login Routes
