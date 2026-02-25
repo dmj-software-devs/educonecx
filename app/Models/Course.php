@@ -149,9 +149,19 @@ class Course extends Model
     public function getThumbnailUrlAttribute(): string
     {
         if ($this->thumbnail) {
+            // Check if the thumbnail path already includes 'storage/'
+            if (str_starts_with($this->thumbnail, 'storage/')) {
+                return asset($this->thumbnail);
+            }
+            // For paths stored as 'courses/thumbnails/filename.jpg'
             return Storage::url($this->thumbnail);
         }
         return asset('images/course-placeholder.jpg');
+    }
+
+     public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 
     public function getVideoIntroUrlAttribute(): ?string
