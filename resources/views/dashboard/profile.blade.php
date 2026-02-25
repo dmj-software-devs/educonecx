@@ -840,8 +840,15 @@
 
     /* Animations */
     @keyframes profile-page-float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
     }
 
     @keyframes profile-page-slideInDown {
@@ -849,6 +856,7 @@
             opacity: 0;
             transform: translateY(-20px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -856,7 +864,9 @@
     }
 
     @keyframes profile-page-spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     /* Ripple Effect */
@@ -898,11 +908,11 @@
         .profile-page-container {
             flex-direction: column;
         }
-        
+
         .profile-page-sidebar {
             width: 100%;
         }
-        
+
         .profile-page-title {
             font-size: 1.8rem !important;
         }
@@ -984,27 +994,27 @@
     .profile-page-position-relative {
         position: relative;
     }
-    
+
     .profile-page-overflow-hidden {
         overflow: hidden;
     }
-    
+
     .profile-page-text-center {
         text-align: center;
     }
-    
+
     .profile-page-small {
         font-size: 0.85rem !important;
     }
-    
+
     .profile-page-text-muted {
         color: #6b7280 !important;
     }
-    
+
     .profile-page-mt-2 {
         margin-top: 8px !important;
     }
-    
+
     .profile-page-mb-0 {
         margin-bottom: 0 !important;
     }
@@ -1015,15 +1025,15 @@
         <!-- Profile Sidebar -->
         <aside class="profile-page-sidebar">
             <div class="profile-page-cover"></div>
-            
+
             <div class="profile-page-avatar-section">
                 <div class="profile-page-avatar-wrapper" onclick="document.getElementById('avatarInput').click()">
                     @if(Auth::user()->avatar)
-                        <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="profile-page-avatar-image">
+                    <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="profile-page-avatar-image">
                     @else
-                        <div class="profile-page-avatar-placeholder">
-                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                        </div>
+                    <div class="profile-page-avatar-placeholder">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
                     @endif
                     <div class="profile-page-avatar-overlay">
                         <i class="fas fa-camera"></i>
@@ -1109,7 +1119,7 @@
                     <i class="fas fa-user-circle"></i>
                     My Profile
                 </h1>
-                
+
                 <a href="{{ route('dashboard') }}" class="profile-page-back-btn">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
@@ -1118,32 +1128,32 @@
 
             <!-- Success/Error Messages -->
             @if(session('success'))
-                <div class="profile-page-alert profile-page-alert-success" id="successAlert">
-                    <i class="fas fa-check-circle"></i>
-                    <div class="profile-page-alert-content">
-                        <p>{{ session('success') }}</p>
-                    </div>
-                    <button class="profile-page-alert-close" onclick="this.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <div class="profile-page-alert profile-page-alert-success" id="successAlert">
+                <i class="fas fa-check-circle"></i>
+                <div class="profile-page-alert-content">
+                    <p>{{ session('success') }}</p>
                 </div>
+                <button class="profile-page-alert-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
             @endif
 
             @if($errors->any())
-                <div class="profile-page-alert profile-page-alert-danger" id="errorAlert">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <div class="profile-page-alert-content">
-                        <h4>Please fix the following errors:</h4>
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <button class="profile-page-alert-close" onclick="this.parentElement.remove()">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <div class="profile-page-alert profile-page-alert-danger" id="errorAlert">
+                <i class="fas fa-exclamation-circle"></i>
+                <div class="profile-page-alert-content">
+                    <h4>Please fix the following errors:</h4>
+                    <ul>
+                        @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+                <button class="profile-page-alert-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
             @endif
 
             <!-- Profile Information Form -->
@@ -1164,16 +1174,16 @@
                                     <i class="fas fa-user"></i>
                                     First Name
                                 </label>
-                                <input type="text" 
-                                       name="first_name" 
-                                       class="profile-page-input @error('first_name') is-invalid @enderror" 
-                                       value="{{ old('first_name', Auth::user()->first_name) }}" 
-                                       required>
+                                <input type="text"
+                                    name="first_name"
+                                    class="profile-page-input @error('first_name') is-invalid @enderror"
+                                    value="{{ old('first_name', Auth::user()->first_name) }}"
+                                    required>
                                 @error('first_name')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1182,16 +1192,16 @@
                                     <i class="fas fa-user"></i>
                                     Last Name
                                 </label>
-                                <input type="text" 
-                                       name="last_name" 
-                                       class="profile-page-input @error('last_name') is-invalid @enderror" 
-                                       value="{{ old('last_name', Auth::user()->last_name) }}" 
-                                       required>
+                                <input type="text"
+                                    name="last_name"
+                                    class="profile-page-input @error('last_name') is-invalid @enderror"
+                                    value="{{ old('last_name', Auth::user()->last_name) }}"
+                                    required>
                                 @error('last_name')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1200,16 +1210,16 @@
                                     <i class="fas fa-envelope"></i>
                                     Email Address
                                 </label>
-                                <input type="email" 
-                                       name="email" 
-                                       class="profile-page-input @error('email') is-invalid @enderror" 
-                                       value="{{ old('email', Auth::user()->email) }}" 
-                                       required>
+                                <input type="email"
+                                    name="email"
+                                    class="profile-page-input @error('email') is-invalid @enderror"
+                                    value="{{ old('email', Auth::user()->email) }}"
+                                    required>
                                 @error('email')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1218,16 +1228,16 @@
                                     <i class="fas fa-phone"></i>
                                     Phone Number
                                 </label>
-                                <input type="tel" 
-                                       name="phone" 
-                                       class="profile-page-input @error('phone') is-invalid @enderror" 
-                                       value="{{ old('phone', Auth::user()->phone) }}"
-                                       placeholder="+1 (555) 000-0000">
+                                <input type="tel"
+                                    name="phone"
+                                    class="profile-page-input @error('phone') is-invalid @enderror"
+                                    value="{{ old('phone', Auth::user()->phone) }}"
+                                    placeholder="+1 (555) 000-0000">
                                 @error('phone')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1236,16 +1246,16 @@
                                     <i class="fas fa-map-marker-alt"></i>
                                     Address
                                 </label>
-                                <input type="text" 
-                                       name="address" 
-                                       class="profile-page-input @error('address') is-invalid @enderror" 
-                                       value="{{ old('address', Auth::user()->address) }}"
-                                       placeholder="Street address">
+                                <input type="text"
+                                    name="address"
+                                    class="profile-page-input @error('address') is-invalid @enderror"
+                                    value="{{ old('address', Auth::user()->address) }}"
+                                    placeholder="Street address">
                                 @error('address')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1254,15 +1264,15 @@
                                     <i class="fas fa-city"></i>
                                     City
                                 </label>
-                                <input type="text" 
-                                       name="city" 
-                                       class="profile-page-input @error('city') is-invalid @enderror" 
-                                       value="{{ old('city', Auth::user()->city) }}">
+                                <input type="text"
+                                    name="city"
+                                    class="profile-page-input @error('city') is-invalid @enderror"
+                                    value="{{ old('city', Auth::user()->city) }}">
                                 @error('city')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1271,15 +1281,15 @@
                                     <i class="fas fa-map"></i>
                                     State
                                 </label>
-                                <input type="text" 
-                                       name="state" 
-                                       class="profile-page-input @error('state') is-invalid @enderror" 
-                                       value="{{ old('state', Auth::user()->state) }}">
+                                <input type="text"
+                                    name="state"
+                                    class="profile-page-input @error('state') is-invalid @enderror"
+                                    value="{{ old('state', Auth::user()->state) }}">
                                 @error('state')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1288,15 +1298,15 @@
                                     <i class="fas fa-mail-bulk"></i>
                                     Postal Code
                                 </label>
-                                <input type="text" 
-                                       name="postal_code" 
-                                       class="profile-page-input @error('postal_code') is-invalid @enderror" 
-                                       value="{{ old('postal_code', Auth::user()->postal_code) }}">
+                                <input type="text"
+                                    name="postal_code"
+                                    class="profile-page-input @error('postal_code') is-invalid @enderror"
+                                    value="{{ old('postal_code', Auth::user()->postal_code) }}">
                                 @error('postal_code')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1314,10 +1324,10 @@
                                     <option value="IN" {{ (old('country', Auth::user()->country) == 'IN') ? 'selected' : '' }}>India</option>
                                 </select>
                                 @error('country')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
 
@@ -1326,15 +1336,15 @@
                                     <i class="fas fa-align-left"></i>
                                     Bio
                                 </label>
-                                <textarea name="bio" 
-                                          class="profile-page-input @error('bio') is-invalid @enderror" 
-                                          rows="4" 
-                                          placeholder="Tell us a little about yourself...">{{ old('bio', Auth::user()->bio) }}</textarea>
+                                <textarea name="bio"
+                                    class="profile-page-input @error('bio') is-invalid @enderror"
+                                    rows="4"
+                                    placeholder="Tell us a little about yourself...">{{ old('bio', Auth::user()->bio) }}</textarea>
                                 @error('bio')
-                                    <div class="profile-page-error-feedback">
-                                        <i class="fas fa-exclamation-circle"></i>
-                                        {{ $message }}
-                                    </div>
+                                <div class="profile-page-error-feedback">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ $message }}
+                                </div>
                                 @enderror
                             </div>
                         </div>
@@ -1370,20 +1380,20 @@
                                 Current Password
                             </label>
                             <div class="profile-page-input-group">
-                                <input type="password" 
-                                       name="current_password" 
-                                       class="profile-page-input @error('current_password') is-invalid @enderror" 
-                                       id="current_password"
-                                       required>
+                                <input type="password"
+                                    name="current_password"
+                                    class="profile-page-input @error('current_password') is-invalid @enderror"
+                                    id="current_password"
+                                    required>
                                 <button type="button" class="profile-page-toggle-password" onclick="togglePassword('current_password')">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
                             @error('current_password')
-                                <div class="profile-page-error-feedback">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    {{ $message }}
-                                </div>
+                            <div class="profile-page-error-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $message }}
+                            </div>
                             @enderror
                         </div>
 
@@ -1393,17 +1403,17 @@
                                 New Password
                             </label>
                             <div class="profile-page-input-group">
-                                <input type="password" 
-                                       name="new_password" 
-                                       class="profile-page-input @error('new_password') is-invalid @enderror" 
-                                       id="new_password"
-                                       oninput="checkPasswordStrength(this.value)"
-                                       required>
+                                <input type="password"
+                                    name="new_password"
+                                    class="profile-page-input @error('new_password') is-invalid @enderror"
+                                    id="new_password"
+                                    oninput="checkPasswordStrength(this.value)"
+                                    required>
                                 <button type="button" class="profile-page-toggle-password" onclick="togglePassword('new_password')">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            
+
                             <!-- Password Strength Meter -->
                             <div class="profile-page-password-strength" id="passwordStrength">
                                 <div class="profile-page-strength-meter">
@@ -1415,10 +1425,10 @@
                                 <span class="profile-page-strength-text" id="strengthText">Enter a password</span>
                             </div>
                             @error('new_password')
-                                <div class="profile-page-error-feedback">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    {{ $message }}
-                                </div>
+                            <div class="profile-page-error-feedback">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $message }}
+                            </div>
                             @enderror
                         </div>
 
@@ -1428,11 +1438,11 @@
                                 Confirm New Password
                             </label>
                             <div class="profile-page-input-group">
-                                <input type="password" 
-                                       name="new_password_confirmation" 
-                                       class="profile-page-input" 
-                                       id="new_password_confirmation"
-                                       required>
+                                <input type="password"
+                                    name="new_password_confirmation"
+                                    class="profile-page-input"
+                                    id="new_password_confirmation"
+                                    required>
                                 <button type="button" class="profile-page-toggle-password" onclick="togglePassword('new_password_confirmation')">
                                     <i class="fas fa-eye"></i>
                                 </button>
@@ -1564,7 +1574,7 @@
         window.togglePassword = function(fieldId) {
             const field = document.getElementById(fieldId);
             const icon = event.currentTarget.querySelector('i');
-            
+
             if (field.type === 'password') {
                 field.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -1582,7 +1592,7 @@
                 resetStrengthMeter();
                 return;
             }
-            
+
             const strengthSegments = [
                 document.getElementById('strength1'),
                 document.getElementById('strength2'),
@@ -1590,30 +1600,30 @@
                 document.getElementById('strength4')
             ];
             const strengthText = document.getElementById('strengthText');
-            
+
             let score = 0;
-            
+
             // Length check
             if (password.length >= 8) score++;
             if (password.length >= 12) score++;
-            
+
             // Contains number
             if (/\d/.test(password)) score++;
-            
+
             // Contains special character
             if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
-            
+
             // Contains uppercase and lowercase
             if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-            
+
             // Cap at 4
             score = Math.min(score, 4);
-            
+
             // Reset all segments
             strengthSegments.forEach(segment => {
                 segment.classList.remove('active', 'weak', 'medium', 'strong');
             });
-            
+
             // Update segments based on strength
             for (let i = 0; i < score; i++) {
                 strengthSegments[i].classList.add('active');
@@ -1625,7 +1635,7 @@
                     strengthSegments[i].classList.add('strong');
                 }
             }
-            
+
             const messages = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
             strengthText.textContent = messages[score];
         };
@@ -1633,11 +1643,11 @@
         function resetStrengthMeter() {
             const strengthSegments = document.querySelectorAll('.profile-page-strength-segment');
             const strengthText = document.getElementById('strengthText');
-            
+
             strengthSegments.forEach(segment => {
                 segment.classList.remove('active', 'weak', 'medium', 'strong');
             });
-            
+
             strengthText.textContent = 'Enter a password';
         }
 
@@ -1646,7 +1656,7 @@
             const uploadBtn = document.getElementById('uploadBtn');
             if (input.files && input.files[0]) {
                 uploadBtn.style.display = 'flex';
-                
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     // Optional: Show preview
@@ -1689,14 +1699,14 @@
             const size = Math.max(rect.width, rect.height);
             const x = event.clientX - rect.left - size / 2;
             const y = event.clientY - rect.top - size / 2;
-            
+
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = x + 'px';
             ripple.style.top = y + 'px';
             ripple.className = 'profile-page-ripple';
-            
+
             button.appendChild(ripple);
-            
+
             setTimeout(() => {
                 ripple.remove();
             }, 600);
@@ -1735,9 +1745,9 @@
         window.addEventListener('scroll', function() {
             const sections = ['profile-info', 'change-password', 'notification-settings', 'privacy-settings'];
             const menuItems = document.querySelectorAll('.profile-page-menu-item');
-            
+
             let current = '';
-            
+
             sections.forEach(sectionId => {
                 const section = document.getElementById(sectionId);
                 if (section) {
@@ -1747,7 +1757,7 @@
                     }
                 }
             });
-            
+
             menuItems.forEach(item => {
                 item.classList.remove('active');
                 if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(current)) {
@@ -1762,7 +1772,7 @@
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<span class="profile-page-spinner"></span> Saving...';
             submitBtn.disabled = true;
-            
+
             setTimeout(() => {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
