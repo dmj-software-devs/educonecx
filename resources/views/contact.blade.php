@@ -725,7 +725,7 @@
                 <!-- Main Contact Card -->
                 <div class="contact-page-info-card" data-aos="fade-right">
                     <div class="contact-page-info-icon">
-                        <i class="fas fa-phone-alt"></i>
+                        <i class="fas fa-phone"></i>
                     </div>
                     <h2 class="contact-page-info-title">Let's Connect</h2>
                     <p class="contact-page-info-description">
@@ -735,7 +735,7 @@
                     
                     <ul class="contact-page-info-list">
                         <li>
-                            <i class="fas fa-phone-alt"></i>
+                            <i class="fas fa-phone"></i>
                             <a href="tel:+18335338228">+1 (833) 533-8228</a>
                         </li>
                         <li>
