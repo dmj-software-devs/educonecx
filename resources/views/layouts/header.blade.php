@@ -55,9 +55,9 @@
                     <div class="profile-dropdown">
                         <button class="profile-btn">
                             @if(Auth::user()->avatar)
-                            <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}">
+                            <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="profile-page-avatar-image">
                             @else
-                            <div class="profile-avatar">
+                            <div class="profile-page-avatar-placeholder">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                             @endif
