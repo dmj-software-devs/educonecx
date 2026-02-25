@@ -109,12 +109,14 @@ Route::get('/faqs', [PageController::class, 'faqs'])->name('faqs');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/refund-policy', [PageController::class, 'refund'])->name('refund');
 Route::get('/terms-conditions', [PageController::class, 'terms'])->name('terms');
+// Add this route for AJAX filtering
+Route::get('/courses/filter', [App\Http\Controllers\CourseController::class, 'filter'])->name('courses.filter');
 
 // ==================== PUBLIC COURSE ROUTES ====================
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/course-category/{slug}', [CourseController::class, 'category'])->name('courses.category');
-Route::post('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
+Route::get('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
 
 // ==================== PUBLIC BLOG ROUTES ====================
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');

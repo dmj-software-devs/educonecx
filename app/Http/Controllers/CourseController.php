@@ -6,7 +6,8 @@ use App\Models\Course;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 class CourseController extends Controller
 {
     /**
@@ -22,7 +23,7 @@ class CourseController extends Controller
             'sort' => $request->input('sort', 'newest_first'),
         ];
 
-        // Base query with relationships - FIXED: removed 'reviews' and added proper relationship counts
+        // Base query with relationships
         $query = Course::published()
             ->with(['category', 'instructor'])
             ->withCount('approvedRatings as reviews_count')
@@ -47,18 +48,19 @@ class CourseController extends Controller
         if (!empty($filters['price'])) {
             $query->where(function ($q) use ($filters) {
                 if (in_array('free', $filters['price'])) {
-                    $q->orWhere('price', 0)
-                        ->orWhere(function ($q2) {
-                            $q2->whereNotNull('sale_price')
-                                ->where('sale_price', 0);
-                        });
+                    $q->orWhere(function ($q2) {
+                        $q2->where('price', 0)
+                            ->orWhere('sale_price', 0);
+                    });
                 }
                 if (in_array('paid', $filters['price'])) {
-                    $q->orWhere('price', '>', 0)
-                        ->where(function ($q2) {
-                            $q2->whereNull('sale_price')
-                                ->orWhere('sale_price', '>', 0);
-                        });
+                    $q->orWhere(function ($q2) {
+                        $q2->where('price', '>', 0)
+                            ->where(function ($q3) {
+                                $q3->whereNull('sale_price')
+                                    ->orWhere('sale_price', '>', 0);
+                            });
+                    });
                 }
             });
         }
@@ -66,10 +68,10 @@ class CourseController extends Controller
         // Apply sorting
         switch ($filters['sort']) {
             case 'newest_first':
-                $query->latest('published_at');
+                $query->latest('created_at');
                 break;
             case 'oldest_first':
-                $query->oldest('published_at');
+                $query->oldest('created_at');
                 break;
             case 'course_title_az':
                 $query->orderBy('title', 'asc');
@@ -84,7 +86,7 @@ class CourseController extends Controller
                 $query->orderBy('average_rating', 'desc');
                 break;
             default:
-                $query->latest('published_at');
+                $query->latest('created_at');
         }
 
         // Get active categories with course counts
@@ -102,6 +104,17 @@ class CourseController extends Controller
                 ];
             });
 
+        // Get course counts for stats
+        $freeCoursesCount = Course::published()
+            ->where(function($q) {
+                $q->where('price', 0)
+                    ->orWhere('sale_price', 0);
+            })->count();
+        
+        $paidCoursesCount = Course::published()
+            ->where('price', '>', 0)
+            ->count();
+
         // Paginate results (12 per page)
         $perPage = 12;
         $paginatedCourses = $query->paginate($perPage);
@@ -109,7 +122,7 @@ class CourseController extends Controller
         // Add query parameters to pagination links
         $paginatedCourses->appends($request->query());
 
-        return view('courses', compact('paginatedCourses', 'categories', 'filters'));
+        return view('courses', compact('paginatedCourses', 'categories', 'filters', 'freeCoursesCount', 'paidCoursesCount'));
     }
 
     /**
@@ -117,87 +130,97 @@ class CourseController extends Controller
      */
     public function filter(Request $request)
     {
-        $filters = [
-            'keyword' => $request->input('keyword', ''),
-            'categories' => $request->input('categories', []),
-            'price' => $request->input('price', []),
-            'sort' => $request->input('sort', 'newest_first'),
-        ];
+        try {
+            $filters = [
+                'keyword' => $request->input('keyword', ''),
+                'categories' => $request->input('categories', []),
+                'price' => $request->input('price', []),
+                'sort' => $request->input('sort', 'newest_first'),
+            ];
 
-        // Base query with relationships - FIXED: removed 'reviews' and added proper relationship counts
-        $query = Course::published()
-            ->with(['category', 'instructor'])
-            ->withCount('approvedRatings as reviews_count')
-            ->withCount('students as total_students')
-            ->withCount('lessons as lessons_count');
+            // Base query with relationships
+            $query = Course::published()
+                ->with(['category', 'instructor'])
+                ->withCount('approvedRatings as reviews_count')
+                ->withCount('students as total_students')
+                ->withCount('lessons as lessons_count');
 
-        // Apply filters (same logic as index method)
-        if (!empty($filters['keyword'])) {
-            $query->where(function ($q) use ($filters) {
-                $q->where('title', 'like', '%' . $filters['keyword'] . '%')
-                    ->orWhere('description', 'like', '%' . $filters['keyword'] . '%')
-                    ->orWhere('excerpt', 'like', '%' . $filters['keyword'] . '%');
-            });
-        }
+            // Apply filters (same logic as index method)
+            if (!empty($filters['keyword'])) {
+                $query->where(function ($q) use ($filters) {
+                    $q->where('title', 'like', '%' . $filters['keyword'] . '%')
+                        ->orWhere('description', 'like', '%' . $filters['keyword'] . '%')
+                        ->orWhere('excerpt', 'like', '%' . $filters['keyword'] . '%');
+                });
+            }
 
-        if (!empty($filters['categories'])) {
-            $query->whereIn('category_id', $filters['categories']);
-        }
+            if (!empty($filters['categories'])) {
+                $query->whereIn('category_id', $filters['categories']);
+            }
 
-        if (!empty($filters['price'])) {
-            $query->where(function ($q) use ($filters) {
-                if (in_array('free', $filters['price'])) {
-                    $q->orWhere('price', 0)
-                        ->orWhere(function ($q2) {
-                            $q2->whereNotNull('sale_price')
-                                ->where('sale_price', 0);
+            if (!empty($filters['price'])) {
+                $query->where(function ($q) use ($filters) {
+                    if (in_array('free', $filters['price'])) {
+                        $q->orWhere(function ($q2) {
+                            $q2->where('price', 0)
+                                ->orWhere('sale_price', 0);
                         });
-                }
-                if (in_array('paid', $filters['price'])) {
-                    $q->orWhere('price', '>', 0)
-                        ->where(function ($q2) {
-                            $q2->whereNull('sale_price')
-                                ->orWhere('sale_price', '>', 0);
+                    }
+                    if (in_array('paid', $filters['price'])) {
+                        $q->orWhere(function ($q2) {
+                            $q2->where('price', '>', 0)
+                                ->where(function ($q3) {
+                                    $q3->whereNull('sale_price')
+                                        ->orWhere('sale_price', '>', 0);
+                                });
                         });
-                }
-            });
+                    }
+                });
+            }
+
+            switch ($filters['sort']) {
+                case 'newest_first':
+                    $query->latest('created_at');
+                    break;
+                case 'oldest_first':
+                    $query->oldest('created_at');
+                    break;
+                case 'course_title_az':
+                    $query->orderBy('title', 'asc');
+                    break;
+                case 'course_title_za':
+                    $query->orderBy('title', 'desc');
+                    break;
+                case 'popular':
+                    $query->orderBy('total_students', 'desc');
+                    break;
+                case 'top_rated':
+                    $query->orderBy('average_rating', 'desc');
+                    break;
+                default:
+                    $query->latest('created_at');
+            }
+
+            // Get paginated results
+            $courses = $query->paginate(12);
+
+            // Generate HTML for response
+            $html = view('partials.course-list', ['courses' => $courses])->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'count' => $courses->total(),
+                'pagination' => (string) $courses->links()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Course filter error: ' . $e->getMessage() . ' in ' . $e->getFile() . ' at line ' . $e->getLine());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error filtering courses: ' . $e->getMessage()
+            ], 500);
         }
-
-        switch ($filters['sort']) {
-            case 'newest_first':
-                $query->latest('published_at');
-                break;
-            case 'oldest_first':
-                $query->oldest('published_at');
-                break;
-            case 'course_title_az':
-                $query->orderBy('title', 'asc');
-                break;
-            case 'course_title_za':
-                $query->orderBy('title', 'desc');
-                break;
-            case 'popular':
-                $query->orderBy('total_students', 'desc');
-                break;
-            case 'top_rated':
-                $query->orderBy('average_rating', 'desc');
-                break;
-            default:
-                $query->latest('published_at');
-        }
-
-        // Get paginated results
-        $courses = $query->paginate(12);
-
-        // Generate HTML for response
-        $html = view('partials.course-list', ['courses' => $courses])->render();
-
-        return response()->json([
-            'success' => true,
-            'html' => $html,
-            'count' => $courses->total(),
-            'pagination' => (string) $courses->links()
-        ]);
     }
 
     /**
@@ -205,41 +228,68 @@ class CourseController extends Controller
      */
     public function show($slug)
     {
-        $course = Course::published()
-            ->with([
-                'category',
-                'instructor',
-                'approvedRatings.user',
-                'sections.lessons'
-            ])
-            ->withCount('approvedRatings as reviews_count')
-            ->withCount('students as total_students')
-            ->withCount('lessons as lessons_count')
-            ->where('slug', $slug)
-            ->firstOrFail();
+        try {
+            $course = Course::published()
+                ->with([
+                    'category',
+                    'instructor',
+                    'approvedRatings' => function($query) {
+                        $query->with('user')->latest();
+                    },
+                    'sections' => function($query) {
+                        $query->orderBy('sort_order');
+                    },
+                    'sections.lessons' => function($query) {
+                        $query->orderBy('sort_order');
+                    }
+                ])
+                ->withCount('approvedRatings as reviews_count')
+                ->withCount('students as total_students')
+                ->withCount('lessons as lessons_count')
+                ->where('slug', $slug)
+                ->firstOrFail();
 
-        // Get rating distribution
-        $ratingDistribution = [
-            5 => $course->approvedRatings()->where('rating', 5)->count(),
-            4 => $course->approvedRatings()->where('rating', 4)->count(),
-            3 => $course->approvedRatings()->where('rating', 3)->count(),
-            2 => $course->approvedRatings()->where('rating', 2)->count(),
-            1 => $course->approvedRatings()->where('rating', 1)->count(),
-        ];
+            // Get rating distribution
+            $ratingDistribution = [
+                5 => $course->approvedRatings()->where('rating', 5)->count(),
+                4 => $course->approvedRatings()->where('rating', 4)->count(),
+                3 => $course->approvedRatings()->where('rating', 3)->count(),
+                2 => $course->approvedRatings()->where('rating', 2)->count(),
+                1 => $course->approvedRatings()->where('rating', 1)->count(),
+            ];
 
-        // Get related courses (same category, excluding current)
-        $relatedCourses = Course::published()
-            ->with(['category', 'instructor'])
-            ->withCount('approvedRatings as reviews_count')
-            ->withCount('students as total_students')
-            ->withCount('lessons as lessons_count')
-            ->where('category_id', $course->category_id)
-            ->where('id', '!=', $course->id)
-            ->latest('published_at')
-            ->take(3)
-            ->get();
+            // Calculate average rating
+            $totalRatings = array_sum($ratingDistribution);
+            $weightedSum = 0;
+            foreach ($ratingDistribution as $rating => $count) {
+                $weightedSum += $rating * $count;
+            }
+            $course->average_rating = $totalRatings > 0 ? round($weightedSum / $totalRatings, 1) : 0;
 
-        return view('course-single', compact('course', 'relatedCourses', 'ratingDistribution'));
+            // Get related courses (same category, excluding current)
+            $relatedCourses = Course::published()
+                ->with(['category', 'instructor'])
+                ->withCount('approvedRatings as reviews_count')
+                ->withCount('students as total_students')
+                ->withCount('lessons as lessons_count')
+                ->where('category_id', $course->category_id)
+                ->where('id', '!=', $course->id)
+                ->latest('created_at')
+                ->take(3)
+                ->get();
+
+            // Check if user is enrolled
+            $isEnrolled = false;
+            if (Auth::check()) {
+                $isEnrolled = $course->students()->where('user_id', Auth::id())->exists();
+            }
+
+            return view('course-single', compact('course', 'relatedCourses', 'ratingDistribution', 'isEnrolled'));
+            
+        } catch (\Exception $e) {
+            Log::error('Course show error: ' . $e->getMessage());
+            abort(404, 'Course not found');
+        }
     }
 
     /**
@@ -247,26 +297,60 @@ class CourseController extends Controller
      */
     public function category($slug)
     {
-        $category = Category::where('slug', $slug)
-            ->active()
-            ->firstOrFail();
+        try {
+            $category = Category::where('slug', $slug)
+                ->active()
+                ->firstOrFail();
 
-        $courses = Course::published()
-            ->with(['category', 'instructor'])
-            ->withCount('approvedRatings as reviews_count')
-            ->withCount('students as total_students')
-            ->withCount('lessons as lessons_count')
-            ->where('category_id', $category->id)
-            ->latest('published_at')
-            ->paginate(12);
+            $filters = [
+                'sort' => request()->input('sort', 'newest_first'),
+            ];
 
-        // Get all categories for sidebar
-        $categories = Category::active()
-            ->withCount('courses')
-            ->orderBy('sort_order')
-            ->get();
+            $query = Course::published()
+                ->with(['category', 'instructor'])
+                ->withCount('approvedRatings as reviews_count')
+                ->withCount('students as total_students')
+                ->withCount('lessons as lessons_count')
+                ->where('category_id', $category->id);
 
-        return view('courses-category', compact('courses', 'category', 'categories'));
+            // Apply sorting
+            switch ($filters['sort']) {
+                case 'newest_first':
+                    $query->latest('created_at');
+                    break;
+                case 'oldest_first':
+                    $query->oldest('created_at');
+                    break;
+                case 'course_title_az':
+                    $query->orderBy('title', 'asc');
+                    break;
+                case 'course_title_za':
+                    $query->orderBy('title', 'desc');
+                    break;
+                case 'popular':
+                    $query->orderBy('total_students', 'desc');
+                    break;
+                case 'top_rated':
+                    $query->orderBy('average_rating', 'desc');
+                    break;
+                default:
+                    $query->latest('created_at');
+            }
+
+            $courses = $query->paginate(12);
+
+            // Get all categories for sidebar
+            $categories = Category::active()
+                ->withCount('courses')
+                ->orderBy('sort_order')
+                ->get();
+
+            return view('courses-category', compact('courses', 'category', 'categories', 'filters'));
+
+        } catch (\Exception $e) {
+            Log::error('Course category error: ' . $e->getMessage());
+            abort(404, 'Category not found');
+        }
     }
 
     /**
@@ -274,21 +358,39 @@ class CourseController extends Controller
      */
     public function getRatingSummary($courseId)
     {
-        $course = Course::findOrFail($courseId);
+        try {
+            $course = Course::findOrFail($courseId);
 
-        $summary = [
-            'average' => $course->average_rating,
-            'total' => $course->total_reviews,
-            'distribution' => [
+            $ratingDistribution = [
                 5 => $course->approvedRatings()->where('rating', 5)->count(),
                 4 => $course->approvedRatings()->where('rating', 4)->count(),
                 3 => $course->approvedRatings()->where('rating', 3)->count(),
                 2 => $course->approvedRatings()->where('rating', 2)->count(),
                 1 => $course->approvedRatings()->where('rating', 1)->count(),
-            ]
-        ];
+            ];
 
-        return response()->json($summary);
+            $totalRatings = array_sum($ratingDistribution);
+            $weightedSum = 0;
+            foreach ($ratingDistribution as $rating => $count) {
+                $weightedSum += $rating * $count;
+            }
+            $average = $totalRatings > 0 ? round($weightedSum / $totalRatings, 1) : 0;
+
+            $summary = [
+                'average' => $average,
+                'total' => $totalRatings,
+                'distribution' => $ratingDistribution
+            ];
+
+            return response()->json($summary);
+            
+        } catch (\Exception $e) {
+            Log::error('Get rating summary error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error getting rating summary'
+            ], 500);
+        }
     }
 
     /**
@@ -296,13 +398,162 @@ class CourseController extends Controller
      */
     public function getReviews($courseId)
     {
-        $course = Course::findOrFail($courseId);
+        try {
+            $course = Course::findOrFail($courseId);
 
-        $reviews = $course->approvedRatings()
-            ->with('user')
-            ->latest()
-            ->paginate(10);
+            $reviews = $course->approvedRatings()
+                ->with('user')
+                ->latest()
+                ->paginate(10);
 
-        return response()->json($reviews);
+            return response()->json($reviews);
+            
+        } catch (\Exception $e) {
+            Log::error('Get reviews error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error getting reviews'
+            ], 500);
+        }
+    }
+
+    /**
+     * Rate a course
+     */
+    public function rate(Request $request, $courseId)
+    {
+        try {
+            $request->validate([
+                'rating' => 'required|integer|min:1|max:5',
+                'review' => 'nullable|string|max:1000'
+            ]);
+
+            $course = Course::findOrFail($courseId);
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please login to rate this course'
+                ], 401);
+            }
+
+            // Check if user is enrolled
+            if (!$course->students()->where('user_id', $user->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must be enrolled in this course to rate it'
+                ], 403);
+            }
+
+            // Create or update rating
+            $rating = $course->ratings()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'rating' => $request->rating,
+                    'review' => $request->review,
+                    'is_approved' => false // Require admin approval
+                ]
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you for your rating! It will be visible after admin approval.',
+                'rating' => $rating
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Rate course error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error submitting rating: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Complete a lesson
+     */
+    public function completeLesson(Request $request, $lessonId)
+    {
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please login to mark lessons as complete'
+                ], 401);
+            }
+
+            $lesson = \App\Models\Lesson::findOrFail($lessonId);
+            
+            // Check if user is enrolled in the course
+            if (!$lesson->section->course->students()->where('user_id', $user->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must be enrolled in this course to mark lessons as complete'
+                ], 403);
+            }
+
+            // Toggle lesson completion
+            $progress = $user->lessonProgress()->toggle($lessonId);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lesson progress updated',
+                'completed' => !empty($progress['attached'])
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Complete lesson error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating lesson progress'
+            ], 500);
+        }
+    }
+
+    /**
+     * Learning page for enrolled courses
+     */
+    public function learn($slug)
+    {
+        try {
+            $user = Auth::user();
+            
+            if (!$user) {
+                return redirect()->route('login');
+            }
+
+            $course = Course::where('slug', $slug)
+                ->with([
+                    'sections' => function($query) {
+                        $query->orderBy('sort_order');
+                    },
+                    'sections.lessons' => function($query) {
+                        $query->orderBy('sort_order');
+                    }
+                ])
+                ->firstOrFail();
+
+            // Check if user is enrolled
+            if (!$course->students()->where('user_id', $user->id)->exists()) {
+                return redirect()->route('courses.show', $course->slug)
+                    ->with('error', 'You must be enrolled in this course to access the learning page');
+            }
+
+            // Get user's completed lessons
+            $completedLessons = $user->completedLessons()
+                ->whereIn('lesson_id', $course->lessons()->pluck('id'))
+                ->pluck('lesson_id')
+                ->toArray();
+
+            return view('courses.learn', compact('course', 'completedLessons'));
+
+        } catch (\Exception $e) {
+            Log::error('Course learn error: ' . $e->getMessage());
+            abort(404, 'Course not found');
+        }
     }
 }
