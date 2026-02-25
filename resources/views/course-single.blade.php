@@ -4,15 +4,49 @@
 
 @section('meta_description', Str::limit($course->excerpt ?? strip_tags($course->description), 160))
 
-@section('content')
+@push('styles')
 <style>
     /* Course Page Specific Styles - Scoped to prevent conflicts */
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --success-color: #06d6a0;
+        --warning-color: #f72585;
+        --dark-color: #1e1e2f;
+        --gray-color: #6c757d;
+        --light-color: #f8f9fa;
+        --border-color: #e9ecef;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+        --shadow-md: 0 5px 15px rgba(0,0,0,0.05);
+        --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        --shadow-hover: 0 20px 40px rgba(102,126,234,0.15);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+    }
+
+    /* Hero Section */
     .course-page-hero {
         position: relative;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 60px 0;
-        color: #ffffff;
+        background: var(--primary-gradient);
+        padding: 80px 0;
         overflow: hidden;
+        color: #ffffff;
+    }
+
+    .course-page-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('/images/pattern.png') repeat;
+        opacity: 0.1;
+        z-index: 1;
     }
 
     .course-page-particles {
@@ -96,7 +130,7 @@
         display: inline-block;
         padding: 6px 16px;
         background: rgba(255, 255, 255, 0.2);
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         font-size: 0.85rem;
         font-weight: 600;
         backdrop-filter: blur(10px);
@@ -104,27 +138,29 @@
     }
 
     .course-page-badge.featured {
-        background: #f72585;
+        background: var(--warning-color);
     }
 
     .course-page-badge.free {
-        background: #06d6a0;
+        background: var(--success-color);
     }
 
     .course-page-hero-title {
-        font-size: clamp(1.8rem, 4vw, 2.5rem) !important;
-        font-weight: 800 !important;
-        margin-bottom: 15px !important;
-        line-height: 1.2 !important;
-        color: #ffffff !important;
+        font-size: clamp(2rem, 5vw, 3rem);
+        font-weight: 800;
+        margin-bottom: 20px;
+        line-height: 1.2;
+        color: #ffffff;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .course-page-hero-description {
-        font-size: 1.1rem !important;
-        opacity: 0.9;
-        margin-bottom: 25px !important;
+        font-size: 1.1rem;
+        opacity: 0.95;
+        margin-bottom: 30px;
         max-width: 800px;
-        color: #ffffff !important;
+        color: #ffffff;
+        line-height: 1.6;
     }
 
     .course-page-meta-list {
@@ -153,18 +189,18 @@
     }
 
     .course-page-meta-content h4 {
-        font-size: 0.9rem !important;
-        font-weight: 400 !important;
+        font-size: 0.9rem;
+        font-weight: 400;
         opacity: 0.8;
-        margin: 0 0 5px 0 !important;
-        color: #ffffff !important;
+        margin: 0 0 5px 0;
+        color: #ffffff;
     }
 
     .course-page-meta-content p {
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        margin: 0 !important;
-        color: #ffffff !important;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: #ffffff;
     }
 
     .course-page-instructor-mini {
@@ -172,40 +208,46 @@
         align-items: center;
         gap: 15px;
         margin-top: 20px;
+        padding: 15px 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-full);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 300px;
     }
 
     .course-page-instructor-mini-avatar {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 600;
         color: #ffffff;
     }
 
     .course-page-instructor-mini-info h4 {
-        font-size: 1rem !important;
-        font-weight: 400 !important;
+        font-size: 0.9rem;
+        font-weight: 400;
         opacity: 0.8;
-        margin: 0 0 5px 0 !important;
-        color: #ffffff !important;
+        margin: 0 0 5px 0;
+        color: #ffffff;
     }
 
     .course-page-instructor-mini-info p {
-        font-size: 1.2rem !important;
-        font-weight: 600 !important;
-        margin: 0 !important;
-        color: #ffffff !important;
+        font-size: 1rem;
+        font-weight: 600;
+        margin: 0;
+        color: #ffffff;
     }
 
     /* Main Content */
     .course-page-main {
         padding: 60px 0;
-        background: #f8f9fa;
+        background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);
     }
 
     /* Course Sidebar */
@@ -216,10 +258,16 @@
 
     .course-page-card {
         background: #ffffff;
-        border-radius: 20px;
+        border-radius: var(--radius-xl);
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-lg);
         margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+
+    .course-page-card:hover {
+        box-shadow: var(--shadow-hover);
     }
 
     .course-page-thumbnail {
@@ -232,6 +280,11 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .course-page-card:hover .course-page-thumbnail img {
+        transform: scale(1.05);
     }
 
     .course-page-preview-btn {
@@ -247,13 +300,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #667eea;
+        color: var(--primary-color);
         font-size: 1.8rem;
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         opacity: 0;
         visibility: hidden;
+        z-index: 10;
     }
 
     .course-page-thumbnail:hover .course-page-preview-btn {
@@ -263,37 +317,39 @@
     }
 
     .course-page-preview-btn:hover {
-        background: #667eea;
+        background: var(--primary-color);
         color: #ffffff;
     }
 
     .course-page-price-box {
         padding: 25px;
-        border-bottom: 1px solid #e9ecef;
+        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(145deg, #ffffff, #fafafa);
     }
 
     .course-page-price {
-        font-size: 2.5rem !important;
-        font-weight: 800 !important;
-        color: #667eea !important;
-        margin-bottom: 5px !important;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin-bottom: 5px;
+        line-height: 1;
     }
 
     .course-page-price.free {
-        color: #06d6a0 !important;
+        color: var(--success-color);
     }
 
     .course-page-price small {
-        font-size: 1rem !important;
-        font-weight: 400 !important;
-        color: #6c757d !important;
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--gray-color);
         text-decoration: line-through;
         margin-left: 10px;
     }
 
     .course-page-price-label {
-        font-size: 0.9rem !important;
-        color: #6c757d !important;
+        font-size: 0.9rem;
+        color: var(--gray-color);
     }
 
     .course-page-actions {
@@ -309,22 +365,29 @@
         justify-content: center;
         gap: 10px;
         padding: 16px 30px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        color: #ffffff !important;
-        border: none !important;
-        border-radius: 9999px !important;
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
         text-decoration: none;
         width: 100%;
+        box-shadow: var(--shadow-md);
     }
 
     .course-page-btn-enroll:hover {
         transform: translateY(-3px);
-        box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3) !important;
-        color: #ffffff !important;
+        box-shadow: var(--shadow-hover);
+        color: #ffffff;
+    }
+
+    .course-page-btn-enroll:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
     }
 
     .course-page-btn-wishlist {
@@ -333,40 +396,52 @@
         justify-content: center;
         gap: 10px;
         padding: 14px 30px;
-        background: #f8f9fa !important;
-        color: #1e1e2f !important;
-        border: 2px solid #e9ecef !important;
-        border-radius: 9999px !important;
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
+        background: var(--light-color);
+        color: var(--dark-color);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
         text-decoration: none;
         width: 100%;
     }
 
     .course-page-btn-wishlist:hover {
-        background: #667eea !important;
-        color: #ffffff !important;
-        border-color: #667eea !important;
+        background: var(--primary-color);
+        color: #ffffff;
+        border-color: var(--primary-color);
     }
 
     .course-page-btn-wishlist.active {
-        background: #667eea !important;
-        color: #ffffff !important;
-        border-color: #667eea !important;
+        background: var(--primary-color);
+        color: #ffffff;
+        border-color: var(--primary-color);
+    }
+
+    .course-page-btn-wishlist.active i {
+        color: #ffffff;
     }
 
     .course-page-includes {
         padding: 25px;
-        background: #f8f9fa;
+        background: var(--light-color);
+        border-top: 1px solid var(--border-color);
     }
 
     .course-page-includes h4 {
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 20px !important;
-        color: #1e1e2f !important;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--dark-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .course-page-includes h4 i {
+        color: var(--primary-color);
     }
 
     .course-page-includes-list {
@@ -389,34 +464,35 @@
 
     .course-page-includes-list i {
         width: 20px;
-        color: #667eea;
+        color: var(--primary-color);
         font-size: 1rem;
     }
 
     .course-page-includes-list span {
         flex: 1;
-        color: #6c757d;
+        color: var(--gray-color);
         font-size: 0.95rem;
     }
 
     .course-page-includes-list strong {
-        color: #1e1e2f;
+        color: var(--dark-color);
         font-weight: 600;
     }
 
     /* Course Content */
     .course-page-content-wrapper {
         background: #ffffff;
-        border-radius: 20px;
+        border-radius: var(--radius-xl);
         padding: 40px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
     }
 
     .course-page-tabs {
         display: flex;
         gap: 10px;
         margin-bottom: 30px;
-        border-bottom: 2px solid #e9ecef;
+        border-bottom: 2px solid var(--border-color);
         padding-bottom: 15px;
         flex-wrap: wrap;
     }
@@ -425,21 +501,22 @@
         padding: 12px 25px;
         background: none;
         border: none;
-        border-radius: 10px;
-        font-size: 1rem !important;
-        font-weight: 600 !important;
-        color: #6c757d;
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--gray-color);
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
     }
 
     .course-page-tab-btn:hover {
-        color: #667eea;
+        color: var(--primary-color);
+        background: rgba(102, 126, 234, 0.05);
     }
 
     .course-page-tab-btn.active {
-        color: #667eea;
+        color: var(--primary-color);
         background: rgba(102, 126, 234, 0.1);
     }
 
@@ -450,7 +527,7 @@
         left: 0;
         width: 100%;
         height: 2px;
-        background: #667eea;
+        background: var(--primary-gradient);
     }
 
     .course-page-tab-pane {
@@ -467,7 +544,6 @@
             opacity: 0;
             transform: translateY(10px);
         }
-
         to {
             opacity: 1;
             transform: translateY(0);
@@ -480,10 +556,10 @@
     }
 
     .course-page-section-title {
-        font-size: 1.5rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 20px !important;
-        color: #1e1e2f !important;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--dark-color);
         position: relative;
         padding-bottom: 10px;
     }
@@ -495,52 +571,48 @@
         left: 0;
         width: 60px;
         height: 3px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 3px;
+        background: var(--primary-gradient);
+        border-radius: var(--radius-full);
     }
 
     .course-page-description {
-        color: #6c757d !important;
-        line-height: 1.8 !important;
-        font-size: 1.05rem !important;
+        color: var(--gray-color);
+        line-height: 1.8;
+        font-size: 1.05rem;
     }
 
+    .course-page-description h1,
+    .course-page-description h2,
     .course-page-description h3 {
-        font-size: 1.3rem !important;
-        color: #1e1e2f !important;
-        margin: 30px 0 15px !important;
-    }
-
-    .course-page-description h4 {
-        font-size: 1.1rem !important;
-        color: #1e1e2f !important;
-        margin: 25px 0 10px !important;
+        color: var(--dark-color);
+        margin-top: 30px;
+        margin-bottom: 15px;
     }
 
     .course-page-description p {
-        margin-bottom: 15px !important;
+        margin-bottom: 15px;
     }
 
     .course-page-description ul,
     .course-page-description ol {
-        margin-bottom: 20px !important;
-        padding-left: 20px !important;
+        margin-bottom: 20px;
+        padding-left: 20px;
     }
 
     .course-page-description li {
-        margin-bottom: 8px !important;
+        margin-bottom: 8px;
     }
 
     .course-page-description img {
         max-width: 100%;
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         margin: 20px 0;
     }
 
     .course-page-learning-outcomes {
-        background: #f8f9fa;
+        background: var(--light-color);
         padding: 30px;
-        border-radius: 20px;
+        border-radius: var(--radius-lg);
         margin: 30px 0;
     }
 
@@ -564,15 +636,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #667eea;
+        color: var(--primary-color);
         font-size: 0.9rem;
         flex-shrink: 0;
     }
 
     .course-page-outcome-text {
-        color: #1e1e2f !important;
-        font-size: 0.95rem !important;
-        line-height: 1.5 !important;
+        color: var(--dark-color);
+        font-size: 0.95rem;
+        line-height: 1.5;
     }
 
     /* Curriculum Tab */
@@ -585,31 +657,39 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .course-page-curriculum-stats {
         display: flex;
         gap: 20px;
-        color: #6c757d;
+        color: var(--gray-color);
         font-size: 0.95rem;
     }
 
     .course-page-curriculum-stats i {
-        color: #667eea;
+        color: var(--primary-color);
         margin-right: 5px;
     }
 
     .course-page-accordion-item {
         background: #ffffff;
-        border: 1px solid #e9ecef;
-        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
         margin-bottom: 15px;
         overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .course-page-accordion-item:hover {
+        border-color: var(--primary-color);
+        box-shadow: var(--shadow-md);
     }
 
     .course-page-accordion-header {
         padding: 18px 20px;
-        background: #f8f9fa;
+        background: linear-gradient(145deg, #ffffff, #fafafa);
         cursor: pointer;
         display: flex;
         justify-content: space-between;
@@ -618,14 +698,14 @@
     }
 
     .course-page-accordion-header:hover {
-        background: rgba(102, 126, 234, 0.05);
+        background: rgba(102, 126, 234, 0.02);
     }
 
     .course-page-accordion-header h3 {
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        margin: 0 !important;
-        color: #1e1e2f !important;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--dark-color);
     }
 
     .course-page-section-meta {
@@ -633,7 +713,7 @@
         align-items: center;
         gap: 15px;
         font-size: 0.9rem;
-        color: #6c757d;
+        color: var(--gray-color);
     }
 
     .course-page-section-meta i {
@@ -647,19 +727,32 @@
     .course-page-accordion-content {
         display: none;
         padding: 20px;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid var(--border-color);
+        background: #ffffff;
     }
 
     .course-page-accordion-content.show {
         display: block;
+        animation: course-page-slideDown 0.3s ease;
+    }
+
+    @keyframes course-page-slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .course-page-lesson-item {
         display: flex;
         align-items: center;
         gap: 15px;
-        padding: 12px 15px;
-        border-bottom: 1px solid #e9ecef;
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
         transition: all 0.3s ease;
     }
 
@@ -668,12 +761,13 @@
     }
 
     .course-page-lesson-item:hover {
-        background: #f8f9fa;
+        background: var(--light-color);
+        border-radius: var(--radius-md);
     }
 
     .course-page-lesson-icon {
         width: 30px;
-        color: #667eea;
+        color: var(--primary-color);
         font-size: 1rem;
         text-align: center;
     }
@@ -683,42 +777,47 @@
     }
 
     .course-page-lesson-title {
-        font-weight: 500 !important;
-        color: #1e1e2f !important;
-        margin-bottom: 5px !important;
+        font-weight: 500;
+        color: var(--dark-color);
+        margin-bottom: 5px;
     }
 
     .course-page-lesson-meta {
         display: flex;
         gap: 15px;
-        font-size: 0.85rem !important;
-        color: #6c757d !important;
+        font-size: 0.85rem;
+        color: var(--gray-color);
     }
 
     .course-page-lesson-meta i {
         margin-right: 5px;
+        color: var(--primary-color);
     }
 
     .course-page-lesson-preview {
-        color: #667eea !important;
-        text-decoration: none !important;
-        font-size: 0.9rem !important;
-        font-weight: 500 !important;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 8px 15px;
+        border-radius: var(--radius-full);
+        transition: all 0.3s ease;
     }
 
     .course-page-lesson-preview:hover {
-        text-decoration: underline !important;
+        background: var(--primary-color);
+        color: #ffffff;
     }
 
     .course-page-lesson-locked {
-        color: #6c757d;
+        color: var(--gray-color);
         font-size: 1rem;
     }
 
     /* Instructor Tab */
     .course-page-instructor-profile {
         display: flex;
-        gap: 30px;
+        gap: 40px;
         flex-wrap: wrap;
     }
 
@@ -726,7 +825,7 @@
         width: 200px;
         height: 200px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--primary-gradient);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -734,6 +833,7 @@
         font-weight: 600;
         color: #ffffff;
         flex-shrink: 0;
+        box-shadow: var(--shadow-lg);
     }
 
     .course-page-instructor-details {
@@ -741,22 +841,22 @@
     }
 
     .course-page-instructor-name {
-        font-size: 2rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 5px !important;
-        color: #1e1e2f !important;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: var(--dark-color);
     }
 
     .course-page-instructor-title {
-        font-size: 1.1rem !important;
-        color: #667eea !important;
-        margin-bottom: 20px !important;
+        font-size: 1.1rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
     }
 
     .course-page-instructor-bio {
-        color: #6c757d !important;
-        line-height: 1.8 !important;
-        margin-bottom: 25px !important;
+        color: var(--gray-color);
+        line-height: 1.8;
+        margin-bottom: 25px;
     }
 
     .course-page-instructor-stats {
@@ -764,8 +864,8 @@
         gap: 40px;
         margin-bottom: 25px;
         padding: 20px 0;
-        border-top: 1px solid #e9ecef;
-        border-bottom: 1px solid #e9ecef;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
     }
 
     .course-page-stat-item {
@@ -773,16 +873,16 @@
     }
 
     .course-page-stat-value {
-        font-size: 1.8rem !important;
-        font-weight: 700 !important;
-        color: #667eea !important;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--primary-color);
         line-height: 1;
-        margin-bottom: 5px !important;
+        margin-bottom: 5px;
     }
 
     .course-page-stat-label {
-        font-size: 0.9rem !important;
-        color: #6c757d !important;
+        font-size: 0.9rem;
+        color: var(--gray-color);
     }
 
     .course-page-instructor-social {
@@ -793,19 +893,19 @@
     .course-page-social-link {
         width: 45px;
         height: 45px;
-        background: #f8f9fa;
+        background: var(--light-color);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #6c757d;
+        color: var(--gray-color);
         text-decoration: none;
         transition: all 0.3s ease;
         font-size: 1.2rem;
     }
 
     .course-page-social-link:hover {
-        background: #667eea;
+        background: var(--primary-color);
         color: #ffffff;
         transform: translateY(-3px);
     }
@@ -820,24 +920,30 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .course-page-related-title {
-        font-size: 1.8rem !important;
-        font-weight: 700 !important;
-        color: #1e1e2f !important;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--dark-color);
     }
 
     .course-page-view-all {
-        color: #667eea !important;
-        text-decoration: none !important;
-        font-weight: 600 !important;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 5px;
+        padding: 10px 20px;
+        border-radius: var(--radius-full);
+        transition: all 0.3s ease;
     }
 
     .course-page-view-all:hover {
+        background: rgba(102, 126, 234, 0.1);
         gap: 10px;
     }
 
@@ -849,17 +955,19 @@
 
     .course-page-related-card {
         background: #ffffff;
-        border-radius: 20px;
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-md);
         transition: all 0.3s ease;
         text-decoration: none;
         color: inherit;
+        border: 1px solid var(--border-color);
     }
 
     .course-page-related-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-hover);
+        border-color: transparent;
     }
 
     .course-page-related-thumbnail {
@@ -883,19 +991,20 @@
     }
 
     .course-page-related-category {
-        font-size: 0.8rem !important;
-        color: #667eea !important;
+        font-size: 0.8rem;
+        color: var(--primary-color);
         text-transform: uppercase;
         letter-spacing: 1px;
         font-weight: 600;
-        margin-bottom: 8px !important;
+        margin-bottom: 8px;
     }
 
     .course-page-related-title {
-        font-size: 1.1rem !important;
-        font-weight: 700 !important;
-        margin-bottom: 10px !important;
-        color: #1e1e2f !important;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--dark-color);
+        line-height: 1.4;
     }
 
     .course-page-related-meta {
@@ -905,13 +1014,13 @@
     }
 
     .course-page-related-price {
-        font-size: 1.2rem !important;
-        font-weight: 700 !important;
-        color: #667eea !important;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary-color);
     }
 
     .course-page-related-price.free {
-        color: #06d6a0 !important;
+        color: var(--success-color);
     }
 
     .course-page-related-rating {
@@ -927,7 +1036,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
+        background: rgba(0, 0, 0, 0.9);
         z-index: 99999;
         align-items: center;
         justify-content: center;
@@ -942,8 +1051,8 @@
         position: relative;
         width: 90%;
         max-width: 900px;
-        background: #1e1e2f;
-        border-radius: 20px;
+        background: var(--dark-color);
+        border-radius: var(--radius-lg);
         overflow: hidden;
     }
 
@@ -961,6 +1070,9 @@
         cursor: pointer;
         transition: all 0.3s ease;
         z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .course-page-modal-close:hover {
@@ -974,24 +1086,58 @@
         height: 0;
     }
 
-    .course-page-video-container iframe {
+    .course-page-video-container iframe,
+    .course-page-video-container video {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
+        border: none;
     }
 
     /* Animations */
     @keyframes course-page-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
 
-        0%,
-        100% {
-            transform: translateY(0);
+    /* Notification System */
+    .course-page-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-lg);
+        z-index: 10000;
+        animation: course-page-slideIn 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 400px;
+    }
+
+    @keyframes course-page-slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
         }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
 
-        50% {
-            transform: translateY(-20px);
+    @keyframes course-page-slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
         }
     }
 
@@ -1024,6 +1170,10 @@
             left: 50%;
             transform: translateX(-50%);
         }
+
+        .course-page-hero {
+            padding: 60px 0;
+        }
     }
 
     @media (max-width: 768px) {
@@ -1032,7 +1182,7 @@
         }
 
         .course-page-hero-title {
-            font-size: 1.8rem !important;
+            font-size: 1.8rem;
         }
 
         .course-page-meta-list {
@@ -1047,9 +1197,39 @@
             flex-direction: column;
             gap: 20px;
         }
+
+        .course-page-tabs {
+            justify-content: center;
+        }
+
+        .course-page-tab-btn.active::after {
+            display: none;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-page-instructor-mini {
+            max-width: 100%;
+        }
+
+        .course-page-curriculum-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .course-page-lesson-item {
+            flex-wrap: wrap;
+        }
+
+        .course-page-lesson-preview {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
+@endpush
 
+@section('content')
 <!-- Hero Section -->
 <section class="course-page-hero">
     <div class="course-page-particles">
@@ -1076,15 +1256,19 @@
             <!-- Badges -->
             <div class="course-page-badge-wrapper">
                 @if($course->featured)
-                <span class="course-page-badge featured">Featured</span>
+                <span class="course-page-badge featured"><i class="fas fa-star"></i> Featured</span>
                 @endif
-                @if($course->is_free)
-                <span class="course-page-badge free">Free Course</span>
-                @elseif($course->sale_price && $course->sale_price < $course->price)
-                <span class="course-page-badge">Sale</span>
+                @if($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
+                <span class="course-page-badge free"><i class="fas fa-gift"></i> Free Course</span>
+                @endif
+                @if(($course->sale_price ?? 0) > 0 && $course->sale_price < $course->price)
+                <span class="course-page-badge"><i class="fas fa-tag"></i> Sale - Save {{ round((1 - $course->sale_price/$course->price) * 100) }}%</span>
                 @endif
                 @if($course->level)
-                <span class="course-page-badge">{{ ucfirst($course->level) }}</span>
+                <span class="course-page-badge"><i class="fas fa-signal"></i> {{ ucfirst($course->level) }}</span>
+                @endif
+                @if($course->language)
+                <span class="course-page-badge"><i class="fas fa-language"></i> {{ ucfirst($course->language) }}</span>
                 @endif
             </div>
 
@@ -1112,7 +1296,7 @@
                     </div>
                     <div class="course-page-meta-content">
                         <h4>Duration</h4>
-                        <p>{{ $course->duration ?? 'Self-Paced' }}</p>
+                        <p>{{ $course->duration_hours ?? $course->duration ?? 'Self-Paced' }}</p>
                     </div>
                 </div>
 
@@ -1122,7 +1306,7 @@
                     </div>
                     <div class="course-page-meta-content">
                         <h4>Lessons</h4>
-                        <p>{{ $course->total_lessons ?? 0 }}</p>
+                        <p>{{ $course->lessons_count ?? $course->total_lessons ?? 0 }}</p>
                     </div>
                 </div>
 
@@ -1165,6 +1349,9 @@
                         <button class="course-page-tab-btn active" data-tab="overview">Overview</button>
                         <button class="course-page-tab-btn" data-tab="curriculum">Curriculum</button>
                         <button class="course-page-tab-btn" data-tab="instructor">Instructor</button>
+                        @if($course->reviews_count > 0)
+                        <button class="course-page-tab-btn" data-tab="reviews">Reviews ({{ $course->reviews_count }})</button>
+                        @endif
                     </div>
 
                     <!-- Overview Tab -->
@@ -1219,59 +1406,61 @@
                             <div class="course-page-curriculum-header">
                                 <h2 class="course-page-section-title">Course Curriculum</h2>
                                 <div class="course-page-curriculum-stats">
-                                    <span><i class="far fa-file-video"></i> {{ $course->total_lessons ?? 0 }} Lessons</span>
-                                    <span><i class="far fa-clock"></i> {{ $course->total_duration ?? 'Self-Paced' }}</span>
+                                    <span><i class="far fa-file-video"></i> {{ $course->lessons_count ?? $course->total_lessons ?? 0 }} Lessons</span>
+                                    <span><i class="far fa-clock"></i> {{ $course->total_duration ?? $course->duration ?? 'Self-Paced' }}</span>
                                 </div>
                             </div>
 
-                            @if($course->sections && $course->sections->count() > 0)
-                            @foreach($course->sections as $sectionIndex => $section)
-                            <div class="course-page-accordion-item">
-                                <div class="course-page-accordion-header" data-section="{{ $sectionIndex }}">
-                                    <h3>{{ $section->title }}</h3>
-                                    <div class="course-page-section-meta">
-                                        <span>{{ $section->lessons->count() }} lessons</span>
-                                        <span>{{ $section->duration ?? '' }}</span>
-                                        <i class="fas fa-chevron-down"></i>
-                                    </div>
-                                </div>
-                                <div class="course-page-accordion-content" id="section-{{ $sectionIndex }}">
-                                    @if($section->lessons && $section->lessons->count() > 0)
-                                    @foreach($section->lessons as $lesson)
-                                    <div class="course-page-lesson-item">
-                                        <div class="course-page-lesson-icon">
-                                            @if($lesson->is_free_preview)
-                                            <i class="fas fa-play-circle"></i>
-                                            @else
-                                            <i class="fas fa-lock"></i>
-                                            @endif
+                            @if(isset($course->sections) && $course->sections->count() > 0)
+                                @foreach($course->sections as $sectionIndex => $section)
+                                <div class="course-page-accordion-item">
+                                    <div class="course-page-accordion-header" data-section="{{ $sectionIndex }}">
+                                        <h3>{{ $section->title }}</h3>
+                                        <div class="course-page-section-meta">
+                                            <span>{{ $section->lessons->count() }} lessons</span>
+                                            <span>{{ $section->duration ?? '' }}</span>
+                                            <i class="fas fa-chevron-down"></i>
                                         </div>
-                                        <div class="course-page-lesson-info">
-                                            <div class="course-page-lesson-title">{{ $lesson->title }}</div>
-                                            <div class="course-page-lesson-meta">
-                                                <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="course-page-accordion-content" id="section-{{ $sectionIndex }}">
+                                        @if($section->lessons && $section->lessons->count() > 0)
+                                            @foreach($section->lessons as $lesson)
+                                            <div class="course-page-lesson-item">
+                                                <div class="course-page-lesson-icon">
+                                                    @if($lesson->is_free_preview)
+                                                    <i class="fas fa-play-circle"></i>
+                                                    @else
+                                                    <i class="fas fa-lock"></i>
+                                                    @endif
+                                                </div>
+                                                <div class="course-page-lesson-info">
+                                                    <div class="course-page-lesson-title">{{ $lesson->title }}</div>
+                                                    <div class="course-page-lesson-meta">
+                                                        <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
+                                                        @if($lesson->is_free_preview)
+                                                        <span class="text-success"><i class="fas fa-unlock-alt"></i> Free Preview</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                                 @if($lesson->is_free_preview)
-                                                <span class="text-success"><i class="fas fa-unlock-alt"></i> Free Preview</span>
+                                                <a href="#" class="course-page-lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
+                                                    Preview <i class="fas fa-arrow-right"></i>
+                                                </a>
+                                                @else
+                                                <div class="course-page-lesson-locked">
+                                                    <i class="fas fa-lock"></i>
+                                                </div>
                                                 @endif
                                             </div>
-                                        </div>
-                                        @if($lesson->is_free_preview)
-                                        <a href="#" class="course-page-lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
-                                            Preview <i class="fas fa-arrow-right"></i>
-                                        </a>
+                                            @endforeach
                                         @else
-                                        <div class="course-page-lesson-locked">
-                                            <i class="fas fa-lock"></i>
-                                        </div>
+                                            <p class="text-center py-3">No lessons in this section yet.</p>
                                         @endif
                                     </div>
-                                    @endforeach
-                                    @endif
                                 </div>
-                            </div>
-                            @endforeach
+                                @endforeach
                             @else
-                            <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
+                                <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
                             @endif
                         </div>
                     </div>
@@ -1320,6 +1509,16 @@
                         </div>
                         @endif
                     </div>
+
+                    <!-- Reviews Tab -->
+                    @if(isset($course->reviews_count) && $course->reviews_count > 0)
+                    <div class="course-page-tab-pane" id="reviews">
+                        <div class="course-page-reviews-section">
+                            <h2 class="course-page-section-title">Student Reviews</h2>
+                            <!-- Add reviews content here -->
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Related Courses -->
@@ -1335,22 +1534,25 @@
                         @foreach($relatedCourses as $relatedCourse)
                         <a href="{{ route('courses.show', $relatedCourse->slug) }}" class="course-page-related-card">
                             <div class="course-page-related-thumbnail">
-                                <img src="{{ $relatedCourse->thumbnail_url }}" alt="{{ $relatedCourse->title }}">
+                                <img src="{{ $relatedCourse->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $relatedCourse->title }}">
                             </div>
                             <div class="course-page-related-content">
                                 <div class="course-page-related-category">{{ $relatedCourse->category->name ?? 'General' }}</div>
                                 <h3 class="course-page-related-title">{{ $relatedCourse->title }}</h3>
                                 <div class="course-page-related-meta">
-                                    <span class="course-page-related-price {{ $relatedCourse->is_free ? 'free' : '' }}">
-                                        @if($relatedCourse->is_free)
+                                    <span class="course-page-related-price {{ ($relatedCourse->is_free ?? ($relatedCourse->price == 0)) ? 'free' : '' }}">
+                                        @if($relatedCourse->is_free ?? ($relatedCourse->price == 0))
                                             Free
-                                        @elseif($relatedCourse->sale_price && $relatedCourse->sale_price < $relatedCourse->price)
+                                        @elseif(($relatedCourse->sale_price ?? 0) > 0 && $relatedCourse->sale_price < $relatedCourse->price)
                                             ${{ number_format($relatedCourse->sale_price, 2) }}
                                         @elseif($relatedCourse->price > 0)
                                             ${{ number_format($relatedCourse->price, 2) }}
                                         @else
                                             Free
                                         @endif
+                                    </span>
+                                    <span class="course-page-related-rating">
+                                        <i class="fas fa-star"></i> {{ number_format($relatedCourse->average_rating ?? 0, 1) }}
                                     </span>
                                 </div>
                             </div>
@@ -1367,19 +1569,19 @@
                     <!-- Course Card -->
                     <div class="course-page-card">
                         <div class="course-page-thumbnail">
-                            <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
-                            @if($course->video_intro)
-                            <button class="course-page-preview-btn" id="previewVideo" data-video="{{ $course->video_intro_url }}">
+                            <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}">
+                            @if($course->video_intro ?? $course->intro_video)
+                            <button class="course-page-preview-btn" id="previewVideo" data-video="{{ $course->video_intro_url ?? $course->intro_video }}">
                                 <i class="fas fa-play"></i>
                             </button>
                             @endif
                         </div>
 
                         <div class="course-page-price-box">
-                            <div class="course-page-price {{ $course->is_free ? 'free' : '' }}">
-                                @if($course->is_free)
+                            <div class="course-page-price {{ ($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0)) ? 'free' : '' }}">
+                                @if($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
                                     Free
-                                @elseif($course->sale_price && $course->sale_price < $course->price)
+                                @elseif(($course->sale_price ?? 0) > 0 && $course->sale_price < $course->price)
                                     ${{ number_format($course->sale_price, 2) }}
                                     <small>${{ number_format($course->price, 2) }}</small>
                                 @elseif($course->price > 0)
@@ -1394,12 +1596,15 @@
                         <!-- Course Actions -->
                         <div class="course-page-actions">
                             @auth
-                                @if($course->is_enrolled)
+                                @if(isset($isEnrolled) && $isEnrolled)
                                     <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
                                         <i class="fas fa-play-circle"></i>
-                                        Continue Learning ({{ $course->user_progress ?? 0 }}%)
+                                        Continue Learning
+                                        @if(isset($course->user_progress) && $course->user_progress > 0)
+                                        ({{ $course->user_progress }}%)
+                                        @endif
                                     </a>
-                                @elseif($course->is_free)
+                                @elseif($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
                                     <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}" data-course-type="free">
                                         <i class="fas fa-graduation-cap"></i>
                                         Enroll Now - Free
@@ -1408,7 +1613,7 @@
                                     <a href="{{ route('checkout', $course) }}" class="course-page-btn-enroll" id="purchaseBtn">
                                         <i class="fas fa-shopping-cart"></i>
                                         Purchase Now - 
-                                        @if($course->sale_price && $course->sale_price < $course->price)
+                                        @if(($course->sale_price ?? 0) > 0 && $course->sale_price < $course->price)
                                             ${{ number_format($course->sale_price, 2) }}
                                         @else
                                             ${{ number_format($course->price, 2) }}
@@ -1419,7 +1624,7 @@
                                 <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
                                     <i class="fas fa-sign-in-alt"></i>
                                     Login to 
-                                    @if($course->is_free)
+                                    @if($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
                                         Enroll
                                     @else
                                         Purchase
@@ -1434,11 +1639,11 @@
                         </div>
 
                         <div class="course-page-includes">
-                            <h4>This course includes:</h4>
+                            <h4><i class="fas fa-gift"></i> This course includes:</h4>
                             <ul class="course-page-includes-list">
                                 <li>
                                     <i class="fas fa-video"></i>
-                                    <span>{{ $course->total_lessons ?? 0 }} on-demand videos</span>
+                                    <span>{{ $course->lessons_count ?? $course->total_lessons ?? 0 }} on-demand videos</span>
                                 </li>
                                 <li>
                                     <i class="far fa-file"></i>
@@ -1478,9 +1683,17 @@
         </div>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // ========== CSS VARIABLES ==========
+        const primaryColor = '#667eea';
+        const successColor = '#06d6a0';
+        const warningColor = '#f72585';
+        const darkColor = '#1e1e2f';
+
         // ========== TAB SWITCHING ==========
         const tabBtns = document.querySelectorAll('.course-page-tab-btn');
         const tabPanes = document.querySelectorAll('.course-page-tab-pane');
@@ -1521,7 +1734,9 @@
 
         // Open first accordion by default
         if (accordionHeaders.length > 0) {
-            accordionHeaders[0].click();
+            setTimeout(() => {
+                accordionHeaders[0].click();
+            }, 100);
         }
 
         // ========== VIDEO PREVIEW MODAL ==========
@@ -1530,42 +1745,85 @@
         const closeBtn = document.getElementById('closeModal');
         const videoContainer = document.getElementById('videoContainer');
 
-        if (previewBtn) {
-            previewBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                modal.classList.add('show');
-
-                const videoUrl = this.dataset.video;
-                if (videoUrl) {
-                    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                        // Extract YouTube ID and create embed
-                        const videoId = extractYoutubeId(videoUrl);
-                        if (videoId) {
-                            videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                        }
-                    } else if (videoUrl.includes('vimeo.com')) {
-                        // Extract Vimeo ID
-                        const vimeoId = videoUrl.split('/').pop();
-                        videoContainer.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}" frameborder="0" allowfullscreen></iframe>`;
-                    } else {
-                        // Assume it's a local video file
-                        videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
-                    }
-                }
-            });
-        }
-
         // Helper function to extract YouTube ID
         function extractYoutubeId(url) {
+            if (!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
+        // Helper function to extract Vimeo ID
+        function extractVimeoId(url) {
+            if (!url) return null;
+            const regExp = /vimeo\.com\/(?:video\/)?(\d+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+
+        function loadVideo(url) {
+            if (!url) return false;
+
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                const videoId = extractYoutubeId(url);
+                if (videoId) {
+                    videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allowfullscreen allow="autoplay"></iframe>`;
+                    return true;
+                }
+            } else if (url.includes('vimeo.com')) {
+                const vimeoId = extractVimeoId(url);
+                if (vimeoId) {
+                    videoContainer.innerHTML = `<iframe src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" frameborder="0" allowfullscreen allow="autoplay"></iframe>`;
+                    return true;
+                }
+            } else {
+                // Assume it's a local video file
+                videoContainer.innerHTML = `<video src="${url}" controls autoplay style="width:100%; height:100%;"></video>`;
+                return true;
+            }
+            return false;
+        }
+
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const videoUrl = this.dataset.video;
+                if (videoUrl) {
+                    if (loadVideo(videoUrl)) {
+                        modal.classList.add('show');
+                    } else {
+                        showNotification('Invalid video URL', 'error');
+                    }
+                } else {
+                    showNotification('No preview video available', 'info');
+                }
+            });
+        }
+
+        // Preview links from curriculum
+        const previewLinks = document.querySelectorAll('.course-page-lesson-preview');
+        previewLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const videoUrl = this.dataset.video;
+                if (videoUrl) {
+                    if (loadVideo(videoUrl)) {
+                        modal.classList.add('show');
+                    } else {
+                        showNotification('Invalid video URL', 'error');
+                    }
+                } else {
+                    showNotification('No preview available for this lesson', 'info');
+                }
+            });
+        });
+
         if (closeBtn) {
             closeBtn.addEventListener('click', function() {
                 modal.classList.remove('show');
-                videoContainer.innerHTML = ''; // Clear video when closing
+                setTimeout(() => {
+                    videoContainer.innerHTML = ''; // Clear video when closing
+                }, 300);
             });
         }
 
@@ -1573,7 +1831,9 @@
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.classList.remove('show');
-                videoContainer.innerHTML = '';
+                setTimeout(() => {
+                    videoContainer.innerHTML = '';
+                }, 300);
             }
         });
 
@@ -1587,13 +1847,15 @@
                 @auth
                 const courseId = this.dataset.courseId;
                 const originalText = this.innerHTML;
+                const originalWidth = this.offsetWidth;
 
-                // Show loading state
+                // Save original content and show loading
                 this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling...';
                 this.disabled = true;
+                this.style.width = originalWidth + 'px';
 
                 // Make AJAX request to enroll
-                fetch(`/courses/${courseId}/enroll-ajax`, {
+                fetch('{{ route("courses.enroll.ajax", $course->id) }}', {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -1601,33 +1863,41 @@
                             'Content-Type': 'application/json'
                         }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw err; });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
-                            showNotification(data.message, 'success');
+                            showNotification(data.message || 'Successfully enrolled!', 'success');
 
                             // Redirect to learning page
                             setTimeout(() => {
-                                window.location.href = data.redirect_url;
+                                window.location.href = data.redirect_url || '{{ route("courses.learning", $course->slug) }}';
                             }, 1500);
                         } else if (data.redirect_to_checkout) {
                             // Redirect to checkout for paid courses
                             window.location.href = data.checkout_url;
                         } else {
-                            showNotification(data.message, 'error');
+                            showNotification(data.message || 'Enrollment failed', 'error');
                             this.innerHTML = originalText;
                             this.disabled = false;
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        showNotification('An error occurred. Please try again.', 'error');
+                        showNotification(error.message || 'An error occurred. Please try again.', 'error');
                         this.innerHTML = originalText;
                         this.disabled = false;
                     });
                 @else
                 // Redirect to login with return URL
-                window.location.href = '{{ route("login") }}?redirect={{ url()->current() }}';
+                showNotification('Please login to enroll in this course', 'info');
+                setTimeout(() => {
+                    window.location.href = '{{ route("login") }}?redirect={{ url()->current() }}';
+                }, 1500);
                 @endauth
             });
         }
@@ -1638,10 +1908,11 @@
         if (wishlistBtn) {
             // Check initial wishlist status
             @auth
-            @if($course->is_wishlisted ?? false)
+            @if(isset($course) && ($course->is_wishlisted ?? false))
             wishlistBtn.classList.add('active');
             wishlistBtn.querySelector('i').classList.remove('far');
             wishlistBtn.querySelector('i').classList.add('fas');
+            wishlistBtn.innerHTML = '<i class="fas fa-heart"></i> Remove from Wishlist';
             @endif
             @endauth
 
@@ -1650,111 +1921,64 @@
 
                 @auth
                 // Check if user is enrolled (can't wishlist enrolled courses)
-                @if(isset($course) && ($course->is_enrolled ?? false))
+                @if(isset($isEnrolled) && $isEnrolled)
                 showNotification('You are already enrolled in this course!', 'info');
                 return;
                 @endif
 
-                this.classList.toggle('active');
-                const icon = this.querySelector('i');
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                this.disabled = true;
 
-                if (this.classList.contains('active')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
+                const isActive = this.classList.contains('active');
+                const url = isActive ? 
+                    '{{ route("wishlist.remove", $course->id) }}' : 
+                    '{{ route("wishlist.add", $course->id) }}';
+                const method = isActive ? 'DELETE' : 'POST';
 
-                    // Make AJAX call to add to wishlist
-                    fetch('{{ route("wishlist.add", $course->id) }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification('Course added to wishlist', 'success');
-                            } else {
-                                showNotification(data.message || 'Error adding to wishlist', 'error');
-                                // Revert if failed
-                                this.classList.remove('active');
-                                icon.classList.remove('fas');
-                                icon.classList.add('far');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showNotification('Error adding to wishlist', 'error');
-                            // Revert if failed
+                fetch(url, {
+                    method: method,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (isActive) {
                             this.classList.remove('active');
-                            icon.classList.remove('fas');
-                            icon.classList.add('far');
-                        });
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-
-                    // Make AJAX call to remove from wishlist
-                    fetch('{{ route("wishlist.remove", $course->id) }}', {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification('Course removed from wishlist', 'info');
-                            } else {
-                                showNotification(data.message || 'Error removing from wishlist', 'error');
-                                // Revert if failed
-                                this.classList.add('active');
-                                icon.classList.remove('far');
-                                icon.classList.add('fas');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showNotification('Error removing from wishlist', 'error');
-                            // Revert if failed
+                            this.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+                            showNotification('Course removed from wishlist', 'info');
+                        } else {
                             this.classList.add('active');
-                            icon.classList.remove('far');
-                            icon.classList.add('fas');
-                        });
-                }
+                            this.innerHTML = '<i class="fas fa-heart"></i> Remove from Wishlist';
+                            showNotification('Course added to wishlist', 'success');
+                        }
+                    } else {
+                        showNotification(data.message || 'Operation failed', 'error');
+                        this.innerHTML = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error processing your request', 'error');
+                    this.innerHTML = originalText;
+                })
+                .finally(() => {
+                    this.disabled = false;
+                });
                 @else
                 // Store the current page in session to redirect back after login
                 sessionStorage.setItem('redirectAfterLogin', window.location.href);
-                window.location.href = '{{ route("login") }}';
+                showNotification('Please login to add to wishlist', 'info');
+                setTimeout(() => {
+                    window.location.href = '{{ route("login") }}';
+                }, 1500);
                 @endauth
             });
         }
-
-        // ========== LESSON PREVIEW FUNCTIONALITY ==========
-        const previewLinks = document.querySelectorAll('.course-page-lesson-preview');
-
-        previewLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                const videoUrl = this.dataset.video;
-                if (videoUrl && modal) {
-                    modal.classList.add('show');
-
-                    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-                        const videoId = extractYoutubeId(videoUrl);
-                        if (videoId) {
-                            videoContainer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                        }
-                    } else {
-                        videoContainer.innerHTML = `<video src="${videoUrl}" controls style="width:100%; height:100%;"></video>`;
-                    }
-                }
-            });
-        });
 
         // ========== NOTIFICATION SYSTEM ==========
         function showNotification(message, type = 'success') {
@@ -1765,11 +1989,11 @@
             const notification = document.createElement('div');
             notification.className = 'course-page-notification';
 
-            // Set styles based on type
+            // Set colors based on type
             const colors = {
-                success: '#28a745',
-                error: '#dc3545',
-                info: '#17a2b8',
+                success: successColor,
+                error: warningColor,
+                info: primaryColor,
                 warning: '#ffc107'
             };
 
@@ -1819,20 +2043,9 @@
             }, 3000);
         }
 
-        // ========== ADD ANIMATION STYLES ==========
+        // ========== ADD SLIDE OUT ANIMATION ==========
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes course-page-slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-
             @keyframes course-page-slideOut {
                 from {
                     transform: translateX(0);
@@ -1843,27 +2056,66 @@
                     opacity: 0;
                 }
             }
-
-            .course-page-btn-enroll:disabled,
-            .course-page-btn-wishlist:disabled {
-                opacity: 0.7;
-                cursor: not-allowed;
-            }
-
-            .course-page-notification {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                font-size: 0.95rem;
-            }
-
-            .course-page-notification i {
-                font-size: 1.2rem;
-            }
         `;
         document.head.appendChild(style);
+
+        // ========== RATING STARS GENERATOR ==========
+        function generateRatingStars(rating) {
+            const fullStars = Math.floor(rating);
+            const halfStar = rating % 1 >= 0.5;
+            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+            let stars = '';
+            for (let i = 0; i < fullStars; i++) stars += '<i class="fas fa-star"></i>';
+            if (halfStar) stars += '<i class="fas fa-star-half-alt"></i>';
+            for (let i = 0; i < emptyStars; i++) stars += '<i class="far fa-star"></i>';
+
+            return stars;
+        }
+
+        // ========== LOAD REVIEWS FUNCTION ==========
+        function loadReviews(courseId) {
+            fetch(`/courses/${courseId}/reviews`)
+                .then(response => response.json())
+                .then(data => {
+                    const reviewsContainer = document.getElementById('reviews');
+                    if (reviewsContainer && data.data) {
+                        // Build reviews HTML
+                        let reviewsHtml = '<h2 class="course-page-section-title">Student Reviews</h2>';
+                        data.data.forEach(review => {
+                            reviewsHtml += `
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <span class="review-author">${review.user.name}</span>
+                                        <span class="review-rating">${generateRatingStars(review.rating)}</span>
+                                    </div>
+                                    <div class="review-content">${review.review}</div>
+                                    <div class="review-date">${new Date(review.created_at).toLocaleDateString()}</div>
+                                </div>
+                            `;
+                        });
+                        reviewsContainer.innerHTML = reviewsHtml;
+                    }
+                })
+                .catch(error => console.error('Error loading reviews:', error));
+        }
+
+        // ========== LOAD RATING SUMMARY ==========
+        @if(isset($course))
+        // loadRatingSummary({{ $course->id }});
+        @endif
+
+        // ========== SCROLL TO TOP WHEN TABS CHANGE ==========
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const contentWrapper = document.querySelector('.course-page-content-wrapper');
+                if (contentWrapper) {
+                    contentWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
 
         console.log('Course page JavaScript initialized successfully');
     });
 </script>
-@endsection
+@endpush
