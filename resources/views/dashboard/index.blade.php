@@ -9,7 +9,8 @@
     /* ===== DASHBOARD VARIABLES ===== */
     :root {
         --sidebar-width: 280px;
-        --header-height: 80px; /* Match your header height */
+        --header-height: 80px;
+        /* Match your header height */
         --primary-color: #4361ee;
         --secondary-color: #3f37c9;
         --success-color: #4cc9f0;
@@ -24,10 +25,10 @@
         --gradient-2: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
         --gradient-3: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
         --gradient-4: linear-gradient(135deg, #06d6a0 0%, #1b9e6d 100%);
-        --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-        --shadow-md: 0 5px 15px rgba(0,0,0,0.05);
-        --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-        --shadow-hover: 0 20px 40px rgba(67,97,238,0.15);
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+        --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 20px 40px rgba(67, 97, 238, 0.15);
         --radius-sm: 8px;
         --radius-md: 12px;
         --radius-lg: 16px;
@@ -101,7 +102,7 @@
         right: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
         animation: rotate 20s linear infinite;
     }
 
@@ -115,12 +116,12 @@
         font-size: 1.6rem;
         font-weight: 800;
         color: white;
-        text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
         letter-spacing: 1px;
     }
 
     .logo-subtitle {
-        color: rgba(255,255,255,0.8);
+        color: rgba(255, 255, 255, 0.8);
         font-size: 0.8rem;
         margin-top: 5px;
     }
@@ -302,7 +303,7 @@
     }
 
     .nav-badge {
-        background: rgba(0,0,0,0.1);
+        background: rgba(0, 0, 0, 0.1);
         padding: 2px 6px;
         border-radius: var(--radius-full);
         font-size: 0.65rem;
@@ -310,14 +311,15 @@
     }
 
     .nav-item.active .nav-badge {
-        background: rgba(255,255,255,0.2);
+        background: rgba(255, 255, 255, 0.2);
         color: white;
     }
 
     /* Main Content Area */
     .dashboard-main {
         flex: 1;
-        min-width: 0; /* Prevent flex overflow */
+        min-width: 0;
+        /* Prevent flex overflow */
     }
 
     /* Welcome Card */
@@ -365,15 +367,15 @@
         font-weight: 800;
         color: white;
         margin-bottom: 10px;
-        text-shadow: 2px 2px 20px rgba(0,0,0,0.2);
+        text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.2);
     }
 
     .welcome-text {
         font-size: 1.1rem;
-        color: rgba(255,255,255,0.95);
+        color: rgba(255, 255, 255, 0.95);
         max-width: 600px;
         line-height: 1.6;
-        text-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+        text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
     }
 
     /* Stats Grid */
@@ -649,7 +651,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         animation: shimmer 2s infinite;
     }
 
@@ -738,13 +740,13 @@
     .score-badge.passed {
         background: linear-gradient(145deg, #06d6a0, #05b587);
         color: white;
-        box-shadow: 0 3px 10px rgba(6,214,160,0.3);
+        box-shadow: 0 3px 10px rgba(6, 214, 160, 0.3);
     }
 
     .score-badge.failed {
         background: linear-gradient(145deg, #ef476f, #d43f62);
         color: white;
-        box-shadow: 0 3px 10px rgba(239,71,111,0.3);
+        box-shadow: 0 3px 10px rgba(239, 71, 111, 0.3);
     }
 
     .score-value {
@@ -985,23 +987,47 @@
 
     /* Animations */
     @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
     }
 
     @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
     }
 
     @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
     }
 
     /* Ripple Effect */
@@ -1030,7 +1056,7 @@
         .stats-grid {
             grid-template-columns: repeat(2, 1fr);
         }
-        
+
         .course-grid {
             grid-template-columns: repeat(2, 1fr);
         }
@@ -1041,12 +1067,12 @@
             flex-direction: column;
             padding: 20px;
         }
-        
+
         .dashboard-sidebar {
             width: 100%;
             margin-bottom: 20px;
         }
-        
+
         .welcome-title {
             font-size: 1.8rem;
         }
@@ -1056,39 +1082,39 @@
         .stats-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .course-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .course-content {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .progress-wrapper {
             width: 100%;
         }
-        
+
         .quiz-content {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .quiz-score {
             width: 100%;
             justify-content: space-between;
         }
-        
+
         .card-header {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .welcome-card {
             padding: 25px;
         }
-        
+
         .welcome-title {
             font-size: 1.5rem;
         }
@@ -1132,23 +1158,23 @@
     .position-relative {
         position: relative;
     }
-    
+
     .overflow-hidden {
         overflow: hidden;
     }
-    
+
     .text-center {
         text-align: center;
     }
-    
+
     .mt-3 {
         margin-top: 15px;
     }
-    
+
     .mb-3 {
         margin-bottom: 15px;
     }
-    
+
     .p-4 {
         padding: 20px;
     }
@@ -1169,17 +1195,17 @@
         <div class="profile-section">
             <div class="avatar-wrapper">
                 @if(Auth::user()->avatar)
-                    <img src="{{ Auth::user()->avatar }}" alt="{{ Auth::user()->name }}" class="avatar-image">
+                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="profile-page-avatar-image">
                 @else
-                    <div class="avatar-placeholder">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                    </div>
+                <div class="profile-page-avatar-placeholder">
+                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                </div>
                 @endif
             </div>
-            
+
             <h3 class="profile-name">{{ Auth::user()->name }}</h3>
             <p class="profile-email">{{ Auth::user()->email }}</p>
-            
+
             <a href="{{ route('profile') }}" class="edit-profile-link">
                 <i class="fas fa-user-edit"></i>
                 Edit Profile
@@ -1197,21 +1223,21 @@
                     <i class="fas fa-book"></i>
                     <span>My Courses</span>
                     @if(($stats['enrolled_courses'] ?? 0) > 0)
-                        <span class="nav-badge">{{ $stats['enrolled_courses'] }}</span>
+                    <span class="nav-badge">{{ $stats['enrolled_courses'] }}</span>
                     @endif
                 </a>
                 <a href="{{ route('my-quizzes') }}" class="nav-item">
                     <i class="fas fa-question-circle"></i>
                     <span>My Quizzes</span>
                     @if(($stats['quizzes_taken'] ?? 0) > 0)
-                        <span class="nav-badge">{{ $stats['quizzes_taken'] }}</span>
+                    <span class="nav-badge">{{ $stats['quizzes_taken'] }}</span>
                     @endif
                 </a>
                 <a href="{{ route('certificates') }}" class="nav-item">
                     <i class="fas fa-certificate"></i>
                     <span>Certificates</span>
                     @if(($stats['certificates_earned'] ?? 0) > 0)
-                        <span class="nav-badge">{{ $stats['certificates_earned'] }}</span>
+                    <span class="nav-badge">{{ $stats['certificates_earned'] }}</span>
                     @endif
                 </a>
             </div>
@@ -1244,17 +1270,17 @@
             <div class="welcome-content">
                 <h1 class="welcome-title">
                     @php
-                        $hour = date('H');
-                        if($hour < 12) $greeting = 'Good Morning';
-                        elseif($hour < 18) $greeting = 'Good Afternoon';
-                        else $greeting = 'Good Evening';
-                    @endphp
-                    {{ $greeting }}, {{ Auth::user()->first_name ?? Auth::user()->name }}! 👋
-                </h1>
-                <p class="welcome-text">
-                    Here's what's happening with your learning journey today. 
-                    You're making great progress!
-                </p>
+                    $hour = date('H');
+                    if($hour < 12) $greeting='Good Morning' ;
+                        elseif($hour < 18) $greeting='Good Afternoon' ;
+                        else $greeting='Good Evening' ;
+                        @endphp
+                        {{ $greeting }}, {{ Auth::user()->first_name ?? Auth::user()->name }}! 👋
+                        </h1>
+                        <p class="welcome-text">
+                            Here's what's happening with your learning journey today.
+                            You're making great progress!
+                        </p>
             </div>
         </div>
 
@@ -1301,67 +1327,67 @@
                     Continue Learning
                 </h2>
                 @if(($recentCourses ?? collect())->count() > 0)
-                    <a href="{{ route('my-courses') }}" class="view-link">
-                        View All <i class="fas fa-arrow-right"></i>
-                    </a>
+                <a href="{{ route('my-courses') }}" class="view-link">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
                 @endif
             </div>
 
             @if(($recentCourses ?? collect())->count() > 0)
-                <div class="course-list">
-                    @foreach($recentCourses as $enrollment)
-                        <div class="course-item">
-                            <div class="course-content">
-                                <div class="course-info">
-                                    <h3 class="course-title">
-                                        <a href="{{ route('courses.learn', $enrollment->course->slug ?? '#') }}">
-                                            {{ $enrollment->course->title ?? 'Course Title' }}
-                                        </a>
-                                    </h3>
-                                    <div class="course-meta">
-                                        <span>
-                                            <i class="fas fa-signal"></i>
-                                            {{ $enrollment->course->level ?? 'All Levels' }}
-                                        </span>
-                                        <span>
-                                            <i class="fas fa-video"></i>
-                                            {{ $enrollment->course->lessons_count ?? 12 }} Lessons
-                                        </span>
-                                        @if(isset($enrollment->course->duration))
-                                        <span>
-                                            <i class="fas fa-clock"></i>
-                                            {{ $enrollment->course->duration }}
-                                        </span>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="progress-wrapper">
-                                    <div class="progress-header">
-                                        <span class="progress-label">Progress</span>
-                                        <span class="progress-percent">{{ $enrollment->progress ?? 0 }}%</span>
-                                    </div>
-                                    <div class="progress-track">
-                                        <div class="progress-fill" style="width: {{ $enrollment->progress ?? 0 }}%"></div>
-                                    </div>
-                                </div>
-                                <a href="{{ route('courses.learn', $enrollment->course->slug ?? '#') }}" class="continue-link">
-                                    Continue <i class="fas fa-arrow-right"></i>
+            <div class="course-list">
+                @foreach($recentCourses as $enrollment)
+                <div class="course-item">
+                    <div class="course-content">
+                        <div class="course-info">
+                            <h3 class="course-title">
+                                <a href="{{ route('courses.learn', $enrollment->course->slug ?? '#') }}">
+                                    {{ $enrollment->course->title ?? 'Course Title' }}
                                 </a>
+                            </h3>
+                            <div class="course-meta">
+                                <span>
+                                    <i class="fas fa-signal"></i>
+                                    {{ $enrollment->course->level ?? 'All Levels' }}
+                                </span>
+                                <span>
+                                    <i class="fas fa-video"></i>
+                                    {{ $enrollment->course->lessons_count ?? 12 }} Lessons
+                                </span>
+                                @if(isset($enrollment->course->duration))
+                                <span>
+                                    <i class="fas fa-clock"></i>
+                                    {{ $enrollment->course->duration }}
+                                </span>
+                                @endif
                             </div>
                         </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-book-open"></i>
+                        <div class="progress-wrapper">
+                            <div class="progress-header">
+                                <span class="progress-label">Progress</span>
+                                <span class="progress-percent">{{ $enrollment->progress ?? 0 }}%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: {{ $enrollment->progress ?? 0 }}%"></div>
+                            </div>
+                        </div>
+                        <a href="{{ route('courses.learn', $enrollment->course->slug ?? '#') }}" class="continue-link">
+                            Continue <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
-                    <h3 class="empty-title">No courses yet</h3>
-                    <p class="empty-text">Start your learning journey by enrolling in a course today!</p>
-                    <a href="{{ route('courses') }}" class="empty-btn">
-                        Browse Courses <i class="fas fa-arrow-right"></i>
-                    </a>
                 </div>
+                @endforeach
+            </div>
+            @else
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="empty-title">No courses yet</h3>
+                <p class="empty-text">Start your learning journey by enrolling in a course today!</p>
+                <a href="{{ route('courses') }}" class="empty-btn">
+                    Browse Courses <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
             @endif
         </div>
 
@@ -1373,45 +1399,45 @@
                     Recent Quiz Attempts
                 </h2>
                 @if(($recentQuizzes ?? collect())->count() > 0)
-                    <a href="{{ route('my-quizzes') }}" class="view-link">
-                        View All <i class="fas fa-arrow-right"></i>
-                    </a>
+                <a href="{{ route('my-quizzes') }}" class="view-link">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
                 @endif
             </div>
 
             @if(($recentQuizzes ?? collect())->count() > 0)
-                <div class="quiz-list">
-                    @foreach($recentQuizzes as $attempt)
-                        <div class="quiz-item">
-                            <div class="quiz-content">
-                                <div class="quiz-info">
-                                    <h4>{{ $attempt->quiz->title ?? 'Quiz Title' }}</h4>
-                                    <span class="quiz-date">
-                                        <i class="far fa-calendar-alt"></i>
-                                        {{ \Carbon\Carbon::parse($attempt->created_at ?? now())->format('M d, Y') }}
-                                    </span>
-                                </div>
-                                <div class="quiz-score">
-                                    <span class="score-badge {{ ($attempt->passed ?? false) ? 'passed' : 'failed' }}">
-                                        {{ ($attempt->passed ?? false) ? 'Passed' : 'Failed' }}
-                                    </span>
-                                    <span class="score-value">{{ $attempt->percentage ?? 0 }}%</span>
-                                </div>
-                            </div>
+            <div class="quiz-list">
+                @foreach($recentQuizzes as $attempt)
+                <div class="quiz-item">
+                    <div class="quiz-content">
+                        <div class="quiz-info">
+                            <h4>{{ $attempt->quiz->title ?? 'Quiz Title' }}</h4>
+                            <span class="quiz-date">
+                                <i class="far fa-calendar-alt"></i>
+                                {{ \Carbon\Carbon::parse($attempt->created_at ?? now())->format('M d, Y') }}
+                            </span>
                         </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-puzzle-piece"></i>
+                        <div class="quiz-score">
+                            <span class="score-badge {{ ($attempt->passed ?? false) ? 'passed' : 'failed' }}">
+                                {{ ($attempt->passed ?? false) ? 'Passed' : 'Failed' }}
+                            </span>
+                            <span class="score-value">{{ $attempt->percentage ?? 0 }}%</span>
+                        </div>
                     </div>
-                    <h3 class="empty-title">No quiz attempts yet</h3>
-                    <p class="empty-text">Test your knowledge by taking a quiz from your courses.</p>
-                    <a href="{{ route('courses') }}" class="empty-btn">
-                        Browse Quizzes <i class="fas fa-arrow-right"></i>
-                    </a>
                 </div>
+                @endforeach
+            </div>
+            @else
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <h3 class="empty-title">No quiz attempts yet</h3>
+                <p class="empty-text">Test your knowledge by taking a quiz from your courses.</p>
+                <a href="{{ route('courses') }}" class="empty-btn">
+                    Browse Quizzes <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
             @endif
         </div>
 
@@ -1425,43 +1451,43 @@
             </div>
 
             @if(($recommendedCourses ?? collect())->count() > 0)
-                <div class="course-grid">
-                    @foreach($recommendedCourses as $course)
-                        <div class="course-card">
-                            <div class="card-image">
-                                <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }}" 
-                                     alt="{{ $course->title ?? 'Course' }}">
-                                <span class="card-badge">{{ $course->category ?? 'Course' }}</span>
-                            </div>
-                            <div class="card-body">
-                                <h3>
-                                    <a href="{{ route('courses.show', $course->slug ?? '#') }}">
-                                        {{ $course->title ?? 'Course Title' }}
-                                    </a>
-                                </h3>
-                                <p class="card-excerpt">
-                                    {{ Str::limit($course->excerpt ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 80) }}
-                                </p>
-                            </div>
-                            <div class="card-footer">
-                                <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="card-btn">
-                                    View Course
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-star"></i>
+            <div class="course-grid">
+                @foreach($recommendedCourses as $course)
+                <div class="course-card">
+                    <div class="card-image">
+                        <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }}"
+                            alt="{{ $course->title ?? 'Course' }}">
+                        <span class="card-badge">{{ $course->category ?? 'Course' }}</span>
                     </div>
-                    <h3 class="empty-title">No recommendations yet</h3>
-                    <p class="empty-text">Complete more courses to get personalized recommendations.</p>
-                    <a href="{{ route('courses') }}" class="empty-btn">
-                        Explore Courses <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <div class="card-body">
+                        <h3>
+                            <a href="{{ route('courses.show', $course->slug ?? '#') }}">
+                                {{ $course->title ?? 'Course Title' }}
+                            </a>
+                        </h3>
+                        <p class="card-excerpt">
+                            {{ Str::limit($course->excerpt ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 80) }}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="card-btn">
+                            View Course
+                        </a>
+                    </div>
                 </div>
+                @endforeach
+            </div>
+            @else
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="empty-title">No recommendations yet</h3>
+                <p class="empty-text">Complete more courses to get personalized recommendations.</p>
+                <a href="{{ route('courses') }}" class="empty-btn">
+                    Explore Courses <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
             @endif
         </div>
 
@@ -1495,7 +1521,9 @@
                     }, 100);
                 }
             });
-        }, { threshold: 0.5 });
+        }, {
+            threshold: 0.5
+        });
 
         progressBars.forEach(bar => observer.observe(bar));
 
@@ -1507,14 +1535,14 @@
             const size = Math.max(rect.width, rect.height);
             const x = event.clientX - rect.left - size / 2;
             const y = event.clientY - rect.top - size / 2;
-            
+
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = x + 'px';
             ripple.style.top = y + 'px';
             ripple.className = 'ripple';
-            
+
             button.appendChild(ripple);
-            
+
             setTimeout(() => {
                 ripple.remove();
             }, 600);
@@ -1529,7 +1557,7 @@
         // Add active class to current nav item
         const currentPath = window.location.pathname;
         const navItems = document.querySelectorAll('.nav-item');
-        
+
         navItems.forEach(item => {
             const href = item.getAttribute('href');
             if (href && currentPath.includes(href) && href !== '#') {
