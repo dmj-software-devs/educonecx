@@ -94,17 +94,13 @@ class QuizController extends Controller
             $rules['options'] = 'required|array|min:2';
             $rules['options.*.text'] = 'required|string';
             $rules['options.*.is_correct'] = 'sometimes|boolean';
-
-            // For single choice and true_false, ensure at least one correct answer
-            if (in_array($request->question_type, ['single_choice', 'true_false'])) {
-                $rules['options'] = 'required|array|min:2';
-            }
         }
 
-        // Separate validation for image_selection
+        // Fix for image_selection - properly handle validation
         if ($request->question_type === 'image_selection') {
             $rules['options'] = 'required|array|min:2';
-            $rules['options.*.image'] = 'required_with:options|image|max:2048';
+            $rules['options.*.image'] = 'required_without:options.*.existing_image|image|max:2048';
+            $rules['options.*.existing_image'] = 'sometimes|string';
             $rules['options.*.text'] = 'nullable|string'; // Make text optional for image selection
             $rules['options.*.is_correct'] = 'sometimes|boolean';
         }
@@ -161,6 +157,8 @@ class QuizController extends Controller
                 // Handle option image
                 if (isset($optionData['image']) && $optionData['image'] instanceof \Illuminate\Http\UploadedFile) {
                     $option['image'] = $optionData['image']->store('question-options', 'public');
+                } elseif (isset($optionData['existing_image'])) {
+                    $option['image'] = $optionData['existing_image'];
                 }
 
                 $question->options()->create($option);
@@ -194,86 +192,6 @@ class QuizController extends Controller
         return redirect()->back()->with('success', 'Question added successfully');
     }
 
-    public function destroy(Quiz $quiz)
-    {
-        $quiz->delete();
-        return redirect()->route('admin.quizzes.index')
-            ->with('success', 'Quiz deleted successfully');
-    }
-
-    public function destroyQuestion($id)
-    {
-        $question = Question::findOrFail($id);
-        $quiz = $question->quiz;
-
-        // Delete associated files
-        if ($question->image) {
-            Storage::disk('public')->delete($question->image);
-        }
-
-        // Delete options images for image selection
-        if ($question->question_type === 'image_selection') {
-            foreach ($question->options as $option) {
-                if ($option->image) {
-                    Storage::disk('public')->delete($option->image);
-                }
-            }
-        }
-
-        $question->delete();
-        $quiz->decrement('total_questions');
-
-        return redirect()->back()->with('success', 'Question deleted successfully');
-    }
-
-    public function editQuestion(Question $question)
-    {
-        $question->load(['options', 'fillBlanks', 'matchingPairs']);
-
-        if (request()->wantsJson()) {
-            // Transform the data to ensure proper structure
-            $data = [
-                'id' => $question->id,
-                'quiz_id' => $question->quiz_id,
-                'question_text' => $question->question_text,
-                'question_type' => $question->question_type,
-                'points' => $question->points,
-                'explanation' => $question->explanation,
-                'image' => $question->image,
-                'sort_order' => $question->sort_order,
-                'options' => $question->options->map(function ($option) {
-                    return [
-                        'id' => $option->id,
-                        'option_text' => $option->option_text,
-                        'is_correct' => $option->is_correct,
-                        'image' => $option->image,
-                        'sort_order' => $option->sort_order
-                    ];
-                }),
-                'fill_blanks' => $question->fillBlanks->map(function ($blank) {
-                    return [
-                        'id' => $blank->id,
-                        'correct_answer' => $blank->correct_answer,
-                        'case_sensitive' => $blank->case_sensitive,
-                        'sort_order' => $blank->sort_order
-                    ];
-                }),
-                'matching_pairs' => $question->matchingPairs->map(function ($pair) {
-                    return [
-                        'id' => $pair->id,
-                        'left_item' => $pair->left_item,
-                        'right_item' => $pair->right_item,
-                        'sort_order' => $pair->sort_order
-                    ];
-                })
-            ];
-
-            return response()->json($data);
-        }
-
-        return view('admin.quizzes.edit-question', compact('question'));
-    }
-
     public function updateQuestion(Request $request, Question $question)
     {
         // Base validation rules
@@ -292,13 +210,13 @@ class QuizController extends Controller
             $rules['options.*.is_correct'] = 'sometimes|boolean';
         }
 
-        // Separate validation for image_selection
+        // Fix for image_selection
         if ($request->question_type === 'image_selection') {
             $rules['options'] = 'required|array|min:2';
             $rules['options.*.image'] = 'nullable'; // Can be existing or new
+            $rules['options.*.existing_image'] = 'sometimes|string';
             $rules['options.*.text'] = 'nullable|string'; // Make text optional
             $rules['options.*.is_correct'] = 'sometimes|boolean';
-            $rules['options.*.existing_image'] = 'nullable|string';
         }
 
         if ($request->question_type === 'fill_blank') {
@@ -437,6 +355,87 @@ class QuizController extends Controller
         return redirect()->route('admin.quizzes.questions', $question->quiz_id)
             ->with('success', 'Question updated successfully');
     }
+
+    public function destroy(Quiz $quiz)
+    {
+        $quiz->delete();
+        return redirect()->route('admin.quizzes.index')
+            ->with('success', 'Quiz deleted successfully');
+    }
+
+    public function destroyQuestion($id)
+    {
+        $question = Question::findOrFail($id);
+        $quiz = $question->quiz;
+
+        // Delete associated files
+        if ($question->image) {
+            Storage::disk('public')->delete($question->image);
+        }
+
+        // Delete options images for image selection
+        if ($question->question_type === 'image_selection') {
+            foreach ($question->options as $option) {
+                if ($option->image) {
+                    Storage::disk('public')->delete($option->image);
+                }
+            }
+        }
+
+        $question->delete();
+        $quiz->decrement('total_questions');
+
+        return redirect()->back()->with('success', 'Question deleted successfully');
+    }
+
+    public function editQuestion(Question $question)
+    {
+        $question->load(['options', 'fillBlanks', 'matchingPairs']);
+
+        if (request()->wantsJson()) {
+            // Transform the data to ensure proper structure
+            $data = [
+                'id' => $question->id,
+                'quiz_id' => $question->quiz_id,
+                'question_text' => $question->question_text,
+                'question_type' => $question->question_type,
+                'points' => $question->points,
+                'explanation' => $question->explanation,
+                'image' => $question->image,
+                'sort_order' => $question->sort_order,
+                'options' => $question->options->map(function ($option) {
+                    return [
+                        'id' => $option->id,
+                        'option_text' => $option->option_text,
+                        'is_correct' => $option->is_correct,
+                        'image' => $option->image,
+                        'sort_order' => $option->sort_order
+                    ];
+                }),
+                'fill_blanks' => $question->fillBlanks->map(function ($blank) {
+                    return [
+                        'id' => $blank->id,
+                        'correct_answer' => $blank->correct_answer,
+                        'case_sensitive' => $blank->case_sensitive,
+                        'sort_order' => $blank->sort_order
+                    ];
+                }),
+                'matching_pairs' => $question->matchingPairs->map(function ($pair) {
+                    return [
+                        'id' => $pair->id,
+                        'left_item' => $pair->left_item,
+                        'right_item' => $pair->right_item,
+                        'sort_order' => $pair->sort_order
+                    ];
+                })
+            ];
+
+            return response()->json($data);
+        }
+
+        return view('admin.quizzes.edit-question', compact('question'));
+    }
+
 
     public function reorderQuestions(Request $request)
     {
