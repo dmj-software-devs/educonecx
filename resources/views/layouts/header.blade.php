@@ -911,68 +911,47 @@
             }
         });
 
-        // Language Selector JavaScript
+        // Language Selector JavaScript - FIXED VERSION
         document.addEventListener('DOMContentLoaded', function() {
             // Language data
             const languages = {
-                'en': {
-                    name: 'English',
-                    flag: '🇺🇸',
-                    native: 'English'
-                },
-                'es': {
-                    name: 'Spanish',
-                    flag: '🇪🇸',
-                    native: 'Español'
-                },
-                'fr': {
-                    name: 'French',
-                    flag: '🇫🇷',
-                    native: 'Français'
-                },
-                'de': {
-                    name: 'German',
-                    flag: '🇩🇪',
-                    native: 'Deutsch'
-                },
-                'it': {
-                    name: 'Italian',
-                    flag: '🇮🇹',
-                    native: 'Italiano'
-                },
-                'pt': {
-                    name: 'Portuguese',
-                    flag: '🇵🇹',
-                    native: 'Português'
-                },
-                'nl': {
-                    name: 'Dutch',
-                    flag: '🇳🇱',
-                    native: 'Nederlands'
-                },
-                'pl': {
-                    name: 'Polish',
-                    flag: '🇵🇱',
-                    native: 'Polski'
-                },
-                'ru': {
-                    name: 'Russian',
-                    flag: '🇷🇺',
-                    native: 'Русский'
-                },
-                'ja': {
-                    name: 'Japanese',
-                    flag: '🇯🇵',
-                    native: '日本語'
-                },
-                'zh': {
-                    name: 'Chinese',
-                    flag: '🇨🇳',
-                    native: '中文'
-                }
+                'en': { name: 'English', flag: '🇺🇸', native: 'English' },
+                'es': { name: 'Spanish', flag: '🇪🇸', native: 'Español' },
+                'fr': { name: 'French', flag: '🇫🇷', native: 'Français' },
+                'de': { name: 'German', flag: '🇩🇪', native: 'Deutsch' },
+                'it': { name: 'Italian', flag: '🇮🇹', native: 'Italiano' },
+                'pt': { name: 'Portuguese', flag: '🇵🇹', native: 'Português' },
+                'nl': { name: 'Dutch', flag: '🇳🇱', native: 'Nederlands' },
+                'pl': { name: 'Polish', flag: '🇵🇱', native: 'Polski' },
+                'ru': { name: 'Russian', flag: '🇷🇺', native: 'Русский' },
+                'ja': { name: 'Japanese', flag: '🇯🇵', native: '日本語' },
+                'zh': { name: 'Chinese', flag: '🇨🇳', native: '中文' }
             };
 
             let currentLanguage = 'en';
+
+            // Function to update active state in dropdown
+            function updateActiveLanguageInDropdown(activeLang) {
+                const items = document.querySelectorAll('.language-item');
+                items.forEach(item => {
+                    const code = item.dataset.lang;
+                    if (code === activeLang) {
+                        item.classList.add('active');
+                        // Add checkmark
+                        const checkIcon = item.querySelector('i.fa-check');
+                        if (!checkIcon) {
+                            item.innerHTML += '<i class="fas fa-check"></i>';
+                        }
+                    } else {
+                        item.classList.remove('active');
+                        // Remove checkmark
+                        const checkIcon = item.querySelector('i.fa-check');
+                        if (checkIcon) {
+                            checkIcon.remove();
+                        }
+                    }
+                });
+            }
 
             // Fetch current language from server
             fetch('/api/current-language')
@@ -1060,9 +1039,9 @@
 
             // Switch language - FIXED VERSION
             function switchLanguage(lang) {
-                // Show loading indicator
+                // Show loading indicator on the toggle button
                 const toggle = document.getElementById('languageToggle');
-                const originalText = toggle.innerHTML;
+                const originalContent = toggle.innerHTML;
                 toggle.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 toggle.disabled = true;
 
@@ -1071,29 +1050,45 @@
 
                 // Use the global translation system
                 if (window.translationSystem) {
-                    // First update the UI to show selected language
-                    updateLanguageDisplay(lang, languages[lang]);
+                    // First, update the server session silently
+                    fetch(`/language/${lang}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    }).catch(err => console.log('Session update error:', err));
 
                     // Then translate the page
                     window.translationSystem.translatePage(lang).then(() => {
+                        // AFTER translation completes, update the language display
+                        updateLanguageDisplay(lang, languages[lang]);
+                        
+                        // Update active state in dropdown
+                        updateActiveLanguageInDropdown(lang);
+                        
                         // Update current language variable
                         currentLanguage = lang;
 
-                        // Reset toggle button
-                        toggle.innerHTML = originalText;
+                        // Reset toggle button to show the new language
+                        toggle.innerHTML = `<span class="current-flag">${languages[lang].flag}</span><span class="current-language">${languages[lang].native}</span><i class="fas fa-chevron-down"></i>`;
                         toggle.disabled = false;
 
                         console.log('Language switched to:', lang);
                     }).catch(error => {
                         console.error('Translation error:', error);
+                        // Revert the toggle button on error
+                        toggle.innerHTML = originalContent;
+                        toggle.disabled = false;
                         // Fallback to redirect
                         window.location.href = `/language/${lang}`;
                     });
                 } else {
-                    // Fallback to redirect
+                    // Fallback to redirect if translation system not available
                     window.location.href = `/language/${lang}`;
                 }
             }
+
             // Update language display
             function updateLanguageDisplay(code, info) {
                 const flagEl = document.getElementById('currentFlag');
