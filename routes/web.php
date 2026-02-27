@@ -14,13 +14,117 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\TranslationController;
+use App\Services\DeepLService;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+// Add to routes/web.php for testing
+Route::get('/test-deepl', function() {
+    $deepl = app(DeepLService::class);
+    return $deepl->translate('Hello world', 'en', 'es');
+});
 
+// Add this temporarily to debug
+Route::get('/test-translate', function() {
+    return response()->json([
+        'route_exists' => true,
+        'translate_url' => route('translate', [], false),
+        'full_url' => route('translate', [], true),
+        'api_key_configured' => config('deepl.api_key') ? 'Yes' : 'No',
+        'api_key' => substr(config('deepl.api_key'), 0, 10) . '...'
+    ]);
+});
+
+// Add to routes/web.php temporarily
+Route::get('/debug-translate', function() {
+    return response()->json([
+        'routes' => [
+            'translate_named' => route('translate', [], false),
+            'translate_url' => url('/translate'),
+        ],
+        'csrf_token' => csrf_token(),
+        'session_has' => session()->has('_token'),
+        'api_key' => config('deepl.api_key') ? 'Configured' : 'Not configured',
+        'middleware' => 'Check that /translate is in web middleware group'
+    ]);
+});
+
+Route::get('/test-deepl-direct', function() {
+    try {
+        $deepl = app(\App\Services\DeepLService::class);
+        $result = $deepl->translate('Hello world', 'en', 'es');
+        return response()->json([
+            'success' => true,
+            'original' => 'Hello world',
+            'translated' => $result,
+            'api_key' => substr(config('deepl.api_key'), 0, 10) . '...'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
+
+Route::get('/debug-deepl-raw', function() {
+    $apiKey = config('deepl.api_key');
+    
+    // Test with proper header authentication
+    $response = Http::withHeaders([
+        'Authorization' => 'DeepL-Auth-Key ' . $apiKey,
+        'Content-Type' => 'application/json',
+    ])->post('https://api-free.deepl.com/v2/translate', [
+        'text' => ['Hello world', 'How are you?'],
+        'source_lang' => 'EN',
+        'target_lang' => 'ES',
+    ]);
+    
+    return response()->json([
+        'status' => $response->status(),
+        'headers' => $response->headers(),
+        'body' => $response->json(),
+        'api_key_preview' => substr($apiKey, 0, 10) . '...',
+    ]);
+});
+
+Route::get('/test-deepl-api', function() {
+    $apiKey = config('deepl.api_key');
+    
+    // Test DeepL API directly with curl
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'https://api-free.deepl.com/v2/translate');
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+        'auth_key' => $apiKey,
+        'text' => 'Hello world',
+        'source_lang' => 'EN',
+        'target_lang' => 'ES'
+    ]));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/x-www-form-urlencoded'
+    ]);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $error = curl_error($ch);
+    curl_close($ch);
+    
+    return response()->json([
+        'api_key_configured' => $apiKey ? 'Yes' : 'No',
+        'api_key_preview' => substr($apiKey, 0, 10) . '...',
+        'http_code' => $httpCode,
+        'curl_error' => $error,
+        'response' => json_decode($response, true) ?: $response
+    ]);
+});
+// Language Switcher Route
+Route::get('/language/{lang}', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
+Route::get('/api/current-language', [App\Http\Controllers\LanguageController::class, 'getCurrentLanguage'])->name('language.current');
 // ==================== EMAIL VERIFICATION ROUTES ====================
 // These routes should be accessible without authentication
 Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])

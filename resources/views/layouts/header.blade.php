@@ -4,8 +4,8 @@
         <div class="container">
             <div class="top-bar-content">
                 <div class="contact-info">
-                    <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> +1 (833) 533-8228</a>
-                    <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> contact@educonecx.com</a>
+                    <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> <span class="translate-text" data-original="+1 (833) 533-8228">+1 (833) 533-8228</span></a>
+                    <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="contact@educonecx.com">contact@educonecx.com</span></a>
                 </div>
                 <div class="social-links">
                     <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -33,23 +33,45 @@
                 <!-- Navigation Menu -->
                 <nav class="main-nav" id="mainNav">
                     <ul class="nav-menu">
-                        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
-                        <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
-                        <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}">Academy</a></li>
-                        <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}">All Courses</a></li>
-                        <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}">Blog</a></li>
-                        <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}">Our Team</a></li>
-                        <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
+                        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><span class="translate-text" data-original="Home">Home</span></a></li>
+                        <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="About">About</span></a></li>
+                        <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="Academy">Academy</span></a></li>
+                        <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="All Courses">All Courses</span></a></li>
+                        <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="Blog">Blog</span></a></li>
+                        <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="Our Team">Our Team</span></a></li>
+                        <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="Contact">Contact</span></a></li>
 
                         <!-- Quiz Link - Only shown to authenticated users -->
                         @auth
-                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}">Quiz</a></li>
+                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="Quiz">Quiz</span></a></li>
                         @endauth
                     </ul>
                 </nav>
 
                 <!-- Right Section -->
                 <div class="header-right">
+                    <!-- Language Selector -->
+                    <div class="language-selector-container">
+                        <div class="language-dropdown">
+                            <button class="language-toggle" id="languageToggle">
+                                <span class="current-flag" id="currentFlag">🇺🇸</span>
+                                <span class="current-language" id="currentLanguage">English</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+
+                            <div class="language-menu" id="languageMenu">
+                                <div class="language-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" placeholder="Search languages..." id="languageSearch">
+                                </div>
+
+                                <div class="language-list" id="languageList">
+                                    <!-- Languages will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     @auth
                     <!-- Profile Dropdown (for authenticated users) -->
                     <div class="profile-dropdown">
@@ -65,14 +87,14 @@
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu">
-                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a>
-                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a>
-                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a>
+                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="Dashboard">Dashboard</span></a>
+                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="Settings">Settings</span></a>
+                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="My Courses">My Courses</span></a>
+                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="Certificates">Certificates</span></a>
                             <div class="dropdown-divider"></div>
                             <a href="{{ route('logout') }}"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i> Logout
+                                <i class="fas fa-sign-out-alt"></i> <span class="translate-text" data-original="Logout">Logout</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
@@ -84,10 +106,10 @@
                     <div class="auth-buttons">
                         <a href="{{ route('login') }}" class="btn-login">
                             <i class="fas fa-sign-in-alt"></i>
-                            <span>Login</span>
+                            <span class="translate-text" data-original="Login">Login</span>
                         </a>
                         <a href="{{ route('register') }}" class="btn-register">
-                            <span>Register</span>
+                            <span class="translate-text" data-original="Register">Register</span>
                             <i class="fas fa-user-plus"></i>
                         </a>
                     </div>
@@ -107,17 +129,17 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
         <ul class="mobile-nav-menu">
-            <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
-            <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
-            <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}">Academy</a></li>
-            <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}">All Courses</a></li>
-            <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}">Blog</a></li>
-            <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}">Our Team</a></li>
-            <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
+            <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><span class="translate-text" data-original="Home">Home</span></a></li>
+            <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="About">About</span></a></li>
+            <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="Academy">Academy</span></a></li>
+            <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="All Courses">All Courses</span></a></li>
+            <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="Blog">Blog</span></a></li>
+            <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="Our Team">Our Team</span></a></li>
+            <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="Contact">Contact</span></a></li>
 
             <!-- Quiz Link - Only shown to authenticated users in mobile menu -->
             @auth
-            <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}">Quiz</a></li>
+            <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="Quiz">Quiz</span></a></li>
             @endauth
         </ul>
 
@@ -138,26 +160,26 @@
                 </div>
             </div>
             <ul class="mobile-nav-menu">
-                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a></li>
-                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a></li>
-                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a></li>
+                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="Dashboard">Dashboard</span></a></li>
+                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="Settings">Settings</span></a></li>
+                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="My Courses">My Courses</span></a></li>
+                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="Certificates">Certificates</span></a></li>
             </ul>
         </div>
         @else
         <div class="mobile-auth-buttons">
             <a href="{{ route('login') }}" class="mobile-btn-login">
-                <i class="fas fa-sign-in-alt"></i> Login
+                <i class="fas fa-sign-in-alt"></i> <span class="translate-text" data-original="Login">Login</span>
             </a>
             <a href="{{ route('register') }}" class="mobile-btn-register">
-                <i class="fas fa-user-plus"></i> Register
+                <i class="fas fa-user-plus"></i> <span class="translate-text" data-original="Register">Register</span>
             </a>
         </div>
         @endauth
 
         <div class="mobile-contact">
-            <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> +1 (833) 533-8228</a>
-            <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> contact@educonecx.com</a>
+            <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> <span class="translate-text" data-original="+1 (833) 533-8228">+1 (833) 533-8228</span></a>
+            <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="contact@educonecx.com">contact@educonecx.com</span></a>
         </div>
     </div>
 
@@ -302,6 +324,153 @@
             display: flex;
             align-items: center;
             gap: 20px;
+        }
+
+        /* Language Selector Styles */
+        .language-selector-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .language-dropdown {
+            position: relative;
+        }
+
+        .language-toggle {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: var(--border-radius-full);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            min-width: 120px;
+        }
+
+        .language-toggle:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .language-toggle .current-flag {
+            font-size: 1.2rem;
+        }
+
+        .language-toggle .current-language {
+            font-weight: 500;
+            color: var(--dark);
+            flex: 1;
+        }
+
+        .language-toggle i {
+            color: var(--gray);
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+
+        .language-dropdown.active .language-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .language-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            width: 280px;
+            background: var(--white);
+            border-radius: var(--border-radius-md);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            z-index: 1000;
+            border: 1px solid var(--gray-light);
+            overflow: hidden;
+        }
+
+        .language-dropdown.active .language-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-search {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--light);
+        }
+
+        .language-search i {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .language-search input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .language-search input::placeholder {
+            color: var(--gray);
+        }
+
+        .language-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .language-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .language-item:hover {
+            background: var(--light);
+        }
+
+        .language-item.active {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+
+        .language-item .flag {
+            font-size: 1.2rem;
+        }
+
+        .language-item .language-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .language-item .native-name {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        .language-item i {
+            color: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .language-item.active i {
+            opacity: 1;
         }
 
         /* Auth Buttons */
@@ -650,6 +819,15 @@
                 font-size: 1.1rem;
                 margin: 0;
             }
+
+            .language-toggle .current-language {
+                display: none;
+            }
+
+            .language-toggle {
+                min-width: auto;
+                padding: 8px 12px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -661,6 +839,33 @@
 
             .contact-info a {
                 margin: 0 10px;
+            }
+
+            .language-menu {
+                width: 250px;
+                right: -50px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .language-menu {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-height: 80vh;
+                border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+                transform: translateY(100%);
+            }
+
+            .language-dropdown.active .language-menu {
+                transform: translateY(0);
+            }
+
+            .language-list {
+                max-height: 60vh;
             }
         }
     </style>
@@ -703,6 +908,199 @@
                     mobileMenu.classList.remove('active');
                     document.body.classList.remove('menu-open');
                 }
+            }
+        });
+
+        // Language Selector JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language data
+            const languages = {
+                'en': {
+                    name: 'English',
+                    flag: '🇺🇸',
+                    native: 'English'
+                },
+                'es': {
+                    name: 'Spanish',
+                    flag: '🇪🇸',
+                    native: 'Español'
+                },
+                'fr': {
+                    name: 'French',
+                    flag: '🇫🇷',
+                    native: 'Français'
+                },
+                'de': {
+                    name: 'German',
+                    flag: '🇩🇪',
+                    native: 'Deutsch'
+                },
+                'it': {
+                    name: 'Italian',
+                    flag: '🇮🇹',
+                    native: 'Italiano'
+                },
+                'pt': {
+                    name: 'Portuguese',
+                    flag: '🇵🇹',
+                    native: 'Português'
+                },
+                'nl': {
+                    name: 'Dutch',
+                    flag: '🇳🇱',
+                    native: 'Nederlands'
+                },
+                'pl': {
+                    name: 'Polish',
+                    flag: '🇵🇱',
+                    native: 'Polski'
+                },
+                'ru': {
+                    name: 'Russian',
+                    flag: '🇷🇺',
+                    native: 'Русский'
+                },
+                'ja': {
+                    name: 'Japanese',
+                    flag: '🇯🇵',
+                    native: '日本語'
+                },
+                'zh': {
+                    name: 'Chinese',
+                    flag: '🇨🇳',
+                    native: '中文'
+                }
+            };
+
+            let currentLanguage = 'en';
+
+            // Fetch current language from server
+            fetch('/api/current-language')
+                .then(response => response.json())
+                .then(data => {
+                    currentLanguage = data.current;
+                    updateLanguageDisplay(currentLanguage, data.info);
+                    populateLanguageList(currentLanguage);
+                })
+                .catch(error => {
+                    console.error('Error fetching language:', error);
+                    // Fallback to English
+                    populateLanguageList('en');
+                });
+
+            // Toggle dropdown
+            const toggle = document.getElementById('languageToggle');
+            const dropdown = document.querySelector('.language-dropdown');
+
+            if (toggle) {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (dropdown && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('languageSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    filterLanguages(this.value);
+                });
+            }
+
+            // Populate language list
+            function populateLanguageList(activeLang) {
+                const list = document.getElementById('languageList');
+                if (!list) return;
+
+                list.innerHTML = '';
+
+                Object.entries(languages).forEach(([code, lang]) => {
+                    const item = document.createElement('div');
+                    item.className = `language-item ${code === activeLang ? 'active' : ''}`;
+                    item.dataset.lang = code;
+
+                    item.innerHTML = `
+                        <span class="flag">${lang.flag}</span>
+                        <span class="language-name">${lang.name}</span>
+                        <span class="native-name">${lang.native}</span>
+                        ${code === activeLang ? '<i class="fas fa-check"></i>' : ''}
+                    `;
+
+                    item.addEventListener('click', function() {
+                        switchLanguage(code);
+                    });
+
+                    list.appendChild(item);
+                });
+            }
+
+            // Filter languages based on search
+            function filterLanguages(searchTerm) {
+                const items = document.querySelectorAll('.language-item');
+                const term = searchTerm.toLowerCase();
+
+                items.forEach(item => {
+                    const name = item.querySelector('.language-name').textContent.toLowerCase();
+                    const native = item.querySelector('.native-name').textContent.toLowerCase();
+
+                    if (name.includes(term) || native.includes(term)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // Switch language - FIXED VERSION
+            function switchLanguage(lang) {
+                // Show loading indicator
+                const toggle = document.getElementById('languageToggle');
+                const originalText = toggle.innerHTML;
+                toggle.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                toggle.disabled = true;
+
+                // Close dropdown
+                document.querySelector('.language-dropdown').classList.remove('active');
+
+                // Use the global translation system
+                if (window.translationSystem) {
+                    // First update the UI to show selected language
+                    updateLanguageDisplay(lang, languages[lang]);
+
+                    // Then translate the page
+                    window.translationSystem.translatePage(lang).then(() => {
+                        // Update current language variable
+                        currentLanguage = lang;
+
+                        // Reset toggle button
+                        toggle.innerHTML = originalText;
+                        toggle.disabled = false;
+
+                        console.log('Language switched to:', lang);
+                    }).catch(error => {
+                        console.error('Translation error:', error);
+                        // Fallback to redirect
+                        window.location.href = `/language/${lang}`;
+                    });
+                } else {
+                    // Fallback to redirect
+                    window.location.href = `/language/${lang}`;
+                }
+            }
+            // Update language display
+            function updateLanguageDisplay(code, info) {
+                const flagEl = document.getElementById('currentFlag');
+                const langEl = document.getElementById('currentLanguage');
+
+                if (flagEl) flagEl.textContent = info.flag;
+                if (langEl) langEl.textContent = info.native;
             }
         });
     </script>

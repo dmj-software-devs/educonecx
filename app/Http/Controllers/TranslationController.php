@@ -1,137 +1,316 @@
 <?php
-// app/Http/Controllers/TranslationController.php
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\DeepLService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class TranslationController extends Controller
 {
-    // Simple phrase dictionary for common terms (fallback)
-    private $phraseDictionary = [
-        'en' => [
-            'es' => [
-                'Question' => 'Pregunta',
-                'of' => 'de',
-                'answered' => 'respondidas',
-                'remaining' => 'restantes',
-                'Submit Quiz' => 'Enviar Examen',
-                'Next Question' => 'Siguiente Pregunta',
-                'Previous' => 'Anterior',
-                'Time Remaining:' => 'Tiempo Restante:',
-                'Questions Answered:' => 'Preguntas Respondidas:',
-                'Total Points:' => 'Puntos Totales:',
-                'Passing Score:' => 'Puntuación Mínima:',
-                'Attempt:' => 'Intento:',
-                'Question Navigator' => 'Navegador de Preguntas',
-                'Quiz Information' => 'Información del Examen',
-                'Quiz Completed!' => '¡Examen Completado!',
-                'You have answered all questions. Click below to submit your quiz.' => 'Has respondido todas las preguntas. Haz clic abajo para enviar tu examen.',
-                'Type your answer here...' => 'Escribe tu respuesta aquí...',
-                'Any of the correct answers will be accepted.' => 'Cualquier respuesta correcta será aceptada.',
-                'Match the items from the left column with the right column' => 'Empareja los elementos de la columna izquierda con la columna derecha',
-                'Select match' => 'Seleccionar emparejamiento',
-                'points' => 'puntos',
-            ],
-            'fr' => [
-                'Question' => 'Question',
-                'of' => 'de',
-                'answered' => 'répondues',
-                'remaining' => 'restantes',
-                'Submit Quiz' => 'Soumettre le Quiz',
-                'Next Question' => 'Question Suivante',
-                'Previous' => 'Précédent',
-                'Time Remaining:' => 'Temps Restant:',
-                'Questions Answered:' => 'Questions Répondues:',
-                'Total Points:' => 'Points Totaux:',
-                'Passing Score:' => 'Score de Réussite:',
-                'Attempt:' => 'Tentative:',
-                'Question Navigator' => 'Navigateur de Questions',
-                'Quiz Information' => 'Informations du Quiz',
-                'Quiz Completed!' => 'Quiz Terminé!',
-                'You have answered all questions. Click below to submit your quiz.' => 'Vous avez répondu à toutes les questions. Cliquez ci-dessous pour soumettre votre quiz.',
-                'Type your answer here...' => 'Tapez votre réponse ici...',
-                'Any of the correct answers will be accepted.' => 'Toute réponse correcte sera acceptée.',
-                'Match the items from the left column with the right column' => 'Faites correspondre les éléments de la colonne de gauche avec la colonne de droite',
-                'Select match' => 'Sélectionner la correspondance',
-                'points' => 'points',
-            ]
-        ]
-    ];
+    protected $deepLService;
+
+    public function __construct(DeepLService $deepLService)
+    {
+        $this->deepLService = $deepLService;
+    }
 
     public function translate(Request $request)
     {
-        $request->validate([
-            'q' => 'required|string',
-            'source' => 'required|string|in:en,es,fr',
-            'target' => 'required|string|in:en,es,fr',
+        // Log the request for debugging
+        Log::info('Translation request received', [
+            'q_type' => gettype($request->q),
+            'source' => $request->source,
+            'target' => $request->target,
+            'batch' => $request->boolean('batch'),
+            'has_array' => is_array($request->q)
         ]);
+
+        // Custom validation - allow array for batch, string for single
+        $rules = [
+            'source' => 'required|string|in:en,es,fr,de,it,pt,nl,pl,ru,ja,zh',
+            'target' => 'required|string|in:en,es,fr,de,it,pt,nl,pl,ru,ja,zh',
+            'formality' => 'sometimes|string|in:default,more,less',
+            'batch' => 'sometimes|boolean'
+        ];
+
+        // If batch is true and q is an array, validate as array
+        if ($request->boolean('batch') && is_array($request->q)) {
+            $rules['q'] = 'required|array';
+            $rules['q.*'] = 'string|min:1';
+        } else {
+            // Otherwise validate as string
+            $rules['q'] = 'required|string|min:1';
+        }
+
+        // Validate the request
+        try {
+            $request->validate($rules);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Translation validation failed', [
+                'errors' => $e->errors(),
+                'request_data' => [
+                    'q' => $request->q,
+                    'batch' => $request->boolean('batch'),
+                    'source' => $request->source,
+                    'target' => $request->target
+                ]
+            ]);
+            
+            return response()->json([
+                'error' => 'Validation failed',
+                'message' => $e->getMessage(),
+                'details' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Translation validation exception: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Validation failed',
+                'message' => $e->getMessage()
+            ], 422);
+        }
 
         $text = $request->q;
         $source = $request->source;
         $target = $request->target;
+        $formality = $request->get('formality', 'default');
 
-        // If source and target are the same, return original
-        if ($source === $target) {
-            return response()->json(['translatedText' => $text]);
+        // Handle batch translation
+        if ($request->boolean('batch') && is_array($text)) {
+            try {
+                Log::info('Processing batch translation', [
+                    'text_count' => count($text),
+                    'source' => $source,
+                    'target' => $target
+                ]);
+
+                $options = [];
+                if ($formality !== 'default') {
+                    $options['formality'] = $formality;
+                }
+                
+                $translatedTexts = $this->deepLService->translateBatch($text, $source, $target, $options);
+                
+                Log::info('Batch translation successful', [
+                    'count' => count($translatedTexts),
+                    'source' => $source,
+                    'target' => $target
+                ]);
+                
+                return response()->json([
+                    'translatedTexts' => $translatedTexts,
+                    'source' => $source,
+                    'target' => $target,
+                    'batch' => true
+                ]);
+
+            } catch (\Exception $e) {
+                Log::error('Batch translation failed: ' . $e->getMessage(), [
+                    'source' => $source,
+                    'target' => $target,
+                    'text_count' => count($text),
+                    'error' => $e->getMessage()
+                ]);
+
+                // Return original texts as fallback
+                return response()->json([
+                    'error' => 'Translation failed',
+                    'message' => $e->getMessage(),
+                    'translatedTexts' => $text, // Return original as fallback
+                    'source' => $source,
+                    'target' => $target,
+                    'batch' => true
+                ], 200); // Return 200 with original text to avoid breaking UI
+            }
         }
 
-        // Check if it's a simple phrase we have in our dictionary
-        if ($source === 'en' && isset($this->phraseDictionary['en'][$target][$text])) {
-            return response()->json(['translatedText' => $this->phraseDictionary['en'][$target][$text]]);
-        }
-
-        // Try LibreTranslate first
+        // Single text translation
         try {
-            Log::info('Attempting LibreTranslate translation', ['text' => $text, 'source' => $source, 'target' => $target]);
+            Log::info('Processing single translation', [
+                'text_length' => strlen($text),
+                'source' => $source,
+                'target' => $target
+            ]);
+
+            // Check if text contains HTML
+            $tagHandling = $this->containsHtml($text) ? 'html' : null;
             
-            $response = Http::timeout(5)->post('https://libretranslate.de/translate', [
-                'q' => $text,
+            $options = [];
+            if ($formality !== 'default') {
+                $options['formality'] = $formality;
+            }
+            if ($tagHandling) {
+                $options['tag_handling'] = $tagHandling;
+            }
+
+            $translatedText = $this->deepLService->translate($text, $source, $target, $options);
+
+            Log::info('Single translation successful', [
+                'source' => $source,
+                'target' => $target
+            ]);
+
+            return response()->json([
+                'translatedText' => $translatedText,
                 'source' => $source,
                 'target' => $target,
-                'format' => 'text'
+                'from_cache' => false,
+                'batch' => false
             ]);
 
-            if ($response->successful()) {
-                $result = $response->json();
-                Log::info('LibreTranslate success', ['result' => $result]);
-                return response()->json($result);
-            }
-
-            Log::warning('LibreTranslate failed', ['status' => $response->status(), 'body' => $response->body()]);
-            
         } catch (\Exception $e) {
-            Log::error('LibreTranslate exception', ['error' => $e->getMessage()]);
-        }
+            Log::error('Translation failed: ' . $e->getMessage(), [
+                'text' => substr($text, 0, 100),
+                'source' => $source,
+                'target' => $target,
+                'error' => $e->getMessage()
+            ]);
 
-        // Try Google Translate as fallback (using a public proxy)
+            return response()->json([
+                'translatedText' => $text,
+                'error' => 'Translation service temporarily unavailable',
+                'message' => $e->getMessage(),
+                'source' => $source,
+                'target' => $target,
+                'batch' => false
+            ], 200); // Return 200 with original text to avoid breaking the UI
+        }
+    }
+
+    /**
+     * Get translation usage information
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function usage()
+    {
         try {
-            Log::info('Attempting Google Translate fallback');
-            
-            $googleResponse = Http::timeout(5)->get('https://translate.googleapis.com/translate_a/single', [
-                'client' => 'gtx',
-                'sl' => $source,
-                'tl' => $target,
-                'dt' => 't',
-                'q' => $text
+            $usage = $this->deepLService->getUsage();
+            return response()->json([
+                'success' => true,
+                'data' => $usage
             ]);
-
-            if ($googleResponse->successful()) {
-                $data = $googleResponse->json();
-                if (isset($data[0][0][0])) {
-                    $translated = $data[0][0][0];
-                    Log::info('Google Translate success', ['translated' => $translated]);
-                    return response()->json(['translatedText' => $translated]);
-                }
-            }
         } catch (\Exception $e) {
-            Log::error('Google Translate exception', ['error' => $e->getMessage()]);
+            Log::error('Failed to get usage: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Could not retrieve usage'
+            ], 500);
         }
+    }
 
-        // If all else fails, return original text
-        Log::warning('All translation methods failed, returning original text');
-        return response()->json(['translatedText' => $text]);
+    /**
+     * Get supported languages
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function languages()
+    {
+        try {
+            $languages = $this->deepLService->getSupportedLanguages();
+            return response()->json([
+                'success' => true,
+                'data' => $languages
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to get languages: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Could not retrieve languages'
+            ], 500);
+        }
+    }
+
+    /**
+     * Test endpoint for debugging
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function test()
+    {
+        $apiKey = config('deepl.api_key');
+        $apiKeyStatus = $apiKey ? 'Configured' : 'Not configured';
+        $apiKeyPreview = $apiKey ? substr($apiKey, 0, 10) . '...' : 'none';
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Translation controller is working',
+            'timestamp' => now()->toDateTimeString(),
+            'config' => [
+                'api_key' => $apiKeyStatus,
+                'api_key_preview' => $apiKeyPreview,
+                'supported_languages' => config('deepl.supported_languages', []),
+                'environment' => app()->environment()
+            ],
+            'request' => [
+                'url' => request()->fullUrl(),
+                'method' => request()->method(),
+                'headers' => [
+                    'accept' => request()->header('accept'),
+                    'content_type' => request()->header('content-type'),
+                    'x_requested_with' => request()->header('x-requested-with')
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Debug endpoint to test translation with various inputs
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function debug(Request $request)
+    {
+        $testResults = [];
+        
+        // Test single string
+        try {
+            $singleResult = $this->deepLService->translate('Hello world', 'en', 'es');
+            $testResults['single_string'] = [
+                'success' => true,
+                'result' => $singleResult
+            ];
+        } catch (\Exception $e) {
+            $testResults['single_string'] = [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+        
+        // Test batch array
+        try {
+            $batchResult = $this->deepLService->translateBatch(['Hello', 'world'], 'en', 'es');
+            $testResults['batch_array'] = [
+                'success' => true,
+                'result' => $batchResult
+            ];
+        } catch (\Exception $e) {
+            $testResults['batch_array'] = [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+        
+        return response()->json([
+            'success' => true,
+            'controller_status' => 'operational',
+            'deepL_service' => class_exists('App\Services\DeepLService'),
+            'test_results' => $testResults
+        ]);
+    }
+
+    /**
+     * Check if text contains HTML
+     *
+     * @param string $text
+     * @return bool
+     */
+    protected function containsHtml(string $text): bool
+    {
+        // Strip whitespace and check for HTML tags
+        $text = trim($text);
+        return preg_match('/<[^<]+>/', $text) === 1;
     }
 }

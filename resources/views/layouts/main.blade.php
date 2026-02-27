@@ -451,10 +451,60 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Translation Loading Indicator */
+        .global-translation-loading {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--gradient-1);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--border-radius-full);
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInRight 0.3s ease;
+        }
+
+        .global-translation-loading.show {
+            display: flex;
+        }
+
+        .global-translation-loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        .global-translation-loading.timeout {
+            background: var(--danger);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <!-- Global Translation Loading Indicator -->
+    <div class="global-translation-loading" id="globalTranslationLoading">
+        <i class="fas fa-spinner"></i>
+        <span>Translating page...</span>
+    </div>
+
     @include('layouts.header')
 
     <main>
@@ -475,6 +525,338 @@
             offset: 100,
             easing: 'ease-in-out'
         });
+    </script>
+
+    <!-- Global Translation System - FIXED VERSION -->
+    <script>
+        // Translation API endpoint
+        const TRANSLATE_API_URL = "{{ route('translate') }}";
+
+        // Current language (will be set from server)
+        let currentLanguage = '{{ app()->getLocale() }}';
+
+        // Cache for translations
+        const translationCache = new Map();
+
+        // Store original texts for all translatable elements
+        let translatableElements = [];
+
+        // Flag to prevent multiple simultaneous translations
+        let isTranslating = false;
+
+        // Store the base English texts
+        let englishTexts = new Map();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize translatable elements
+            initializeTranslatableElements();
+            
+            // Store English texts as base
+            storeEnglishTexts();
+
+            // Auto-translate if current language is not English
+            if (currentLanguage !== 'en') {
+                translatePage(currentLanguage);
+            }
+        });
+
+        // Store all original English texts
+        function storeEnglishTexts() {
+            translatableElements.forEach(item => {
+                if (item.element && item.baseOriginal) {
+                    englishTexts.set(item.element, item.baseOriginal);
+                }
+            });
+            console.log('English texts stored:', englishTexts.size);
+        }
+
+        // Initialize all translatable elements and preserve original texts
+        function initializeTranslatableElements() {
+            translatableElements = [];
+
+            // Find all elements with text content that should be translated
+            const selectors = [
+                'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                'p', 'span:not(.no-translate):not(.flag):not(.current-flag)',
+                'a:not(.no-translate):not(.btn):not(.language-toggle)',
+                '.btn', '.section-title', '.card-title', '.card-text',
+                '.nav-menu a', '.contact-info a', '.footer-links a',
+                'label', '.badge', '.alert', '.hero-title', '.hero-subtitle'
+            ];
+
+            selectors.forEach(selector => {
+                document.querySelectorAll(selector).forEach(element => {
+                    // Skip elements that should not be translated
+                    if (element.closest('.language-selector-container') ||
+                        element.closest('.profile-dropdown') ||
+                        element.classList.contains('no-translate') ||
+                        element.classList.contains('flag') ||
+                        element.classList.contains('current-flag') ||
+                        element.id === 'currentFlag' ||
+                        element.id === 'currentLanguage') {
+                        return;
+                    }
+
+                    // Skip elements with no text or only whitespace
+                    const text = element.textContent?.trim();
+                    if (!text || text.length < 2) return;
+
+                    // Skip elements that contain only numbers or special characters
+                    if (/^[\d\s\W]+$/.test(text)) return;
+
+                    // Get the original text
+                    let originalText = element.getAttribute('data-original');
+                    
+                    // If no data-original attribute, use current text and store it
+                    if (!originalText) {
+                        originalText = text;
+                        element.setAttribute('data-original', text);
+                    }
+                    
+                    // Store base English text
+                    if (!element.hasAttribute('data-base-original')) {
+                        element.setAttribute('data-base-original', text);
+                    }
+
+                    // Add to translatable elements
+                    translatableElements.push({
+                        element: element,
+                        original: originalText,
+                        baseOriginal: element.getAttribute('data-base-original')
+                    });
+                });
+            });
+
+            console.log('Translatable elements found:', translatableElements.length);
+        }
+
+        // Translate the entire page
+        async function translatePage(targetLang) {
+            if (isTranslating) return;
+            isTranslating = true;
+
+            // Show loading indicator
+            const loadingEl = document.getElementById('globalTranslationLoading');
+            if (loadingEl) {
+                loadingEl.classList.add('show');
+                loadingEl.classList.remove('timeout');
+                loadingEl.innerHTML = '<i class="fas fa-spinner"></i><span>Translating page...</span>';
+            }
+
+            // Set a timeout to show warning if translation takes too long
+            const timeoutId = setTimeout(() => {
+                if (loadingEl) {
+                    loadingEl.classList.add('timeout');
+                    loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Translation taking longer than expected...</span>';
+                }
+            }, 8000);
+
+            try {
+                // Update session silently
+                fetch(`/language/${targetLang}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                }).catch(err => console.log('Session update error:', err));
+
+                console.log(`Translating page from ${currentLanguage} to ${targetLang}`);
+                console.log(`Elements to translate: ${translatableElements.length}`);
+
+                // Use base English texts as source for translation
+                const textsToTranslate = translatableElements.map(item => item.baseOriginal);
+
+                if (textsToTranslate.length === 0) {
+                    console.log('No elements to translate');
+                    return true;
+                }
+
+                // Perform batch translation
+                const translatedTexts = await translateBatch(textsToTranslate, 'en', targetLang);
+
+                // Apply translations
+                let appliedCount = 0;
+                translatedTexts.forEach((translated, index) => {
+                    if (translatableElements[index] && translatableElements[index].element) {
+                        const element = translatableElements[index].element;
+                        
+                        if (translated && translated.trim().length > 0) {
+                            const currentContent = element.textContent;
+                            
+                            // Only update if the translation is different
+                            if (translated !== currentContent) {
+                                element.textContent = translated;
+                                appliedCount++;
+                                
+                                // Log first few translations for debugging
+                                if (appliedCount <= 5) {
+                                    console.log(`Element ${index}: "${currentContent}" -> "${translated}"`);
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Update current language
+                currentLanguage = targetLang;
+
+                console.log(`Translation complete: ${appliedCount}/${translatableElements.length} elements updated`);
+                
+                return true;
+
+            } catch (error) {
+                console.error('Page translation error:', error);
+                throw error;
+            } finally {
+                clearTimeout(timeoutId);
+                if (loadingEl) {
+                    loadingEl.classList.remove('show', 'timeout');
+                }
+                isTranslating = false;
+            }
+        }
+
+        // Batch translate multiple texts
+        async function translateBatch(texts, sourceLang, targetLang) {
+            if (texts.length === 0) return [];
+            if (sourceLang === targetLang) return texts;
+
+            // Check cache
+            const uncachedIndices = [];
+            const uncachedTexts = [];
+            const results = new Array(texts.length);
+
+            texts.forEach((text, index) => {
+                const cacheKey = `${text}_${sourceLang}_${targetLang}`;
+                if (translationCache.has(cacheKey)) {
+                    results[index] = translationCache.get(cacheKey);
+                } else if (text && text.trim().length >= 2) {
+                    uncachedIndices.push(index);
+                    uncachedTexts.push(text);
+                } else {
+                    results[index] = text;
+                }
+            });
+
+            if (uncachedTexts.length === 0) {
+                return results;
+            }
+
+            try {
+                console.log(`Translating ${uncachedTexts.length} texts to ${targetLang}...`);
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
+                    return results;
+                }
+
+                const response = await fetch(TRANSLATE_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        q: uncachedTexts,
+                        source: sourceLang,
+                        target: targetLang,
+                        batch: true
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Translation failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(`Received ${data.translatedTexts?.length || 0} translations`);
+
+                if (data.translatedTexts && Array.isArray(data.translatedTexts)) {
+                    data.translatedTexts.forEach((translated, idx) => {
+                        const originalIndex = uncachedIndices[idx];
+                        results[originalIndex] = translated;
+
+                        // Cache the result
+                        const cacheKey = `${uncachedTexts[idx]}_${sourceLang}_${targetLang}`;
+                        translationCache.set(cacheKey, translated);
+                    });
+                } else {
+                    uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
+                }
+
+                return results;
+            } catch (error) {
+                console.error('Batch translation error:', error);
+                uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
+                return results;
+            }
+        }
+
+        // Reset to English
+        window.resetToEnglish = function() {
+            translatableElements.forEach(item => {
+                if (item.element && item.baseOriginal) {
+                    item.element.textContent = item.baseOriginal;
+                    item.element.setAttribute('data-original', item.baseOriginal);
+                }
+            });
+            currentLanguage = 'en';
+            
+            // Update language display
+            const flagEl = document.getElementById('currentFlag');
+            const langEl = document.getElementById('currentLanguage');
+            if (flagEl) flagEl.textContent = '🇺🇸';
+            if (langEl) langEl.textContent = 'English';
+            
+            console.log('Reset to English');
+        };
+
+        // Debug function
+        window.testTranslation = async function() {
+            console.log('Testing translation API...');
+            console.log('Current language:', currentLanguage);
+            console.log('Elements:', translatableElements.length);
+            
+            try {
+                const response = await fetch(TRANSLATE_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        q: 'Hello world',
+                        source: 'en',
+                        target: 'es',
+                        batch: false
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Test translation:', data);
+            } catch (error) {
+                console.error('Test error:', error);
+            }
+        };
+
+        // Expose for debugging
+        window.translationSystem = {
+            translatePage,
+            resetToEnglish: window.resetToEnglish,
+            currentLanguage: () => currentLanguage,
+            elements: () => translatableElements.length,
+            test: window.testTranslation,
+            apiUrl: TRANSLATE_API_URL
+        };
+
+        console.log('Translation system initialized. Current language:', currentLanguage);
     </script>
 
     @stack('scripts')
