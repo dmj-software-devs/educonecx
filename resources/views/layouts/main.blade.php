@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -69,6 +69,8 @@
         html {
             scroll-behavior: smooth;
             font-size: 16px;
+            overflow-x: hidden;
+            width: 100%;
         }
 
         body {
@@ -76,6 +78,8 @@
             color: var(--dark);
             line-height: 1.6;
             overflow-x: hidden;
+            width: 100%;
+            position: relative;
             background-color: var(--white);
         }
 
@@ -103,6 +107,7 @@
         }
 
         .container {
+            width: 100%;
             max-width: 1280px;
             margin: 0 auto;
             padding: 0 30px;
@@ -111,6 +116,18 @@
         @media (max-width: 768px) {
             .container {
                 padding: 0 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 15px;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            .container {
+                padding: 0 12px;
             }
         }
 
@@ -355,6 +372,7 @@
         .grid {
             display: grid;
             gap: 30px;
+            width: 100%;
         }
 
         .grid-2 {
@@ -574,6 +592,55 @@
                 padding: 10px 24px;
                 font-size: 0.9rem;
             }
+        }
+        
+        /* Fix for white space on right side - Keep this but make it less aggressive */
+        @media (max-width: 1024px) {
+            body, html {
+                overflow-x: hidden;
+                width: 100%;
+                position: relative;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body.menu-open {
+                overflow: hidden;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+            }
+            
+            /* Allow dropdowns to work properly */
+            .language-menu, 
+            .dropdown-menu {
+                max-width: 90vw;
+                z-index: 10000;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .row, [class*="col-"] {
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
+        
+        /* Fix for z-index issues */
+        .language-selector-container {
+            z-index: 1001;
+        }
+        
+        .language-menu {
+            z-index: 1002;
+        }
+        
+        .mobile-menu {
+            z-index: 999;
+        }
+        
+        .main-header {
+            z-index: 1000;
         }
     </style>
 </head>
