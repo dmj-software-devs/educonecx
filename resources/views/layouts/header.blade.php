@@ -326,7 +326,7 @@
             gap: 20px;
         }
 
-        /* Language Selector Styles */
+        /* Language Selector Styles - Updated for better mobile */
         .language-selector-container {
             position: relative;
             display: inline-block;
@@ -790,7 +790,7 @@
             color: var(--primary);
         }
 
-        /* Responsive */
+        /* Responsive - Updated for better mobile language dropdown */
         @media (max-width: 1024px) {
             .main-nav {
                 display: none;
@@ -828,6 +828,11 @@
                 min-width: auto;
                 padding: 8px 12px;
             }
+            
+            /* Adjust language menu position for tablet */
+            .language-menu {
+                right: -20px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -841,31 +846,54 @@
                 margin: 0 10px;
             }
 
+            /* Improved mobile language dropdown - stays as dropdown not bottom sheet */
             .language-menu {
-                width: 250px;
-                right: -50px;
+                position: absolute;
+                width: 260px;
+                right: 0;
+                top: calc(100% + 10px);
+                bottom: auto;
+                left: auto;
+                border-radius: var(--border-radius-md);
+                max-height: 400px;
+                transform: translateY(-10px);
+            }
+            
+            .language-dropdown.active .language-menu {
+                transform: translateY(0);
+            }
+            
+            .language-list {
+                max-height: 300px;
             }
         }
 
         @media (max-width: 576px) {
+            /* Keep as dropdown, not bottom sheet */
             .language-menu {
-                position: fixed;
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-height: 80vh;
-                border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-                transform: translateY(100%);
+                position: absolute;
+                width: 260px;
+                right: -10px;
+                top: calc(100% + 10px);
+                bottom: auto;
+                left: auto;
+                border-radius: var(--border-radius-md);
+                max-height: 400px;
+                transform: translateY(-10px);
             }
-
+            
             .language-dropdown.active .language-menu {
                 transform: translateY(0);
             }
-
+            
             .language-list {
-                max-height: 60vh;
+                max-height: 300px;
+            }
+            
+            /* Adjust for very small screens */
+            .language-menu {
+                right: -20px;
+                width: 240px;
             }
         }
     </style>
@@ -885,17 +913,24 @@
         const mobileToggle = document.getElementById('mobileToggle');
         const mobileMenu = document.getElementById('mobileMenu');
 
-        mobileToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            mobileMenu.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
-        });
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                document.body.classList.toggle('menu-open');
+            });
+        }
 
         // Close mobile menu on link click
         document.querySelectorAll('.mobile-nav-menu a, .mobile-btn-login, .mobile-btn-register, .mobile-auth a').forEach(link => {
             link.addEventListener('click', () => {
-                mobileToggle.classList.remove('active');
-                mobileMenu.classList.remove('active');
+                if (mobileToggle) {
+                    mobileToggle.classList.remove('active');
+                }
+                if (mobileMenu) {
+                    mobileMenu.classList.remove('active');
+                }
                 document.body.classList.remove('menu-open');
             });
         });
@@ -903,7 +938,7 @@
         // Close mobile menu when clicking outside
         document.addEventListener('click', function(event) {
             if (window.innerWidth <= 1024) {
-                if (!mobileMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
+                if (mobileMenu && mobileToggle && !mobileMenu.contains(event.target) && !mobileToggle.contains(event.target)) {
                     mobileToggle.classList.remove('active');
                     mobileMenu.classList.remove('active');
                     document.body.classList.remove('menu-open');
@@ -937,9 +972,8 @@
                     const code = item.dataset.lang;
                     if (code === activeLang) {
                         item.classList.add('active');
-                        // Add checkmark
-                        const checkIcon = item.querySelector('i.fa-check');
-                        if (!checkIcon) {
+                        // Add checkmark if not present
+                        if (!item.querySelector('i.fa-check')) {
                             item.innerHTML += '<i class="fas fa-check"></i>';
                         }
                     } else {
@@ -950,46 +984,6 @@
                             checkIcon.remove();
                         }
                     }
-                });
-            }
-
-            // Fetch current language from server
-            fetch('/api/current-language')
-                .then(response => response.json())
-                .then(data => {
-                    currentLanguage = data.current;
-                    updateLanguageDisplay(currentLanguage, data.info);
-                    populateLanguageList(currentLanguage);
-                })
-                .catch(error => {
-                    console.error('Error fetching language:', error);
-                    // Fallback to English
-                    populateLanguageList('en');
-                });
-
-            // Toggle dropdown
-            const toggle = document.getElementById('languageToggle');
-            const dropdown = document.querySelector('.language-dropdown');
-
-            if (toggle) {
-                toggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    dropdown.classList.toggle('active');
-                });
-            }
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (dropdown && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-            // Search functionality
-            const searchInput = document.getElementById('languageSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    filterLanguages(this.value);
                 });
             }
 
@@ -1012,7 +1006,8 @@
                         ${code === activeLang ? '<i class="fas fa-check"></i>' : ''}
                     `;
 
-                    item.addEventListener('click', function() {
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
                         switchLanguage(code);
                     });
 
@@ -1037,7 +1032,7 @@
                 });
             }
 
-            // Switch language - FIXED VERSION
+            // Switch language
             function switchLanguage(lang) {
                 // Show loading indicator on the toggle button
                 const toggle = document.getElementById('languageToggle');
@@ -1096,6 +1091,51 @@
 
                 if (flagEl) flagEl.textContent = info.flag;
                 if (langEl) langEl.textContent = info.native;
+            }
+
+            // Fetch current language from server
+            fetch('/api/current-language')
+                .then(response => response.json())
+                .then(data => {
+                    currentLanguage = data.current;
+                    updateLanguageDisplay(currentLanguage, languages[currentLanguage] || languages['en']);
+                    populateLanguageList(currentLanguage);
+                })
+                .catch(error => {
+                    console.error('Error fetching language:', error);
+                    // Fallback to English
+                    populateLanguageList('en');
+                });
+
+            // Toggle dropdown
+            const toggle = document.getElementById('languageToggle');
+            const dropdown = document.querySelector('.language-dropdown');
+
+            if (toggle) {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('active');
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (dropdown && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('languageSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    filterLanguages(this.value);
+                });
+
+                // Prevent clicks on search from closing dropdown
+                searchInput.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
             }
         });
     </script>
