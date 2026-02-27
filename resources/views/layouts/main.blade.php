@@ -381,6 +381,10 @@
             .grid-4 {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .grid {
+                gap: 20px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -389,6 +393,10 @@
             .grid-3,
             .grid-4 {
                 grid-template-columns: 1fr;
+            }
+            
+            .grid {
+                gap: 15px;
             }
         }
 
@@ -400,6 +408,12 @@
         @media (max-width: 768px) {
             .section-padding {
                 padding: 60px 0;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .section-padding {
+                padding: 40px 0;
             }
         }
 
@@ -435,6 +449,12 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
+        
+        @media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+        }
 
         /* Loading Spinner */
         .spinner {
@@ -445,6 +465,14 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+        
+        @media (max-width: 576px) {
+            .spinner {
+                width: 30px;
+                height: 30px;
+                border-width: 3px;
+            }
+        }
 
         @keyframes spin {
             to {
@@ -452,7 +480,7 @@
             }
         }
 
-        /* Translation Loading Indicator */
+        /* Translation Loading Indicator - Enhanced Mobile Responsive */
         .global-translation-loading {
             position: fixed;
             top: 20px;
@@ -470,6 +498,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             animation: slideInRight 0.3s ease;
+            max-width: calc(100% - 40px);
         }
 
         .global-translation-loading.show {
@@ -489,10 +518,61 @@
                 transform: translateX(100%);
                 opacity: 0;
             }
-
             to {
                 transform: translateX(0);
                 opacity: 1;
+            }
+        }
+        
+        /* Mobile Responsive Styles for Translation Loading */
+        @media (max-width: 768px) {
+            .global-translation-loading {
+                top: 15px;
+                right: 15px;
+                padding: 10px 18px;
+                font-size: 0.9rem;
+                gap: 8px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .global-translation-loading {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                padding: 10px 16px;
+                font-size: 0.85rem;
+                gap: 8px;
+                border-radius: 50px;
+                justify-content: center;
+            }
+            
+            .global-translation-loading i {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 375px) {
+            .global-translation-loading {
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Additional mobile optimizations */
+        @media (max-width: 576px) {
+            .card-content {
+                padding: 16px;
+            }
+            
+            .card-content h3 {
+                font-size: 1.2rem;
+            }
+            
+            .btn {
+                padding: 10px 24px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -527,7 +607,7 @@
         });
     </script>
 
-    <!-- Global Translation System - FIXED VERSION -->
+    <!-- Global Translation System -->
     <script>
         // Translation API endpoint
         const TRANSLATE_API_URL = "{{ route('translate') }}";
