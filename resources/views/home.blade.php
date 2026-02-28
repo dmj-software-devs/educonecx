@@ -1315,28 +1315,27 @@
         <p class="logo-cloud-title">Trusted by students from</p>
         <div class="logo-cloud">
             <div class="logo-track">
-                <!-- University Logos (using placeholder images) -->
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Harvard_shield_wreath.svg/1200px-Harvard_shield_wreath.svg.png" alt="Harvard">
+                    <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard">
                 </div>
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Stanford_University_seal_2003.svg/1200px-Stanford_University_seal_2003.svg.png" alt="Stanford">
+                    <img src="{{ asset('storage/home-page-svgs/Stanford_University_seal_2003.svg') }}" alt="Stanford">
                 </div>
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/MIT_seal.svg/1200px-MIT_seal.svg.png" alt="MIT">
+                    <img src="{{ asset('storage/home-page-svgs/MIT_seal.svg') }}" alt="MIT">
                 </div>
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/University_of_Cambridge_seal.svg/1200px-University_of_Cambridge_seal.svg.png" alt="Cambridge">
+                    <img src="{{ asset('storage/home-page-pngs/University_of_Cambridge_seal.png') }}" alt="Cambridge">
                 </div>
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Oxford-University-Circlet.svg/1200px-Oxford-University-Circlet.svg.png" alt="Oxford">
+                    <img src="{{ asset('storage/home-page-pngs/Oxford-University-Circlet.png') }}" alt="Oxford">
                 </div>
-                <!-- Duplicate for seamless loop -->
+
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/2/29/Harvard_shield_wreath.svg/1200px-Harvard_shield_wreath.svg.png" alt="Harvard">
+                    <img src="{{ asset('storage/home-page-pngs/Harvard_shield_wreath.png') }}" alt="Harvard">
                 </div>
                 <div class="logo-item">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Stanford_University_seal_2003.svg/1200px-Stanford_University_seal_2003.svg.png" alt="Stanford">
+                    <img src="{{ asset('storage/home-page-pngs/Stanford_University_seal_2003.png') }}" alt="Stanford">
                 </div>
             </div>
         </div>
