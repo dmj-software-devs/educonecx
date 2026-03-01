@@ -34,8 +34,20 @@ class QuizController extends Controller
             'time_limit' => 'nullable|integer|min:1',
             'attempts_allowed' => 'integer|min:0',
             'pass_percentage' => 'integer|between:0,100',
-            'status' => 'required|in:draft,published'
+            'status' => 'required|in:draft,published',
+
+            // Add checkbox fields to validation (they're optional since they might not be sent)
+            'shuffle_questions' => 'nullable|boolean',
+            'randomize_options' => 'nullable|boolean',
+            'show_results' => 'nullable|boolean',
+            'show_answers' => 'nullable|boolean',
         ]);
+
+        // Set default values for checkboxes (0 if not present)
+        $validated['shuffle_questions'] = $request->has('shuffle_questions') ? 1 : 0;
+        $validated['randomize_options'] = $request->has('randomize_options') ? 1 : 0;
+        $validated['show_results'] = $request->has('show_results') ? 1 : 0;
+        $validated['show_answers'] = $request->has('show_answers') ? 1 : 0;
 
         $validated['slug'] = Str::slug($validated['title']);
         $validated['created_by'] = auth()->id();
@@ -62,8 +74,19 @@ class QuizController extends Controller
             'time_limit' => 'nullable|integer|min:1',
             'attempts_allowed' => 'integer|min:0',
             'pass_percentage' => 'integer|between:0,100',
-            'status' => 'required|in:draft,published'
+            'status' => 'required|in:draft,published',
+            // Add checkbox fields
+            'shuffle_questions' => 'nullable|boolean',
+            'randomize_options' => 'nullable|boolean',
+            'show_results' => 'nullable|boolean',
+            'show_answers' => 'nullable|boolean',
         ]);
+
+        // Set default values for checkboxes
+        $validated['shuffle_questions'] = $request->has('shuffle_questions') ? 1 : 0;
+        $validated['randomize_options'] = $request->has('randomize_options') ? 1 : 0;
+        $validated['show_results'] = $request->has('show_results') ? 1 : 0;
+        $validated['show_answers'] = $request->has('show_answers') ? 1 : 0;
 
         $validated['slug'] = Str::slug($validated['title']);
 
