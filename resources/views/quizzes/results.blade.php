@@ -94,9 +94,17 @@
     }
 
     @keyframes rs-pop {
-        0% { transform: scale(0); }
-        70% { transform: scale(1.1); }
-        100% { transform: scale(1); }
+        0% {
+            transform: scale(0);
+        }
+
+        70% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
     }
 
     .rs-title {
@@ -136,7 +144,8 @@
         box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
         position: relative;
         animation: rs-float 3s ease-in-out infinite;
-        padding: 0 15px; /* Added padding to prevent text overflow */
+        padding: 0 15px;
+        /* Added padding to prevent text overflow */
         text-align: center;
     }
 
@@ -154,17 +163,34 @@
     }
 
     @keyframes rs-float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
     }
 
     @keyframes rs-pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.05); opacity: 0.8; }
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.5;
+        }
+
+        50% {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
     }
 
     .rs-score-percentage {
-        font-size: 3.2rem; /* Slightly reduced */
+        font-size: 3.2rem;
+        /* Slightly reduced */
         font-weight: 700;
         line-height: 1.1;
         margin-bottom: 5px;
@@ -597,7 +623,9 @@
     }
 
     @keyframes rs-spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     /* Responsive Design - Updated for better mobile handling */
@@ -610,7 +638,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
-        
+
         .rs-score-percentage {
             font-size: 3rem;
         }
@@ -920,7 +948,11 @@
                 $pointsEarned = $answer ? $answer->points_earned : 0;
                 $statusClass = $isCorrect ? 'rs-question-correct' : ($pointsEarned > 0 ? 'rs-question-partial' : 'rs-question-incorrect');
                 $pointsClass = $isCorrect ? 'rs-points-correct' : ($pointsEarned > 0 ? 'rs-points-partial' : 'rs-points-incorrect');
+
+                // Decode answer data
+                $answerData = $answer ? $answer->decoded_data : null;
                 @endphp
+
                 <div class="rs-question-item {{ $statusClass }}">
                     <div class="rs-question-header">
                         <div class="rs-question-meta">
@@ -936,74 +968,45 @@
 
                     @if($question->image)
                     <div style="margin-bottom: 15px;">
-                        <img src="{{ $question->image_url }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <img src="{{ Storage::url($question->image) }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
                     </div>
                     @endif
 
-                    @if($answer && $answer->answer_data)
-                    <div class="rs-answer-box">
+                    <!-- Show ALL options with user's answers and correct answers -->
+                    <div style="margin: 20px 0;">
+                        <div style="display: flex; gap: 20px; margin-bottom: 15px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div style="width: 16px; height: 16px; background: rgba(6, 214, 160, 0.1); border: 2px solid #06d6a0; border-radius: 4px;"></div>
+                                <span style="font-size: 0.85rem; color: #6c757d;">Correct answer</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div style="width: 16px; height: 16px; background: rgba(239, 71, 111, 0.1); border: 2px solid #ef476f; border-radius: 4px;"></div>
+                                <span style="font-size: 0.85rem; color: #6c757d;">Your incorrect selection</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <div style="width: 16px; height: 16px; background: rgba(255, 209, 102, 0.1); border: 2px solid #ffd166; border-radius: 4px;"></div>
+                                <span style="font-size: 0.85rem; color: #6c757d;">Correct answer you missed</span>
+                            </div>
+                        </div>
+
+                        @include('quizzes.partials.answer-display', [
+                        'question' => $question,
+                        'answerData' => $answerData,
+                        'type' => 'user'
+                        ])
+                    </div>
+
+                    <!-- Question Explanation -->
+                    @if($question->explanation)
+                    <div class="rs-answer-box" style="margin-top: 20px; background: rgba(67, 97, 238, 0.03);">
                         <div class="rs-answer-label">
-                            <i class="fas fa-user"></i>
-                            Your Answer:
+                            <i class="fas fa-lightbulb" style="color: #ffd166;"></i>
+                            Explanation:
                         </div>
-                        <div class="rs-answer-value">
-                            @php
-                            $answerData = json_decode($answer->answer_data, true);
-                            @endphp
-                            @if(is_array($answerData))
-                                @foreach($answerData as $key => $value)
-                                    @if(is_numeric($key) && strpos($key, 'pair_') === false)
-                                        @php
-                                        $option = $question->options->where('id', $value)->first();
-                                        @endphp
-                                        {{ $option ? $option->option_text : $value }}
-                                    @elseif(strpos($key, 'pair_') === 0)
-                                        {{ $value }}
-                                    @else
-                                        {{ $value }}
-                                    @endif
-                                    @if(!$loop->last), @endif
-                                @endforeach
-                            @else
-                                {{ $answerData }}
-                            @endif
+                        <div style="color: #1e1e2f; font-size: 0.95rem; line-height: 1.6; padding: 10px; background: white; border-radius: 8px;">
+                            {{ $question->explanation }}
                         </div>
                     </div>
-                    @endif
-
-                    @if($quiz->show_answers && !$isCorrect)
-                        @if(in_array($question->question_type, ['multiple_choice', 'single_choice', 'true_false']))
-                            @php
-                            $correctOptions = $question->options->where('is_correct', true);
-                            @endphp
-                            @if($correctOptions->count() > 0)
-                            <div class="rs-answer-box">
-                                <div class="rs-answer-label">
-                                    <i class="fas fa-check-circle" style="color: #06d6a0;"></i>
-                                    Correct Answer:
-                                </div>
-                                <div class="rs-correct-answer">
-                                    <i class="fas fa-check-circle"></i>
-                                    @foreach($correctOptions as $option)
-                                        {{ $option->option_text }}@if(!$loop->last), @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                            @endif
-                        @elseif($question->question_type == 'fill_blank' && $question->fillBlanks->count() > 0)
-                            <div class="rs-answer-box">
-                                <div class="rs-answer-label">
-                                    <i class="fas fa-check-circle" style="color: #06d6a0;"></i>
-                                    Correct Answer:
-                                </div>
-                                <div class="rs-correct-answer">
-                                    <i class="fas fa-check-circle"></i>
-                                    @foreach($question->fillBlanks as $blank)
-                                        {{ $blank->answer }}@if(!$loop->last) or @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
                     @endif
                 </div>
                 @endforeach
@@ -1082,7 +1085,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Animate stats cards on scroll
         const statItems = document.querySelectorAll('.rs-stat-item');
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1090,7 +1093,10 @@
                     entry.target.style.transform = 'translateY(0)';
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
 
         statItems.forEach((item, index) => {
             item.style.opacity = '0';
@@ -1103,7 +1109,7 @@
         // Confetti effect for passed quizzes
         @if($passed)
         const colors = ['#06d6a0', '#4361ee', '#f72585', '#ffd166', '#667eea'];
-        
+
         function createConfetti() {
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
@@ -1159,4 +1165,59 @@
         console.log('Quiz results page initialized');
     });
 </script>
+@endpush
+
+@push('styles')
+<style>
+    /* Add these styles to your existing styles */
+    .rs-option-item {
+        transition: all 0.2s ease;
+        margin-bottom: 8px;
+    }
+    
+    .rs-option-item:hover {
+        transform: translateX(5px);
+    }
+    
+    .rs-option-correct {
+        border-left: 4px solid #06d6a0;
+    }
+    
+    .rs-option-incorrect {
+        border-left: 4px solid #ef476f;
+    }
+    
+    .rs-option-missed {
+        border-left: 4px solid #ffd166;
+    }
+    
+    .rs-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 8px;
+    }
+    
+    .rs-badge-correct {
+        background: rgba(6, 214, 160, 0.15);
+        color: #06d6a0;
+    }
+    
+    .rs-badge-incorrect {
+        background: rgba(239, 71, 111, 0.15);
+        color: #ef476f;
+    }
+    
+    .rs-badge-missed {
+        background: rgba(255, 209, 102, 0.15);
+        color: #b85e00;
+    }
+    
+    .rs-badge-user {
+        background: rgba(67, 97, 238, 0.15);
+        color: #4361ee;
+    }
+</style>
 @endpush

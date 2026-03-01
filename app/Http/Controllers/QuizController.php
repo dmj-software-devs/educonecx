@@ -162,7 +162,7 @@ class QuizController extends Controller
         if ($quiz->time_limit) {
             $elapsed = now()->diffInSeconds($attempt->started_at);
             $remainingTime = max(0, ($quiz->time_limit * 60) - $elapsed);
-            
+
             // Auto-submit if time's up
             if ($remainingTime <= 0) {
                 return $this->autoSubmitTimeout($quiz, $attempt);
@@ -227,10 +227,10 @@ class QuizController extends Controller
         // Save current answer if provided
         if (!empty($answers) && isset($questions[$currentIndex])) {
             $currentQuestion = $questions[$currentIndex];
-            
+
             // Extract the actual answer values from the nested structure
             $processedAnswers = $this->processAnswerInput($answers, $currentQuestion);
-            
+
             // Check if answer is correct
             $isCorrect = $this->validateAnswer($currentQuestion, $processedAnswers);
             $pointsEarned = $isCorrect ? $currentQuestion->points : 0;
@@ -274,50 +274,38 @@ class QuizController extends Controller
      */
     private function processAnswerInput($answers, $question)
     {
-        // If it's a single choice or true/false, we need to extract the value
-        if (in_array($question->question_type, ['single_choice', 'true_false'])) {
-            // Check if it's a nested array like { "1": ["1"] }
-            if (is_array($answers) && isset($answers[$question->id])) {
-                $value = $answers[$question->id];
-                // If value is an array with one element, return that element
-                if (is_array($value) && count($value) === 1) {
-                    return $value[0];
+        // Get the answer for this specific question
+        $questionAnswer = $answers[$question->id] ?? null;
+
+        if (!$questionAnswer) {
+            return null;
+        }
+
+        switch ($question->question_type) {
+            case 'single_choice':
+            case 'true_false':
+                // For radio inputs, value is directly the option ID
+                return $questionAnswer;
+
+            case 'multiple_choice':
+                // For checkbox inputs, value might be an array of IDs
+                return $questionAnswer;
+
+            case 'fill_blank':
+                // For text input
+                return trim($questionAnswer);
+
+            case 'matching':
+                // For matching pairs, we need to collect all pair values
+                $matchingAnswers = [];
+                foreach ($questionAnswer as $pairId => $value) {
+                    $matchingAnswers[$pairId] = $value;
                 }
-                return $value;
-            }
+                return $matchingAnswers;
+
+            default:
+                return $questionAnswer;
         }
-        
-        // For multiple choice, we need to keep the array structure
-        if ($question->question_type === 'multiple_choice') {
-            if (is_array($answers) && isset($answers[$question->id])) {
-                $value = $answers[$question->id];
-                // Ensure we return an array
-                if (!is_array($value)) {
-                    return [$value];
-                }
-                return $value;
-            }
-            return [];
-        }
-        
-        // For fill in the blank
-        if ($question->question_type === 'fill_blank') {
-            if (is_array($answers) && isset($answers[$question->id])) {
-                $value = $answers[$question->id];
-                if (is_array($value)) {
-                    return $value[0] ?? '';
-                }
-                return $value;
-            }
-            return '';
-        }
-        
-        // For matching
-        if ($question->question_type === 'matching') {
-            return $answers;
-        }
-        
-        return $answers;
     }
 
     /**
@@ -327,7 +315,7 @@ class QuizController extends Controller
     {
         $questions = $quiz->questions;
         $answers = QuizAnswer::where('attempt_id', $attempt->id)->get();
-        
+
         $totalPoints = $questions->sum('points');
         $earnedPoints = $answers->sum('points_earned');
         $percentage = $totalPoints > 0 ? round(($earnedPoints / $totalPoints) * 100) : 0;
@@ -375,78 +363,78 @@ class QuizController extends Controller
                 if (!is_array($answers)) {
                     return false;
                 }
-                
+
                 // Get correct option IDs
                 $correctOptions = $question->options()
                     ->where('is_correct', true)
                     ->pluck('id')
-                    ->map(function($id) {
+                    ->map(function ($id) {
                         return (int) $id; // Convert to integer for comparison
                     })
                     ->sort()
                     ->values()
                     ->toArray();
-                
+
                 // Convert answer values to integers for comparison
                 $answerValues = collect($answers)
-                    ->map(function($value) {
+                    ->map(function ($value) {
                         return (int) $value;
                     })
                     ->sort()
                     ->values()
                     ->toArray();
-                
+
                 return $correctOptions == $answerValues;
-                
+
             case 'single_choice':
             case 'true_false':
                 // Get correct option ID
                 $correctOption = $question->options()
                     ->where('is_correct', true)
                     ->first();
-                
+
                 if (!$correctOption) {
                     return false;
                 }
-                
+
                 return (int) $answers === (int) $correctOption->id;
-                
+
             case 'fill_blank':
                 // Get correct answers
                 $correctAnswers = $question->fillBlanks
                     ->pluck('answer')
-                    ->map(function($item) {
+                    ->map(function ($item) {
                         return strtolower(trim($item));
                     })
                     ->toArray();
-                
+
                 $userAnswer = strtolower(trim($answers));
-                
+
                 return in_array($userAnswer, $correctAnswers);
-                
+
             case 'matching':
                 // Matching expects array of pairs
                 if (!is_array($answers)) {
                     return false;
                 }
-                
+
                 // Implement matching validation logic
                 $correctPairs = 0;
                 $totalPairs = $question->matchingPairs->count();
-                
+
                 foreach ($answers as $key => $value) {
                     if (strpos($key, 'pair_') === 0) {
                         $pairId = str_replace('pair_', '', $key);
                         $pair = $question->matchingPairs->find($pairId);
-                        
+
                         if ($pair && $pair->right_item === $value) {
                             $correctPairs++;
                         }
                     }
                 }
-                
+
                 return $correctPairs === $totalPairs;
-                
+
             default:
                 return false;
         }
@@ -458,28 +446,41 @@ class QuizController extends Controller
      * 1. Two parameters: ($quizId, $attemptId) - for route parameters
      * 2. One parameter with the attempt ID as query string - for backward compatibility
      */
+    /**
+     * Show quiz results - FIXED VERSION
+     */
     public function results($quizId, $attemptId = null)
     {
         // If only one parameter is passed and it's a Request object (for API)
         if ($quizId instanceof Request) {
             return $this->resultsWithRequest($quizId);
         }
-        
+
         // If attemptId is null, try to get it from the request
         if ($attemptId === null) {
             $attemptId = request()->get('attempt');
-            
+
             if (!$attemptId) {
                 abort(404, 'Attempt ID not provided.');
             }
         }
 
+        // Load quiz with questions and ALL their relationships
         $quiz = Quiz::with(['questions' => function ($q) {
-            $q->orderBy('sort_order');
+            $q->orderBy('sort_order')->with([
+                'options',
+                'fillBlanks',
+                'matchingPairs'
+            ]);
         }])->findOrFail($quizId);
 
+        // Load attempt with answers and their question relationships
         $attempt = QuizAttempt::with(['answers' => function ($q) {
-            $q->with('question');
+            $q->with([
+                'question.options',
+                'question.fillBlanks',
+                'question.matchingPairs'
+            ]);
         }])->where('id', $attemptId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
@@ -494,15 +495,25 @@ class QuizController extends Controller
         $percentage = $attempt->percentage ?? 0;
         $passed = $attempt->passed ?? false;
 
-        // Prepare answers for display
+        // Debug: Check if fillBlanks are loaded
+        foreach ($quiz->questions as $question) {
+            if ($question->question_type === 'fill_blank') {
+                \Log::info('Fill Blank Question ID: ' . $question->id);
+                \Log::info('Fill Blanks count: ' . $question->fillBlanks->count());
+                \Log::info('Fill Blanks data: ' . $question->fillBlanks->toJson());
+            }
+        }
+
+        // Prepare answers for display with decoded data
         $answers = [];
         foreach ($attempt->answers as $answer) {
+            $answerData = json_decode($answer->answer_data, true);
+            $answer->decoded_data = $answerData;
             $answers[$answer->question_id] = $answer;
         }
 
         return view('quizzes.results', compact('quiz', 'attempt', 'earnedPoints', 'totalPoints', 'percentage', 'passed', 'answers'));
     }
-
     /**
      * Handle results with Request object (for API consistency)
      */
@@ -510,11 +521,11 @@ class QuizController extends Controller
     {
         $quizId = $request->route('quiz');
         $attemptId = $request->get('attempt');
-        
+
         if (!$attemptId) {
             abort(404, 'Attempt ID not provided.');
         }
-        
+
         return $this->results($quizId, $attemptId);
     }
 
@@ -524,7 +535,7 @@ class QuizController extends Controller
     public function history()
     {
         $user = Auth::user();
-        
+
         $attempts = QuizAttempt::with('quiz')
             ->where('user_id', $user->id)
             ->where('status', 'completed')
