@@ -37,6 +37,7 @@
                         <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="About">About</span></a></li>
                         <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="Academy">Academy</span></a></li>
                         <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="All Courses">All Courses</span></a></li>
+                        <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><span class="translate-text" data-original="Neo Ed Tech">Neo Ed Tech</span><img src="{{ asset('images/neo-ed-tech-logo.png') }}"></a></li>
                         <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="Blog">Blog</span></a></li>
                         <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="Our Team">Our Team</span></a></li>
                         <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="Contact">Contact</span></a></li>
@@ -133,6 +134,7 @@
             <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="About">About</span></a></li>
             <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="Academy">Academy</span></a></li>
             <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="All Courses">All Courses</span></a></li>
+            <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><span class="translate-text" data-original="Neo Ed Tech">Neo Ed Tech</span><img src="{{ asset('images/neo-ed-tech-logo.png') }}"></a></li>
             <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="Blog">Blog</span></a></li>
             <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="Our Team">Our Team</span></a></li>
             <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="Contact">Contact</span></a></li>
@@ -828,7 +830,7 @@
                 min-width: auto;
                 padding: 8px 12px;
             }
-            
+
             /* Adjust language menu position for tablet */
             .language-menu {
                 right: -20px;
@@ -858,17 +860,18 @@
                 max-height: 400px;
                 transform: translateY(-10px);
             }
-            
+
             .language-dropdown.active .language-menu {
                 transform: translateY(0);
             }
-            
+
             .language-list {
                 max-height: 300px;
             }
         }
 
         @media (max-width: 576px) {
+
             /* Keep as dropdown, not bottom sheet */
             .language-menu {
                 position: absolute;
@@ -881,15 +884,15 @@
                 max-height: 400px;
                 transform: translateY(-10px);
             }
-            
+
             .language-dropdown.active .language-menu {
                 transform: translateY(0);
             }
-            
+
             .language-list {
                 max-height: 300px;
             }
-            
+
             /* Adjust for very small screens */
             .language-menu {
                 right: -20px;
@@ -950,17 +953,61 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Language data
             const languages = {
-                'en': { name: 'English', flag: '🇺🇸', native: 'English' },
-                'es': { name: 'Spanish', flag: '🇪🇸', native: 'Español' },
-                'fr': { name: 'French', flag: '🇫🇷', native: 'Français' },
-                'de': { name: 'German', flag: '🇩🇪', native: 'Deutsch' },
-                'it': { name: 'Italian', flag: '🇮🇹', native: 'Italiano' },
-                'pt': { name: 'Portuguese', flag: '🇵🇹', native: 'Português' },
-                'nl': { name: 'Dutch', flag: '🇳🇱', native: 'Nederlands' },
-                'pl': { name: 'Polish', flag: '🇵🇱', native: 'Polski' },
-                'ru': { name: 'Russian', flag: '🇷🇺', native: 'Русский' },
-                'ja': { name: 'Japanese', flag: '🇯🇵', native: '日本語' },
-                'zh': { name: 'Chinese', flag: '🇨🇳', native: '中文' }
+                'en': {
+                    name: 'English',
+                    flag: '🇺🇸',
+                    native: 'English'
+                },
+                'es': {
+                    name: 'Spanish',
+                    flag: '🇪🇸',
+                    native: 'Español'
+                },
+                'fr': {
+                    name: 'French',
+                    flag: '🇫🇷',
+                    native: 'Français'
+                },
+                'de': {
+                    name: 'German',
+                    flag: '🇩🇪',
+                    native: 'Deutsch'
+                },
+                'it': {
+                    name: 'Italian',
+                    flag: '🇮🇹',
+                    native: 'Italiano'
+                },
+                'pt': {
+                    name: 'Portuguese',
+                    flag: '🇵🇹',
+                    native: 'Português'
+                },
+                'nl': {
+                    name: 'Dutch',
+                    flag: '🇳🇱',
+                    native: 'Nederlands'
+                },
+                'pl': {
+                    name: 'Polish',
+                    flag: '🇵🇱',
+                    native: 'Polski'
+                },
+                'ru': {
+                    name: 'Russian',
+                    flag: '🇷🇺',
+                    native: 'Русский'
+                },
+                'ja': {
+                    name: 'Japanese',
+                    flag: '🇯🇵',
+                    native: '日本語'
+                },
+                'zh': {
+                    name: 'Chinese',
+                    flag: '🇨🇳',
+                    native: '中文'
+                }
             };
 
             let currentLanguage = 'en';
@@ -1058,10 +1105,10 @@
                     window.translationSystem.translatePage(lang).then(() => {
                         // AFTER translation completes, update the language display
                         updateLanguageDisplay(lang, languages[lang]);
-                        
+
                         // Update active state in dropdown
                         updateActiveLanguageInDropdown(lang);
-                        
+
                         // Update current language variable
                         currentLanguage = lang;
 
