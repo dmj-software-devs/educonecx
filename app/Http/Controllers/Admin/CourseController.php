@@ -82,7 +82,7 @@ class CourseController extends Controller
             'title' => 'required|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'course_type' => 'required|in:free,paid',
-            'price' => 'nullable|numeric|min:0|required_if:course_type,paid',
+            'price' => 'nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lte:price',
             'discount_start_date' => 'nullable|date|required_with:sale_price',
             'discount_end_date' => 'nullable|date|after:discount_start_date|required_with:sale_price',
@@ -113,14 +113,6 @@ class CourseController extends Controller
             // Set is_free based on course_type
             $validated['is_free'] = $validated['course_type'] === 'free';
             
-            // If free, set price to null
-            if ($validated['is_free']) {
-                $validated['price'] = null;
-                $validated['sale_price'] = null;
-                $validated['discount_start_date'] = null;
-                $validated['discount_end_date'] = null;
-            }
-
             // Generate slug
             $validated['slug'] = Str::slug($validated['title']);
             
@@ -197,7 +189,7 @@ class CourseController extends Controller
             'title' => 'required|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'course_type' => 'required|in:free,paid',
-            'price' => 'nullable|numeric|min:0|required_if:course_type,paid',
+            'price' => 'nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lte:price',
             'discount_start_date' => 'nullable|date|required_with:sale_price',
             'discount_end_date' => 'nullable|date|after:discount_start_date|required_with:sale_price',
@@ -227,14 +219,6 @@ class CourseController extends Controller
         try {
             // Set is_free based on course_type
             $validated['is_free'] = $validated['course_type'] === 'free';
-            
-            // If free, set price to null
-            if ($validated['is_free']) {
-                $validated['price'] = null;
-                $validated['sale_price'] = null;
-                $validated['discount_start_date'] = null;
-                $validated['discount_end_date'] = null;
-            }
 
             // Handle thumbnail upload
             if ($request->hasFile('thumbnail')) {
@@ -676,31 +660,31 @@ class CourseController extends Controller
     }
 
     /**
- * Get lesson data for editing (AJAX)
- */
-public function editLessonData(Lesson $lesson)
-{
-    try {
-        $lesson->load('section');
-        
-        return response()->json([
-            'id' => $lesson->id,
-            'section_id' => $lesson->section_id,
-            'title' => $lesson->title,
-            'description' => $lesson->description,
-            'content' => $lesson->content,
-            'video_type' => $lesson->video_type,
-            'video_url' => $lesson->video_url,
-            'video_duration' => $lesson->video_duration,
-            'video_thumbnail' => $lesson->video_thumbnail,
-            'attachment' => $lesson->attachment,
-            'is_preview' => (bool)$lesson->is_preview,
-            'is_free' => (bool)$lesson->is_free,
-            'sort_order' => $lesson->sort_order,
-            'status' => $lesson->status
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Failed to load lesson data'], 500);
+     * Get lesson data for editing (AJAX)
+     */
+    public function editLessonData(Lesson $lesson)
+    {
+        try {
+            $lesson->load('section');
+            
+            return response()->json([
+                'id' => $lesson->id,
+                'section_id' => $lesson->section_id,
+                'title' => $lesson->title,
+                'description' => $lesson->description,
+                'content' => $lesson->content,
+                'video_type' => $lesson->video_type,
+                'video_url' => $lesson->video_url,
+                'video_duration' => $lesson->video_duration,
+                'video_thumbnail' => $lesson->video_thumbnail,
+                'attachment' => $lesson->attachment,
+                'is_preview' => (bool)$lesson->is_preview,
+                'is_free' => (bool)$lesson->is_free,
+                'sort_order' => $lesson->sort_order,
+                'status' => $lesson->status
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to load lesson data'], 500);
+        }
     }
-}
 }

@@ -1,174 +1,128 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use App\Models\Course;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Enrollment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
-use Stripe\PaymentIntent;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PaymentController extends Controller
+class Order extends Model
 {
-    /**
-     * Show checkout page
-     */
-    public function checkout(Course $course)
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'order_number',
+        'subscription_id',
+        'order_type',
+        'subtotal',
+        'discount_amount',
+        'coupon_code',
+        'total',
+        'payment_method',
+        'payment_status',
+        'transaction_id',
+        'stripe_session_id',
+        'stripe_payment_intent',
+        'stripe_response',
+        'billing_name',
+        'billing_email',
+        'billing_phone',
+        'billing_address',
+        'billing_city',
+        'billing_state',
+        'billing_country',
+        'billing_postal',
+        'notes'
+    ];
+
+    protected $casts = [
+        'subtotal' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
+        'total' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    protected $appends = [
+        'payment_status_label',
+        'order_type_label'
+    ];
+
+    // Relationships
+    public function user()
     {
-        // Check if user is already enrolled
-        $existingEnrollment = Enrollment::where('user_id', Auth::id())
-            ->where('course_id', $course->id)
-            ->first();
-
-        if ($existingEnrollment) {
-            return redirect()->route('courses.learning', $course->slug)
-                ->with('info', 'You are already enrolled in this course.');
-        }
-
-        // Check if it's a free course
-        if ($course->is_free) {
-            return redirect()->route('courses.enroll', $course);
-        }
-
-        // Use the new Stripe checkout view
-        return view('checkout-stripe', compact('course'));
+        return $this->belongsTo(User::class);
     }
 
-    /**
-     * Process payment with Stripe
-     */
-    public function process(Request $request)
+    public function items()
     {
-        $validated = $request->validate([
-            'course_id' => 'required|exists:courses,id',
-            'payment_method_id' => 'required|string'
-        ]);
-
-        $course = Course::findOrFail($validated['course_id']);
-
-        // Check if it's a free course
-        if ($course->is_free) {
-            return redirect()->route('courses.enroll', $course);
-        }
-
-        try {
-            DB::beginTransaction();
-
-            // Create order
-            $order = Order::create([
-                'user_id' => Auth::id(),
-                'order_number' => 'ORD-' . strtoupper(uniqid()),
-                'subtotal' => $course->current_price,
-                'total' => $course->current_price,
-                'payment_method' => 'stripe',
-                'payment_status' => 'pending',
-                'billing_name' => Auth::user()->name,
-                'billing_email' => Auth::user()->email
-            ]);
-
-            // Create order item
-            OrderItem::create([
-                'order_id' => $order->id,
-                'course_id' => $course->id,
-                'course_title' => $course->title,
-                'price' => $course->current_price,
-                'total' => $course->current_price
-            ]);
-
-            // Initialize Stripe
-            Stripe::setApiKey(config('services.stripe.secret'));
-
-            // Create Payment Intent
-            $paymentIntent = PaymentIntent::create([
-                'amount' => round($course->current_price * 100),
-                'currency' => 'usd',
-                'payment_method' => $validated['payment_method_id'],
-                'confirmation_method' => 'manual',
-                'confirm' => true,
-                'return_url' => route('payment.success'),
-                'metadata' => [
-                    'order_id' => $order->id,
-                    'order_number' => $order->order_number,
-                    'course_id' => $course->id,
-                    'user_id' => Auth::id()
-                ]
-            ]);
-
-            if ($paymentIntent->status === 'succeeded') {
-                // Update order
-                $order->update([
-                    'payment_status' => 'paid',
-                    'transaction_id' => $paymentIntent->id
-                ]);
-
-                // Create enrollment
-                Enrollment::create([
-                    'user_id' => Auth::id(),
-                    'course_id' => $course->id,
-                    'order_id' => $order->id,
-                    'enrollment_date' => now(),
-                    'status' => 'active',
-                    'progress' => 0
-                ]);
-
-                $course->increment('total_students');
-
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'redirect_url' => route('payment.success', ['order' => $order->id])
-                ]);
-            } else {
-                DB::rollBack();
-
-                return response()->json([
-                    'success' => false,
-                    'error' => 'Payment failed. Please try again.'
-                ], 400);
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'error' => 'Payment processing failed: ' . $e->getMessage()
-            ], 500);
-        }
+        return $this->hasMany(OrderItem::class);
     }
 
-    /**
-     * Payment success page
-     */
-    public function success(Request $request)
+    public function enrollments()
     {
-        $order = Order::with('items.course')
-            ->where('user_id', Auth::id())
-            ->findOrFail($request->order);
-
-        return view('payment-success', compact('order'));
+        return $this->hasMany(Enrollment::class);
     }
 
-    /**
-     * Payment cancel page
-     */
-    public function cancel()
+    public function subscription()
     {
-        return view('payment-cancel');
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_id');
     }
 
-    /**
-     * Payment webhook (for payment gateway callbacks)
-     */
-    public function webhook(Request $request)
+    public function userSubscription()
     {
-        // You can keep this for backward compatibility
-        // Or delegate to the StripePaymentController
-        return app(StripePaymentController::class)->handleWebhook($request);
+        return $this->hasOne(UserSubscription::class);
+    }
+
+    // Accessors
+    public function getPaymentStatusLabelAttribute()
+    {
+        $labels = [
+            'pending' => 'Pending',
+            'paid' => 'Paid',
+            'failed' => 'Failed',
+            'refunded' => 'Refunded'
+        ];
+        return $labels[$this->payment_status] ?? ucfirst($this->payment_status);
+    }
+
+    public function getOrderTypeLabelAttribute()
+    {
+        $labels = [
+            'course' => 'Course Purchase',
+            'subscription' => 'Subscription'
+        ];
+        return $labels[$this->order_type] ?? ucfirst($this->order_type);
+    }
+
+    // Scopes
+    public function scopeCompleted($query)
+    {
+        return $query->where('payment_status', 'paid');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('payment_status', 'pending');
+    }
+
+    public function scopeFailed($query)
+    {
+        return $query->where('payment_status', 'failed');
+    }
+
+    public function scopeCourses($query)
+    {
+        return $query->where('order_type', 'course');
+    }
+
+    public function scopeSubscriptions($query)
+    {
+        return $query->where('order_type', 'subscription');
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 }

@@ -79,7 +79,8 @@ class Course extends Model
         'instructor_name',
         'category_name',
         'rating_stars',
-        'total_enrollments'
+        'total_enrollments',
+        'access_type_label'
     ];
 
     // Relationships
@@ -121,7 +122,7 @@ class Course extends Model
     public function students()
     {
         return $this->belongsToMany(User::class, 'enrollments')
-            ->withPivot('progress', 'completed_at', 'enrollment_date', 'expiry_date')
+            ->withPivot('progress', 'completed_at', 'enrollment_date', 'expiry_date', 'access_type')
             ->withTimestamps();
     }
 
@@ -145,23 +146,21 @@ class Course extends Model
         return $this->hasMany(Certificate::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
     // Accessors
     public function getThumbnailUrlAttribute(): string
     {
         if ($this->thumbnail) {
-            // Check if the thumbnail path already includes 'storage/'
             if (str_starts_with($this->thumbnail, 'storage/')) {
                 return asset($this->thumbnail);
             }
-            // For paths stored as 'courses/thumbnails/filename.jpg'
             return Storage::url($this->thumbnail);
         }
         return asset('images/course-placeholder.jpg');
-    }
-
-     public function reviews()
-    {
-        return $this->hasMany(Review::class);
     }
 
     public function getVideoIntroUrlAttribute(): ?string
@@ -251,6 +250,45 @@ class Course extends Model
         return $this->enrollments()->count();
     }
 
+    public function getAccessTypeLabelAttribute(): string
+    {
+        return $this->is_free ? 'Free' : 'Subscription Required';
+    }
+
+    // Check if user has access via subscription
+    public function hasSubscriptionAccess($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return false;
+        
+        // Check if user has an active subscription
+        return UserSubscription::where('user_id', $userId)
+            ->where('status', 'active')
+            ->where('end_date', '>', now())
+            ->exists();
+    }
+
+    // Check if user can access this course
+    public function canUserAccess($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        if (!$userId) return false;
+        
+        // Free courses are accessible to everyone
+        if ($this->is_free) {
+            return true;
+        }
+        
+        // Check if user is enrolled (via subscription)
+        $isEnrolled = $this->students()->where('user_id', $userId)->exists();
+        if ($isEnrolled) {
+            return true;
+        }
+        
+        // Check if user has active subscription
+        return $this->hasSubscriptionAccess($userId);
+    }
+
     // Scopes
     public function scopePublished($query)
     {
@@ -284,7 +322,7 @@ class Course extends Model
 
     public function scopePaid($query)
     {
-        return $query->where('course_type', 'paid');
+        return $query->where('is_free', false);
     }
 
     public function scopeByCategory($query, $categoryId)
@@ -409,7 +447,6 @@ class Course extends Model
         });
 
         static::deleting(function ($course) {
-            // Delete related files
             if ($course->thumbnail) {
                 Storage::disk('public')->delete($course->thumbnail);
             }

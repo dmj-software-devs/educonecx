@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+
 class CourseController extends Controller
 {
     /**
@@ -48,19 +49,10 @@ class CourseController extends Controller
         if (!empty($filters['price'])) {
             $query->where(function ($q) use ($filters) {
                 if (in_array('free', $filters['price'])) {
-                    $q->orWhere(function ($q2) {
-                        $q2->where('price', 0)
-                            ->orWhere('sale_price', 0);
-                    });
+                    $q->orWhere('is_free', true);
                 }
                 if (in_array('paid', $filters['price'])) {
-                    $q->orWhere(function ($q2) {
-                        $q2->where('price', '>', 0)
-                            ->where(function ($q3) {
-                                $q3->whereNull('sale_price')
-                                    ->orWhere('sale_price', '>', 0);
-                            });
-                    });
+                    $q->orWhere('is_free', false);
                 }
             });
         }
@@ -105,15 +97,8 @@ class CourseController extends Controller
             });
 
         // Get course counts for stats
-        $freeCoursesCount = Course::published()
-            ->where(function($q) {
-                $q->where('price', 0)
-                    ->orWhere('sale_price', 0);
-            })->count();
-        
-        $paidCoursesCount = Course::published()
-            ->where('price', '>', 0)
-            ->count();
+        $freeCoursesCount = Course::published()->free()->count();
+        $paidCoursesCount = Course::published()->paid()->count();
 
         // Paginate results (12 per page)
         $perPage = 12;
@@ -161,19 +146,10 @@ class CourseController extends Controller
             if (!empty($filters['price'])) {
                 $query->where(function ($q) use ($filters) {
                     if (in_array('free', $filters['price'])) {
-                        $q->orWhere(function ($q2) {
-                            $q2->where('price', 0)
-                                ->orWhere('sale_price', 0);
-                        });
+                        $q->orWhere('is_free', true);
                     }
                     if (in_array('paid', $filters['price'])) {
-                        $q->orWhere(function ($q2) {
-                            $q2->where('price', '>', 0)
-                                ->where(function ($q3) {
-                                    $q3->whereNull('sale_price')
-                                        ->orWhere('sale_price', '>', 0);
-                                });
-                        });
+                        $q->orWhere('is_free', false);
                     }
                 });
             }
@@ -280,11 +256,14 @@ class CourseController extends Controller
 
             // Check if user is enrolled
             $isEnrolled = false;
+            $hasActiveSubscription = false;
+            
             if (Auth::check()) {
                 $isEnrolled = $course->students()->where('user_id', Auth::id())->exists();
+                $hasActiveSubscription = Auth::user()->has_active_subscription;
             }
 
-            return view('course-single', compact('course', 'relatedCourses', 'ratingDistribution', 'isEnrolled'));
+            return view('course-single', compact('course', 'relatedCourses', 'ratingDistribution', 'isEnrolled', 'hasActiveSubscription'));
             
         } catch (\Exception $e) {
             Log::error('Course show error: ' . $e->getMessage());
@@ -537,10 +516,33 @@ class CourseController extends Controller
                 ])
                 ->firstOrFail();
 
-            // Check if user is enrolled
-            if (!$course->students()->where('user_id', $user->id)->exists()) {
+            // Check if user can access this course
+            if (!$course->canUserAccess($user->id)) {
+                if (!$course->is_free && !$user->has_active_subscription) {
+                    return redirect()->route('subscription.plans')
+                        ->with('error', 'This course requires an active subscription. Please purchase a subscription to access.');
+                }
                 return redirect()->route('courses.show', $course->slug)
-                    ->with('error', 'You must be enrolled in this course to access the learning page');
+                    ->with('error', 'You do not have access to this course.');
+            }
+
+            // Get or create enrollment
+            $enrollment = Enrollment::where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->first();
+
+            if (!$enrollment) {
+                // Create enrollment automatically if user has subscription
+                $enrollment = Enrollment::create([
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                    'access_type' => 'subscription',
+                    'enrollment_date' => now(),
+                    'expiry_date' => $user->active_subscription->end_date ?? null,
+                    'status' => 'active',
+                    'progress' => 0
+                ]);
+                $course->increment('total_students');
             }
 
             // Get user's completed lessons
@@ -549,7 +551,7 @@ class CourseController extends Controller
                 ->pluck('lesson_id')
                 ->toArray();
 
-            return view('courses.learn', compact('course', 'completedLessons'));
+            return view('courses.learn', compact('course', 'enrollment', 'completedLessons'));
 
         } catch (\Exception $e) {
             Log::error('Course learn error: ' . $e->getMessage());

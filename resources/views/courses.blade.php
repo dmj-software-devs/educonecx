@@ -24,10 +24,10 @@
         --gradient-2: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
         --gradient-3: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
         --gradient-4: linear-gradient(135deg, #06d6a0 0%, #1b9e6d 100%);
-        --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-        --shadow-md: 0 5px 15px rgba(0,0,0,0.05);
-        --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-        --shadow-hover: 0 20px 40px rgba(67,97,238,0.15);
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+        --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 20px 40px rgba(67, 97, 238, 0.15);
         --radius-sm: 8px;
         --radius-md: 12px;
         --radius-lg: 16px;
@@ -923,7 +923,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.5);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 9998;
         opacity: 0;
         transition: opacity 0.3s;
@@ -952,12 +952,21 @@
 
     /* Animations */
     @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
     }
 
     @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     @keyframes slideInRight {
@@ -965,6 +974,7 @@
             transform: translateX(100%);
             opacity: 0;
         }
+
         to {
             transform: translateX(0);
             opacity: 1;
@@ -976,6 +986,7 @@
             transform: translateX(0);
             opacity: 1;
         }
+
         to {
             transform: translateX(100%);
             opacity: 0;
@@ -1029,11 +1040,11 @@
     .position-relative {
         position: relative;
     }
-    
+
     .overflow-hidden {
         overflow: hidden;
     }
-    
+
     .text-center {
         text-align: center;
     }
@@ -1050,7 +1061,7 @@
             flex-direction: column;
             padding: 20px;
         }
-        
+
         .courses-sidebar {
             position: fixed;
             top: 0;
@@ -1190,15 +1201,15 @@
                                 <input type="checkbox" name="price[]" value="free" class="price-checkbox"
                                     {{ in_array('free', $filters['price'] ?? []) ? 'checked' : '' }}>
                                 Free Courses
-                                <span class="filter-count">{{ $freeCoursesCount ?? \App\Models\Course::published()->free()->count() }}</span>
+                                <span class="filter-count">{{ $freeCoursesCount }}</span>
                             </label>
                         </li>
                         <li class="filter-option">
                             <label>
                                 <input type="checkbox" name="price[]" value="paid" class="price-checkbox"
                                     {{ in_array('paid', $filters['price'] ?? []) ? 'checked' : '' }}>
-                                Paid Courses
-                                <span class="filter-count">{{ $paidCoursesCount ?? \App\Models\Course::published()->paid()->count() }}</span>
+                                Subscription Required
+                                <span class="filter-count">{{ $paidCoursesCount }}</span>
                             </label>
                         </li>
                     </ul>
@@ -1281,7 +1292,7 @@
                                     <div class="course-rating">
                                         <span class="stars">
                                             @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= floor($course->average_rating ?? 0))
+                                                @if($i <=floor($course->average_rating ?? 0))
                                                 <i class="fas fa-star"></i>
                                                 @elseif($i - 0.5 <= ($course->average_rating ?? 0))
                                                     <i class="fas fa-star-half-alt"></i>
@@ -1317,18 +1328,14 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="course-footer">
-                                <div class="course-price {{ ($course->price == 0 || $course->sale_price == 0) ? 'free' : '' }}">
-                                    @if($course->price == 0 || $course->sale_price == 0)
+                                <div class="course-price {{ $course->is_free ? 'free' : '' }}">
+                                    @if($course->is_free)
                                     Free
-                                    @elseif($course->sale_price && $course->sale_price < $course->price)
-                                    ${{ number_format($course->sale_price, 2) }}
-                                    <small>${{ number_format($course->price, 2) }}</small>
                                     @else
-                                    ${{ number_format($course->price, 2) }}
+                                    Subscription
                                     @endif
-                                    <span class="price-label">one-time payment</span>
+                                    <span class="price-label">{{ $course->is_free ? '' : 'one payment - all courses' }}</span>
                                 </div>
                                 <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
                                     View Details <i class="fas fa-arrow-right"></i>
@@ -1463,7 +1470,7 @@
 
             if (keyword) params.append('keyword', keyword);
             if (sort) params.append('sort', sort);
-            
+
             categories.forEach(cat => params.append('categories[]', cat));
             prices.forEach(price => params.append('price[]', price));
 
@@ -1489,24 +1496,24 @@
                     if (data.success) {
                         // Update courses container
                         coursesContainer.innerHTML = data.html;
-                        
+
                         // Update stats
                         if (data.count !== undefined) {
                             document.getElementById('totalResults').textContent = data.count;
                             document.getElementById('totalCoursesCount').textContent = data.count;
                         }
-                        
+
                         // Reinitialize bookmark buttons for new content
                         initializeBookmarkButtons();
                         // Reinitialize ripple effects
                         initializeRippleEffects();
                         // Reinitialize pagination links
                         initializePaginationLinks();
-                        
+
                         // Hide loading spinner
                         loadingSpinner.classList.remove('show');
                         coursesContainer.style.opacity = '1';
-                        
+
                         // Show notification
                         showNotification('Filters applied successfully', 'success');
                     } else {
@@ -1518,7 +1525,7 @@
                     loadingSpinner.classList.remove('show');
                     coursesContainer.style.opacity = '1';
                     showNotification('Error applying filters. Please try again.', 'error');
-                    
+
                     // Fallback to form submission
                     if (searchForm) {
                         searchForm.submit();
@@ -1571,22 +1578,22 @@
         if (clearAllBtn) {
             clearAllBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                
+
                 // Uncheck all checkboxes
                 document.querySelectorAll('.category-checkbox, .price-checkbox').forEach(input => {
                     input.checked = false;
                 });
-                
+
                 // Clear search input
                 if (searchInput) {
                     searchInput.value = '';
                 }
-                
+
                 // Reset sort to default
                 if (sortSelect) {
                     sortSelect.value = 'newest_first';
                 }
-                
+
                 // Update courses
                 updateCourses();
             });
@@ -1596,22 +1603,22 @@
         if (resetFiltersBtn) {
             resetFiltersBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                
+
                 // Uncheck all checkboxes
                 document.querySelectorAll('.category-checkbox, .price-checkbox').forEach(input => {
                     input.checked = false;
                 });
-                
+
                 // Clear search input
                 if (searchInput) {
                     searchInput.value = '';
                 }
-                
+
                 // Reset sort to default
                 if (sortSelect) {
                     sortSelect.value = 'newest_first';
                 }
-                
+
                 // Redirect to courses page
                 window.location.href = '{{ route("courses") }}';
             });
@@ -1623,46 +1630,46 @@
             paginationLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
+
                     // Show loading spinner
                     loadingSpinner.classList.add('show');
                     coursesContainer.style.opacity = '0.5';
-                    
+
                     // Get the URL
                     const url = this.href;
-                    
+
                     // Fetch the page
                     fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            coursesContainer.innerHTML = data.html;
-                            initializeBookmarkButtons();
-                            initializeRippleEffects();
-                            initializePaginationLinks();
-                            
-                            // Scroll to top of courses
-                            document.querySelector('.courses-main').scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        window.location.href = url; // Fallback
-                    })
-                    .finally(() => {
-                        loadingSpinner.classList.remove('show');
-                        coursesContainer.style.opacity = '1';
-                    });
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                coursesContainer.innerHTML = data.html;
+                                initializeBookmarkButtons();
+                                initializeRippleEffects();
+                                initializePaginationLinks();
+
+                                // Scroll to top of courses
+                                document.querySelector('.courses-main').scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            window.location.href = url; // Fallback
+                        })
+                        .finally(() => {
+                            loadingSpinner.classList.remove('show');
+                            coursesContainer.style.opacity = '1';
+                        });
                 });
             });
         }
@@ -1673,15 +1680,15 @@
         // ========== BOOKMARK FUNCTIONALITY ==========
         function initializeBookmarkButtons() {
             const bookmarkBtns = document.querySelectorAll('.bookmark-btn');
-            
+
             bookmarkBtns.forEach(btn => {
                 btn.classList.add('position-relative', 'overflow-hidden');
-                
+
                 // Check if course is already bookmarked (you can implement this based on user's wishlist)
                 @auth
                 // You can add logic here to check if course is in user's wishlist
                 @endauth
-                
+
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     createRipple(e);
@@ -1695,40 +1702,40 @@
                     // Update icon
                     const icon = this.querySelector('i');
                     const isAdding = this.classList.contains('active');
-                    
+
                     if (isAdding) {
                         icon.classList.remove('far');
                         icon.classList.add('fas');
 
                         // Make AJAX call to add to wishlist
                         fetch(`/wishlist/add/${courseId}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification('Course added to bookmarks', 'success');
-                            } else {
-                                // Revert if failed
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showNotification('Course added to bookmarks', 'success');
+                                } else {
+                                    // Revert if failed
+                                    this.classList.remove('active');
+                                    icon.classList.remove('fas');
+                                    icon.classList.add('far');
+                                    showNotification(data.message || 'Failed to add to bookmarks', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                // Revert on error
                                 this.classList.remove('active');
                                 icon.classList.remove('fas');
                                 icon.classList.add('far');
-                                showNotification(data.message || 'Failed to add to bookmarks', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            // Revert on error
-                            this.classList.remove('active');
-                            icon.classList.remove('fas');
-                            icon.classList.add('far');
-                            showNotification('Error adding to bookmarks', 'error');
-                        });
+                                showNotification('Error adding to bookmarks', 'error');
+                            });
 
                     } else {
                         icon.classList.remove('fas');
@@ -1736,25 +1743,25 @@
 
                         // Make AJAX call to remove from wishlist
                         fetch(`/wishlist/remove/${courseId}`, {
-                            method: 'DELETE',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification('Course removed from bookmarks', 'info');
-                            } else {
-                                showNotification(data.message || 'Failed to remove from bookmarks', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showNotification('Error removing from bookmarks', 'error');
-                        });
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showNotification('Course removed from bookmarks', 'info');
+                                } else {
+                                    showNotification(data.message || 'Failed to remove from bookmarks', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showNotification('Error removing from bookmarks', 'error');
+                            });
                     }
                     @else
                     // Redirect to login
@@ -1778,14 +1785,14 @@
             const size = Math.max(rect.width, rect.height);
             const x = event.clientX - rect.left - size / 2;
             const y = event.clientY - rect.top - size / 2;
-            
+
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = x + 'px';
             ripple.style.top = y + 'px';
             ripple.className = 'ripple';
-            
+
             button.appendChild(ripple);
-            
+
             setTimeout(() => {
                 ripple.remove();
             }, 600);
@@ -1855,25 +1862,25 @@
         // ========== INITIALIZE ACTIVE FILTERS FROM URL ==========
         function initializeFiltersFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
-            
+
             // Set categories
             const categoryValues = urlParams.getAll('categories[]');
             document.querySelectorAll('.category-checkbox').forEach(checkbox => {
                 checkbox.checked = categoryValues.includes(checkbox.value);
             });
-            
+
             // Set prices
             const priceValues = urlParams.getAll('price[]');
             document.querySelectorAll('.price-checkbox').forEach(checkbox => {
                 checkbox.checked = priceValues.includes(checkbox.value);
             });
-            
+
             // Set sort
             const sort = urlParams.get('sort');
             if (sort && sortSelect) {
                 sortSelect.value = sort;
             }
-            
+
             // Set keyword
             const keyword = urlParams.get('keyword');
             if (keyword && searchInput) {

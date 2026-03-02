@@ -17,10 +17,10 @@
         --gray-color: #6c757d;
         --light-color: #f8f9fa;
         --border-color: #e9ecef;
-        --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
-        --shadow-md: 0 5px 15px rgba(0,0,0,0.05);
-        --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-        --shadow-hover: 0 20px 40px rgba(102,126,234,0.15);
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
+        --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 20px 40px rgba(102, 126, 234, 0.15);
         --radius-sm: 8px;
         --radius-md: 12px;
         --radius-lg: 16px;
@@ -145,13 +145,17 @@
         background: var(--success-color);
     }
 
+    .course-page-badge.subscription {
+        background: var(--primary-color);
+    }
+
     .course-page-hero-title {
         font-size: clamp(2rem, 5vw, 3rem);
         font-weight: 800;
         margin-bottom: 20px;
         line-height: 1.2;
         color: #ffffff;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .course-page-hero-description {
@@ -325,6 +329,7 @@
         padding: 25px;
         border-bottom: 1px solid var(--border-color);
         background: linear-gradient(145deg, #ffffff, #fafafa);
+        text-align: center;
     }
 
     .course-page-price {
@@ -339,6 +344,11 @@
         color: var(--success-color);
     }
 
+    .course-page-price.subscription {
+        color: var(--primary-color);
+        font-size: 2rem;
+    }
+
     .course-page-price small {
         font-size: 1rem;
         font-weight: 400;
@@ -350,6 +360,19 @@
     .course-page-price-label {
         font-size: 0.9rem;
         color: var(--gray-color);
+        display: block;
+        margin-top: 5px;
+    }
+
+    .subscription-badge {
+        display: inline-block;
+        background: var(--primary-gradient);
+        color: white;
+        padding: 4px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 10px;
     }
 
     .course-page-actions {
@@ -544,6 +567,7 @@
             opacity: 0;
             transform: translateY(10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -741,6 +765,7 @@
             opacity: 0;
             transform: translateY(-10px);
         }
+
         to {
             opacity: 1;
             transform: translateY(0);
@@ -1098,8 +1123,15 @@
 
     /* Animations */
     @keyframes course-page-float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
     }
 
     /* Notification System */
@@ -1124,6 +1156,7 @@
             transform: translateX(100%);
             opacity: 0;
         }
+
         to {
             transform: translateX(0);
             opacity: 1;
@@ -1135,6 +1168,7 @@
             transform: translateX(0);
             opacity: 1;
         }
+
         to {
             transform: translateX(100%);
             opacity: 0;
@@ -1258,11 +1292,10 @@
                 @if($course->featured)
                 <span class="course-page-badge featured"><i class="fas fa-star"></i> Featured</span>
                 @endif
-                @if($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
+                @if($course->is_free)
                 <span class="course-page-badge free"><i class="fas fa-gift"></i> Free Course</span>
-                @endif
-                @if(($course->sale_price ?? 0) > 0 && $course->sale_price < $course->price)
-                <span class="course-page-badge"><i class="fas fa-tag"></i> Sale - Save {{ round((1 - $course->sale_price/$course->price) * 100) }}%</span>
+                @else
+                <span class="course-page-badge subscription"><i class="fas fa-crown"></i> Subscription Required</span>
                 @endif
                 @if($course->level)
                 <span class="course-page-badge"><i class="fas fa-signal"></i> {{ ucfirst($course->level) }}</span>
@@ -1412,55 +1445,55 @@
                             </div>
 
                             @if(isset($course->sections) && $course->sections->count() > 0)
-                                @foreach($course->sections as $sectionIndex => $section)
-                                <div class="course-page-accordion-item">
-                                    <div class="course-page-accordion-header" data-section="{{ $sectionIndex }}">
-                                        <h3>{{ $section->title }}</h3>
-                                        <div class="course-page-section-meta">
-                                            <span>{{ $section->lessons->count() }} lessons</span>
-                                            <span>{{ $section->duration ?? '' }}</span>
-                                            <i class="fas fa-chevron-down"></i>
-                                        </div>
-                                    </div>
-                                    <div class="course-page-accordion-content" id="section-{{ $sectionIndex }}">
-                                        @if($section->lessons && $section->lessons->count() > 0)
-                                            @foreach($section->lessons as $lesson)
-                                            <div class="course-page-lesson-item">
-                                                <div class="course-page-lesson-icon">
-                                                    @if($lesson->is_free_preview)
-                                                    <i class="fas fa-play-circle"></i>
-                                                    @else
-                                                    <i class="fas fa-lock"></i>
-                                                    @endif
-                                                </div>
-                                                <div class="course-page-lesson-info">
-                                                    <div class="course-page-lesson-title">{{ $lesson->title }}</div>
-                                                    <div class="course-page-lesson-meta">
-                                                        <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
-                                                        @if($lesson->is_free_preview)
-                                                        <span class="text-success"><i class="fas fa-unlock-alt"></i> Free Preview</span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                @if($lesson->is_free_preview)
-                                                <a href="#" class="course-page-lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
-                                                    Preview <i class="fas fa-arrow-right"></i>
-                                                </a>
-                                                @else
-                                                <div class="course-page-lesson-locked">
-                                                    <i class="fas fa-lock"></i>
-                                                </div>
-                                                @endif
-                                            </div>
-                                            @endforeach
-                                        @else
-                                            <p class="text-center py-3">No lessons in this section yet.</p>
-                                        @endif
+                            @foreach($course->sections as $sectionIndex => $section)
+                            <div class="course-page-accordion-item">
+                                <div class="course-page-accordion-header" data-section="{{ $sectionIndex }}">
+                                    <h3>{{ $section->title }}</h3>
+                                    <div class="course-page-section-meta">
+                                        <span>{{ $section->lessons->count() }} lessons</span>
+                                        <span>{{ $section->duration ?? '' }}</span>
+                                        <i class="fas fa-chevron-down"></i>
                                     </div>
                                 </div>
-                                @endforeach
+                                <div class="course-page-accordion-content" id="section-{{ $sectionIndex }}">
+                                    @if($section->lessons && $section->lessons->count() > 0)
+                                    @foreach($section->lessons as $lesson)
+                                    <div class="course-page-lesson-item">
+                                        <div class="course-page-lesson-icon">
+                                            @if($lesson->is_free_preview)
+                                            <i class="fas fa-play-circle"></i>
+                                            @else
+                                            <i class="fas fa-lock"></i>
+                                            @endif
+                                        </div>
+                                        <div class="course-page-lesson-info">
+                                            <div class="course-page-lesson-title">{{ $lesson->title }}</div>
+                                            <div class="course-page-lesson-meta">
+                                                <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
+                                                @if($lesson->is_free_preview)
+                                                <span class="text-success"><i class="fas fa-unlock-alt"></i> Free Preview</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @if($lesson->is_free_preview)
+                                        <a href="#" class="course-page-lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
+                                            Preview <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                        @else
+                                        <div class="course-page-lesson-locked">
+                                            <i class="fas fa-lock"></i>
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                    @else
+                                    <p class="text-center py-3">No lessons in this section yet.</p>
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
                             @else
-                                <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
+                            <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
                             @endif
                         </div>
                     </div>
@@ -1540,15 +1573,11 @@
                                 <div class="course-page-related-category">{{ $relatedCourse->category->name ?? 'General' }}</div>
                                 <h3 class="course-page-related-title">{{ $relatedCourse->title }}</h3>
                                 <div class="course-page-related-meta">
-                                    <span class="course-page-related-price {{ ($relatedCourse->is_free ?? ($relatedCourse->price == 0)) ? 'free' : '' }}">
-                                        @if($relatedCourse->is_free ?? ($relatedCourse->price == 0))
-                                            Free
-                                        @elseif(($relatedCourse->sale_price ?? 0) > 0 && $relatedCourse->sale_price < $relatedCourse->price)
-                                            ${{ number_format($relatedCourse->sale_price, 2) }}
-                                        @elseif($relatedCourse->price > 0)
-                                            ${{ number_format($relatedCourse->price, 2) }}
+                                    <span class="course-page-related-price {{ $relatedCourse->is_free ? 'free' : '' }}">
+                                        @if($relatedCourse->is_free)
+                                        Free
                                         @else
-                                            Free
+                                        Subscription
                                         @endif
                                     </span>
                                     <span class="course-page-related-rating">
@@ -1578,58 +1607,61 @@
                         </div>
 
                         <div class="course-page-price-box">
-                            <div class="course-page-price {{ ($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0)) ? 'free' : '' }}">
-                                @if($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
-                                    Free
-                                @elseif(($course->sale_price ?? 0) > 0 && $course->sale_price < $course->price)
-                                    ${{ number_format($course->sale_price, 2) }}
-                                    <small>${{ number_format($course->price, 2) }}</small>
-                                @elseif($course->price > 0)
-                                    ${{ number_format($course->price, 2) }}
-                                @else
-                                    Free
-                                @endif
+                            @if($course->is_free)
+                            <div class="course-page-price free">
+                                Free
                             </div>
-                            <span class="course-page-price-label">one-time payment, lifetime access</span>
+                            <span class="course-page-price-label">No payment required</span>
+                            @else
+                            <div class="subscription-badge">
+                                <i class="fas fa-crown"></i> SUBSCRIPTION REQUIRED
+                            </div>
+                            <div class="course-page-price subscription">
+                                One Payment
+                            </div>
+                            <span class="course-page-price-label">Get access to ALL paid courses</span>
+                            @endif
                         </div>
 
                         <!-- Course Actions -->
                         <div class="course-page-actions">
                             @auth
                                 @if(isset($isEnrolled) && $isEnrolled)
-                                    <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
-                                        <i class="fas fa-play-circle"></i>
-                                        Continue Learning
-                                        @if(isset($course->user_progress) && $course->user_progress > 0)
-                                        ({{ $course->user_progress }}%)
-                                        @endif
-                                    </a>
-                                @elseif($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
-                                    <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}" data-course-type="free">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        Enroll Now - Free
-                                    </button>
-                                @else
-                                    <a href="{{ route('checkout', $course) }}" class="course-page-btn-enroll" id="purchaseBtn">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        Purchase Now - 
-                                        @if(($course->sale_price ?? 0) > 0 && $course->sale_price < $course->price)
-                                            ${{ number_format($course->sale_price, 2) }}
-                                        @else
-                                            ${{ number_format($course->price, 2) }}
-                                        @endif
-                                    </a>
-                                @endif
-                            @else
-                                <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    Login to 
-                                    @if($course->is_free ?? ($course->price == 0 || ($course->sale_price ?? 0) == 0))
-                                        Enroll
-                                    @else
-                                        Purchase
+                                <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
+                                    <i class="fas fa-play-circle"></i>
+                                    Continue Learning
+                                    @if(isset($course->user_progress) && $course->user_progress > 0)
+                                    ({{ $course->user_progress }}%)
                                     @endif
                                 </a>
+                                @elseif($course->is_free)
+                                <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Enroll Now - Free
+                                </button>
+                                @else
+                                    @if(isset($hasActiveSubscription) && $hasActiveSubscription)
+                                    <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Enroll Now (With Subscription)
+                                    </button>
+                                    @else
+                                    <a href="{{ route('subscription.plans') }}" class="course-page-btn-enroll">
+                                        <i class="fas fa-crown"></i>
+                                        Get Subscription to Access
+                                    </a>
+                                    @endif
+                                @endif
+                            @else
+                            <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login to
+                                @if($course->is_free)
+                                Enroll
+                                @else
+                                Get Subscription
+                                @endif
+                            </a>
                             @endauth
 
                             <button class="course-page-btn-wishlist" id="wishlistBtn" data-course-id="{{ $course->id }}">
@@ -1865,7 +1897,9 @@
                     })
                     .then(response => {
                         if (!response.ok) {
-                            return response.json().then(err => { throw err; });
+                            return response.json().then(err => {
+                                throw err;
+                            });
                         }
                         return response.json();
                     })
@@ -1877,9 +1911,12 @@
                             setTimeout(() => {
                                 window.location.href = data.redirect_url || '{{ route("courses.learning", $course->slug) }}';
                             }, 1500);
-                        } else if (data.redirect_to_checkout) {
-                            // Redirect to checkout for paid courses
-                            window.location.href = data.checkout_url;
+                        } else if (data.redirect_to_subscription) {
+                            // Redirect to subscription plans
+                            showNotification(data.message || 'Subscription required', 'info');
+                            setTimeout(() => {
+                                window.location.href = data.subscription_url || '{{ route("subscription.plans") }}';
+                            }, 1500);
                         } else {
                             showNotification(data.message || 'Enrollment failed', 'error');
                             this.innerHTML = originalText;
@@ -1931,44 +1968,44 @@
                 this.disabled = true;
 
                 const isActive = this.classList.contains('active');
-                const url = isActive ? 
-                    '{{ route("wishlist.remove", $course->id) }}' : 
+                const url = isActive ?
+                    '{{ route("wishlist.remove", $course->id) }}' :
                     '{{ route("wishlist.add", $course->id) }}';
                 const method = isActive ? 'DELETE' : 'POST';
 
                 fetch(url, {
-                    method: method,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (isActive) {
-                            this.classList.remove('active');
-                            this.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
-                            showNotification('Course removed from wishlist', 'info');
-                        } else {
-                            this.classList.add('active');
-                            this.innerHTML = '<i class="fas fa-heart"></i> Remove from Wishlist';
-                            showNotification('Course added to wishlist', 'success');
+                        method: method,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
                         }
-                    } else {
-                        showNotification(data.message || 'Operation failed', 'error');
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (isActive) {
+                                this.classList.remove('active');
+                                this.innerHTML = '<i class="far fa-heart"></i> Add to Wishlist';
+                                showNotification('Course removed from wishlist', 'info');
+                            } else {
+                                this.classList.add('active');
+                                this.innerHTML = '<i class="fas fa-heart"></i> Remove from Wishlist';
+                                showNotification('Course added to wishlist', 'success');
+                            }
+                        } else {
+                            showNotification(data.message || 'Operation failed', 'error');
+                            this.innerHTML = originalText;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Error processing your request', 'error');
                         this.innerHTML = originalText;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('Error processing your request', 'error');
-                    this.innerHTML = originalText;
-                })
-                .finally(() => {
-                    this.disabled = false;
-                });
+                    })
+                    .finally(() => {
+                        this.disabled = false;
+                    });
                 @else
                 // Store the current page in session to redirect back after login
                 sessionStorage.setItem('redirectAfterLogin', window.location.href);
@@ -2073,44 +2110,15 @@
             return stars;
         }
 
-        // ========== LOAD REVIEWS FUNCTION ==========
-        function loadReviews(courseId) {
-            fetch(`/courses/${courseId}/reviews`)
-                .then(response => response.json())
-                .then(data => {
-                    const reviewsContainer = document.getElementById('reviews');
-                    if (reviewsContainer && data.data) {
-                        // Build reviews HTML
-                        let reviewsHtml = '<h2 class="course-page-section-title">Student Reviews</h2>';
-                        data.data.forEach(review => {
-                            reviewsHtml += `
-                                <div class="review-item">
-                                    <div class="review-header">
-                                        <span class="review-author">${review.user.name}</span>
-                                        <span class="review-rating">${generateRatingStars(review.rating)}</span>
-                                    </div>
-                                    <div class="review-content">${review.review}</div>
-                                    <div class="review-date">${new Date(review.created_at).toLocaleDateString()}</div>
-                                </div>
-                            `;
-                        });
-                        reviewsContainer.innerHTML = reviewsHtml;
-                    }
-                })
-                .catch(error => console.error('Error loading reviews:', error));
-        }
-
-        // ========== LOAD RATING SUMMARY ==========
-        @if(isset($course))
-        // loadRatingSummary({{ $course->id }});
-        @endif
-
         // ========== SCROLL TO TOP WHEN TABS CHANGE ==========
         tabBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const contentWrapper = document.querySelector('.course-page-content-wrapper');
                 if (contentWrapper) {
-                    contentWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    contentWrapper.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 }
             });
         });

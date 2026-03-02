@@ -10,15 +10,17 @@ class OrderItem extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 'course_id', 'course_title', 'price', 'discount_amount', 'total'
+        'order_id',
+        'item_type',
+        'course_id',
+        'item_name',
+        'price',
+        'total'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
-        'total' => 'decimal:2',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'total' => 'decimal:2'
     ];
 
     // Relationships
@@ -30,5 +32,25 @@ class OrderItem extends Model
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    // Accessors
+    public function getItemNameAttribute()
+    {
+        return $this->attributes['item_name'] ?? 'Item';
+    }
+
+    public function getItemTypeAttribute()
+    {
+        return $this->attributes['item_type'] ?? 'unknown';
+    }
+
+    public function getItemTypeLabelAttribute()
+    {
+        $labels = [
+            'course' => 'Course',
+            'all_access' => 'All-Access Pass'
+        ];
+        return $labels[$this->item_type] ?? ucfirst($this->item_type);
     }
 }

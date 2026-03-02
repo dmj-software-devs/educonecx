@@ -10,9 +10,18 @@ class Enrollment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'course_id', 'order_id', 'enrollment_date', 'expiry_date',
-        'status', 'progress', 'completed_at', 'certificate_generated',
-        'certificate_url', 'last_accessed'
+        'user_id',
+        'course_id',
+        'order_id',
+        'access_type',
+        'enrollment_date',
+        'expiry_date',
+        'status',
+        'progress',
+        'completed_at',
+        'certificate_generated',
+        'certificate_url',
+        'last_accessed'
     ];
 
     protected $casts = [
@@ -24,6 +33,10 @@ class Enrollment extends Model
         'certificate_generated' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
+    ];
+
+    protected $appends = [
+        'access_type_label'
     ];
 
     // Relationships
@@ -47,23 +60,16 @@ class Enrollment extends Model
         return $this->hasOne(Certificate::class);
     }
 
-    // Scopes
-    public function scopeActive($query)
-    {
-        return $query->where('status', 'active');
-    }
-
-    public function scopeCompleted($query)
-    {
-        return $query->whereNotNull('completed_at');
-    }
-
-    public function scopeInProgress($query)
-    {
-        return $query->whereNull('completed_at')->where('status', 'active');
-    }
-
     // Accessors
+    public function getAccessTypeLabelAttribute()
+    {
+        $labels = [
+            'purchased' => 'Purchased',
+            'subscription' => 'Subscription Access'
+        ];
+        return $labels[$this->access_type] ?? ucfirst($this->access_type);
+    }
+
     public function getIsCompletedAttribute()
     {
         return !is_null($this->completed_at);
@@ -80,5 +86,31 @@ class Enrollment extends Model
         
         $days = now()->diffInDays($this->expiry_date, false);
         return $days > 0 ? $days : 0;
+    }
+
+    // Scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeCompleted($query)
+    {
+        return $query->whereNotNull('completed_at');
+    }
+
+    public function scopeInProgress($query)
+    {
+        return $query->whereNull('completed_at')->where('status', 'active');
+    }
+
+    public function scopePurchased($query)
+    {
+        return $query->where('access_type', 'purchased');
+    }
+
+    public function scopeSubscription($query)
+    {
+        return $query->where('access_type', 'subscription');
     }
 }

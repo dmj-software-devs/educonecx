@@ -10,30 +10,43 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'order_number', 'subtotal', 'discount_amount', 'coupon_code',
-        'total', 'payment_method', 'payment_status', 'transaction_id',
-        'billing_name', 'billing_email', 'billing_phone', 'billing_address',
-        'billing_city', 'billing_state', 'billing_country', 'billing_postal', 'notes'
+        'user_id',
+        'order_number',
+        'subscription_id',
+        'order_type',
+        'subtotal',
+        'tax',
+        'discount',
+        'total',
+        'payment_method',
+        'payment_status',
+        'transaction_id',
+        'billing_name',
+        'billing_email',
+        'billing_phone',
+        'billing_address',
+        'billing_city',
+        'billing_state',
+        'billing_country',
+        'billing_postcode',
+        'notes',
+        'status'
     ];
 
     protected $casts = [
         'subtotal' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
+        'tax' => 'decimal:2',
+        'discount' => 'decimal:2',
         'total' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-        
-        static::creating(function ($order) {
-            if (empty($order->order_number)) {
-                $order->order_number = 'ORD-' . strtoupper(uniqid());
-            }
-        });
-    }
+    protected $appends = [
+        'status_label',
+        'payment_status_label',
+        'order_type_label'
+    ];
 
     // Relationships
     public function user()
@@ -51,8 +64,51 @@ class Order extends Model
         return $this->hasMany(Enrollment::class);
     }
 
+    public function subscription()
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_id');
+    }
+
+    public function userSubscription()
+    {
+        return $this->hasOne(UserSubscription::class);
+    }
+
+    // Accessors
+    public function getStatusLabelAttribute()
+    {
+        $labels = [
+            'pending' => 'Pending',
+            'processing' => 'Processing',
+            'completed' => 'Completed',
+            'cancelled' => 'Cancelled',
+            'refunded' => 'Refunded'
+        ];
+        return $labels[$this->status] ?? ucfirst($this->status);
+    }
+
+    public function getPaymentStatusLabelAttribute()
+    {
+        $labels = [
+            'pending' => 'Pending',
+            'paid' => 'Paid',
+            'failed' => 'Failed',
+            'refunded' => 'Refunded'
+        ];
+        return $labels[$this->payment_status] ?? ucfirst($this->payment_status);
+    }
+
+    public function getOrderTypeLabelAttribute()
+    {
+        $labels = [
+            'course' => 'Course Purchase',
+            'subscription' => 'Subscription'
+        ];
+        return $labels[$this->order_type] ?? ucfirst($this->order_type);
+    }
+
     // Scopes
-    public function scopePaid($query)
+    public function scopeCompleted($query)
     {
         return $query->where('payment_status', 'paid');
     }
@@ -67,19 +123,18 @@ class Order extends Model
         return $query->where('payment_status', 'failed');
     }
 
-    // Accessors
-    public function getStatusColorAttribute()
+    public function scopeCourses($query)
     {
-        return [
-            'pending' => 'warning',
-            'paid' => 'success',
-            'failed' => 'danger',
-            'refunded' => 'info'
-        ][$this->payment_status] ?? 'secondary';
+        return $query->where('order_type', 'course');
     }
 
-    public function getStatusBadgeAttribute()
+    public function scopeSubscriptions($query)
     {
-        return '<span class="badge badge-' . $this->status_color . '">' . ucfirst($this->payment_status) . '</span>';
+        return $query->where('order_type', 'subscription');
+    }
+
+    public function scopeForUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
     }
 }

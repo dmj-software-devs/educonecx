@@ -194,8 +194,8 @@
                     <i class="fas fa-tag"></i>
                 </div>
                 <div>
-                    <h3>Pricing</h3>
-                    <p>Set your course pricing (free or paid)</p>
+                    <h3>Course Type</h3>
+                    <p>Select whether this course is free or requires subscription</p>
                 </div>
             </div>
 
@@ -207,9 +207,9 @@
                             <label class="type-option">
                                 <input type="radio" name="course_type" value="paid" {{ old('course_type', 'paid') == 'paid' ? 'checked' : '' }} id="typePaid">
                                 <div class="type-content">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <span>Paid Course</span>
-                                    <small>Students pay to access</small>
+                                    <i class="fas fa-crown"></i>
+                                    <span>Subscription Required</span>
+                                    <small>Users need a subscription to access</small>
                                 </div>
                             </label>
                             <label class="type-option">
@@ -217,70 +217,33 @@
                                 <div class="type-content">
                                     <i class="fas fa-gift"></i>
                                     <span>Free Course</span>
-                                    <small>Completely free for students</small>
+                                    <small>Completely free for all users</small>
                                 </div>
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-6" id="priceField">
+                <!-- Price fields (for display only, not used for payment) -->
+                <div class="col-md-6" id="priceField" style="display: none;">
                     <div class="form-group">
                         <label class="form-label">
-                            Regular Price ($) <span class="text-danger">*</span>
+                            Display Price ($) <span class="label-hint">(Optional, for reference only)</span>
                         </label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
                             <input type="number"
                                 name="price"
                                 id="priceInput"
-                                class="form-control @error('price') is-invalid @enderror"
-                                value="{{ old('price') }}"
+                                class="form-control"
+                                value="{{ old('price', '49.99') }}"
                                 step="0.01"
                                 min="0"
                                 placeholder="49.99">
                         </div>
-                        @error('price')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="col-md-6" id="salePriceField">
-                    <div class="form-group">
-                        <label class="form-label">
-                            Sale Price ($)
-                            <span class="label-hint">(Optional)</span>
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            <input type="number"
-                                name="sale_price"
-                                id="salePriceInput"
-                                class="form-control @error('sale_price') is-invalid @enderror"
-                                value="{{ old('sale_price') }}"
-                                step="0.01"
-                                min="0"
-                                placeholder="29.99">
+                        <div class="form-hint">
+                            <i class="fas fa-info-circle"></i> This is for display only. Users pay a one-time subscription for all courses.
                         </div>
-                        @error('sale_price')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- Discount Period -->
-                <div class="col-md-6" id="discountStartField">
-                    <div class="form-group">
-                        <label class="form-label">Discount Start Date</label>
-                        <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date') }}">
-                    </div>
-                </div>
-
-                <div class="col-md-6" id="discountEndField">
-                    <div class="form-group">
-                        <label class="form-label">Discount End Date</label>
-                        <input type="datetime-local" name="discount_end_date" class="form-control" value="{{ old('discount_end_date') }}">
                     </div>
                 </div>
             </div>
@@ -409,9 +372,9 @@
                         <select name="instructor_id" class="form-select">
                             <option value="{{ auth()->id() }}" selected>{{ auth()->user()->name }} (You)</option>
                             @if(auth()->user()->isAdmin() && isset($instructors))
-                                @foreach($instructors as $instructor)
-                                <option value="{{ $instructor->id }}">{{ $instructor->name }}</option>
-                                @endforeach
+                            @foreach($instructors as $instructor)
+                            <option value="{{ $instructor->id }}">{{ $instructor->name }}</option>
+                            @endforeach
                             @endif
                         </select>
                         <div class="form-hint">Select the course instructor</div>
@@ -1135,33 +1098,21 @@
         }
     });
 
-    // Toggle price fields based on course type
+    // Toggle price fields based on course type (for display only)
     function togglePriceFields() {
         const isFree = document.getElementById('typeFree').checked;
         const priceField = document.getElementById('priceField');
-        const salePriceField = document.getElementById('salePriceField');
-        const discountStartField = document.getElementById('discountStartField');
-        const discountEndField = document.getElementById('discountEndField');
-        const priceInput = document.getElementById('priceInput');
-        const salePriceInput = document.getElementById('salePriceInput');
 
         if (isFree) {
             priceField.style.display = 'none';
-            salePriceField.style.display = 'none';
-            discountStartField.style.display = 'none';
-            discountEndField.style.display = 'none';
-            priceInput.removeAttribute('required');
-            priceInput.value = '';
-            salePriceInput.value = '';
         } else {
             priceField.style.display = 'block';
-            salePriceField.style.display = 'block';
-            discountStartField.style.display = 'block';
-            discountEndField.style.display = 'block';
-            priceInput.setAttribute('required', 'required');
         }
     }
 
+    document.getElementById('typePaid').addEventListener('change', togglePriceFields);
+    document.getElementById('typeFree').addEventListener('change', togglePriceFields);
+    togglePriceFields();
     // Add event listeners
     document.getElementById('typePaid').addEventListener('change', togglePriceFields);
     document.getElementById('typeFree').addEventListener('change', togglePriceFields);

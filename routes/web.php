@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\TranslationController;
 use App\Services\DeepLService;
-
+use Illuminate\Support\Facades\Http;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -122,9 +122,11 @@ Route::get('/test-deepl-api', function() {
         'response' => json_decode($response, true) ?: $response
     ]);
 });
+
 // Language Switcher Route
 Route::get('/language/{lang}', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
 Route::get('/api/current-language', [App\Http\Controllers\LanguageController::class, 'getCurrentLanguage'])->name('language.current');
+
 // ==================== EMAIL VERIFICATION ROUTES ====================
 // These routes should be accessible without authentication
 Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
@@ -139,7 +141,9 @@ Route::middleware('auth')->group(function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 });
+
 Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate'])->name('translate');
+
 // ==================== AUTHENTICATION ROUTES ====================
 Route::middleware('guest')->group(function () {
     // Login Routes
@@ -171,9 +175,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-quizzes', [DashboardController::class, 'quizzes'])->name('my-quizzes');
     Route::get('/certificates', [DashboardController::class, 'certificates'])->name('certificates');
 
-    // Enrollment routes
+    // ==================== SUBSCRIPTION ROUTES ====================
+    Route::get('/subscription/plans', [PaymentController::class, 'subscriptionPlans'])->name('subscription.plans');
+    Route::get('/subscription/checkout/{plan}', [PaymentController::class, 'subscriptionCheckout'])->name('subscription.checkout');
+    Route::post('/subscription/process', [PaymentController::class, 'processSubscription'])->name('subscription.process');
+    Route::get('/subscription/success', [PaymentController::class, 'subscriptionSuccess'])->name('payment.subscription.success');
+
+    // Enrollment routes with subscription support
     Route::post('/courses/{course}/enroll', [App\Http\Controllers\EnrollmentController::class, 'enroll'])->name('courses.enroll');
     Route::post('/courses/{course}/enroll-ajax', [App\Http\Controllers\EnrollmentController::class, 'enrollAjax'])->name('courses.enroll.ajax');
+    Route::get('/courses/{course}/enroll-subscription', [App\Http\Controllers\EnrollmentController::class, 'enrollWithSubscription'])->name('courses.enroll.subscription');
     Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::class, 'learning'])->name('courses.learning');
     Route::post('/courses/{course}/lessons/{lesson}/progress', [App\Http\Controllers\EnrollmentController::class, 'updateProgress'])->name('courses.progress');
 
@@ -214,14 +225,12 @@ Route::get('/faqs', [PageController::class, 'faqs'])->name('faqs');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/refund-policy', [PageController::class, 'refund'])->name('refund');
 Route::get('/terms-conditions', [PageController::class, 'terms'])->name('terms');
-// Add this route for AJAX filtering
-Route::get('/courses/filter', [App\Http\Controllers\CourseController::class, 'filter'])->name('courses.filter');
 
 // ==================== PUBLIC COURSE ROUTES ====================
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/course-category/{slug}', [CourseController::class, 'category'])->name('courses.category');
-Route::get('/courses/filter', [CourseController::class, 'filter'])->name('courses.filter');
+Route::get('/courses/filter', [App\Http\Controllers\CourseController::class, 'filter'])->name('courses.filter');
 
 // ==================== PUBLIC BLOG ROUTES ====================
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');
@@ -236,6 +245,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('payment.webhook');
 });
 
+// ==================== STRIPE PAYMENT ROUTES ====================
+Route::middleware('auth')->group(function () {
+    Route::post('/stripe/create-checkout-session', [App\Http\Controllers\StripePaymentController::class, 'createCheckoutSession'])
+        ->name('stripe.create-checkout-session');
+    Route::get('/stripe/success', [App\Http\Controllers\StripePaymentController::class, 'success'])
+        ->name('stripe.success');
+    Route::get('/stripe/cancel', [App\Http\Controllers\StripePaymentController::class, 'cancel'])
+        ->name('stripe.cancel');
+});
+
+// Stripe webhook (no auth required)
+Route::post('/stripe/webhook', [App\Http\Controllers\StripePaymentController::class, 'handleWebhook'])
+    ->name('stripe.webhook');
+
 // ==================== ADMIN ROUTES ====================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard - Using AdminDashboardController
@@ -249,26 +272,33 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('courses/lessons/{lesson}', [App\Http\Controllers\Admin\CourseController::class, 'updateLesson'])->name('courses.lessons.update');
     Route::delete('courses/lessons/{lesson}', [App\Http\Controllers\Admin\CourseController::class, 'destroyLesson'])->name('courses.lessons.destroy');
     Route::post('courses/{course}/clone', [App\Http\Controllers\Admin\CourseController::class, 'clone'])->name('courses.clone');
-    // Add this route for getting lesson data via AJAX
     Route::get('courses/lessons/{lesson}/edit-data', [App\Http\Controllers\Admin\CourseController::class, 'editLessonData'])->name('courses.lessons.edit-data');
+    
     // Reordering
     Route::post('courses/sections/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderSections'])->name('courses.sections.reorder');
     Route::post('courses/lessons/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderLessons'])->name('courses.lessons.reorder');
+    
     // Sections Management
     Route::post('courses/{course}/sections', [App\Http\Controllers\Admin\CourseController::class, 'storeSection'])->name('courses.sections.store');
     Route::put('courses/sections/{section}', [App\Http\Controllers\Admin\CourseController::class, 'updateSection'])->name('courses.sections.update');
     Route::delete('courses/sections/{section}', [App\Http\Controllers\Admin\CourseController::class, 'destroySection'])->name('courses.sections.destroy');
-    Route::post('courses/sections/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderSections'])->name('courses.sections.reorder');
+
+    // Subscription Plans Management
+    Route::resource('subscription-plans', App\Http\Controllers\Admin\SubscriptionPlanController::class);
+    Route::post('subscription-plans/reorder', [App\Http\Controllers\Admin\SubscriptionPlanController::class, 'reorder'])->name('subscription-plans.reorder');
+    
+    // User Subscriptions Management
+    Route::get('subscriptions', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'index'])->name('subscriptions.index');
+    Route::get('subscriptions/{subscription}', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'show'])->name('subscriptions.show');
+    Route::post('subscriptions/{subscription}/cancel', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
+    Route::post('subscriptions/{subscription}/renew', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'renew'])->name('subscriptions.renew');
 
     // Quizzes Management
     Route::resource('quizzes', App\Http\Controllers\Admin\QuizController::class);
     Route::get('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'questions'])->name('quizzes.questions');
     Route::post('quizzes/{quiz}/questions', [App\Http\Controllers\Admin\QuizController::class, 'storeQuestion'])->name('quizzes.questions.store');
-
-    // Question Edit Routes
     Route::get('quizzes/questions/{question}/edit', [App\Http\Controllers\Admin\QuizController::class, 'editQuestion'])->name('quizzes.questions.edit');
     Route::put('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'updateQuestion'])->name('quizzes.questions.update');
-
     Route::delete('quizzes/questions/{question}', [App\Http\Controllers\Admin\QuizController::class, 'destroyQuestion'])->name('quizzes.questions.destroy');
     Route::post('quizzes/questions/reorder', [App\Http\Controllers\Admin\QuizController::class, 'reorderQuestions'])->name('quizzes.questions.reorder');
 
@@ -304,6 +334,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('reports/courses', [App\Http\Controllers\Admin\ReportController::class, 'courses'])->name('reports.courses');
     Route::get('reports/quizzes', [App\Http\Controllers\Admin\ReportController::class, 'quizzes'])->name('reports.quizzes');
     Route::get('reports/export/{type}/{format}', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
+
+    // Reports - New subscription reports
+    Route::get('reports/subscriptions', [App\Http\Controllers\Admin\ReportController::class, 'subscriptions'])->name('reports.subscriptions');
+    Route::get('reports/subscription-revenue', [App\Http\Controllers\Admin\ReportController::class, 'subscriptionRevenue'])->name('reports.subscription-revenue');
 
     // Notifications
     Route::get('notifications', [App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications');
@@ -350,21 +384,6 @@ if (app()->environment('local')) {
     });
 }
 
-// ==================== STRIPE PAYMENT ROUTES ====================
-Route::middleware('auth')->group(function () {
-    Route::post('/stripe/create-checkout-session', [App\Http\Controllers\StripePaymentController::class, 'createCheckoutSession'])
-        ->name('stripe.create-checkout-session');
-    Route::get('/stripe/success', [App\Http\Controllers\StripePaymentController::class, 'success'])
-        ->name('stripe.success');
-    Route::get('/stripe/cancel', [App\Http\Controllers\StripePaymentController::class, 'cancel'])
-        ->name('stripe.cancel');
-});
-
-// Stripe webhook (no auth required)
-Route::post('/stripe/webhook', [App\Http\Controllers\StripePaymentController::class, 'handleWebhook'])
-    ->name('stripe.webhook');
-
-
 // Add this route temporarily
 Route::get('/test-url', function (Request $request) {
     return response()->json([
@@ -388,6 +407,19 @@ Route::get('/stripe/success-test', function (Request $request) {
         })->values()
     ]);
 })->name('stripe.success.test');
+
+// ==================== SUBSCRIPTION ROUTES ====================
+Route::get('/subscription/plans', [PaymentController::class, 'subscriptionPlans'])->name('subscription.plans');
+Route::get('/subscription/checkout/{plan}', [PaymentController::class, 'subscriptionCheckout'])->name('subscription.checkout');
+Route::post('/subscription/process', [PaymentController::class, 'processSubscription'])->name('subscription.process');
+Route::get('/subscription/success', [PaymentController::class, 'subscriptionSuccess'])->name('payment.subscription.success');
+
+// Enrollment routes with subscription support
+Route::post('/courses/{course}/enroll', [App\Http\Controllers\EnrollmentController::class, 'enroll'])->name('courses.enroll');
+Route::post('/courses/{course}/enroll-ajax', [App\Http\Controllers\EnrollmentController::class, 'enrollAjax'])->name('courses.enroll.ajax');
+Route::get('/courses/{course}/enroll-subscription', [App\Http\Controllers\EnrollmentController::class, 'enrollWithSubscription'])->name('courses.enroll.subscription');
+Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::class, 'learning'])->name('courses.learning');
+
 // ==================== FALLBACK ROUTE ====================
 // Route::fallback(function () {
 //     return view('errors.404');

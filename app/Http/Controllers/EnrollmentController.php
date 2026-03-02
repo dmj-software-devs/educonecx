@@ -15,43 +15,63 @@ use App\Models\LessonProgress;
 class EnrollmentController extends Controller
 {
     /**
-     * Enroll in a course (handles both free and paid courses)
+     * Enroll in a course (handles free courses and subscription-based enrollment)
      */
     public function enroll($courseId)
     {
         $course = Course::published()->findOrFail($courseId);
+        $user = Auth::user();
 
         // Check if user is already enrolled
-        if ($course->is_enrolled) {
-            return redirect()->back()->with('error', 'You are already enrolled in this course.');
+        if ($course->isEnrolled($user->id)) {
+            return redirect()->route('courses.learning', $course->slug)
+                ->with('info', 'You are already enrolled in this course.');
         }
 
-        // For paid courses, redirect to checkout
+        // For paid courses, check subscription
         if (!$course->is_free) {
-            return redirect()->route('checkout', $course)
-                ->with('info', 'Please complete the payment to enroll in this course.');
+            if (!$user->has_active_subscription) {
+                return redirect()->route('subscription.plans')
+                    ->with('error', 'This course requires an active subscription. Please purchase a subscription to access all paid courses.');
+            }
+            
+            // Create enrollment with subscription access
+            return $this->createEnrollment($course, $user, 'subscription');
         }
 
-        // For free courses, create enrollment directly
+        // For free courses
+        return $this->createEnrollment($course, $user, 'purchased');
+    }
+
+    /**
+     * Create enrollment record
+     */
+    private function createEnrollment($course, $user, $accessType)
+    {
         DB::beginTransaction();
 
         try {
-            // Create enrollment
             Enrollment::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
                 'course_id' => $course->id,
+                'access_type' => $accessType,
                 'enrollment_date' => now(),
+                'expiry_date' => $accessType === 'subscription' ? $user->active_subscription->end_date : null,
                 'status' => 'active',
                 'progress' => 0
             ]);
 
-            // Update total students count
             $course->increment('total_students');
 
             DB::commit();
 
+            $message = $accessType === 'subscription' 
+                ? 'Successfully enrolled using your subscription! Start learning now.'
+                : 'Successfully enrolled in the course! Start learning now.';
+
             return redirect()->route('courses.learning', $course->slug)
-                ->with('success', 'Successfully enrolled in the course! Start learning now.');
+                ->with('success', $message);
+                
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Failed to enroll. Please try again.');
@@ -59,15 +79,16 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * Enroll in a course via AJAX (handles both free and paid courses)
+     * Enroll in a course via AJAX
      */
     public function enrollAjax($courseId)
     {
         try {
             $course = Course::published()->findOrFail($courseId);
+            $user = Auth::user();
 
             // Check if user is already enrolled
-            if ($course->is_enrolled) {
+            if ($course->isEnrolled($user->id)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You are already enrolled in this course.',
@@ -75,30 +96,53 @@ class EnrollmentController extends Controller
                 ]);
             }
 
-            // For paid courses, return checkout URL
+            // For paid courses, check subscription
             if (!$course->is_free) {
+                if (!$user->has_active_subscription) {
+                    return response()->json([
+                        'success' => false,
+                        'redirect_to_subscription' => true,
+                        'subscription_url' => route('subscription.plans'),
+                        'message' => 'This course requires a subscription. Please purchase a subscription to access all paid courses.'
+                    ]);
+                }
+                
+                // Create enrollment with subscription
+                DB::beginTransaction();
+                
+                Enrollment::create([
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                    'access_type' => 'subscription',
+                    'enrollment_date' => now(),
+                    'expiry_date' => $user->active_subscription->end_date,
+                    'status' => 'active',
+                    'progress' => 0
+                ]);
+
+                $course->increment('total_students');
+                DB::commit();
+
                 return response()->json([
-                    'success' => false,
-                    'redirect_to_checkout' => true,
-                    'checkout_url' => route('checkout', $course),
-                    'message' => 'Please complete the payment to enroll.'
+                    'success' => true,
+                    'message' => 'Successfully enrolled using your subscription!',
+                    'redirect_url' => route('courses.learning', $course->slug)
                 ]);
             }
 
+            // For free courses
             DB::beginTransaction();
 
-            // Create enrollment for free course
             Enrollment::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
                 'course_id' => $course->id,
+                'access_type' => 'purchased',
                 'enrollment_date' => now(),
                 'status' => 'active',
                 'progress' => 0
             ]);
 
-            // Update total students count
             $course->increment('total_students');
-
             DB::commit();
 
             return response()->json([
@@ -106,6 +150,7 @@ class EnrollmentController extends Controller
                 'message' => 'Successfully enrolled in the course!',
                 'redirect_url' => route('courses.learning', $course->slug)
             ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -125,46 +170,40 @@ class EnrollmentController extends Controller
             ->with(['sections.lessons', 'instructor'])
             ->firstOrFail();
 
-        // Check if user has access (enrolled or purchased)
-        $enrollment = Enrollment::where('user_id', Auth::id())
+        $user = Auth::user();
+
+        // Check if user has access
+        if (!$course->canUserAccess($user->id)) {
+            if (!$course->is_free && !$user->has_active_subscription) {
+                return redirect()->route('subscription.plans')
+                    ->with('error', 'This course requires an active subscription. Please purchase a subscription to access.');
+            }
+            return redirect()->route('courses.show', $course->slug)
+                ->with('error', 'You do not have access to this course.');
+        }
+
+        // Get enrollment
+        $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $course->id)
-            ->where('status', 'active')
             ->first();
 
-        // If not enrolled, check if they've purchased it
-        if (!$enrollment && !$course->is_free) {
-            // Check if user has purchased this course
-            $hasPurchased = \App\Models\Order::where('user_id', Auth::id())
-                ->whereHas('items', function ($query) use ($course) {
-                    $query->where('course_id', $course->id);
-                })
-                ->where('payment_status', 'paid')
-                ->exists();
-
-            if ($hasPurchased) {
-                // Create enrollment after successful purchase
-                $enrollment = Enrollment::create([
-                    'user_id' => Auth::id(),
-                    'course_id' => $course->id,
-                    'enrollment_date' => now(),
-                    'status' => 'active',
-                    'progress' => 0
-                ]);
-
-                // Increment total students count
-                $course->increment('total_students');
-            }
+        // If no enrollment but user has subscription and course is paid, create enrollment
+        if (!$enrollment && !$course->is_free && $user->has_active_subscription) {
+            $enrollment = Enrollment::create([
+                'user_id' => $user->id,
+                'course_id' => $course->id,
+                'access_type' => 'subscription',
+                'enrollment_date' => now(),
+                'expiry_date' => $user->active_subscription->end_date,
+                'status' => 'active',
+                'progress' => 0
+            ]);
+            $course->increment('total_students');
         }
 
-        // If still no enrollment, redirect to course page
-        if (!$enrollment) {
-            return redirect()->route('courses.show', $course->slug)
-                ->with('error', 'Please enroll or purchase this course to access the content.');
-        }
-
-        // Get course progress for enrolled user
-        $progress = $enrollment->progress;
-        $completedLessons = LessonProgress::where('user_id', Auth::id())
+        // Get course progress
+        $progress = $enrollment ? $enrollment->progress : 0;
+        $completedLessons = LessonProgress::where('user_id', $user->id)
             ->where('course_id', $course->id)
             ->where('status', 'completed')
             ->pluck('lesson_id')
@@ -329,27 +368,20 @@ class EnrollmentController extends Controller
     public function checkStatus($courseId)
     {
         $course = Course::findOrFail($courseId);
+        $user = Auth::user();
 
-        $enrollment = Enrollment::where('user_id', Auth::id())
+        $enrollment = Enrollment::where('user_id', $user->id)
             ->where('course_id', $courseId)
             ->where('status', 'active')
             ->first();
 
-        $hasPurchased = false;
-
-        if (!$enrollment && !$course->is_free) {
-            $hasPurchased = \App\Models\Order::where('user_id', Auth::id())
-                ->whereHas('items', function ($query) use ($course) {
-                    $query->where('course_id', $course->id);
-                })
-                ->where('payment_status', 'paid')
-                ->exists();
-        }
+        $hasSubscription = $user->has_active_subscription;
 
         return response()->json([
             'success' => true,
             'is_enrolled' => $enrollment ? true : false,
-            'has_purchased' => $hasPurchased,
+            'has_subscription' => $hasSubscription,
+            'can_access' => $course->canUserAccess($user->id),
             'is_free' => $course->is_free,
             'redirect_url' => $enrollment ? route('courses.learning', $course->slug) : null
         ]);

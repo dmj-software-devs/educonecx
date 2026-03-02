@@ -28,11 +28,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'updated_at' => 'datetime'
     ];
 
-    // Relationships
+    protected $appends = [
+        'has_active_subscription',
+        'active_subscription'
+    ];
+
+    // Existing relationships
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'enrollments')
-                    ->withPivot('progress', 'completed_at', 'enrollment_date')
+                    ->withPivot('progress', 'completed_at', 'enrollment_date', 'access_type')
                     ->withTimestamps();
     }
 
@@ -69,6 +74,109 @@ class User extends Authenticatable implements MustVerifyEmail
     public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    // New subscription relationships
+    public function subscriptions()
+    {
+        return $this->hasMany(UserSubscription::class);
+    }
+
+    public function activeSubscriptions()
+    {
+        return $this->subscriptions()
+            ->where('status', 'active')
+            ->where('end_date', '>', now());
+    }
+
+    // Accessors
+    public function getHasActiveSubscriptionAttribute()
+    {
+        return $this->activeSubscriptions()->exists();
+    }
+
+    public function getActiveSubscriptionAttribute()
+    {
+        return $this->activeSubscriptions()->first();
+    }
+
+    // Check if user can access a course
+    public function canAccessCourse($courseId)
+    {
+        $course = Course::find($courseId);
+        if (!$course) return false;
+        
+        // Free courses are accessible to everyone
+        if ($course->is_free) {
+            return true;
+        }
+        
+        // Check if user is enrolled (via subscription)
+        $isEnrolled = $this->enrollments()
+            ->where('course_id', $courseId)
+            ->where('status', 'active')
+            ->exists();
+            
+        if ($isEnrolled) {
+            return true;
+        }
+        
+        // Check if user has active subscription (for paid courses)
+        return $this->has_active_subscription;
+    }
+
+    // Get all accessible course IDs
+    public function getAccessibleCourseIds()
+    {
+        $enrolledCourseIds = $this->enrollments()
+            ->where('status', 'active')
+            ->pluck('course_id')
+            ->toArray();
+        
+        if ($this->has_active_subscription) {
+            // If user has subscription, they can access all paid courses
+            $paidCourseIds = Course::where('is_free', false)
+                ->pluck('id')
+                ->toArray();
+            
+            return array_unique(array_merge($enrolledCourseIds, $paidCourseIds));
+        }
+        
+        // If no subscription, they can only access free courses they're enrolled in
+        return $enrolledCourseIds;
+    }
+
+    // Auto-enroll in all paid courses when subscription is activated
+    public function enrollInAllPaidCourses($subscriptionId = null)
+    {
+        $paidCourses = Course::where('is_free', false)->get();
+        
+        foreach ($paidCourses as $course) {
+            // Check if already enrolled
+            $existingEnrollment = Enrollment::where('user_id', $this->id)
+                ->where('course_id', $course->id)
+                ->first();
+
+            if (!$existingEnrollment) {
+                Enrollment::create([
+                    'user_id' => $this->id,
+                    'course_id' => $course->id,
+                    'access_type' => 'subscription',
+                    'enrollment_date' => now(),
+                    'expiry_date' => $this->active_subscription->end_date ?? now()->addYear(),
+                    'status' => 'active',
+                    'progress' => 0
+                ]);
+
+                $course->increment('total_students');
+            } elseif ($existingEnrollment->access_type === 'subscription') {
+                // Update expiry date for existing subscription enrollment
+                $existingEnrollment->update([
+                    'expiry_date' => $this->active_subscription->end_date ?? now()->addYear(),
+                    'status' => 'active'
+                ]);
+            }
+        }
     }
 
     // Helper methods
