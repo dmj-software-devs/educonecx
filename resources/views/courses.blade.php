@@ -1271,6 +1271,10 @@
                             <span class="course-badge popular">Popular</span>
                             @elseif($course->is_free)
                             <span class="course-badge free">Free</span>
+                            @elseif(Auth::check() && Auth::user()->has_active_subscription)
+                            <span class="course-badge" style="background: linear-gradient(135deg, #06d6a0 0%, #05b587 100%);">
+                                <i class="fas fa-check-circle"></i> Subscribed
+                            </span>
                             @endif
 
                             <div class="course-bookmark">
@@ -1328,18 +1332,46 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="course-footer">
                                 <div class="course-price {{ $course->is_free ? 'free' : '' }}">
                                     @if($course->is_free)
                                     Free
                                     @else
+                                    @auth
+                                    {{ Auth::user()->has_active_subscription ? 'Subscribed' : 'Subscription' }}
+                                    @else
                                     Subscription
+                                    @endauth
                                     @endif
-                                    <span class="price-label">{{ $course->is_free ? '' : 'one payment - all courses' }}</span>
+                                    <span class="price-label">
+                                        @if($course->is_free)
+                                        No payment required
+                                        @else
+                                        @auth
+                                        {{ Auth::user()->has_active_subscription ? 'Active - Access all courses' : 'One payment - all courses' }}
+                                        @else
+                                        One payment - all courses
+                                        @endauth
+                                        @endif
+                                    </span>
                                 </div>
+
+                                @auth
+                                @if(!$course->is_free && Auth::user()->has_active_subscription)
+                                <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn" style="background: linear-gradient(135deg, #06d6a0 0%, #05b587 100%);">
+                                    <i class="fas fa-play-circle"></i> Start Learning
+                                </a>
+                                @else
                                 <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
                                     View Details <i class="fas fa-arrow-right"></i>
                                 </a>
+                                @endif
+                                @else
+                                <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
+                                    View Details <i class="fas fa-arrow-right"></i>
+                                </a>
+                                @endauth
                             </div>
                         </div>
                         @endforeach

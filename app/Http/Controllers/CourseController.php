@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Category;
+use App\Models\Enrollment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -107,7 +108,17 @@ class CourseController extends Controller
         // Add query parameters to pagination links
         $paginatedCourses->appends($request->query());
 
-        return view('courses', compact('paginatedCourses', 'categories', 'filters', 'freeCoursesCount', 'paidCoursesCount'));
+        // Check if user has active subscription
+        $hasActiveSubscription = Auth::check() ? Auth::user()->has_active_subscription : false;
+
+        return view('courses', compact(
+            'paginatedCourses', 
+            'categories', 
+            'filters', 
+            'freeCoursesCount', 
+            'paidCoursesCount',
+            'hasActiveSubscription'
+        ));
     }
 
     /**
@@ -180,8 +191,14 @@ class CourseController extends Controller
             // Get paginated results
             $courses = $query->paginate(12);
 
+            // Check if user has active subscription for the response
+            $hasActiveSubscription = Auth::check() ? Auth::user()->has_active_subscription : false;
+
             // Generate HTML for response
-            $html = view('partials.course-list', ['courses' => $courses])->render();
+            $html = view('partials.course-list', [
+                'courses' => $courses,
+                'hasActiveSubscription' => $hasActiveSubscription
+            ])->render();
 
             return response()->json([
                 'success' => true,
