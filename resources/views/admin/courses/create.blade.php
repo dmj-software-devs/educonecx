@@ -990,25 +990,15 @@
                 $('#thumbnailUpload').removeClass('border-danger');
             }
 
-            // Price validation for paid courses
+            // Price validation for paid courses (optional, for display only)
             if ($('#typePaid').is(':checked')) {
                 const price = parseFloat($('#priceInput').val());
-                if (!price || price <= 0) {
+                if (price && price <= 0) {
                     isValid = false;
-                    errors.push('Price must be a positive number for paid courses');
+                    errors.push('Display price must be a positive number');
                     $('#priceInput').addClass('is-invalid');
                 } else {
                     $('#priceInput').removeClass('is-invalid');
-                }
-
-                // Sale price validation (if provided)
-                const salePrice = parseFloat($('#salePriceInput').val());
-                if (salePrice && salePrice > price) {
-                    isValid = false;
-                    errors.push('Sale price cannot be greater than regular price');
-                    $('#salePriceInput').addClass('is-invalid');
-                } else {
-                    $('#salePriceInput').removeClass('is-invalid');
                 }
             }
 
@@ -1110,10 +1100,7 @@
         }
     }
 
-    document.getElementById('typePaid').addEventListener('change', togglePriceFields);
-    document.getElementById('typeFree').addEventListener('change', togglePriceFields);
-    togglePriceFields();
-    // Add event listeners
+    // Add event listeners for radio buttons
     document.getElementById('typePaid').addEventListener('change', togglePriceFields);
     document.getElementById('typeFree').addEventListener('change', togglePriceFields);
 

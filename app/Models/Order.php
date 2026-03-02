@@ -15,12 +15,15 @@ class Order extends Model
         'subscription_id',
         'order_type',
         'subtotal',
-        'tax',
-        'discount',
+        'discount_amount',
+        'coupon_code',
         'total',
         'payment_method',
         'payment_status',
         'transaction_id',
+        'stripe_session_id',
+        'stripe_payment_intent',
+        'stripe_response',
         'billing_name',
         'billing_email',
         'billing_phone',
@@ -28,22 +31,19 @@ class Order extends Model
         'billing_city',
         'billing_state',
         'billing_country',
-        'billing_postcode',
-        'notes',
-        'status'
+        'billing_postal',
+        'notes'
     ];
 
     protected $casts = [
         'subtotal' => 'decimal:2',
-        'tax' => 'decimal:2',
-        'discount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'total' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
 
     protected $appends = [
-        'status_label',
         'payment_status_label',
         'order_type_label'
     ];
@@ -75,18 +75,6 @@ class Order extends Model
     }
 
     // Accessors
-    public function getStatusLabelAttribute()
-    {
-        $labels = [
-            'pending' => 'Pending',
-            'processing' => 'Processing',
-            'completed' => 'Completed',
-            'cancelled' => 'Cancelled',
-            'refunded' => 'Refunded'
-        ];
-        return $labels[$this->status] ?? ucfirst($this->status);
-    }
-
     public function getPaymentStatusLabelAttribute()
     {
         $labels = [

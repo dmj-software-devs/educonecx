@@ -47,7 +47,7 @@
                         
                         <!-- Stripe Elements will be inserted here -->
                         <div id="stripe-card-element" class="stripe-card-element">
-                            <!-- Stripe Elements will create form elements here -->
+                            <!-- A Stripe Element will be inserted here. -->
                         </div>
                         
                         <div id="stripe-errors" class="stripe-errors" role="alert"></div>
@@ -182,7 +182,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const planId = this.dataset.planId;
         
         try {
-            // Create payment intent on server
+            // First create a payment method
+            const { paymentMethod, error } = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+            });
+            
+            if (error) {
+                throw new Error(error.message);
+            }
+            
+            // Now send the payment method ID to your server
             const response = await fetch('{{ route("subscription.process") }}', {
                 method: 'POST',
                 headers: {
@@ -191,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: JSON.stringify({
                     plan_id: planId,
-                    payment_method_id: 'card' // This will be handled by Stripe
+                    payment_method_id: paymentMethod.id
                 }),
             });
             
@@ -211,31 +221,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 1500);
             } else if (data.requires_action) {
                 // Handle 3D Secure authentication
-                const result = await stripe.handleCardAction(data.payment_intent_client_secret);
+                const result = await stripe.confirmCardPayment(data.payment_intent_client_secret);
                 
                 if (result.error) {
                     throw new Error(result.error.message);
                 } else {
-                    // The card action has been handled, confirm the payment
-                    const confirmResponse = await fetch('{{ route("subscription.process") }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        },
-                        body: JSON.stringify({
-                            plan_id: planId,
-                            payment_intent_id: result.paymentIntent.id
-                        }),
-                    });
-                    
-                    const confirmData = await confirmResponse.json();
-                    
-                    if (confirmData.success) {
-                        window.location.href = confirmData.redirect_url;
-                    } else {
-                        throw new Error(confirmData.error || 'Payment failed');
-                    }
+                    // Payment succeeded after 3D Secure
+                    window.location.href = data.redirect_url;
                 }
             } else {
                 throw new Error('Unexpected response from server');
@@ -307,6 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+/* All your existing styles remain the same */
 .checkout-container {
     padding: 60px 0;
     background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);

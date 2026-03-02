@@ -78,17 +78,15 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+        // Validate only the fields that exist in your form
         $validated = $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'course_type' => 'required|in:free,paid',
             'price' => 'nullable|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lte:price',
-            'discount_start_date' => 'nullable|date|required_with:sale_price',
-            'discount_end_date' => 'nullable|date|after:discount_start_date|required_with:sale_price',
             'description' => 'required|min:50',
             'excerpt' => 'nullable|max:500',
-            'level' => 'nullable|in:beginner,intermediate,advanced',
+            'level' => 'nullable|in:beginner,intermediate,advanced,all-levels',
             'language' => 'nullable|string|max:50',
             'prerequisites' => 'nullable|string',
             'what_you_will_learn' => 'nullable|string',
@@ -98,8 +96,8 @@ class CourseController extends Controller
             'featured' => 'nullable|boolean',
             'popular' => 'nullable|boolean',
             'status' => 'required|in:draft,published,archived',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'video_intro' => 'nullable|mimetypes:video/mp4,video/webm|max:51200', // 50MB max
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'video_intro' => 'nullable|mimetypes:video/mp4,video/webm|max:51200',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
             'seo_title' => 'nullable|max:255',
@@ -185,17 +183,15 @@ class CourseController extends Controller
      */
     public function update(Request $request, Course $course)
     {
+        // Validate only the fields that exist in your form
         $validated = $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'course_type' => 'required|in:free,paid',
             'price' => 'nullable|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lte:price',
-            'discount_start_date' => 'nullable|date|required_with:sale_price',
-            'discount_end_date' => 'nullable|date|after:discount_start_date|required_with:sale_price',
             'description' => 'required|min:50',
             'excerpt' => 'nullable|max:500',
-            'level' => 'nullable|in:beginner,intermediate,advanced',
+            'level' => 'nullable|in:beginner,intermediate,advanced,all-levels',
             'language' => 'nullable|string|max:50',
             'prerequisites' => 'nullable|string',
             'what_you_will_learn' => 'nullable|string',
@@ -397,11 +393,11 @@ class CourseController extends Controller
             'description' => 'nullable',
             'content' => 'nullable',
             'video_url' => 'nullable|required_without:video_file|url',
-            'video_file' => 'nullable|required_without:video_url|file|mimetypes:video/mp4,video/webm|max:512000', // 500MB max
+            'video_file' => 'nullable|required_without:video_url|file|mimetypes:video/mp4,video/webm|max:512000',
             'video_type' => 'nullable|in:youtube,vimeo,local,external',
             'video_duration' => 'nullable|integer|min:0',
             'video_thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'attachment' => 'nullable|file|max:10240', // 10MB max
+            'attachment' => 'nullable|file|max:10240',
             'is_preview' => 'nullable|boolean',
             'is_free' => 'nullable|boolean',
             'status' => 'required|in:draft,published'
