@@ -408,6 +408,26 @@ Route::get('/stripe/success-test', function (Request $request) {
     ]);
 })->name('stripe.success.test');
 
+// Add this with your other lesson routes
+Route::post('/save-current-lesson', function(Request $request) {
+    try {
+        $request->validate([
+            'course_id' => 'required|integer',
+            'lesson_id' => 'required|integer'
+        ]);
+        
+        session(['current_lesson_' . $request->course_id => $request->lesson_id]);
+        
+        return response()->json(['success' => true]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    }
+})->name('save.current.lesson')->middleware('auth');
+
+// Lesson routes (add these in the authenticated routes section)
+Route::post('/courses/lesson/{lesson}/complete', [CourseController::class, 'completeLesson'])->name('courses.lesson.complete');
+Route::get('/courses/lesson/{lesson}/data', [CourseController::class, 'getLessonData'])->name('courses.lesson.data');
+Route::post('/courses/lesson/{lesson}/progress', [CourseController::class, 'updateLessonProgress'])->name('courses.lesson.progress');
 // Translation debugging routes
 Route::get('/translation/test', [TranslationController::class, 'test'])->name('translation.test');
 Route::get('/translation/debug', [TranslationController::class, 'debug'])->name('translation.debug');

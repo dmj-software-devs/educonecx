@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Category;
 use App\Models\Enrollment;
+use App\Models\Lesson;
+use App\Models\LessonProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -468,7 +470,7 @@ class CourseController extends Controller
     }
 
     /**
-     * Complete a lesson
+     * Complete or incomplete a lesson
      */
     public function completeLesson(Request $request, $lessonId)
     {
@@ -482,30 +484,157 @@ class CourseController extends Controller
                 ], 401);
             }
 
-            $lesson = \App\Models\Lesson::findOrFail($lessonId);
+            $request->validate([
+                'completed' => 'required|boolean'
+            ]);
+
+            $lesson = Lesson::with('section.course')->findOrFail($lessonId);
+            $course = $lesson->section->course;
             
             // Check if user is enrolled in the course
-            if (!$lesson->section->course->students()->where('user_id', $user->id)->exists()) {
+            if (!$course->students()->where('user_id', $user->id)->exists()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You must be enrolled in this course to mark lessons as complete'
                 ], 403);
             }
 
-            // Toggle lesson completion
-            $progress = $user->lessonProgress()->toggle($lessonId);
+            $completed = $request->completed;
+
+            if ($completed) {
+                // Mark as completed
+                $lesson->markAsCompleted($user->id);
+                $message = 'Lesson marked as completed';
+            } else {
+                // Mark as incomplete
+                LessonProgress::where('user_id', $user->id)
+                    ->where('lesson_id', $lessonId)
+                    ->delete();
+                
+                // Update enrollment progress
+                $totalLessons = $course->lessons()->count();
+                $completedLessons = LessonProgress::where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->where('status', 'completed')
+                    ->count();
+                
+                $progress = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+                
+                Enrollment::where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->update([
+                        'progress' => $progress,
+                        'completed_at' => $progress >= 100 ? now() : null
+                    ]);
+                
+                $message = 'Lesson marked as incomplete';
+            }
+
+            // Get updated progress
+            $totalLessons = $course->lessons()->count();
+            $completedLessons = LessonProgress::where('user_id', $user->id)
+                ->where('course_id', $course->id)
+                ->where('status', 'completed')
+                ->count();
+            
+            $overallProgress = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 
             return response()->json([
                 'success' => true,
-                'message' => 'Lesson progress updated',
-                'completed' => !empty($progress['attached'])
+                'message' => $message,
+                'completed' => $completed,
+                'progress' => $overallProgress,
+                'completed_count' => $completedLessons,
+                'total_lessons' => $totalLessons
             ]);
 
         } catch (\Exception $e) {
             Log::error('Complete lesson error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error updating lesson progress'
+                'message' => 'Error updating lesson progress: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get lesson data for AJAX requests
+     */
+    public function getLessonData($lessonId)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $lesson = Lesson::with('section.course')->findOrFail($lessonId);
+            
+            // Check if user has access
+            if (!$lesson->section->course->canUserAccess($user->id)) {
+                return response()->json(['success' => false, 'message' => 'No access'], 403);
+            }
+
+            // Get user progress for this lesson
+            $progress = LessonProgress::where('user_id', $user->id)
+                ->where('lesson_id', $lessonId)
+                ->first();
+
+            return response()->json([
+                'success' => true,
+                'lesson' => [
+                    'id' => $lesson->id,
+                    'title' => $lesson->title,
+                    'content' => $lesson->content,
+                    'video_url' => $lesson->video_url_full,
+                    'video_type' => $lesson->video_type,
+                    'duration' => $lesson->duration_formatted,
+                    'attachment' => $lesson->attachment_url,
+                    'is_completed' => $lesson->is_completed,
+                    'progress' => $progress ? $progress->progress : 0,
+                    'last_position' => $progress ? $progress->last_position : 0
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Get lesson data error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading lesson data'
+            ], 500);
+        }
+    }
+
+    /**
+     * Update video progress
+     */
+    public function updateLessonProgress(Request $request, $lessonId)
+    {
+        try {
+            $request->validate([
+                'seconds' => 'required|numeric|min:0'
+            ]);
+
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+            }
+
+            $lesson = Lesson::findOrFail($lessonId);
+            
+            $progress = $lesson->updateProgress($request->seconds, $user->id);
+
+            return response()->json([
+                'success' => true,
+                'progress' => $progress->progress,
+                'status' => $progress->status
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Update lesson progress error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating progress'
             ], 500);
         }
     }
@@ -563,12 +692,52 @@ class CourseController extends Controller
             }
 
             // Get user's completed lessons
-            $completedLessons = $user->completedLessons()
+            $completedLessons = LessonProgress::where('user_id', $user->id)
                 ->whereIn('lesson_id', $course->lessons()->pluck('id'))
+                ->where('status', 'completed')
                 ->pluck('lesson_id')
                 ->toArray();
 
-            return view('courses.learn', compact('course', 'enrollment', 'completedLessons'));
+            // Get current lesson from session or first incomplete lesson
+            $currentLesson = null;
+            if (session()->has('current_lesson_' . $course->id)) {
+                $currentLessonId = session('current_lesson_' . $course->id);
+                $currentLesson = $course->lessons->firstWhere('id', $currentLessonId);
+            }
+            
+            if (!$currentLesson) {
+                // Find first incomplete lesson
+                foreach ($course->sections as $section) {
+                    foreach ($section->lessons as $lesson) {
+                        if (!in_array($lesson->id, $completedLessons)) {
+                            $currentLesson = $lesson;
+                            break 2;
+                        }
+                    }
+                }
+                
+                // If all completed, get last lesson
+                if (!$currentLesson && $course->lessons->isNotEmpty()) {
+                    $currentLesson = $course->lessons->last();
+                }
+            }
+
+            // Calculate stats
+            $totalLessonsCount = $course->lessons()->count();
+            $completedLessonsCount = count($completedLessons);
+            
+            // Calculate total time spent (simplified - you can enhance this)
+            $totalTimeSpent = '0h';
+
+            return view('course-learning', compact(
+                'course', 
+                'enrollment', 
+                'completedLessons',
+                'currentLesson',
+                'totalLessonsCount',
+                'completedLessonsCount',
+                'totalTimeSpent'
+            ));
 
         } catch (\Exception $e) {
             Log::error('Course learn error: ' . $e->getMessage());

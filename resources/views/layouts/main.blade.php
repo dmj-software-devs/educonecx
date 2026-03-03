@@ -17,7 +17,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
-
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -40,7 +41,7 @@
             --dark-slate: #2E5C61;
             --ivory: #F9F7E9;
             --light-gold: #EBD789;
-            
+
             /* Extended Palette */
             --primary: var(--regal-navy);
             --primary-dark: #0A1D44;
@@ -58,28 +59,28 @@
             --light: var(--ivory);
             --white: var(--pure-white);
             --black: #0A1D44;
-            
+
             /* Text Colors - Fixed for better visibility */
             --text-on-dark: #FFFFFF;
             --text-on-light: #0A1D44;
             --text-muted: #5f5f5f;
             --text-highlight: #FBC60C;
-            
+
             /* Liquid Gradients - Adjusted for better contrast */
             --gradient-liquid-1: linear-gradient(135deg, #0A1D44 0%, #18386E 50%, #2E5C61 100%);
             --gradient-liquid-2: linear-gradient(45deg, #FBC60C 0%, #EBD789 50%, #F9F7E9 100%);
             --gradient-liquid-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
             --gradient-liquid-4: linear-gradient(225deg, #0A1D44 0%, #2E5C61 50%, #5AD1E4 100%);
-            
+
             /* Hero-specific gradients */
             --gradient-hero: linear-gradient(135deg, #0A1D44 0%, #18386E 70%, #2E5C61 100%);
             --gradient-hero-overlay: linear-gradient(135deg, rgba(10, 29, 68, 0.9) 0%, rgba(24, 56, 110, 0.8) 100%);
-            
+
             /* Liquid Effects */
             --shadow-liquid: 0 20px 40px -15px rgba(10, 29, 68, 0.3);
             --shadow-liquid-hover: 0 30px 50px -15px rgba(251, 198, 12, 0.3);
             --shadow-liquid-glow: 0 0 30px rgba(90, 209, 228, 0.3);
-            
+
             /* Border Radius */
             --border-radius-sm: 12px;
             --border-radius-md: 20px;
@@ -87,7 +88,7 @@
             --border-radius-xl: 40px;
             --border-radius-full: 9999px;
             --border-radius-liquid: 40% 60% 30% 70% / 50% 40% 60% 50%;
-            
+
             /* Transitions */
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             --transition-liquid: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -117,14 +118,21 @@
         }
 
         /* Typography - Fixed for better readability */
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 700;
             line-height: 1.2;
         }
 
         /* Hero section specific typography - NO gradients on hero */
-        .hero-title, .hero-section h1, .hero-section .display-1 {
+        .hero-title,
+        .hero-section h1,
+        .hero-section .display-1 {
             color: var(--text-on-dark) !important;
             background: none !important;
             -webkit-background-clip: unset !important;
@@ -139,14 +147,16 @@
             -webkit-text-fill-color: unset !important;
         }
 
-        .hero-section p, .hero-text {
+        .hero-section p,
+        .hero-text {
             color: var(--text-on-dark) !important;
             opacity: 0.95;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         /* Regular headings - gradient only for non-hero sections */
-        .section-title, .card-title {
+        .section-title,
+        .card-title {
             background: var(--gradient-liquid-1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -177,7 +187,7 @@
                 padding: 0 20px;
             }
         }
-        
+
         @media (max-width: 576px) {
             .container {
                 padding: 0 15px;
@@ -245,33 +255,66 @@
         }
 
         @keyframes liquid-morph-1 {
-            0% { border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%; transform: translate(0, 0) rotate(0deg); }
-            100% { border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%; transform: translate(100px, 50px) rotate(20deg); }
+            0% {
+                border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%;
+                transform: translate(100px, 50px) rotate(20deg);
+            }
         }
 
         @keyframes liquid-morph-2 {
-            0% { border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%; transform: translate(0, 0) rotate(0deg); }
-            100% { border-radius: 67% 33% 31% 69% / 48% 62% 38% 52%; transform: translate(-80px, -80px) rotate(-15deg); }
+            0% {
+                border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                border-radius: 67% 33% 31% 69% / 48% 62% 38% 52%;
+                transform: translate(-80px, -80px) rotate(-15deg);
+            }
         }
 
         @keyframes liquid-morph-3 {
-            0% { border-radius: 67% 33% 59% 41% / 57% 43% 57% 43%; transform: translate(0, 0) scale(1); }
-            100% { border-radius: 41% 59% 33% 67% / 43% 62% 38% 57%; transform: translate(60px, -40px) scale(1.2); }
+            0% {
+                border-radius: 67% 33% 59% 41% / 57% 43% 57% 43%;
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                border-radius: 41% 59% 33% 67% / 43% 62% 38% 57%;
+                transform: translate(60px, -40px) scale(1.2);
+            }
         }
 
         @keyframes liquid-morph-4 {
-            0% { border-radius: 44% 56% 31% 69% / 58% 29% 71% 42%; transform: translate(0, 0) scale(1); }
-            100% { border-radius: 56% 44% 69% 31% / 42% 71% 29% 58%; transform: translate(-50px, 30px) scale(0.9); }
+            0% {
+                border-radius: 44% 56% 31% 69% / 58% 29% 71% 42%;
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                border-radius: 56% 44% 69% 31% / 42% 71% 29% 58%;
+                transform: translate(-50px, 30px) scale(0.9);
+            }
         }
 
         @keyframes liquid-float {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(30px, -30px); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(30px, -30px);
+            }
         }
 
         /* Liquid Typography - Only for non-hero sections */
-        .display-1:not(.hero-title), 
-        .display-2:not(.hero-title), 
+        .display-1:not(.hero-title),
+        .display-2:not(.hero-title),
         .section-title:not(.hero-title) {
             position: relative;
             display: inline-block;
@@ -290,8 +333,15 @@
         }
 
         @keyframes liquid-line {
-            0% { width: 100px; border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%; }
-            100% { width: 150px; border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%; }
+            0% {
+                width: 100px;
+                border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
+            }
+
+            100% {
+                width: 150px;
+                border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%;
+            }
         }
 
         .text-gradient:not(.hero-title-gradient) {
@@ -311,9 +361,17 @@
         }
 
         @keyframes liquid-text {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Liquid Buttons - Fixed for better visibility */
@@ -517,15 +575,34 @@
 
         /* Liquid Animations */
         @keyframes liquid-wave {
-            0% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-20px) scale(1.05); }
-            100% { transform: translateY(0) scale(1); }
+            0% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+            }
         }
 
         @keyframes liquid-pulse {
-            0% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
-            100% { opacity: 0.3; transform: scale(1); }
+            0% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.1);
+            }
+
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
         }
 
         .animate-liquid-float {
@@ -587,9 +664,20 @@
         }
 
         @keyframes spin-liquid {
-            0% { transform: rotate(0deg) scale(1); border-radius: var(--border-radius-liquid); }
-            50% { transform: rotate(180deg) scale(1.1); border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-            100% { transform: rotate(360deg) scale(1); border-radius: var(--border-radius-liquid); }
+            0% {
+                transform: rotate(0deg) scale(1);
+                border-radius: var(--border-radius-liquid);
+            }
+
+            50% {
+                transform: rotate(180deg) scale(1.1);
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            }
+
+            100% {
+                transform: rotate(360deg) scale(1);
+                border-radius: var(--border-radius-liquid);
+            }
         }
 
         /* Translation Loading Indicator */
@@ -627,8 +715,15 @@
         }
 
         @keyframes slideInLiquid {
-            0% { transform: translateX(100%) scale(0.8); opacity: 0; }
-            100% { transform: translateX(0) scale(1); opacity: 1; }
+            0% {
+                transform: translateX(100%) scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
         }
 
         /* Grid */
@@ -638,12 +733,16 @@
             width: 100%;
         }
 
-        .grid-2, .grid-3, .grid-4 {
+        .grid-2,
+        .grid-3,
+        .grid-4 {
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         }
 
         /* Inputs */
-        input, textarea, select {
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 14px 20px;
             border: 2px solid var(--pale-slate);
@@ -655,7 +754,9 @@
             backdrop-filter: blur(5px);
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: var(--sky-blue);
             box-shadow: var(--shadow-liquid-glow);
@@ -699,16 +800,16 @@
                 right: 15px;
                 padding: 12px 22px;
             }
-            
+
             .btn {
                 padding: 12px 28px;
             }
-            
+
             .card-content {
                 padding: 20px;
             }
         }
-        
+
         @media (max-width: 576px) {
             .global-translation-loading {
                 top: 10px;
@@ -718,26 +819,26 @@
                 padding: 12px 20px;
                 justify-content: center;
             }
-            
+
             .btn {
                 padding: 10px 24px;
                 width: 100%;
                 text-align: center;
             }
-            
+
             .card-content {
                 padding: 16px;
             }
-            
+
             .display-1 {
                 font-size: 2.5rem;
             }
-            
+
             .display-2 {
                 font-size: 2rem;
             }
         }
-        
+
         @media (max-width: 375px) {
             .global-translation-loading {
                 padding: 10px 16px;
@@ -756,13 +857,15 @@
 
         /* Fix for white space */
         @media (max-width: 1024px) {
-            body, html {
+
+            body,
+            html {
                 overflow-x: hidden;
                 width: 100%;
                 position: relative;
             }
         }
-        
+
         @media (max-width: 768px) {
             body.menu-open {
                 overflow: hidden;
@@ -781,8 +884,8 @@
             color: var(--bright-amber) !important;
         }
 
-        .hero-section h1, 
-        .hero-section h2, 
+        .hero-section h1,
+        .hero-section h2,
         .hero-section h3 {
             color: var(--pure-white) !important;
         }
@@ -796,6 +899,19 @@
             -webkit-background-clip: unset !important;
             -webkit-text-fill-color: unset !important;
             color: var(--pure-white) !important;
+        }
+
+        /* Translation specific styles */
+        .translate-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .translate-text.translating {
+            opacity: 0.7;
+        }
+
+        .no-translate {
+            /* Elements with this class won't be translated */
         }
     </style>
 </head>
@@ -837,7 +953,8 @@
         });
     </script>
 
-    <!-- Global Translation System -->
+    <!-- Global Translation System - Enhanced -->
+    // Global Translation System - Simplified and fixed
     <script>
         // Translation API endpoint
         const TRANSLATE_API_URL = "{{ route('translate') }}";
@@ -857,82 +974,147 @@
         // Store the base English texts
         let englishTexts = new Map();
 
+        // Batch size for translation API calls
+        const BATCH_SIZE = 20;
+        const BATCH_DELAY = 500;
+
+        // Language display mapping
+        const languageDisplay = {
+            'en': {
+                flag: '🇺🇸',
+                code: 'EN',
+                name: 'English'
+            },
+            'es': {
+                flag: '🇪🇸',
+                code: 'ES',
+                name: 'Español'
+            },
+            'fr': {
+                flag: '🇫🇷',
+                code: 'FR',
+                name: 'Français'
+            },
+            'de': {
+                flag: '🇩🇪',
+                code: 'DE',
+                name: 'Deutsch'
+            },
+            'it': {
+                flag: '🇮🇹',
+                code: 'IT',
+                name: 'Italiano'
+            },
+            'pt': {
+                flag: '🇵🇹',
+                code: 'PT',
+                name: 'Português'
+            },
+            'zh': {
+                flag: '🇨🇳',
+                code: 'ZH',
+                name: '中文'
+            }
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize translatable elements
             initializeTranslatableElements();
-            
-            // Store English texts as base
             storeEnglishTexts();
 
-            // Auto-translate if current language is not English
             if (currentLanguage !== 'en') {
-                translatePage(currentLanguage);
+                setTimeout(() => {
+                    translatePage(currentLanguage);
+                }, 100);
             }
+
+            updateLanguageDisplay(currentLanguage);
         });
 
-        // Store all original English texts
-        function storeEnglishTexts() {
-            translatableElements.forEach(item => {
-                if (item.element && item.baseOriginal) {
-                    englishTexts.set(item.element, item.baseOriginal);
-                }
-            });
-            console.log('English texts stored:', englishTexts.size);
+        // Simple function to check if text should be translated
+        function shouldTranslate(text) {
+            if (!text || text.trim().length < 2) return false;
+
+            // Don't translate if it's just numbers and symbols
+            if (/^[\d\s\W]+$/.test(text)) return false;
+
+            // Don't translate email addresses
+            if (text.includes('@') && text.includes('.')) return false;
+
+            // Don't translate phone numbers
+            if (text.match(/[\d-+()\s]{7,}/) && text.includes('+1')) return false;
+
+            // Translate everything else
+            return true;
         }
 
-        // Initialize all translatable elements and preserve original texts
         function initializeTranslatableElements() {
             translatableElements = [];
 
-            // Find all elements with text content that should be translated
             const selectors = [
                 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-                'p', 'span:not(.no-translate):not(.flag):not(.current-flag)',
-                'a:not(.no-translate):not(.btn):not(.language-toggle)',
+                'p', 'span', 'a', 'button', 'label', 'div',
                 '.btn', '.section-title', '.card-title', '.card-text',
                 '.nav-menu a', '.contact-info a', '.footer-links a',
-                'label', '.badge', '.alert', '.hero-title', '.hero-subtitle'
+                '.badge', '.hero-title', '.hero-subtitle',
+                '.mobile-nav-list a', '.mobile-section-title',
+                '.mobile-contact a', '.auth-buttons a'
             ];
 
             selectors.forEach(selector => {
                 document.querySelectorAll(selector).forEach(element => {
                     // Skip elements that should not be translated
-                    if (element.closest('.language-selector-container') ||
+                    if (element.closest('.language-selector') ||
+                        element.closest('.user-menu') ||
                         element.closest('.profile-dropdown') ||
-                        element.classList.contains('no-translate') ||
-                        element.classList.contains('flag') ||
                         element.classList.contains('current-flag') ||
+                        element.classList.contains('current-lang') ||
+                        element.classList.contains('user-name') ||
                         element.id === 'currentFlag' ||
-                        element.id === 'currentLanguage') {
+                        element.id === 'currentLang' ||
+                        element.id === 'langBtn' ||
+                        element.id === 'userBtn') {
                         return;
                     }
 
-                    // Skip elements with no text or only whitespace
-                    const text = element.textContent?.trim();
+                    // Get the text content, ignoring child elements
+                    let text = '';
+                    element.childNodes.forEach(node => {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            text += node.textContent;
+                        }
+                    });
+
+                    text = text.trim();
                     if (!text || text.length < 2) return;
 
-                    // Skip elements that contain only numbers or special characters
-                    if (/^[\d\s\W]+$/.test(text)) return;
+                    // Skip if it's just whitespace or numbers
+                    if (/^[\s\d]+$/.test(text)) return;
 
-                    // Get the original text
+                    // Check if we should translate this text
+                    if (!shouldTranslate(text)) return;
+
+                    // Get or set original text
                     let originalText = element.getAttribute('data-original');
-                    
-                    // If no data-original attribute, use current text and store it
                     if (!originalText) {
                         originalText = text;
                         element.setAttribute('data-original', text);
                     }
-                    
+
                     // Store base English text
-                    if (!element.hasAttribute('data-base-original')) {
+                    let baseOriginal = element.getAttribute('data-base-original');
+                    if (!baseOriginal) {
+                        baseOriginal = text;
                         element.setAttribute('data-base-original', text);
                     }
 
-                    // Add to translatable elements
+                    // Mark as translatable
+                    element.classList.add('translate-text');
+
                     translatableElements.push({
                         element: element,
                         original: originalText,
-                        baseOriginal: element.getAttribute('data-base-original')
+                        baseOriginal: baseOriginal,
+                        text: text
                     });
                 });
             });
@@ -940,41 +1122,57 @@
             console.log('Translatable elements found:', translatableElements.length);
         }
 
-        // Translate the entire page
+        function storeEnglishTexts() {
+            translatableElements.forEach(item => {
+                if (item.element && item.baseOriginal) {
+                    englishTexts.set(item.element, item.baseOriginal);
+                }
+            });
+        }
+
+        function updateLanguageDisplay(lang) {
+            const display = languageDisplay[lang] || languageDisplay['en'];
+            const flagEl = document.getElementById('currentFlag');
+            const langEl = document.getElementById('currentLang');
+
+            if (flagEl) flagEl.textContent = display.flag;
+            if (langEl) langEl.textContent = display.code;
+        }
+
         async function translatePage(targetLang) {
             if (isTranslating) return;
             isTranslating = true;
 
-            // Show loading indicator
             const loadingEl = document.getElementById('globalTranslationLoading');
             if (loadingEl) {
                 loadingEl.classList.add('show');
-                loadingEl.classList.remove('timeout');
                 loadingEl.innerHTML = '<i class="fas fa-spinner"></i><span>Translating page...</span>';
             }
 
-            // Set a timeout to show warning if translation takes too long
+            // Add translating class
+            translatableElements.forEach(item => {
+                if (item.element) item.element.classList.add('translating');
+            });
+
             const timeoutId = setTimeout(() => {
                 if (loadingEl) {
-                    loadingEl.classList.add('timeout');
                     loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Translation taking longer than expected...</span>';
                 }
-            }, 8000);
+            }, 30000);
 
             try {
-                // Update session silently
+                // Update session
                 fetch(`/language/${targetLang}`, {
                     method: 'GET',
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 }).catch(err => console.log('Session update error:', err));
 
                 console.log(`Translating page from ${currentLanguage} to ${targetLang}`);
                 console.log(`Elements to translate: ${translatableElements.length}`);
 
-                // Use base English texts as source for translation
+                // Get all texts to translate
                 const textsToTranslate = translatableElements.map(item => item.baseOriginal);
 
                 if (textsToTranslate.length === 0) {
@@ -982,52 +1180,92 @@
                     return true;
                 }
 
-                // Perform batch translation
-                const translatedTexts = await translateBatch(textsToTranslate, 'en', targetLang);
+                console.log(`Processing ${Math.ceil(textsToTranslate.length / BATCH_SIZE)} batches`);
+
+                // Process in batches
+                const totalBatches = Math.ceil(textsToTranslate.length / BATCH_SIZE);
+                let allTranslatedTexts = new Array(textsToTranslate.length).fill(null);
+
+                for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+                    const start = batchIndex * BATCH_SIZE;
+                    const end = Math.min(start + BATCH_SIZE, textsToTranslate.length);
+                    const batchTexts = textsToTranslate.slice(start, end);
+
+                    if (loadingEl) {
+                        loadingEl.innerHTML = `<i class="fas fa-spinner"></i><span>Translating... Batch ${batchIndex + 1}/${totalBatches}</span>`;
+                    }
+
+                    console.log(`Processing batch ${batchIndex + 1}/${totalBatches} (${batchTexts.length} texts)`);
+
+                    try {
+                        const batchResults = await translateBatch(batchTexts, 'en', targetLang);
+
+                        for (let i = 0; i < batchResults.length; i++) {
+                            allTranslatedTexts[start + i] = batchResults[i];
+                        }
+
+                        // Delay between batches
+                        if (batchIndex < totalBatches - 1) {
+                            await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
+                        }
+                    } catch (error) {
+                        console.error(`Batch ${batchIndex + 1} failed:`, error);
+                        // Fallback to original texts
+                        for (let i = 0; i < batchTexts.length; i++) {
+                            allTranslatedTexts[start + i] = batchTexts[i];
+                        }
+                    }
+                }
 
                 // Apply translations
                 let appliedCount = 0;
-                translatedTexts.forEach((translated, index) => {
-                    if (translatableElements[index] && translatableElements[index].element) {
-                        const element = translatableElements[index].element;
-                        
-                        if (translated && translated.trim().length > 0) {
-                            const currentContent = element.textContent;
-                            
-                            // Only update if the translation is different
-                            if (translated !== currentContent) {
-                                element.textContent = translated;
-                                appliedCount++;
-                                
-                                // Log first few translations for debugging
-                                if (appliedCount <= 5) {
-                                    console.log(`Element ${index}: "${currentContent}" -> "${translated}"`);
-                                }
+
+                for (let i = 0; i < translatableElements.length; i++) {
+                    const item = translatableElements[i];
+                    const translated = allTranslatedTexts[i];
+
+                    if (item.element && translated && translated.trim().length > 0) {
+                        // Check if translation is different from original
+                        if (translated !== item.baseOriginal) {
+                            // Update the text content only
+                            item.element.innerHTML = item.element.innerHTML.replace(item.baseOriginal, translated);
+                            item.element.setAttribute('data-original', translated);
+                            appliedCount++;
+
+                            if (appliedCount <= 10) {
+                                console.log(`✅ Translated ${i}: "${item.baseOriginal.substring(0, 30)}..." -> "${translated.substring(0, 30)}..."`);
                             }
                         }
                     }
-                });
+                }
 
                 // Update current language
                 currentLanguage = targetLang;
+                updateLanguageDisplay(targetLang);
 
-                console.log(`Translation complete: ${appliedCount}/${translatableElements.length} elements updated`);
-                
+                console.log(`✅ Translation complete: ${appliedCount}/${translatableElements.length} elements updated`);
+
+                if (appliedCount === 0 && textsToTranslate.length > 0) {
+                    console.warn('⚠️ No elements were updated. Checking API...');
+                    testTranslationAPI();
+                }
+
                 return true;
 
             } catch (error) {
                 console.error('Page translation error:', error);
-                throw error;
             } finally {
                 clearTimeout(timeoutId);
-                if (loadingEl) {
-                    loadingEl.classList.remove('show', 'timeout');
-                }
+
+                translatableElements.forEach(item => {
+                    if (item.element) item.element.classList.remove('translating');
+                });
+
+                if (loadingEl) loadingEl.classList.remove('show');
                 isTranslating = false;
             }
         }
 
-        // Batch translate multiple texts
         async function translateBatch(texts, sourceLang, targetLang) {
             if (texts.length === 0) return [];
             if (sourceLang === targetLang) return texts;
@@ -1049,28 +1287,19 @@
                 }
             });
 
-            if (uncachedTexts.length === 0) {
-                return results;
-            }
+            if (uncachedTexts.length === 0) return results;
 
             try {
-                console.log(`Translating ${uncachedTexts.length} texts to ${targetLang}...`);
-
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-                
-                if (!csrfToken) {
-                    console.error('CSRF token not found');
-                    uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
-                    return results;
-                }
+
+                console.log(`Sending ${uncachedTexts.length} texts to translation API...`);
 
                 const response = await fetch(TRANSLATE_API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify({
                         q: uncachedTexts,
@@ -1085,18 +1314,21 @@
                 }
 
                 const data = await response.json();
-                console.log(`Received ${data.translatedTexts?.length || 0} translations`);
 
                 if (data.translatedTexts && Array.isArray(data.translatedTexts)) {
                     data.translatedTexts.forEach((translated, idx) => {
                         const originalIndex = uncachedIndices[idx];
-                        results[originalIndex] = translated;
+                        const finalTranslation = translated || uncachedTexts[idx];
+                        results[originalIndex] = finalTranslation;
 
                         // Cache the result
                         const cacheKey = `${uncachedTexts[idx]}_${sourceLang}_${targetLang}`;
-                        translationCache.set(cacheKey, translated);
+                        translationCache.set(cacheKey, finalTranslation);
                     });
+
+                    console.log(`Received ${data.translatedTexts.length} translations`);
                 } else {
+                    console.error('Invalid API response:', data);
                     uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
                 }
 
@@ -1108,68 +1340,47 @@
             }
         }
 
-        // Reset to English
-        window.resetToEnglish = function() {
-            translatableElements.forEach(item => {
-                if (item.element && item.baseOriginal) {
-                    item.element.textContent = item.baseOriginal;
-                    item.element.setAttribute('data-original', item.baseOriginal);
-                }
-            });
-            currentLanguage = 'en';
-            
-            // Update language display
-            const flagEl = document.getElementById('currentFlag');
-            const langEl = document.getElementById('currentLanguage');
-            if (flagEl) flagEl.textContent = '🇺🇸';
-            if (langEl) langEl.textContent = 'English';
-            
-            console.log('Reset to English');
-        };
+        // Test API function
+        async function testTranslationAPI() {
+            console.log('🔍 Testing translation API...');
 
-        // Debug function
-        window.testTranslation = async function() {
-            console.log('Testing translation API...');
-            console.log('Current language:', currentLanguage);
-            console.log('Elements:', translatableElements.length);
-            
             try {
-                const response = await fetch(TRANSLATE_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        q: 'Hello world',
-                        source: 'en',
-                        target: 'es',
-                        batch: false
-                    })
-                });
-                
-                const data = await response.json();
-                console.log('Test translation:', data);
-            } catch (error) {
-                console.error('Test error:', error);
-            }
-        };
+                const testTexts = ['Hello', 'Welcome to our site', 'Learn more'];
+                const results = await translateBatch(testTexts, 'en', 'es');
 
-        // Expose for debugging
+                console.log('Test results:', results);
+
+                if (results[0] !== 'Hello') {
+                    console.log('✅ API is working!');
+                } else {
+                    console.error('❌ API is not translating');
+                }
+            } catch (error) {
+                console.error('Test failed:', error);
+            }
+        }
+
+        // Public API
         window.translationSystem = {
             translatePage,
-            resetToEnglish: window.resetToEnglish,
             currentLanguage: () => currentLanguage,
             elements: () => translatableElements.length,
-            test: window.testTranslation,
-            apiUrl: TRANSLATE_API_URL
+            refresh: () => {
+                initializeTranslatableElements();
+                storeEnglishTexts();
+            },
+            test: testTranslationAPI
         };
 
-        console.log('Translation system initialized. Current language:', currentLanguage);
+        console.log('Translation system ready. Current language:', currentLanguage);
+
+        // Run test after 2 seconds
+        setTimeout(testTranslationAPI, 2000);
     </script>
 
     @stack('scripts')
+    <!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

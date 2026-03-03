@@ -171,7 +171,7 @@ class Lesson extends Model
                 ->where('status', 'completed')
                 ->count();
 
-            $progress = round(($completedLessons / $totalLessons) * 100);
+            $progress = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 
             Enrollment::where('user_id', $userId)
                 ->where('course_id', $this->course_id)
@@ -207,6 +207,11 @@ class Lesson extends Model
                 'completed_at' => $progress >= 90 ? now() : null
             ]
         );
+
+        // Auto-mark as completed if watched 90%
+        if ($progress >= 90 && $lessonProgress->status !== 'completed') {
+            $this->markAsCompleted($userId);
+        }
 
         return $lessonProgress;
     }
