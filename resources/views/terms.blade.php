@@ -6,28 +6,133 @@
 
 @push('styles')
 <style>
+    /* Root Variables - Your Beautiful Colors */
+    :root {
+        --bright-amber: #FBC60C;
+        --khaki-beige: #9F9A87;
+        --pure-white: #FEFDFE;
+        --prussian-blue: #0A1D44;
+        --regal-navy: #18386E;
+        --sky-blue: #5AD1E4;
+        --pale-slate: #CBD1DA;
+        --dark-slate: #2E5C61;
+        --ivory: #F9F7E9;
+        --light-gold: #EBD789;
+        
+        /* Extended Palette */
+        --primary: var(--regal-navy);
+        --primary-dark: var(--prussian-blue);
+        --primary-light: var(--dark-slate);
+        --secondary: var(--sky-blue);
+        --accent: var(--bright-amber);
+        --accent-soft: var(--light-gold);
+        --success: var(--sky-blue);
+        --warning: var(--bright-amber);
+        
+        /* Text Colors */
+        --text-primary: #0A1D44;
+        --text-secondary: #2E5C61;
+        --text-muted: #5f5f5f;
+        --text-light: #FEFDFE;
+        
+        /* Gradients */
+        --gradient-1: linear-gradient(135deg, #0A1D44 0%, #18386E 50%, #2E5C61 100%);
+        --gradient-2: linear-gradient(45deg, #FBC60C 0%, #EBD789 50%, #F9F7E9 100%);
+        --gradient-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
+        
+        /* Shadows */
+        --shadow-sm: 0 2px 8px rgba(10, 29, 68, 0.08);
+        --shadow-md: 0 4px 12px rgba(10, 29, 68, 0.12);
+        --shadow-lg: 0 8px 24px rgba(10, 29, 68, 0.15);
+        --shadow-hover: 0 12px 28px rgba(251, 198, 12, 0.2);
+        
+        /* Border Radius */
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+        
+        /* Transitions */
+        --transition: all 0.3s ease;
+    }
+
     /* Terms Header */
     .terms-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: var(--gradient-1);
+        color: var(--pure-white);
         padding: 80px 0;
         text-align: center;
         margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .terms-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(251, 198, 12, 0.1);
+        border-radius: 50%;
+        animation: float 10s ease-in-out infinite;
+    }
+
+    .terms-header::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(90, 209, 228, 0.1);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .terms-header .container {
+        position: relative;
+        z-index: 2;
     }
     
     .terms-title {
-        font-size: 48px;
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+        font-weight: 800;
         margin-bottom: 20px;
         animation: slideUp 0.8s ease-out;
+        color: var(--pure-white);
+    }
+
+    .terms-title span {
+        color: var(--bright-amber);
     }
     
     .terms-subtitle {
-        font-size: 18px;
-        opacity: 0.9;
+        font-size: clamp(1rem, 3vw, 1.2rem);
+        opacity: 0.95;
         max-width: 700px;
         margin: 0 auto;
         line-height: 1.6;
         animation: slideUp 0.8s ease-out 0.2s both;
+        color: var(--ivory);
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
     
     /* Terms Content */
@@ -38,39 +143,49 @@
     .terms-container {
         max-width: 900px;
         margin: 0 auto;
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
         padding: 50px;
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
     
     .last-updated {
         text-align: right;
-        color: #999;
-        font-size: 14px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
         margin-bottom: 30px;
         padding-bottom: 20px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid rgba(251, 198, 12, 0.2);
     }
     
     /* Disclaimer Box */
     .disclaimer-box {
-        background: #fff3cd;
-        border: 1px solid #ffeeba;
-        border-radius: 10px;
+        background: rgba(251, 198, 12, 0.05);
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        border-radius: var(--radius-md);
         padding: 30px;
         margin-bottom: 40px;
+        border-left: 4px solid var(--bright-amber);
     }
     
     .disclaimer-title {
-        font-size: 20px;
+        font-size: 1.25rem;
         font-weight: 700;
-        color: #856404;
+        color: var(--prussian-blue);
         margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .disclaimer-title i {
+        color: var(--bright-amber);
+        font-size: 1.5rem;
     }
     
     .disclaimer-text {
-        color: #856404;
+        color: var(--text-secondary);
         line-height: 1.8;
         margin-bottom: 15px;
     }
@@ -78,10 +193,14 @@
     .disclaimer-text:last-child {
         margin-bottom: 0;
     }
+
+    .disclaimer-text strong {
+        color: var(--prussian-blue);
+    }
     
     .disclaimer-list {
         margin: 15px 0 15px 20px;
-        color: #856404;
+        color: var(--text-secondary);
     }
     
     .disclaimer-list li {
@@ -92,31 +211,32 @@
     /* Terms Sections */
     .terms-article {
         margin-bottom: 40px;
+        scroll-margin-top: 100px;
     }
     
     .article-number {
-        font-size: 18px;
+        font-size: 1rem;
         font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 10px;
+        color: var(--bright-amber);
+        margin-bottom: 5px;
         display: block;
     }
     
     .article-title {
-        font-size: 24px;
+        font-size: 1.5rem;
         font-weight: 700;
-        color: var(--text-color);
+        color: var(--text-primary);
         margin-bottom: 20px;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 5px;
+        border-bottom: 2px solid var(--gradient-2);
+        padding-bottom: 8px;
         display: inline-block;
     }
     
     .article-content {
-        color: #444;
+        color: var(--text-muted);
         line-height: 1.8;
         margin-bottom: 15px;
-        font-size: 16px;
+        font-size: 1rem;
     }
     
     .article-list {
@@ -126,13 +246,13 @@
     
     .article-list li {
         margin-bottom: 10px;
-        color: #555;
-        line-height: 1.6;
+        color: var(--text-muted);
+        line-height: 1.7;
         list-style-type: disc;
     }
     
     .article-list li strong {
-        color: var(--text-color);
+        color: var(--text-primary);
     }
     
     .article-subsection {
@@ -140,61 +260,86 @@
         margin-top: 15px;
         margin-bottom: 15px;
         padding-left: 15px;
-        border-left: 3px solid var(--primary-color);
+        border-left: 3px solid var(--gradient-2);
     }
     
     .article-subsection p {
-        color: #555;
+        color: var(--text-muted);
         line-height: 1.7;
         margin-bottom: 10px;
     }
     
     .highlight-box {
-        background: #f0f7ff;
-        border: 1px solid #cce5ff;
-        border-radius: 8px;
+        background: rgba(90, 209, 228, 0.05);
+        border: 1px solid rgba(90, 209, 228, 0.3);
+        border-radius: var(--radius-md);
         padding: 20px;
         margin: 20px 0;
+        border-left: 4px solid var(--sky-blue);
     }
     
     .highlight-box p {
-        color: #004085;
+        color: var(--text-secondary);
     }
     
     .note-box {
-        background: #f8f9fa;
-        border-left: 4px solid var(--primary-color);
-        padding: 15px 20px;
+        background: var(--ivory);
+        border-left: 4px solid var(--bright-amber);
+        border-radius: var(--radius-md);
+        padding: 20px 25px;
         margin: 20px 0;
     }
     
     .note-box p {
         margin-bottom: 5px;
+        color: var(--text-secondary);
     }
     
     .note-box p:last-child {
         margin-bottom: 0;
     }
+
+    .note-box a {
+        color: var(--bright-amber);
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .note-box a:hover {
+        color: var(--prussian-blue);
+        text-decoration: underline;
+    }
     
     hr {
         margin: 40px 0;
         border: none;
-        border-top: 1px solid #eee;
+        border-top: 2px solid var(--gradient-2);
+        opacity: 0.3;
     }
     
     /* Table of Contents */
     .toc {
-        background: #f8f9fa;
+        background: var(--ivory);
         padding: 25px;
-        border-radius: 10px;
+        border-radius: var(--radius-md);
         margin-bottom: 40px;
+        border: 1px solid rgba(251, 198, 12, 0.2);
     }
     
     .toc-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 15px;
-        color: var(--text-color);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .toc-title i {
+        color: var(--bright-amber);
+        font-size: 1.3rem;
     }
     
     .toc-list {
@@ -203,7 +348,7 @@
         margin: 0;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 10px;
+        gap: 8px 15px;
     }
     
     .toc-list li {
@@ -211,27 +356,50 @@
     }
     
     .toc-list a {
-        color: var(--primary-color);
+        color: var(--text-secondary);
         text-decoration: none;
-        font-size: 14px;
-        transition: color 0.3s;
+        font-size: 0.9rem;
+        transition: var(--transition);
         display: block;
-        padding: 5px 0;
+        padding: 6px 10px;
+        border-radius: var(--radius-sm);
+        border-left: 2px solid transparent;
     }
     
     .toc-list a:hover {
-        color: var(--primary-hover);
-        text-decoration: underline;
+        color: var(--bright-amber);
+        background: rgba(251, 198, 12, 0.05);
+        border-left-color: var(--bright-amber);
+        padding-left: 15px;
+    }
+
+    .toc-list a.active {
+        color: var(--bright-amber);
+        background: rgba(251, 198, 12, 0.05);
+        border-left-color: var(--bright-amber);
+        font-weight: 600;
     }
     
     /* Responsive */
-    @media (max-width: 768px) {
+    @media (max-width: 992px) {
         .terms-header {
             padding: 60px 0;
         }
         
-        .terms-title {
-            font-size: 36px;
+        .terms-container {
+            padding: 40px 30px;
+            margin: 0 20px;
+        }
+        
+        .toc-list {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .terms-header {
+            padding: 50px 0;
+            margin-bottom: 40px;
         }
         
         .terms-container {
@@ -240,7 +408,7 @@
         }
         
         .article-title {
-            font-size: 20px;
+            font-size: 1.3rem;
         }
         
         .toc-list {
@@ -248,11 +416,84 @@
         }
         
         .article-content {
-            font-size: 15px;
+            font-size: 0.95rem;
         }
         
         .disclaimer-box {
             padding: 20px;
+        }
+        
+        .disclaimer-title {
+            font-size: 1.1rem;
+        }
+
+        .toc {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .terms-header {
+            padding: 40px 0;
+        }
+
+        .terms-title {
+            font-size: 2rem;
+        }
+
+        .terms-container {
+            padding: 25px 15px;
+            margin: 0 10px;
+        }
+
+        .last-updated {
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .article-title {
+            font-size: 1.2rem;
+        }
+
+        .article-list {
+            margin-left: 10px;
+            padding-left: 15px;
+        }
+
+        .article-list li {
+            font-size: 0.9rem;
+        }
+
+        .note-box {
+            padding: 15px 20px;
+        }
+
+        .toc-list a {
+            font-size: 0.85rem;
+            padding: 8px 10px;
+        }
+    }
+
+    /* Print Styles */
+    @media print {
+        .terms-header {
+            background: none;
+            color: black;
+            padding: 20px 0;
+        }
+
+        .terms-header::before,
+        .terms-header::after {
+            display: none;
+        }
+
+        .terms-container {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+
+        .toc {
+            display: none;
         }
     }
 </style>
@@ -262,7 +503,7 @@
     <!-- Terms Header -->
     <section class="terms-header">
         <div class="container">
-            <h1 class="terms-title">Terms & Conditions</h1>
+            <h1 class="terms-title">Terms & <span>Conditions</span></h1>
             <p class="terms-subtitle">Please read these terms carefully before using our services</p>
         </div>
     </section>
@@ -272,14 +513,18 @@
         <div class="container">
             <div class="terms-container">
                 <div class="last-updated">
+                    <i class="far fa-calendar-alt" style="color: var(--bright-amber); margin-right: 5px;"></i>
                     Last Updated: February 7, 2026
                 </div>
                 
                 <!-- Table of Contents -->
                 <div class="toc">
-                    <div class="toc-title">Quick Navigation</div>
+                    <div class="toc-title">
+                        <i class="fas fa-list-ul"></i>
+                        Quick Navigation
+                    </div>
                     <ul class="toc-list">
-                        <li><a href="#disclaimer">Disclaimer – Financial, Freelance, and Educational Training</a></li>
+                        <li><a href="#disclaimer">⚠️ Disclaimer – Financial, Freelance, and Educational Training</a></li>
                         <li><a href="#section1">1. Acceptance of Terms</a></li>
                         <li><a href="#section2">2. Description of Services</a></li>
                         <li><a href="#section3">3. User Eligibility and Account Registration</a></li>
@@ -304,7 +549,10 @@
                 
                 <!-- Disclaimer Section -->
                 <div id="disclaimer" class="disclaimer-box">
-                    <h2 class="disclaimer-title">⚠️ Disclaimer – Financial, Freelance, and Educational Training</h2>
+                    <h2 class="disclaimer-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Disclaimer – Financial, Freelance, and Educational Training
+                    </h2>
                     
                     <p class="disclaimer-text">All courses, training materials, videos, documents, and educational content provided on this platform are offered strictly for educational and informational purposes only. Nothing contained within any course, including but not limited to training related to finance, cryptocurrencies, investing, trading, business, freelance activities, or any other professional field, should be interpreted as financial, legal, tax, professional, or investment advice.</p>
                     
@@ -516,7 +764,7 @@
                 <!-- Summary Note -->
                 <div class="note-box">
                     <p><strong>By using EDUCONECX, you acknowledge that you have read, understood, and agree to be bound by these Terms & Conditions.</strong></p>
-                    <p>If you have any questions about these Terms, please contact us at <a href="mailto:contact@educonecx.com" style="color: var(--primary-color);">contact@educonecx.com</a>.</p>
+                    <p>If you have any questions about these Terms, please contact us at <a href="mailto:contact@educonecx.com">contact@educonecx.com</a>.</p>
                 </div>
             </div>
         </div>
@@ -546,28 +794,46 @@
         const sections = document.querySelectorAll('.terms-article, #disclaimer');
         const tocLinks = document.querySelectorAll('.toc-list a');
         
+        // Debounce scroll event
+        let scrollTimeout;
+        
         window.addEventListener('scroll', () => {
-            let current = '';
+            clearTimeout(scrollTimeout);
             
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
+            scrollTimeout = setTimeout(() => {
+                let current = '';
+                let currentPosition = window.scrollY + 200;
                 
-                if (pageYOffset >= sectionTop - 200) {
-                    current = section.getAttribute('id');
-                }
-            });
-            
-            tocLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                    link.style.fontWeight = '600';
-                } else {
-                    link.style.fontWeight = 'normal';
-                }
-            });
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionBottom = sectionTop + section.offsetHeight;
+                    
+                    if (currentPosition >= sectionTop && currentPosition < sectionBottom) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                tocLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            }, 100);
         });
+
+        // Handle hash in URL on page load
+        if (window.location.hash) {
+            const targetElement = document.querySelector(window.location.hash);
+            if (targetElement) {
+                setTimeout(() => {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+            }
+        }
     });
 </script>
 @endpush

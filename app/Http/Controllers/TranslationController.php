@@ -37,8 +37,8 @@ class TranslationController extends Controller
 
         // If batch is true and q is an array, validate as array
         if ($request->boolean('batch') && is_array($request->q)) {
-            $rules['q'] = 'required|array';
-            $rules['q.*'] = 'string|min:1';
+            $rules['q'] = 'required|array|min:1';
+            $rules['q.*'] = 'required|string|min:1';
         } else {
             // Otherwise validate as string
             $rules['q'] = 'required|string|min:1';
@@ -57,17 +57,11 @@ class TranslationController extends Controller
                     'target' => $request->target
                 ]
             ]);
-            
+
             return response()->json([
                 'error' => 'Validation failed',
                 'message' => $e->getMessage(),
                 'details' => $e->errors()
-            ], 422);
-        } catch (\Exception $e) {
-            Log::error('Translation validation exception: ' . $e->getMessage());
-            return response()->json([
-                'error' => 'Validation failed',
-                'message' => $e->getMessage()
             ], 422);
         }
 
@@ -81,36 +75,50 @@ class TranslationController extends Controller
             try {
                 Log::info('Processing batch translation', [
                     'text_count' => count($text),
+                    'first_text' => substr($text[0] ?? '', 0, 50),
                     'source' => $source,
                     'target' => $target
                 ]);
 
-                $options = [];
-                if ($formality !== 'default') {
-                    $options['formality'] = $formality;
-                }
-                
+                $options = [
+                    'formality' => $formality !== 'default' ? $formality : null,
+                    'preserve_formatting' => true,
+                    'split_sentences' => '0' // Don't split sentences to preserve structure
+                ];
+
                 $translatedTexts = $this->deepLService->translateBatch($text, $source, $target, $options);
-                
-                Log::info('Batch translation successful', [
-                    'count' => count($translatedTexts),
+
+                // Check if translations actually changed
+                $changed = 0;
+                foreach ($translatedTexts as $i => $translated) {
+                    if ($translated !== $text[$i]) {
+                        $changed++;
+                    }
+                }
+
+                Log::info('Batch translation completed', [
+                    'total' => count($text),
+                    'changed' => $changed,
+                    'sample_original' => substr($text[0] ?? '', 0, 50),
+                    'sample_translated' => substr($translatedTexts[0] ?? '', 0, 50),
                     'source' => $source,
                     'target' => $target
                 ]);
-                
+
                 return response()->json([
                     'translatedTexts' => $translatedTexts,
                     'source' => $source,
                     'target' => $target,
-                    'batch' => true
+                    'batch' => true,
+                    'changed_count' => $changed
                 ]);
-
             } catch (\Exception $e) {
                 Log::error('Batch translation failed: ' . $e->getMessage(), [
                     'source' => $source,
                     'target' => $target,
                     'text_count' => count($text),
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
                 ]);
 
                 // Return original texts as fallback
@@ -129,24 +137,30 @@ class TranslationController extends Controller
         try {
             Log::info('Processing single translation', [
                 'text_length' => strlen($text),
+                'text_preview' => substr($text, 0, 100),
                 'source' => $source,
                 'target' => $target
             ]);
 
             // Check if text contains HTML
             $tagHandling = $this->containsHtml($text) ? 'html' : null;
-            
-            $options = [];
-            if ($formality !== 'default') {
-                $options['formality'] = $formality;
-            }
+
+            $options = [
+                'formality' => $formality !== 'default' ? $formality : null,
+                'preserve_formatting' => true,
+                'split_sentences' => '0' // Don't split sentences to preserve structure
+            ];
+
             if ($tagHandling) {
                 $options['tag_handling'] = $tagHandling;
             }
 
             $translatedText = $this->deepLService->translate($text, $source, $target, $options);
 
-            Log::info('Single translation successful', [
+            Log::info('Single translation completed', [
+                'original_preview' => substr($text, 0, 50),
+                'translated_preview' => substr($translatedText, 0, 50),
+                'changed' => $translatedText !== $text,
                 'source' => $source,
                 'target' => $target
             ]);
@@ -156,15 +170,16 @@ class TranslationController extends Controller
                 'source' => $source,
                 'target' => $target,
                 'from_cache' => false,
-                'batch' => false
+                'batch' => false,
+                'changed' => $translatedText !== $text
             ]);
-
         } catch (\Exception $e) {
-            Log::error('Translation failed: ' . $e->getMessage(), [
+            Log::error('Single translation failed: ' . $e->getMessage(), [
                 'text' => substr($text, 0, 100),
                 'source' => $source,
                 'target' => $target,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
@@ -175,6 +190,43 @@ class TranslationController extends Controller
                 'target' => $target,
                 'batch' => false
             ], 200); // Return 200 with original text to avoid breaking the UI
+        }
+    }
+
+    /**
+     * Force translation test - bypasses any caching or fallbacks
+     */
+    public function forceTest(Request $request)
+    {
+        $text = $request->input('text', 'Hello world');
+        $source = $request->input('source', 'en');
+        $target = $request->input('target', 'es');
+
+        try {
+            // Create a new instance without any caching
+            $deepL = new \DeepL\Translator(config('deepl.api_key'));
+
+            $result = $deepL->translateText($text, $source, $target, [
+                'preserve_formatting' => true,
+                'split_sentences' => '0'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'original' => $text,
+                'translated' => $result->text,
+                'source' => $source,
+                'target' => $target,
+                'api_key_configured' => !empty(config('deepl.api_key')),
+                'api_key_preview' => substr(config('deepl.api_key'), 0, 8) . '...'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage(),
+                'api_key_configured' => !empty(config('deepl.api_key')),
+                'api_key_preview' => substr(config('deepl.api_key'), 0, 8) . '...'
+            ], 500);
         }
     }
 
@@ -232,7 +284,22 @@ class TranslationController extends Controller
         $apiKey = config('deepl.api_key');
         $apiKeyStatus = $apiKey ? 'Configured' : 'Not configured';
         $apiKeyPreview = $apiKey ? substr($apiKey, 0, 10) . '...' : 'none';
-        
+
+        // Test DeepL connection
+        $deepLStatus = 'Unknown';
+        $deepLError = null;
+
+        try {
+            if ($apiKey) {
+                $deepL = new \DeepL\Translator($apiKey);
+                $usage = $deepL->getUsage();
+                $deepLStatus = 'Connected - Character count: ' . ($usage->character->count ?? 'Unknown');
+            }
+        } catch (\Exception $e) {
+            $deepLStatus = 'Connection failed';
+            $deepLError = $e->getMessage();
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Translation controller is working',
@@ -242,6 +309,10 @@ class TranslationController extends Controller
                 'api_key_preview' => $apiKeyPreview,
                 'supported_languages' => config('deepl.supported_languages', []),
                 'environment' => app()->environment()
+            ],
+            'deepL' => [
+                'status' => $deepLStatus,
+                'error' => $deepLError
             ],
             'request' => [
                 'url' => request()->fullUrl(),
@@ -264,13 +335,15 @@ class TranslationController extends Controller
     public function debug(Request $request)
     {
         $testResults = [];
-        
+
         // Test single string
         try {
             $singleResult = $this->deepLService->translate('Hello world', 'en', 'es');
             $testResults['single_string'] = [
                 'success' => true,
-                'result' => $singleResult
+                'original' => 'Hello world',
+                'result' => $singleResult,
+                'changed' => $singleResult !== 'Hello world'
             ];
         } catch (\Exception $e) {
             $testResults['single_string'] = [
@@ -278,13 +351,15 @@ class TranslationController extends Controller
                 'error' => $e->getMessage()
             ];
         }
-        
+
         // Test batch array
         try {
             $batchResult = $this->deepLService->translateBatch(['Hello', 'world'], 'en', 'es');
             $testResults['batch_array'] = [
                 'success' => true,
-                'result' => $batchResult
+                'original' => ['Hello', 'world'],
+                'result' => $batchResult,
+                'changed' => $batchResult[0] !== 'Hello' || $batchResult[1] !== 'world'
             ];
         } catch (\Exception $e) {
             $testResults['batch_array'] = [
@@ -292,7 +367,7 @@ class TranslationController extends Controller
                 'error' => $e->getMessage()
             ];
         }
-        
+
         return response()->json([
             'success' => true,
             'controller_status' => 'operational',

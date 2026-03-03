@@ -408,6 +408,11 @@ Route::get('/stripe/success-test', function (Request $request) {
     ]);
 })->name('stripe.success.test');
 
+// Translation debugging routes
+Route::get('/translation/test', [TranslationController::class, 'test'])->name('translation.test');
+Route::get('/translation/debug', [TranslationController::class, 'debug'])->name('translation.debug');
+Route::post('/translation/force-test', [TranslationController::class, 'forceTest'])->name('translation.force-test');
+
 // ==================== SUBSCRIPTION ROUTES ====================
 Route::get('/subscription/plans', [PaymentController::class, 'subscriptionPlans'])->name('subscription.plans');
 Route::get('/subscription/checkout/{plan}', [PaymentController::class, 'subscriptionCheckout'])->name('subscription.checkout');
