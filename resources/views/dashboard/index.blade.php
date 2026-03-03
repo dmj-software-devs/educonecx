@@ -6,39 +6,68 @@
 
 @push('styles')
 <style>
-    /* ===== DASHBOARD VARIABLES ===== */
+    /* Root Variables - Your Beautiful Colors */
     :root {
-        --sidebar-width: 280px;
-        --header-height: 80px;
-        /* Match your header height */
-        --primary-color: #4361ee;
-        --secondary-color: #3f37c9;
-        --success-color: #4cc9f0;
-        --warning-color: #f72585;
-        --info-color: #4895ef;
-        --dark-color: #1e1e2f;
-        --light-color: #f8f9fa;
-        --gray-color: #6c757d;
-        --border-color: #e9ecef;
-        --card-bg: #ffffff;
-        --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --gradient-2: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
-        --gradient-3: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%);
-        --gradient-4: linear-gradient(135deg, #06d6a0 0%, #1b9e6d 100%);
-        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
-        --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.05);
-        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-        --shadow-hover: 0 20px 40px rgba(67, 97, 238, 0.15);
+        --bright-amber: #FBC60C;
+        --khaki-beige: #9F9A87;
+        --pure-white: #FEFDFE;
+        --prussian-blue: #0A1D44;
+        --regal-navy: #18386E;
+        --sky-blue: #5AD1E4;
+        --pale-slate: #CBD1DA;
+        --dark-slate: #2E5C61;
+        --ivory: #F9F7E9;
+        --light-gold: #EBD789;
+        
+        /* Extended Palette */
+        --primary: var(--regal-navy);
+        --primary-dark: var(--prussian-blue);
+        --primary-light: var(--dark-slate);
+        --secondary: var(--sky-blue);
+        --accent: var(--bright-amber);
+        --accent-soft: var(--light-gold);
+        --success: var(--sky-blue);
+        --warning: var(--bright-amber);
+        --danger: #EBD789;
+        --dark: var(--prussian-blue);
+        --dark-light: var(--regal-navy);
+        --gray: var(--khaki-beige);
+        --gray-light: var(--pale-slate);
+        --light: var(--ivory);
+        --white: var(--pure-white);
+        
+        /* Text Colors */
+        --text-primary: #0A1D44;
+        --text-secondary: #2E5C61;
+        --text-muted: #5f5f5f;
+        --text-light: #FEFDFE;
+        
+        /* Gradients */
+        --gradient-1: linear-gradient(135deg, #0A1D44 0%, #18386E 50%, #2E5C61 100%);
+        --gradient-2: linear-gradient(45deg, #FBC60C 0%, #EBD789 50%, #F9F7E9 100%);
+        --gradient-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
+        --gradient-4: linear-gradient(135deg, #2E5C61 0%, #18386E 100%);
+        
+        /* Shadows */
+        --shadow-sm: 0 2px 8px rgba(10, 29, 68, 0.08);
+        --shadow-md: 0 4px 12px rgba(10, 29, 68, 0.12);
+        --shadow-lg: 0 8px 24px rgba(10, 29, 68, 0.15);
+        --shadow-hover: 0 12px 28px rgba(251, 198, 12, 0.2);
+        
+        /* Border Radius */
         --radius-sm: 8px;
         --radius-md: 12px;
         --radius-lg: 16px;
         --radius-xl: 24px;
         --radius-full: 9999px;
+        
+        /* Transitions */
+        --transition: all 0.3s ease;
     }
 
     /* Main layout adjustments */
     body {
-        background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);
+        background: linear-gradient(135deg, var(--ivory) 0%, var(--pure-white) 100%);
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -61,17 +90,16 @@
         gap: 30px;
     }
 
-    /* ===== SIDEBAR STYLES - NOW FULLY STATIC ===== */
+    /* ===== SIDEBAR STYLES ===== */
     .dashboard-sidebar {
-        width: var(--sidebar-width);
-        background: var(--card-bg);
+        width: 280px;
+        background: var(--pure-white);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-lg);
         overflow: hidden;
         height: fit-content;
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-        /* Removed position: sticky - now fully static */
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        transition: var(--transition);
     }
 
     .dashboard-sidebar::-webkit-scrollbar {
@@ -79,11 +107,11 @@
     }
 
     .dashboard-sidebar::-webkit-scrollbar-track {
-        background: var(--border-color);
+        background: var(--pale-slate);
     }
 
     .dashboard-sidebar::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
+        background: var(--bright-amber);
         border-radius: var(--radius-full);
     }
 
@@ -102,7 +130,7 @@
         right: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(251, 198, 12, 0.2) 0%, transparent 70%);
         animation: rotate 20s linear infinite;
     }
 
@@ -115,13 +143,13 @@
     .logo-text {
         font-size: 1.6rem;
         font-weight: 800;
-        color: white;
-        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        color: var(--pure-white);
+        text-shadow: 2px 2px 10px rgba(10, 29, 68, 0.2);
         letter-spacing: 1px;
     }
 
     .logo-subtitle {
-        color: rgba(255, 255, 255, 0.8);
+        color: var(--ivory);
         font-size: 0.8rem;
         margin-top: 5px;
     }
@@ -130,8 +158,8 @@
     .profile-section {
         padding: 20px 20px;
         text-align: center;
-        border-bottom: 1px solid var(--border-color);
-        background: linear-gradient(145deg, #ffffff, #fafafa);
+        border-bottom: 1px solid rgba(251, 198, 12, 0.1);
+        background: linear-gradient(145deg, var(--pure-white), var(--ivory));
     }
 
     .avatar-wrapper {
@@ -147,9 +175,9 @@
         height: 100%;
         border-radius: 50%;
         object-fit: cover;
-        border: 3px solid white;
+        border: 3px solid var(--pure-white);
         box-shadow: var(--shadow-md);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: var(--transition);
     }
 
     .avatar-placeholder {
@@ -157,16 +185,16 @@
         height: 90px;
         border-radius: 50%;
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 2.2rem;
         font-weight: 700;
         margin: 0 auto 12px;
-        border: 3px solid white;
+        border: 3px solid var(--pure-white);
         box-shadow: var(--shadow-md);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: var(--transition);
         text-transform: uppercase;
     }
 
@@ -179,13 +207,13 @@
     .profile-name {
         font-size: 1.1rem;
         font-weight: 700;
-        color: var(--dark-color);
+        color: var(--text-primary);
         margin-bottom: 4px;
     }
 
     .profile-email {
         font-size: 0.8rem;
-        color: var(--gray-color);
+        color: var(--text-muted);
         margin-bottom: 12px;
         word-break: break-word;
     }
@@ -196,24 +224,25 @@
         gap: 6px;
         padding: 6px 18px;
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
         border-radius: var(--radius-full);
         font-size: 0.85rem;
         font-weight: 500;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         box-shadow: var(--shadow-sm);
     }
 
     .edit-profile-link:hover {
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
         transform: translateY(-2px);
         box-shadow: var(--shadow-hover);
-        color: white;
     }
 
     .edit-profile-link i {
         font-size: 0.85rem;
-        transition: transform 0.3s ease;
+        transition: var(--transition);
     }
 
     .edit-profile-link:hover i {
@@ -236,7 +265,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
-        color: var(--gray-color);
+        color: var(--text-muted);
     }
 
     .nav-item {
@@ -245,12 +274,13 @@
         gap: 10px;
         padding: 10px 12px;
         border-radius: var(--radius-md);
-        color: var(--gray-color);
+        color: var(--text-muted);
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         margin-bottom: 4px;
         position: relative;
         overflow: hidden;
+        border: 1px solid transparent;
     }
 
     .nav-item::before {
@@ -260,7 +290,7 @@
         top: 0;
         height: 100%;
         width: 3px;
-        background: var(--gradient-1);
+        background: var(--gradient-2);
         transform: scaleY(0);
         transition: transform 0.3s ease;
     }
@@ -273,18 +303,19 @@
         width: 20px;
         font-size: 1rem;
         text-align: center;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
 
     .nav-item:hover {
-        background: linear-gradient(145deg, #f8f9fa, #ffffff);
-        color: var(--primary-color);
+        background: linear-gradient(145deg, var(--ivory), var(--pure-white));
+        color: var(--bright-amber);
         transform: translateX(5px);
+        border-color: rgba(251, 198, 12, 0.2);
     }
 
     .nav-item.active {
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
         box-shadow: var(--shadow-md);
     }
 
@@ -293,7 +324,7 @@
     }
 
     .nav-item.active i {
-        color: white;
+        color: var(--pure-white);
     }
 
     .nav-item span {
@@ -303,23 +334,23 @@
     }
 
     .nav-badge {
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(251, 198, 12, 0.1);
         padding: 2px 6px;
         border-radius: var(--radius-full);
         font-size: 0.65rem;
         font-weight: 600;
+        color: var(--bright-amber);
     }
 
     .nav-item.active .nav-badge {
         background: rgba(255, 255, 255, 0.2);
-        color: white;
+        color: var(--pure-white);
     }
 
     /* Main Content Area */
     .dashboard-main {
         flex: 1;
         min-width: 0;
-        /* Prevent flex overflow */
     }
 
     /* Welcome Card */
@@ -340,7 +371,7 @@
         right: -5%;
         width: 300px;
         height: 300px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(251, 198, 12, 0.1);
         border-radius: 50%;
         animation: float 8s ease-in-out infinite;
     }
@@ -352,7 +383,7 @@
         left: -2%;
         width: 250px;
         height: 250px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(90, 209, 228, 0.1);
         border-radius: 50%;
         animation: float 6s ease-in-out infinite reverse;
     }
@@ -363,19 +394,19 @@
     }
 
     .welcome-title {
-        font-size: 2.2rem;
+        font-size: clamp(1.5rem, 3vw, 2.2rem);
         font-weight: 800;
-        color: white;
+        color: var(--pure-white);
         margin-bottom: 10px;
-        text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.2);
+        text-shadow: 2px 2px 20px rgba(10, 29, 68, 0.2);
     }
 
     .welcome-text {
         font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.95);
+        color: var(--ivory);
         max-width: 600px;
         line-height: 1.6;
-        text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.1);
+        text-shadow: 1px 1px 10px rgba(10, 29, 68, 0.1);
     }
 
     /* Stats Grid */
@@ -387,14 +418,14 @@
     }
 
     .stat-card {
-        background: white;
+        background: var(--pure-white);
         border-radius: var(--radius-lg);
         padding: 25px;
         box-shadow: var(--shadow-md);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: var(--transition);
         position: relative;
         overflow: hidden;
-        border: 1px solid var(--border-color);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
     .stat-card::before {
@@ -416,6 +447,7 @@
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
     .stat-icon {
@@ -423,7 +455,7 @@
         height: 50px;
         border-radius: var(--radius-md);
         background: var(--stat-gradient, var(--gradient-1));
-        color: white;
+        color: var(--pure-white);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -433,15 +465,15 @@
     }
 
     .stat-value {
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
         font-weight: 800;
-        color: var(--dark-color);
+        color: var(--text-primary);
         margin-bottom: 5px;
         line-height: 1;
     }
 
     .stat-label {
-        color: var(--gray-color);
+        color: var(--text-muted);
         font-size: 0.9rem;
         font-weight: 600;
         text-transform: uppercase;
@@ -450,23 +482,24 @@
 
     /* Content Cards */
     .content-card {
-        background: white;
+        background: var(--pure-white);
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-md);
         margin-bottom: 30px;
         overflow: hidden;
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        transition: var(--transition);
     }
 
     .content-card:hover {
         box-shadow: var(--shadow-lg);
+        border-color: var(--bright-amber);
     }
 
     .card-header {
         padding: 20px 25px;
-        background: linear-gradient(145deg, #ffffff, #fafafa);
-        border-bottom: 1px solid var(--border-color);
+        background: linear-gradient(145deg, var(--pure-white), var(--ivory));
+        border-bottom: 1px solid rgba(251, 198, 12, 0.1);
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -477,7 +510,7 @@
     .card-title {
         font-size: 1.3rem;
         font-weight: 700;
-        color: var(--dark-color);
+        color: var(--text-primary);
         margin: 0;
         display: flex;
         align-items: center;
@@ -488,7 +521,7 @@
         width: 35px;
         height: 35px;
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
         border-radius: var(--radius-md);
         display: flex;
         align-items: center;
@@ -498,27 +531,27 @@
     }
 
     .view-link {
-        color: var(--primary-color);
+        color: var(--bright-amber);
         text-decoration: none;
         font-weight: 600;
         font-size: 0.95rem;
         display: flex;
         align-items: center;
         gap: 5px;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         padding: 8px 16px;
         border-radius: var(--radius-full);
-        background: rgba(67, 97, 238, 0.1);
+        background: rgba(251, 198, 12, 0.1);
     }
 
     .view-link:hover {
-        background: var(--primary-color);
-        color: white;
+        background: var(--gradient-1);
+        color: var(--pure-white);
         gap: 10px;
     }
 
     .view-link i {
-        transition: transform 0.3s ease;
+        transition: var(--transition);
     }
 
     .view-link:hover i {
@@ -528,8 +561,8 @@
     /* Course Items */
     .course-item {
         padding: 20px 25px;
-        border-bottom: 1px solid var(--border-color);
-        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(251, 198, 12, 0.1);
+        transition: var(--transition);
         position: relative;
         overflow: hidden;
     }
@@ -541,7 +574,7 @@
         top: 0;
         height: 100%;
         width: 3px;
-        background: var(--gradient-1);
+        background: var(--gradient-2);
         transform: scaleY(0);
         transition: transform 0.3s ease;
     }
@@ -555,7 +588,7 @@
     }
 
     .course-item:hover {
-        background: linear-gradient(145deg, #f8f9fa, #ffffff);
+        background: linear-gradient(145deg, var(--ivory), var(--pure-white));
         padding-left: 35px;
     }
 
@@ -579,19 +612,19 @@
     }
 
     .course-title a {
-        color: var(--dark-color);
+        color: var(--text-primary);
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: var(--transition);
     }
 
     .course-title a:hover {
-        color: var(--primary-color);
+        color: var(--bright-amber);
     }
 
     .course-meta {
         display: flex;
         gap: 15px;
-        color: var(--gray-color);
+        color: var(--text-muted);
         font-size: 0.85rem;
         flex-wrap: wrap;
     }
@@ -603,7 +636,7 @@
     }
 
     .course-meta i {
-        color: var(--primary-color);
+        color: var(--bright-amber);
         font-size: 0.9rem;
     }
 
@@ -620,17 +653,17 @@
     }
 
     .progress-label {
-        color: var(--gray-color);
+        color: var(--text-muted);
     }
 
     .progress-percent {
         font-weight: 700;
-        color: var(--primary-color);
+        color: var(--bright-amber);
     }
 
     .progress-track {
         height: 6px;
-        background: var(--border-color);
+        background: var(--pale-slate);
         border-radius: var(--radius-full);
         overflow: hidden;
     }
@@ -651,34 +684,37 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        background: linear-gradient(90deg, transparent, rgba(251, 198, 12, 0.3), transparent);
         animation: shimmer 2s infinite;
     }
 
     .continue-link {
         padding: 8px 20px;
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
         border-radius: var(--radius-full);
         text-decoration: none;
         font-size: 0.9rem;
         font-weight: 500;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         display: inline-flex;
         align-items: center;
         gap: 5px;
         white-space: nowrap;
         box-shadow: var(--shadow-sm);
+        border: none;
+        cursor: pointer;
     }
 
     .continue-link:hover {
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
         transform: translateX(5px);
         box-shadow: var(--shadow-hover);
-        color: white;
     }
 
     .continue-link i {
-        transition: transform 0.3s ease;
+        transition: var(--transition);
     }
 
     .continue-link:hover i {
@@ -688,8 +724,8 @@
     /* Quiz Items */
     .quiz-item {
         padding: 15px 25px;
-        border-bottom: 1px solid var(--border-color);
-        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(251, 198, 12, 0.1);
+        transition: var(--transition);
     }
 
     .quiz-item:last-child {
@@ -697,7 +733,7 @@
     }
 
     .quiz-item:hover {
-        background: linear-gradient(145deg, #f8f9fa, #ffffff);
+        background: linear-gradient(145deg, var(--ivory), var(--pure-white));
     }
 
     .quiz-content {
@@ -712,11 +748,11 @@
         font-size: 1rem;
         font-weight: 700;
         margin-bottom: 5px;
-        color: var(--dark-color);
+        color: var(--text-primary);
     }
 
     .quiz-date {
-        color: var(--gray-color);
+        color: var(--text-muted);
         font-size: 0.8rem;
         display: flex;
         align-items: center;
@@ -738,21 +774,21 @@
     }
 
     .score-badge.passed {
-        background: linear-gradient(145deg, #06d6a0, #05b587);
-        color: white;
-        box-shadow: 0 3px 10px rgba(6, 214, 160, 0.3);
+        background: var(--gradient-3);
+        color: var(--prussian-blue);
+        box-shadow: 0 3px 10px rgba(90, 209, 228, 0.3);
     }
 
     .score-badge.failed {
-        background: linear-gradient(145deg, #ef476f, #d43f62);
-        color: white;
-        box-shadow: 0 3px 10px rgba(239, 71, 111, 0.3);
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
+        box-shadow: 0 3px 10px rgba(251, 198, 12, 0.3);
     }
 
     .score-value {
         font-weight: 700;
-        color: var(--dark-color);
-        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        color: var(--text-primary);
+        background: linear-gradient(145deg, var(--ivory), var(--pale-slate));
         padding: 5px 12px;
         border-radius: var(--radius-md);
     }
@@ -766,20 +802,21 @@
     }
 
     .course-card {
-        background: white;
+        background: var(--pure-white);
         border-radius: var(--radius-lg);
         overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        transition: var(--transition);
+        border: 1px solid rgba(251, 198, 12, 0.1);
         height: 100%;
         display: flex;
         flex-direction: column;
     }
 
     .course-card:hover {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
         box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
     .card-image {
@@ -804,8 +841,8 @@
         top: 10px;
         right: 10px;
         padding: 4px 12px;
-        background: var(--gradient-1);
-        color: white;
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
         border-radius: var(--radius-full);
         font-size: 0.7rem;
         font-weight: 600;
@@ -828,17 +865,17 @@
     }
 
     .card-body h3 a {
-        color: var(--dark-color);
+        color: var(--text-primary);
         text-decoration: none;
-        transition: color 0.3s ease;
+        transition: var(--transition);
     }
 
     .card-body h3 a:hover {
-        color: var(--primary-color);
+        color: var(--bright-amber);
     }
 
     .card-excerpt {
-        color: var(--gray-color);
+        color: var(--text-muted);
         font-size: 0.9rem;
         line-height: 1.6;
         margin-bottom: 15px;
@@ -853,14 +890,14 @@
         display: block;
         padding: 10px;
         background: transparent;
-        color: var(--primary-color);
-        border: 2px solid var(--primary-color);
+        color: var(--bright-amber);
+        border: 2px solid var(--bright-amber);
         border-radius: var(--radius-full);
         text-decoration: none;
         font-size: 0.9rem;
         font-weight: 600;
         text-align: center;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         position: relative;
         overflow: hidden;
         z-index: 1;
@@ -881,7 +918,7 @@
     }
 
     .card-btn:hover {
-        color: white;
+        color: var(--pure-white);
         border-color: transparent;
     }
 
@@ -899,32 +936,32 @@
     .empty-icon {
         width: 80px;
         height: 80px;
-        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        background: linear-gradient(145deg, var(--ivory), var(--pale-slate));
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 20px;
         font-size: 2rem;
-        color: var(--gray-color);
-        transition: all 0.3s ease;
+        color: var(--text-muted);
+        transition: var(--transition);
     }
 
     .empty-state:hover .empty-icon {
         transform: scale(1.1) rotate(5deg);
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
     }
 
     .empty-title {
         font-size: 1.2rem;
         font-weight: 700;
-        color: var(--dark-color);
+        color: var(--text-primary);
         margin-bottom: 10px;
     }
 
     .empty-text {
-        color: var(--gray-color);
+        color: var(--text-muted);
         margin-bottom: 20px;
         max-width: 300px;
         margin-left: auto;
@@ -937,22 +974,25 @@
         gap: 8px;
         padding: 10px 25px;
         background: var(--gradient-1);
-        color: white;
+        color: var(--pure-white);
         border-radius: var(--radius-full);
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         box-shadow: var(--shadow-md);
+        border: none;
+        cursor: pointer;
     }
 
     .empty-btn:hover {
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
         transform: translateY(-2px);
         box-shadow: var(--shadow-hover);
-        color: white;
     }
 
     .empty-btn i {
-        transition: transform 0.3s ease;
+        transition: var(--transition);
     }
 
     .empty-btn:hover i {
@@ -961,11 +1001,12 @@
 
     /* Streak Card */
     .streak-card {
-        background: linear-gradient(145deg, #f72585, #b5179e);
+        background: var(--gradient-2);
         border-radius: var(--radius-lg);
         padding: 30px;
         text-align: center;
-        color: white;
+        color: var(--prussian-blue);
+        border: 1px solid rgba(251, 198, 12, 0.3);
     }
 
     .streak-icon {
@@ -985,14 +1026,15 @@
         opacity: 0.9;
     }
 
+    .streak-card p {
+        color: var(--prussian-blue);
+    }
+
     /* Animations */
     @keyframes float {
-
-        0%,
-        100% {
+        0%, 100% {
             transform: translateY(0);
         }
-
         50% {
             transform: translateY(-20px);
         }
@@ -1002,7 +1044,6 @@
         from {
             transform: rotate(0deg);
         }
-
         to {
             transform: rotate(360deg);
         }
@@ -1012,19 +1053,15 @@
         0% {
             transform: translateX(-100%);
         }
-
         100% {
             transform: translateX(100%);
         }
     }
 
     @keyframes pulse {
-
-        0%,
-        100% {
+        0%, 100% {
             transform: scale(1);
         }
-
         50% {
             transform: scale(1.1);
         }
@@ -1072,10 +1109,6 @@
             width: 100%;
             margin-bottom: 20px;
         }
-
-        .welcome-title {
-            font-size: 1.8rem;
-        }
     }
 
     @media (max-width: 768px) {
@@ -1122,6 +1155,10 @@
         .welcome-text {
             font-size: 1rem;
         }
+
+        .course-item {
+            padding: 15px 20px;
+        }
     }
 
     @media (max-width: 576px) {
@@ -1137,10 +1174,6 @@
             font-size: 1.8rem;
         }
 
-        .course-item {
-            padding: 15px 20px;
-        }
-
         .course-item:hover {
             padding-left: 25px;
         }
@@ -1151,6 +1184,42 @@
 
         .welcome-title {
             font-size: 1.3rem;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+        }
+
+        .card-title i {
+            width: 30px;
+            height: 30px;
+            font-size: 0.9rem;
+        }
+
+        .empty-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1rem;
+        }
+
+        .empty-text {
+            font-size: 0.9rem;
+        }
+
+        .streak-card {
+            padding: 20px;
+        }
+
+        .streak-number {
+            font-size: 2rem;
         }
     }
 
@@ -1195,9 +1264,9 @@
         <div class="profile-section">
             <div class="avatar-wrapper">
                 @if(Auth::user()->avatar)
-                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="profile-page-avatar-image">
+                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="avatar-image">
                 @else
-                <div class="profile-page-avatar-placeholder">
+                <div class="avatar-placeholder">
                     {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 @endif
@@ -1252,6 +1321,10 @@
 
             <div class="nav-section">
                 <div class="nav-section-title">Account</div>
+                <a href="{{ route('profile') }}" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
                 <a href="{{ route('logout') }}" class="nav-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
@@ -1286,7 +1359,7 @@
 
         <!-- Stats Cards -->
         <div class="stats-grid">
-            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #4361ee, #3a0ca3);">
+            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #0A1D44, #18386E);">
                 <div class="stat-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
@@ -1294,7 +1367,7 @@
                 <div class="stat-label">Enrolled Courses</div>
             </div>
 
-            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #06d6a0, #1b9e6d);">
+            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #5AD1E4, #2E5C61);">
                 <div class="stat-icon">
                     <i class="fas fa-check-circle"></i>
                 </div>
@@ -1302,7 +1375,7 @@
                 <div class="stat-label">Completed Courses</div>
             </div>
 
-            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #4cc9f0, #4895ef);">
+            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #FBC60C, #EBD789);">
                 <div class="stat-icon">
                     <i class="fas fa-puzzle-piece"></i>
                 </div>
@@ -1310,7 +1383,7 @@
                 <div class="stat-label">Quizzes Taken</div>
             </div>
 
-            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #f72585, #b5179e);">
+            <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #2E5C61, #18386E);">
                 <div class="stat-icon">
                     <i class="fas fa-award"></i>
                 </div>
@@ -1548,7 +1621,7 @@
             }, 600);
         }
 
-        const buttons = document.querySelectorAll('.continue-link, .card-btn, .empty-btn, .view-link');
+        const buttons = document.querySelectorAll('.continue-link, .card-btn, .empty-btn, .view-link, .edit-profile-link');
         buttons.forEach(button => {
             button.classList.add('position-relative', 'overflow-hidden');
             button.addEventListener('click', createRipple);
@@ -1561,6 +1634,13 @@
         navItems.forEach(item => {
             const href = item.getAttribute('href');
             if (href && currentPath.includes(href) && href !== '#') {
+                item.classList.add('active');
+            }
+        });
+
+        // Remove active class from all nav items except dashboard
+        navItems.forEach(item => {
+            if (item.getAttribute('href') === '{{ route("dashboard") }}') {
                 item.classList.add('active');
             }
         });
