@@ -38,16 +38,16 @@
                 <!-- Desktop Navigation -->
                 <nav class="desktop-nav">
                     <ul class="nav-menu">
-                        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
-                        <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}">About</a></li>
-                        <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}">Academy</a></li>
-                        <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}">Courses</a></li>
-                        <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}">Neo Ed Tech</a></li>
-                        <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}">Blog</a></li>
-                        <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}">Team</a></li>
-                        <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
+                        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><span class="translate-text" data-original="Home">Home</span></a></li>
+                        <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="About">About</span></a></li>
+                        <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="Academy">Academy</span></a></li>
+                        <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="Courses">Courses</span></a></li>
+                        <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><span class="translate-text" data-original="Neo Ed Tech">Neo Ed Tech</span></a></li>
+                        <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="Blog">Blog</span></a></li>
+                        <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="Team">Team</span></a></li>
+                        <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="Contact">Contact</span></a></li>
                         @auth
-                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}">Quiz</a></li>
+                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="Quiz">Quiz</span></a></li>
                         @endauth
                     </ul>
                 </nav>
@@ -85,13 +85,13 @@
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="user-dropdown" id="userDropdown">
-                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a>
-                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a>
-                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a>
-                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a>
+                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="Dashboard">Dashboard</span></a>
+                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="Settings">Settings</span></a>
+                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="My Courses">My Courses</span></a>
+                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="Certificates">Certificates</span></a>
                             <div class="dropdown-divider"></div>
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i> Logout
+                                <i class="fas fa-sign-out-alt"></i> <span class="translate-text" data-original="Logout">Logout</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
                         </div>
@@ -99,8 +99,8 @@
                     @else
                     <!-- Auth Buttons -->
                     <div class="auth-buttons">
-                        <a href="{{ route('login') }}" class="btn-login">Login</a>
-                        <a href="{{ route('register') }}" class="btn-register">Register</a>
+                        <a href="{{ route('login') }}" class="btn-login"><span class="translate-text" data-original="Login">Login</span></a>
+                        <a href="{{ route('register') }}" class="btn-register"><span class="translate-text" data-original="Register">Register</span></a>
                     </div>
                     @endauth
 
@@ -132,7 +132,7 @@
                 @else
                 <div class="mobile-guest">
                     <i class="fas fa-user-circle"></i>
-                    <span>Guest</span>
+                    <span class="translate-text" data-original="Guest">Guest</span>
                 </div>
                 @endauth
             </div>
@@ -140,50 +140,50 @@
 
         <nav class="mobile-nav">
             <ul class="mobile-nav-list">
-                <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><i class="fas fa-info-circle"></i> About</a></li>
-                <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><i class="fas fa-graduation-cap"></i> Academy</a></li>
-                <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') ? 'active' : '' }}"><i class="fas fa-book"></i> Courses</a></li>
-                <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><i class="fas fa-microchip"></i> Neo Ed Tech</a></li>
-                <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}"><i class="fas fa-blog"></i> Blog</a></li>
-                <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><i class="fas fa-users"></i> Team</a></li>
-                <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="fas fa-envelope"></i> Contact</a></li>
+                <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="fas fa-home"></i> <span class="translate-text" data-original="Home">Home</span></a></li>
+                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><i class="fas fa-info-circle"></i> <span class="translate-text" data-original="About">About</span></a></li>
+                <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><i class="fas fa-graduation-cap"></i> <span class="translate-text" data-original="Academy">Academy</span></a></li>
+                <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') ? 'active' : '' }}"><i class="fas fa-book"></i> <span class="translate-text" data-original="Courses">Courses</span></a></li>
+                <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><i class="fas fa-microchip"></i> <span class="translate-text" data-original="Neo Ed Tech">Neo Ed Tech</span></a></li>
+                <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}"><i class="fas fa-blog"></i> <span class="translate-text" data-original="Blog">Blog</span></a></li>
+                <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><i class="fas fa-users"></i> <span class="translate-text" data-original="Team">Team</span></a></li>
+                <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="Contact">Contact</span></a></li>
                 @auth
-                <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><i class="fas fa-question-circle"></i> Quiz</a></li>
+                <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><i class="fas fa-question-circle"></i> <span class="translate-text" data-original="Quiz">Quiz</span></a></li>
                 @endauth
             </ul>
         </nav>
 
         @auth
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title">Account</h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="Account">Account</span></h3>
             <ul class="mobile-nav-list">
-                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> Dashboard</a></li>
-                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> My Courses</a></li>
-                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> Certificates</a></li>
+                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="Dashboard">Dashboard</span></a></li>
+                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="Settings">Settings</span></a></li>
+                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="My Courses">My Courses</span></a></li>
+                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="Certificates">Certificates</span></a></li>
             </ul>
         </div>
         @else
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title">Account</h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="Account">Account</span></h3>
             <div class="mobile-auth-buttons">
-                <a href="{{ route('login') }}" class="mobile-btn-login">Login</a>
-                <a href="{{ route('register') }}" class="mobile-btn-register">Register</a>
+                <a href="{{ route('login') }}" class="mobile-btn-login"><span class="translate-text" data-original="Login">Login</span></a>
+                <a href="{{ route('register') }}" class="mobile-btn-register"><span class="translate-text" data-original="Register">Register</span></a>
             </div>
         </div>
         @endauth
 
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title">Contact</h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="Contact">Contact</span></h3>
             <div class="mobile-contact">
-                <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> +1 (833) 533-8228</a>
-                <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> contact@educonecx.com</a>
+                <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> <span class="translate-text" data-original="+1 (833) 533-8228">+1 (833) 533-8228</span></a>
+                <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="contact@educonecx.com">contact@educonecx.com</span></a>
             </div>
         </div>
 
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title">Follow Us</h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="Follow Us">Follow Us</span></h3>
             <div class="mobile-social">
                 <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank"><i class="fab fa-facebook-f"></i></a>
                 <a href="https://www.tiktok.com/@educonecx.officia" target="_blank"><i class="fab fa-tiktok"></i></a>

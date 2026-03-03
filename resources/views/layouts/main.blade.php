@@ -797,6 +797,19 @@
             -webkit-text-fill-color: unset !important;
             color: var(--pure-white) !important;
         }
+
+        /* Translation specific styles */
+        .translate-text {
+            transition: opacity 0.3s ease;
+        }
+
+        .translate-text.translating {
+            opacity: 0.7;
+        }
+
+        .no-translate {
+            /* Elements with this class won't be translated */
+        }
     </style>
 </head>
 
@@ -837,7 +850,7 @@
         });
     </script>
 
-    <!-- Global Translation System -->
+    <!-- Global Translation System - Enhanced -->
     <script>
         // Translation API endpoint
         const TRANSLATE_API_URL = "{{ route('translate') }}";
@@ -857,6 +870,17 @@
         // Store the base English texts
         let englishTexts = new Map();
 
+        // Language display mapping
+        const languageDisplay = {
+            'en': { flag: '🇺🇸', code: 'EN', name: 'English' },
+            'es': { flag: '🇪🇸', code: 'ES', name: 'Español' },
+            'fr': { flag: '🇫🇷', code: 'FR', name: 'Français' },
+            'de': { flag: '🇩🇪', code: 'DE', name: 'Deutsch' },
+            'it': { flag: '🇮🇹', code: 'IT', name: 'Italiano' },
+            'pt': { flag: '🇵🇹', code: 'PT', name: 'Português' },
+            'zh': { flag: '🇨🇳', code: 'ZH', name: '中文' }
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize translatable elements
             initializeTranslatableElements();
@@ -866,8 +890,14 @@
 
             // Auto-translate if current language is not English
             if (currentLanguage !== 'en') {
-                translatePage(currentLanguage);
+                // Small delay to ensure DOM is fully ready
+                setTimeout(() => {
+                    translatePage(currentLanguage);
+                }, 100);
             }
+
+            // Update language display in header
+            updateLanguageDisplay(currentLanguage);
         });
 
         // Store all original English texts
@@ -880,6 +910,16 @@
             console.log('English texts stored:', englishTexts.size);
         }
 
+        // Update language display in header
+        function updateLanguageDisplay(lang) {
+            const display = languageDisplay[lang] || languageDisplay['en'];
+            const flagEl = document.getElementById('currentFlag');
+            const langEl = document.getElementById('currentLang');
+            
+            if (flagEl) flagEl.textContent = display.flag;
+            if (langEl) langEl.textContent = display.code;
+        }
+
         // Initialize all translatable elements and preserve original texts
         function initializeTranslatableElements() {
             translatableElements = [];
@@ -887,23 +927,29 @@
             // Find all elements with text content that should be translated
             const selectors = [
                 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-                'p', 'span:not(.no-translate):not(.flag):not(.current-flag)',
-                'a:not(.no-translate):not(.btn):not(.language-toggle)',
+                'p', 'span:not(.no-translate):not(.flag):not(.current-flag):not(.current-lang):not(.user-name)',
+                'a:not(.no-translate):not(.btn):not(.lang-btn):not(.user-btn):not(.menu-toggle)',
                 '.btn', '.section-title', '.card-title', '.card-text',
                 '.nav-menu a', '.contact-info a', '.footer-links a',
-                'label', '.badge', '.alert', '.hero-title', '.hero-subtitle'
+                'label', '.badge', '.alert', '.hero-title', '.hero-subtitle',
+                '.mobile-nav-list a', '.mobile-section-title', '.mobile-guest span',
+                '.mobile-contact a', '.auth-buttons a'
             ];
 
             selectors.forEach(selector => {
                 document.querySelectorAll(selector).forEach(element => {
                     // Skip elements that should not be translated
-                    if (element.closest('.language-selector-container') ||
+                    if (element.closest('.language-selector') ||
+                        element.closest('.user-menu') ||
                         element.closest('.profile-dropdown') ||
                         element.classList.contains('no-translate') ||
                         element.classList.contains('flag') ||
                         element.classList.contains('current-flag') ||
+                        element.classList.contains('current-lang') ||
+                        element.classList.contains('user-name') ||
                         element.id === 'currentFlag' ||
-                        element.id === 'currentLanguage') {
+                        element.id === 'currentLang' ||
+                        element.id === 'langBtn') {
                         return;
                     }
 
@@ -914,6 +960,31 @@
                     // Skip elements that contain only numbers or special characters
                     if (/^[\d\s\W]+$/.test(text)) return;
 
+                    // Skip elements that have the translate-text class already
+                    if (element.classList.contains('translate-text')) {
+                        // Get the original text from data-original
+                        let originalText = element.getAttribute('data-original');
+                        if (!originalText) {
+                            originalText = text;
+                            element.setAttribute('data-original', text);
+                        }
+                        
+                        // Store base English text
+                        if (!element.hasAttribute('data-base-original')) {
+                            element.setAttribute('data-base-original', text);
+                        }
+
+                        translatableElements.push({
+                            element: element,
+                            original: originalText,
+                            baseOriginal: element.getAttribute('data-base-original')
+                        });
+                        return;
+                    }
+
+                    // For elements without translate-text class, add it
+                    element.classList.add('translate-text');
+                    
                     // Get the original text
                     let originalText = element.getAttribute('data-original');
                     
@@ -953,6 +1024,13 @@
                 loadingEl.innerHTML = '<i class="fas fa-spinner"></i><span>Translating page...</span>';
             }
 
+            // Add translating class to all translatable elements
+            translatableElements.forEach(item => {
+                if (item.element) {
+                    item.element.classList.add('translating');
+                }
+            });
+
             // Set a timeout to show warning if translation takes too long
             const timeoutId = setTimeout(() => {
                 if (loadingEl) {
@@ -975,7 +1053,7 @@
                 console.log(`Elements to translate: ${translatableElements.length}`);
 
                 // Use base English texts as source for translation
-                const textsToTranslate = translatableElements.map(item => item.baseOriginal);
+                const textsToTranslate = translatableElements.map(item => item.baseOriginal).filter(text => text && text.trim().length >= 2);
 
                 if (textsToTranslate.length === 0) {
                     console.log('No elements to translate');
@@ -987,16 +1065,20 @@
 
                 // Apply translations
                 let appliedCount = 0;
-                translatedTexts.forEach((translated, index) => {
-                    if (translatableElements[index] && translatableElements[index].element) {
-                        const element = translatableElements[index].element;
+                let translationIndex = 0;
+                
+                translatableElements.forEach((item, index) => {
+                    if (item.element && item.baseOriginal && item.baseOriginal.trim().length >= 2) {
+                        const translated = translatedTexts[translationIndex];
+                        translationIndex++;
                         
                         if (translated && translated.trim().length > 0) {
-                            const currentContent = element.textContent;
+                            const currentContent = item.element.textContent;
                             
                             // Only update if the translation is different
                             if (translated !== currentContent) {
-                                element.textContent = translated;
+                                item.element.textContent = translated;
+                                item.element.setAttribute('data-original', translated);
                                 appliedCount++;
                                 
                                 // Log first few translations for debugging
@@ -1010,6 +1092,9 @@
 
                 // Update current language
                 currentLanguage = targetLang;
+                
+                // Update language display in header
+                updateLanguageDisplay(targetLang);
 
                 console.log(`Translation complete: ${appliedCount}/${translatableElements.length} elements updated`);
                 
@@ -1020,6 +1105,14 @@
                 throw error;
             } finally {
                 clearTimeout(timeoutId);
+                
+                // Remove translating class
+                translatableElements.forEach(item => {
+                    if (item.element) {
+                        item.element.classList.remove('translating');
+                    }
+                });
+                
                 if (loadingEl) {
                     loadingEl.classList.remove('show', 'timeout');
                 }
@@ -1119,10 +1212,7 @@
             currentLanguage = 'en';
             
             // Update language display
-            const flagEl = document.getElementById('currentFlag');
-            const langEl = document.getElementById('currentLanguage');
-            if (flagEl) flagEl.textContent = '🇺🇸';
-            if (langEl) langEl.textContent = 'English';
+            updateLanguageDisplay('en');
             
             console.log('Reset to English');
         };
@@ -1156,12 +1246,20 @@
             }
         };
 
+        // Force refresh translatable elements (useful for dynamically loaded content)
+        window.refreshTranslatableElements = function() {
+            initializeTranslatableElements();
+            storeEnglishTexts();
+            console.log('Translatable elements refreshed:', translatableElements.length);
+        };
+
         // Expose for debugging
         window.translationSystem = {
             translatePage,
             resetToEnglish: window.resetToEnglish,
             currentLanguage: () => currentLanguage,
             elements: () => translatableElements.length,
+            refresh: window.refreshTranslatableElements,
             test: window.testTranslation,
             apiUrl: TRANSLATE_API_URL
         };
