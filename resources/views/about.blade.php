@@ -6,13 +6,71 @@
 
 @push('styles')
 <style>
+    /* Root Variables - Your Beautiful Logo Colors */
+    :root {
+        --bright-amber: #FBC60C;
+        --khaki-beige: #9F9A87;
+        --pure-white: #FEFDFE;
+        --prussian-blue: #0A1D44;
+        --regal-navy: #18386E;
+        --sky-blue: #5AD1E4;
+        --pale-slate: #CBD1DA;
+        --dark-slate: #2E5C61;
+        --ivory: #F9F7E9;
+        --light-gold: #EBD789;
+        
+        /* Extended Palette - Fixed for better readability */
+        --primary: var(--regal-navy);
+        --primary-dark: var(--prussian-blue);
+        --primary-light: var(--dark-slate);
+        --secondary: var(--sky-blue);
+        --accent: var(--bright-amber);
+        --accent-soft: var(--light-gold);
+        --success: var(--sky-blue);
+        --warning: var(--bright-amber);
+        
+        /* Text Colors - Enhanced for readability */
+        --text-primary: #0A1D44;
+        --text-secondary: #2E5C61;
+        --text-muted: #5f5f5f;
+        --text-light: #FEFDFE;
+        
+        /* Gradients with your colors */
+        --gradient-1: linear-gradient(135deg, #0A1D44 0%, #18386E 50%, #2E5C61 100%);
+        --gradient-2: linear-gradient(45deg, #FBC60C 0%, #EBD789 50%, #F9F7E9 100%);
+        --gradient-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
+        
+        /* Shadows */
+        --shadow-sm: 0 2px 8px rgba(10, 29, 68, 0.08);
+        --shadow-md: 0 4px 12px rgba(10, 29, 68, 0.12);
+        --shadow-lg: 0 8px 24px rgba(10, 29, 68, 0.15);
+        --shadow-hover: 0 12px 28px rgba(251, 198, 12, 0.2);
+        
+        /* Border Radius */
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+        
+        /* Transitions */
+        --transition: all 0.3s ease;
+        --transition-slow: all 0.5s ease;
+    }
+
+    /* Animations */
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
     /* Hero Section */
     .about-hero {
         position: relative;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 100px 0;
+        background: var(--gradient-1);
+        padding: 120px 0;
         overflow: hidden;
-        color: var(--white);
+        color: var(--pure-white);
     }
 
     .about-hero-particles {
@@ -26,7 +84,7 @@
 
     .about-hero-particle {
         position: absolute;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(251, 198, 12, 0.1);
         border-radius: 50%;
     }
 
@@ -43,6 +101,7 @@
         height: 200px;
         bottom: -50px;
         left: -50px;
+        background: rgba(90, 209, 228, 0.1);
         animation: float 10s ease-in-out infinite reverse;
     }
 
@@ -51,6 +110,7 @@
         height: 150px;
         top: 30%;
         left: 20%;
+        background: rgba(235, 215, 137, 0.1);
         animation: float 12s ease-in-out infinite;
     }
 
@@ -65,13 +125,14 @@
     .about-hero-badge {
         display: inline-block;
         padding: 8px 20px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: var(--border-radius-full);
+        background: rgba(254, 253, 254, 0.2);
+        border-radius: var(--radius-full);
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 25px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        color: var(--pure-white);
     }
 
     .about-hero-title {
@@ -79,19 +140,24 @@
         font-weight: 800;
         margin-bottom: 20px;
         line-height: 1.1;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 2px 10px rgba(10, 29, 68, 0.3);
+    }
+
+    .about-hero-title span {
+        color: var(--bright-amber);
     }
 
     .about-hero-text {
         font-size: clamp(1.1rem, 3vw, 1.3rem);
-        opacity: 0.9;
+        opacity: 0.95;
         line-height: 1.8;
+        color: var(--ivory);
     }
 
     /* Mission Section */
     .mission-section {
         padding: 80px 0;
-        background: var(--white);
+        background: var(--pure-white);
     }
 
     .mission-grid {
@@ -106,7 +172,7 @@
     }
 
     .mission-subtitle {
-        color: var(--primary);
+        color: var(--bright-amber);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -120,10 +186,15 @@
         font-weight: 800;
         margin-bottom: 25px;
         line-height: 1.2;
+        color: var(--prussian-blue);
+    }
+
+    .mission-title span {
+        color: var(--bright-amber);
     }
 
     .mission-text {
-        color: var(--gray);
+        color: var(--text-muted);
         line-height: 1.8;
         margin-bottom: 20px;
         font-size: 1.1rem;
@@ -142,18 +213,18 @@
     .mission-stat-number {
         font-size: 2.5rem;
         font-weight: 800;
-        color: var(--primary);
+        color: var(--prussian-blue);
         margin-bottom: 5px;
     }
 
     .mission-stat-label {
-        color: var(--gray);
+        color: var(--text-muted);
         font-size: 0.95rem;
     }
 
     .mission-image {
         position: relative;
-        border-radius: var(--border-radius-lg);
+        border-radius: var(--radius-lg);
         overflow: hidden;
         box-shadow: var(--shadow-lg);
     }
@@ -173,17 +244,19 @@
         position: absolute;
         bottom: 30px;
         left: 30px;
-        background: var(--gradient-1);
-        color: var(--white);
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
         padding: 15px 25px;
-        border-radius: var(--border-radius-lg);
+        border-radius: var(--radius-lg);
         box-shadow: var(--shadow-lg);
         animation: float 6s ease-in-out infinite;
+        border: 2px solid rgba(251, 198, 12, 0.3);
     }
 
     .mission-image-badge i {
         font-size: 2rem;
         margin-bottom: 5px;
+        color: var(--prussian-blue);
     }
 
     .mission-image-badge span {
@@ -194,7 +267,7 @@
     /* Values Section */
     .values-section {
         padding: 80px 0;
-        background: var(--light);
+        background: var(--ivory);
     }
 
     .section-header {
@@ -203,7 +276,7 @@
     }
 
     .section-subtitle {
-        color: var(--primary);
+        color: var(--bright-amber);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -216,10 +289,15 @@
         font-size: clamp(2rem, 5vw, 2.5rem);
         font-weight: 800;
         margin-bottom: 15px;
+        color: var(--prussian-blue);
+    }
+
+    .section-title span {
+        color: var(--bright-amber);
     }
 
     .section-description {
-        color: var(--gray);
+        color: var(--text-muted);
         max-width: 700px;
         margin: 0 auto;
         font-size: 1.1rem;
@@ -234,14 +312,15 @@
     }
 
     .value-card {
-        background: var(--white);
+        background: var(--pure-white);
         padding: 40px 30px;
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
         transition: var(--transition);
         text-align: center;
         position: relative;
         overflow: hidden;
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
     .value-card::before {
@@ -250,8 +329,8 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 5px;
-        background: var(--gradient-1);
+        height: 4px;
+        background: var(--gradient-2);
         transform: translateX(-100%);
         transition: var(--transition);
     }
@@ -261,43 +340,47 @@
     }
 
     .value-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
     .value-icon {
         width: 80px;
         height: 80px;
         background: var(--gradient-1);
-        border-radius: 50%;
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 25px;
-        color: var(--white);
+        color: var(--pure-white);
         font-size: 2rem;
         transition: var(--transition);
     }
 
     .value-card:hover .value-icon {
-        transform: rotateY(180deg);
+        transform: scale(1.1);
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
     }
 
     .value-title {
         font-size: 1.3rem;
         margin-bottom: 15px;
         font-weight: 700;
+        color: var(--prussian-blue);
     }
 
     .value-text {
-        color: var(--gray);
+        color: var(--text-muted);
         line-height: 1.6;
     }
 
     /* Story Section */
     .story-section {
         padding: 80px 0;
-        background: var(--white);
+        background: var(--pure-white);
     }
 
     .story-grid {
@@ -309,7 +392,7 @@
 
     .story-image {
         position: relative;
-        border-radius: var(--border-radius-lg);
+        border-radius: var(--radius-lg);
         overflow: hidden;
         box-shadow: var(--shadow-lg);
     }
@@ -332,7 +415,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+        background: linear-gradient(135deg, rgba(10, 29, 68, 0.2) 0%, rgba(24, 56, 110, 0.2) 100%);
         z-index: 1;
     }
 
@@ -345,10 +428,15 @@
         font-weight: 800;
         margin-bottom: 25px;
         line-height: 1.2;
+        color: var(--prussian-blue);
+    }
+
+    .story-title span {
+        color: var(--bright-amber);
     }
 
     .story-text {
-        color: var(--gray);
+        color: var(--text-muted);
         line-height: 1.8;
         margin-bottom: 20px;
         font-size: 1.1rem;
@@ -357,10 +445,11 @@
     .story-quote {
         margin: 30px 0;
         padding: 20px 30px;
-        background: var(--light);
-        border-radius: var(--border-radius-lg);
+        background: var(--ivory);
+        border-radius: var(--radius-lg);
         position: relative;
         font-style: italic;
+        border-left: 4px solid var(--bright-amber);
     }
 
     .story-quote i {
@@ -368,20 +457,20 @@
         top: 20px;
         left: 20px;
         font-size: 2rem;
-        color: var(--primary);
+        color: var(--bright-amber);
         opacity: 0.2;
     }
 
     .story-quote p {
         margin-left: 30px;
         font-size: 1.1rem;
-        color: var(--dark);
+        color: var(--prussian-blue);
     }
 
-    /* Services Section - UPDATED FOR BETTER ALIGNMENT */
+    /* Services Section - IMPROVED CARD ALIGNMENT */
     .services-section {
         padding: 80px 0;
-        background: var(--light);
+        background: var(--ivory);
     }
 
     .services-grid {
@@ -392,28 +481,30 @@
     }
 
     .service-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
         transition: var(--transition);
         height: 100%;
         display: flex;
         flex-direction: column;
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
     .service-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
     .service-header {
         background: var(--gradient-1);
-        color: var(--white);
-        padding: 30px;
+        color: var(--pure-white);
+        padding: 30px 25px;
         position: relative;
         overflow: hidden;
-        min-height: 180px;
+        min-height: 160px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -426,35 +517,38 @@
         right: -50%;
         width: 200px;
         height: 200px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(251, 198, 12, 0.1);
         border-radius: 50%;
         animation: float 8s ease-in-out infinite;
     }
 
     .service-icon {
-        font-size: 3rem;
+        font-size: 2.5rem;
         margin-bottom: 15px;
         position: relative;
         z-index: 1;
+        color: var(--bright-amber);
     }
 
     .service-header h3 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
+        font-size: 1.4rem;
+        margin-bottom: 8px;
         position: relative;
         z-index: 1;
         line-height: 1.3;
+        color: var(--pure-white);
     }
 
     .service-header p {
         opacity: 0.9;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         position: relative;
         z-index: 1;
+        color: var(--ivory);
     }
 
     .service-body {
-        padding: 30px;
+        padding: 30px 25px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -469,15 +563,15 @@
     .service-features li {
         display: flex;
         align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 15px;
-        color: var(--gray);
+        gap: 12px;
+        margin-bottom: 16px;
+        color: var(--text-muted);
         font-size: 0.95rem;
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
     .service-features li i {
-        color: var(--success);
+        color: var(--bright-amber);
         font-size: 1rem;
         margin-top: 3px;
         flex-shrink: 0;
@@ -491,20 +585,24 @@
         display: inline-block;
         padding: 12px 25px;
         background: var(--gradient-1);
-        color: var(--white);
-        border-radius: var(--border-radius-full);
+        color: var(--pure-white);
+        border-radius: var(--radius-full);
         font-weight: 600;
         font-size: 0.95rem;
         transition: var(--transition);
         text-align: center;
         margin-top: auto;
         align-self: flex-start;
+        text-decoration: none;
+        border: 1px solid transparent;
     }
 
     .service-btn:hover {
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
         transform: translateX(5px);
-        box-shadow: var(--shadow-md);
-        color: var(--white);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
     .service-btn i {
@@ -516,31 +614,139 @@
         transform: translateX(5px);
     }
 
+    /* NEO Section */
+    .neo-section {
+        padding: 80px 0;
+        background: var(--pure-white);
+    }
+
+    .neo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .neo-subtitle {
+        color: var(--bright-amber);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .neo-title {
+        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 25px;
+        line-height: 1.2;
+        color: var(--prussian-blue);
+    }
+
+    .neo-title span {
+        color: var(--bright-amber);
+    }
+
+    .neo-text {
+        color: var(--text-muted);
+        line-height: 1.8;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    .neo-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .neo-feature {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .neo-feature i {
+        color: var(--bright-amber);
+        font-size: 1.1rem;
+    }
+
+    .neo-feature span {
+        color: var(--prussian-blue);
+    }
+
+    .neo-image {
+        position: relative;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .neo-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: var(--transition-slow);
+    }
+
+    .neo-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .neo-badge {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
+        padding: 15px 20px;
+        border-radius: var(--radius-lg);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: float 6s ease-in-out infinite;
+        border: 2px solid rgba(251, 198, 12, 0.3);
+    }
+
+    .neo-badge i {
+        font-size: 1.5rem;
+        color: var(--prussian-blue);
+    }
+
+    .neo-badge span {
+        font-weight: 600;
+    }
+
     /* Team Section */
     .team-section {
         padding: 80px 0;
-        background: var(--white);
+        background: var(--ivory);
     }
 
     .team-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 40px;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
         margin-top: 50px;
     }
 
     .team-card {
-        background: var(--white);
-        border-radius: var(--border-radius-lg);
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
         overflow: hidden;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
         transition: var(--transition);
         text-align: center;
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
     .team-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
     .team-image {
@@ -569,7 +775,7 @@
         justify-content: center;
         gap: 10px;
         padding: 15px;
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        background: linear-gradient(to top, rgba(10, 29, 68, 0.9), transparent);
         transition: var(--transition);
     }
 
@@ -580,49 +786,51 @@
     .team-social a {
         width: 35px;
         height: 35px;
-        background: var(--white);
+        background: var(--pure-white);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--primary);
+        color: var(--prussian-blue);
         transition: var(--transition);
+        text-decoration: none;
     }
 
     .team-social a:hover {
-        background: var(--primary);
-        color: var(--white);
+        background: var(--bright-amber);
+        color: var(--prussian-blue);
         transform: translateY(-3px);
     }
 
     .team-info {
-        padding: 25px;
+        padding: 25px 20px;
     }
 
     .team-name {
         font-size: 1.2rem;
         font-weight: 700;
         margin-bottom: 5px;
+        color: var(--prussian-blue);
     }
 
     .team-position {
-        color: var(--primary);
+        color: var(--bright-amber);
         font-size: 0.9rem;
         font-weight: 500;
         margin-bottom: 10px;
     }
 
     .team-bio {
-        color: var(--gray);
-        font-size: 0.95rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
         line-height: 1.6;
     }
 
     /* CTA Section */
     .about-cta {
         padding: 80px 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: var(--white);
+        background: var(--gradient-1);
+        color: var(--pure-white);
         text-align: center;
         position: relative;
         overflow: hidden;
@@ -635,7 +843,7 @@
         right: -10%;
         width: 400px;
         height: 400px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(251, 198, 12, 0.1);
         border-radius: 50%;
         animation: float 10s ease-in-out infinite;
     }
@@ -647,7 +855,7 @@
         left: -10%;
         width: 300px;
         height: 300px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(90, 209, 228, 0.1);
         border-radius: 50%;
         animation: float 8s ease-in-out infinite reverse;
     }
@@ -662,12 +870,18 @@
     .about-cta h2 {
         font-size: clamp(2rem, 5vw, 3rem);
         margin-bottom: 20px;
+        color: var(--pure-white);
+    }
+
+    .about-cta h2 span {
+        color: var(--bright-amber);
     }
 
     .about-cta p {
         font-size: 1.2rem;
-        opacity: 0.9;
+        opacity: 0.95;
         margin-bottom: 30px;
+        color: var(--ivory);
     }
 
     .about-cta-buttons {
@@ -679,16 +893,30 @@
 
     .about-cta-buttons .btn {
         min-width: 200px;
+        padding: 14px 28px;
+    }
+
+    .about-cta-buttons .btn-primary {
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
+    }
+
+    .about-cta-buttons .btn-primary:hover {
+        background: transparent;
+        color: var(--pure-white);
+        border: 2px solid var(--bright-amber);
     }
 
     .about-cta-buttons .btn-secondary {
-        border-color: var(--white);
-        color: var(--white);
+        border-color: var(--pure-white);
+        color: var(--pure-white);
+        background: transparent;
     }
 
     .about-cta-buttons .btn-secondary:hover {
-        background: var(--white);
-        color: var(--primary);
+        background: var(--pure-white);
+        color: var(--prussian-blue);
+        border-color: var(--pure-white);
     }
 
     /* Responsive */
@@ -699,7 +927,6 @@
     }
 
     @media (max-width: 992px) {
-
         .mission-grid,
         .story-grid,
         .neo-grid {
@@ -738,12 +965,30 @@
             gap: 20px;
         }
 
+        .neo-features {
+            grid-template-columns: 1fr;
+        }
+
         .about-cta-buttons .btn {
             min-width: 150px;
         }
 
-        .neo-features {
+        .team-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .team-grid {
             grid-template-columns: 1fr;
+        }
+
+        .about-cta-buttons {
+            flex-direction: column;
+        }
+
+        .about-cta-buttons .btn {
+            width: 100%;
         }
     }
 </style>
@@ -761,7 +1006,7 @@
     <div class="container">
         <div class="about-hero-content" data-aos="fade-up">
             <span class="about-hero-badge">About EDUCONECX</span>
-            <h1 class="about-hero-title">Empowering Learners Worldwide</h1>
+            <h1 class="about-hero-title">Empowering <span>Learners Worldwide</span></h1>
             <p class="about-hero-text">
                 We're on a mission to make quality education accessible to everyone,
                 everywhere through AI-powered learning and practical skill development.
@@ -776,7 +1021,7 @@
         <div class="mission-grid">
             <div class="mission-content" data-aos="fade-right">
                 <span class="mission-subtitle">Our Mission</span>
-                <h2 class="mission-title">Breaking Barriers, Building Futures</h2>
+                <h2 class="mission-title">Breaking Barriers, <span>Building Futures</span></h2>
                 <p class="mission-text">
                     EDUCONECX is an international, AI-powered educational platform dedicated to
                     supporting learners worldwide with practical language and digital business skills.
@@ -822,7 +1067,7 @@
     <div class="container">
         <div class="section-header" data-aos="fade-up">
             <span class="section-subtitle">Our Values</span>
-            <h2 class="section-title">What Drives Us Forward</h2>
+            <h2 class="section-title">What <span>Drives Us</span> Forward</h2>
             <p class="section-description">
                 These core principles guide everything we do at EDUCONECX
             </p>
@@ -908,7 +1153,7 @@
 
             <div class="story-content" data-aos="fade-left">
                 <span class="section-subtitle">Our Story</span>
-                <h2 class="story-title">Why We Created This Platform</h2>
+                <h2 class="story-title">Why We Created <span>This Platform</span></h2>
                 <p class="story-text">
                     Many individuals face challenges due to limited access to relevant learning
                     resources or training that connects directly to real-world applications.
@@ -939,7 +1184,7 @@
     <div class="container">
         <div class="section-header" data-aos="fade-up">
             <span class="section-subtitle">Our Services</span>
-            <h2 class="section-title">Comprehensive Learning Solutions</h2>
+            <h2 class="section-title">Comprehensive <span>Learning Solutions</span></h2>
             <p class="section-description">
                 Empowering Learners with Practical Language and Digital Business Skills
             </p>
@@ -953,7 +1198,7 @@
                         <i class="fas fa-language"></i>
                     </div>
                     <h3>Language Learning Programs</h3>
-                    <p>Master practical communication skills for the global workplace</p>
+                    <p>Master practical communication skills</p>
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
@@ -973,8 +1218,8 @@
                     <div class="service-icon">
                         <i class="fas fa-headset"></i>
                     </div>
-                    <h3>Call Center & Customer Service Training</h3>
-                    <p>Prepare for international customer support roles</p>
+                    <h3>Call Center & Customer Service</h3>
+                    <p>Prepare for international support roles</p>
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
@@ -1018,7 +1263,7 @@
         <div class="neo-grid">
             <div class="neo-content" data-aos="fade-right">
                 <span class="neo-subtitle">NEO-EDTECH</span>
-                <h2 class="neo-title">Professional Agency Services</h2>
+                <h2 class="neo-title">Professional <span>Agency Services</span></h2>
                 <p class="neo-text">
                     In addition to our educational platform, EDUCONECX operates NEO-EDTECH,
                     a professional agency providing digital marketing, AI-powered solutions,
@@ -1063,108 +1308,12 @@
     </div>
 </section>
 
-<style>
-    .neo-section {
-        padding: 80px 0;
-        background: var(--white);
-    }
-
-    .neo-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 60px;
-        align-items: center;
-    }
-
-    .neo-subtitle {
-        color: var(--primary);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 0.9rem;
-        margin-bottom: 15px;
-        display: block;
-    }
-
-    .neo-title {
-        font-size: clamp(2rem, 5vw, 2.5rem);
-        font-weight: 800;
-        margin-bottom: 25px;
-        line-height: 1.2;
-    }
-
-    .neo-text {
-        color: var(--gray);
-        line-height: 1.8;
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-    }
-
-    .neo-features {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        margin: 30px 0;
-    }
-
-    .neo-feature {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .neo-feature i {
-        color: var(--success);
-        font-size: 1.1rem;
-    }
-
-    .neo-image {
-        position: relative;
-        border-radius: var(--border-radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-lg);
-    }
-
-    .neo-image img {
-        width: 100%;
-        height: auto;
-        display: block;
-        transition: var(--transition-slow);
-    }
-
-    .neo-image:hover img {
-        transform: scale(1.05);
-    }
-
-    .neo-badge {
-        position: absolute;
-        top: 30px;
-        right: 30px;
-        background: var(--gradient-2);
-        color: var(--white);
-        padding: 15px 20px;
-        border-radius: var(--border-radius-lg);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .neo-badge i {
-        font-size: 1.5rem;
-    }
-
-    .neo-badge span {
-        font-weight: 600;
-    }
-</style>
-
 <!-- Team Section -->
 <section class="team-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
             <span class="section-subtitle">Our Team</span>
-            <h2 class="section-title">Meet the Experts Behind EDUCONECX</h2>
+            <h2 class="section-title">Meet the <span>Experts Behind</span> EDUCONECX</h2>
             <p class="section-description">
                 Passionate educators and industry professionals dedicated to your success
             </p>
@@ -1246,7 +1395,7 @@
 <section class="about-cta">
     <div class="container">
         <div class="about-cta-content" data-aos="zoom-in">
-            <h2>Ready to Start Your Learning Journey?</h2>
+            <h2>Ready to Start Your <span>Learning Journey?</span></h2>
             <p>Join thousands of students worldwide and transform your future with EDUCONECX</p>
             <div class="about-cta-buttons">
                 <a href="{{ route('academy') }}" class="btn btn-primary">
