@@ -876,48 +876,95 @@
     }
 
     /* Logo Cloud */
-    .logo-cloud-section {
-        padding: 50px 0;
-        background: var(--pure-white);
-    }
+    /* Logo Cloud - Fixed for full-width sliding */
+.logo-cloud-section {
+    padding: 50px 0;
+    background: var(--pure-white);
+    width: 100%;
+    overflow: hidden;
+}
 
-    .logo-cloud-title {
-        text-align: center;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 30px;
-    }
+.logo-cloud-title {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
 
-    .logo-cloud {
-        overflow: hidden;
-        mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    }
+.logo-cloud {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+}
 
+.logo-track {
+    display: flex;
+    gap: 50px;
+    animation: marquee 45s linear infinite;
+    width: max-content;
+    /* This ensures the track takes the full width of its content */
+    padding-left: 20px;
+    /* Add some padding to prevent items from touching the edges */
+}
+
+@keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+.logo-item {
+    flex-shrink: 0;
+    filter: grayscale(100%) opacity(0.6);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    /* Ensure consistent width for text fallback */
+}
+
+.logo-item:hover {
+    filter: grayscale(0%) opacity(1);
+}
+
+.logo-item img {
+    height: 40px;
+    width: auto;
+    max-width: 120px;
+    object-fit: contain;
+}
+
+.logo-item span {
+    font-size: 1.1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--prussian-blue);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
     .logo-track {
-        display: flex;
-        gap: 50px;
-        animation: marquee 45s linear infinite;
-        width: fit-content;
+        gap: 30px;
+        animation-duration: 35s;
+        /* Slightly faster on mobile */
     }
-
+    
     .logo-item {
-        flex-shrink: 0;
-        filter: grayscale(100%) opacity(0.6);
-        transition: var(--transition);
+        min-width: 100px;
     }
-
-    .logo-item:hover {
-        filter: grayscale(0%) opacity(1);
-    }
-
+    
     .logo-item img {
-        height: 35px;
-        width: auto;
+        height: 30px;
     }
-
+    
+    .logo-item span {
+        font-size: 1rem;
+    }
+}
     /* Responsive */
     @media (max-width: 1024px) {
         .grid-3 {
@@ -1076,23 +1123,74 @@
         <p class="logo-cloud-title">Trusted by students from</p>
         <div class="logo-cloud">
             <div class="logo-track">
+                <!-- Harvard -->
                 <div class="logo-item">
-                    <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard">
+                    @php
+                        $harvardPath = public_path('storage/home-page-svgs/Harvard_shield_wreath.svg');
+                    @endphp
+                    @if(file_exists($harvardPath))
+                        <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard University" style="height: 40px;">
+                    @else
+                        <span style="font-weight: 600; color: var(--prussian-blue);">Harvard</span>
+                    @endif
                 </div>
+                
+                <!-- Stanford -->
                 <div class="logo-item">
-                    <img src="{{ asset('storage/home-page-svgs/Stanford_University_seal_2003.svg') }}" alt="Stanford">
+                    @php
+                        $stanfordPath = public_path('storage/home-page-svgs/Stanford_University_seal_2003.svg');
+                    @endphp
+                    @if(file_exists($stanfordPath))
+                        <img src="{{ asset('storage/home-page-svgs/Stanford_University_seal_2003.svg') }}" alt="Stanford University" style="height: 40px;">
+                    @else
+                        <span style="font-weight: 600; color: var(--prussian-blue);">Stanford</span>
+                    @endif
                 </div>
+                
+                <!-- MIT -->
                 <div class="logo-item">
-                    <img src="{{ asset('storage/home-page-svgs/MIT_seal.svg') }}" alt="MIT">
+                    @php
+                        $mitPath = public_path('storage/home-page-svgs/MIT_seal.svg');
+                    @endphp
+                    @if(file_exists($mitPath))
+                        <img src="{{ asset('storage/home-page-svgs/MIT_seal.svg') }}" alt="MIT" style="height: 40px;">
+                    @else
+                        <span style="font-weight: 600; color: var(--prussian-blue);">MIT</span>
+                    @endif
                 </div>
+                
+                <!-- Cambridge -->
                 <div class="logo-item">
-                    <img src="{{ asset('storage/home-page-pngs/University_of_Cambridge_seal.png') }}" alt="Cambridge">
+                    @php
+                        $cambridgePath = public_path('storage/home-page-pngs/University_of_Cambridge_seal.png');
+                    @endphp
+                    @if(file_exists($cambridgePath))
+                        <img src="{{ asset('storage/home-page-pngs/University_of_Cambridge_seal.png') }}" alt="University of Cambridge" style="height: 40px;">
+                    @else
+                        <span style="font-weight: 600; color: var(--prussian-blue);">Cambridge</span>
+                    @endif
                 </div>
+                
+                <!-- Oxford -->
                 <div class="logo-item">
-                    <img src="{{ asset('storage/home-page-pngs/Oxford-University-Circlet.png') }}" alt="Oxford">
+                    @php
+                        $oxfordPath = public_path('storage/home-page-pngs/Oxford-University-Circlet.png');
+                    @endphp
+                    @if(file_exists($oxfordPath))
+                        <img src="{{ asset('storage/home-page-pngs/Oxford-University-Circlet.png') }}" alt="University of Oxford" style="height: 40px;">
+                    @else
+                        <span style="font-weight: 600; color: var(--prussian-blue);">Oxford</span>
+                    @endif
                 </div>
+                
+                <!-- Duplicate for seamless looping -->
+                <!-- Harvard (duplicate) -->
                 <div class="logo-item">
-                    <img src="{{ asset('storage/home-page-pngs/Harvard_shield_wreath.png') }}" alt="Harvard">
+                    @if(file_exists($harvardPath))
+                        <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard University" style="height: 40px;">
+                    @else
+                        <span style="font-weight: 600; color: var(--prussian-blue);">Harvard</span>
+                    @endif
                 </div>
             </div>
         </div>
