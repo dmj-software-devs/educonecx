@@ -17,8 +17,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
-<!-- Bootstrap CSS -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -117,6 +119,12 @@
             background-color: var(--pure-white);
         }
 
+        @media (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
         /* Typography - Fixed for better readability */
         h1,
         h2,
@@ -163,6 +171,12 @@
             background-clip: text;
         }
 
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
         a {
             text-decoration: none;
             color: inherit;
@@ -204,6 +218,7 @@
             z-index: -1;
             overflow: hidden;
             opacity: 0.6;
+            pointer-events: none;
         }
 
         .liquid-blob {
@@ -254,12 +269,33 @@
             animation: liquid-morph-4 30s infinite alternate;
         }
 
+        @media (max-width: 768px) {
+            .liquid-blob {
+                filter: blur(50px);
+            }
+            .liquid-blob-1 {
+                width: 300px;
+                height: 300px;
+            }
+            .liquid-blob-2 {
+                width: 350px;
+                height: 350px;
+            }
+            .liquid-blob-3 {
+                width: 250px;
+                height: 250px;
+            }
+            .liquid-blob-4 {
+                width: 300px;
+                height: 300px;
+            }
+        }
+
         @keyframes liquid-morph-1 {
             0% {
                 border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
                 transform: translate(0, 0) rotate(0deg);
             }
-
             100% {
                 border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%;
                 transform: translate(100px, 50px) rotate(20deg);
@@ -271,7 +307,6 @@
                 border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
                 transform: translate(0, 0) rotate(0deg);
             }
-
             100% {
                 border-radius: 67% 33% 31% 69% / 48% 62% 38% 52%;
                 transform: translate(-80px, -80px) rotate(-15deg);
@@ -283,7 +318,6 @@
                 border-radius: 67% 33% 59% 41% / 57% 43% 57% 43%;
                 transform: translate(0, 0) scale(1);
             }
-
             100% {
                 border-radius: 41% 59% 33% 67% / 43% 62% 38% 57%;
                 transform: translate(60px, -40px) scale(1.2);
@@ -295,7 +329,6 @@
                 border-radius: 44% 56% 31% 69% / 58% 29% 71% 42%;
                 transform: translate(0, 0) scale(1);
             }
-
             100% {
                 border-radius: 56% 44% 69% 31% / 42% 71% 29% 58%;
                 transform: translate(-50px, 30px) scale(0.9);
@@ -306,7 +339,6 @@
             0% {
                 transform: translate(0, 0);
             }
-
             100% {
                 transform: translate(30px, -30px);
             }
@@ -332,12 +364,18 @@
             animation: liquid-line 4s infinite alternate;
         }
 
+        @media (max-width: 768px) {
+            .section-title::after {
+                width: 60px;
+                height: 3px;
+            }
+        }
+
         @keyframes liquid-line {
             0% {
                 width: 100px;
                 border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
             }
-
             100% {
                 width: 150px;
                 border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%;
@@ -364,11 +402,9 @@
             0% {
                 background-position: 0% 50%;
             }
-
             50% {
                 background-position: 100% 50%;
             }
-
             100% {
                 background-position: 0% 50%;
             }
@@ -450,11 +486,29 @@
             background: rgba(90, 209, 228, 0.1);
         }
 
+        @media (max-width: 768px) {
+            .btn {
+                padding: 12px 28px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .btn {
+                padding: 10px 24px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
         /* Hero Section - Fixed for better contrast */
         .hero-section {
             background: var(--gradient-hero);
             position: relative;
             color: var(--pure-white);
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
         }
 
         .hero-section::before {
@@ -475,6 +529,13 @@
 
         .hero-section .hero-content {
             color: var(--pure-white);
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                min-height: 50vh;
+                padding: 40px 0;
+            }
         }
 
         /* Liquid Cards */
@@ -536,6 +597,18 @@
             padding: 28px;
         }
 
+        @media (max-width: 768px) {
+            .card-content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-content {
+                padding: 16px;
+            }
+        }
+
         .card-title {
             color: var(--prussian-blue);
             margin-bottom: 12px;
@@ -578,11 +651,9 @@
             0% {
                 transform: translateY(0) scale(1);
             }
-
             50% {
                 transform: translateY(-20px) scale(1.05);
             }
-
             100% {
                 transform: translateY(0) scale(1);
             }
@@ -593,12 +664,10 @@
                 opacity: 0.3;
                 transform: scale(1);
             }
-
             50% {
                 opacity: 0.5;
                 transform: scale(1.1);
             }
-
             100% {
                 opacity: 0.3;
                 transform: scale(1);
@@ -668,12 +737,10 @@
                 transform: rotate(0deg) scale(1);
                 border-radius: var(--border-radius-liquid);
             }
-
             50% {
                 transform: rotate(180deg) scale(1.1);
                 border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             }
-
             100% {
                 transform: rotate(360deg) scale(1);
                 border-radius: var(--border-radius-liquid);
@@ -719,10 +786,35 @@
                 transform: translateX(100%) scale(0.8);
                 opacity: 0;
             }
-
             100% {
                 transform: translateX(0) scale(1);
                 opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .global-translation-loading {
+                top: 15px;
+                right: 15px;
+                padding: 12px 22px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .global-translation-loading {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                padding: 12px 20px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .global-translation-loading {
+                padding: 10px 16px;
+                font-size: 0.9rem;
             }
         }
 
@@ -737,6 +829,12 @@
         .grid-3,
         .grid-4 {
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                gap: 20px;
+            }
         }
 
         /* Inputs */
@@ -763,86 +861,11 @@
             transform: scale(1.02);
         }
 
-        /* Navigation */
-        .nav-liquid {
-            background: rgba(254, 253, 254, 0.2);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(251, 198, 12, 0.2);
-            border-radius: 0 0 var(--border-radius-liquid) var(--border-radius-liquid);
-        }
-
-        .nav-liquid a {
-            position: relative;
-            padding: 10px 0;
-        }
-
-        .nav-liquid a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--gradient-liquid-2);
-            border-radius: var(--border-radius-liquid);
-            transition: width 0.4s ease;
-        }
-
-        .nav-liquid a:hover::after,
-        .nav-liquid a.active::after {
-            width: 100%;
-        }
-
-        /* Responsive Adjustments */
         @media (max-width: 768px) {
-            .global-translation-loading {
-                top: 15px;
-                right: 15px;
-                padding: 12px 22px;
-            }
-
-            .btn {
-                padding: 12px 28px;
-            }
-
-            .card-content {
-                padding: 20px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .global-translation-loading {
-                top: 10px;
-                right: 10px;
-                left: 10px;
-                width: auto;
-                padding: 12px 20px;
-                justify-content: center;
-            }
-
-            .btn {
-                padding: 10px 24px;
-                width: 100%;
-                text-align: center;
-            }
-
-            .card-content {
-                padding: 16px;
-            }
-
-            .display-1 {
-                font-size: 2.5rem;
-            }
-
-            .display-2 {
-                font-size: 2rem;
-            }
-        }
-
-        @media (max-width: 375px) {
-            .global-translation-loading {
-                padding: 10px 16px;
-                font-size: 0.9rem;
+            input,
+            textarea,
+            select {
+                padding: 12px 16px;
             }
         }
 
@@ -857,21 +880,11 @@
 
         /* Fix for white space */
         @media (max-width: 1024px) {
-
             body,
             html {
                 overflow-x: hidden;
                 width: 100%;
                 position: relative;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body.menu-open {
-                overflow: hidden;
-                position: fixed;
-                width: 100%;
-                height: 100%;
             }
         }
 
@@ -913,6 +926,55 @@
         .no-translate {
             /* Elements with this class won't be translated */
         }
+
+        /* Bootstrap override for mobile */
+        @media (max-width: 768px) {
+            .row {
+                margin-right: -10px;
+                margin-left: -10px;
+            }
+            
+            .col,
+            [class*="col-"] {
+                padding-right: 10px;
+                padding-left: 10px;
+            }
+        }
+
+        /* Footer responsiveness */
+        .footer {
+            background: var(--prussian-blue);
+            color: var(--pure-white);
+            padding: 60px 0 30px;
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 40px 0 20px;
+            }
+            
+            .footer .row > div {
+                margin-bottom: 30px;
+            }
+        }
+
+        /* Page content padding */
+        main {
+            min-height: 60vh;
+            padding: 40px 0;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 30px 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            main {
+                padding: 20px 0;
+            }
+        }
     </style>
 </head>
 
@@ -941,6 +1003,7 @@
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <!-- Initialize AOS -->
@@ -949,12 +1012,23 @@
             duration: 1000,
             once: true,
             offset: 100,
-            easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)'
+            easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+            disable: function() {
+                return window.innerWidth < 768;
+            }
+        });
+
+        // Refresh AOS on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 768) {
+                AOS.init({ disable: true });
+            } else {
+                AOS.init({ disable: false });
+            }
         });
     </script>
 
     <!-- Global Translation System - Enhanced -->
-    // Global Translation System - Simplified and fixed
     <script>
         // Translation API endpoint
         const TRANSLATE_API_URL = "{{ route('translate') }}";
@@ -1379,8 +1453,6 @@
     </script>
 
     @stack('scripts')
-    <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
