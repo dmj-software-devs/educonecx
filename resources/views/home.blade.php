@@ -1034,7 +1034,7 @@
         <div class="hero-content" data-aos="fade-up">
             <div class="hero-badge">
                 <div class="avatar-group">
-                    <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=40&h=40&fit=crop" alt="Student" class="avatar">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop" alt="Student" class="avatar">
                     <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop" alt="Student" class="avatar">
                     <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop" alt="Student" class="avatar">
                 </div>
