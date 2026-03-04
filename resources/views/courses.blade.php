@@ -114,6 +114,18 @@
         color: var(--pure-white);
     }
 
+    @media (max-width: 768px) {
+        .courses-hero {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .courses-hero {
+            padding: 50px 0;
+        }
+    }
+
     .courses-hero-particles {
         position: absolute;
         top: 0;
@@ -137,6 +149,15 @@
         animation: float 8s ease-in-out infinite;
     }
 
+    @media (max-width: 768px) {
+        .courses-hero-particle:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: -50px;
+            right: -50px;
+        }
+    }
+
     .courses-hero-particle:nth-child(2) {
         width: 200px;
         height: 200px;
@@ -144,6 +165,15 @@
         left: -50px;
         background: rgba(90, 209, 228, 0.1);
         animation: float 10s ease-in-out infinite reverse;
+    }
+
+    @media (max-width: 768px) {
+        .courses-hero-particle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            bottom: -30px;
+            left: -30px;
+        }
     }
 
     .courses-hero-particle:nth-child(3) {
@@ -155,12 +185,20 @@
         animation: float 12s ease-in-out infinite;
     }
 
+    @media (max-width: 768px) {
+        .courses-hero-particle:nth-child(3) {
+            width: 100px;
+            height: 100px;
+        }
+    }
+
     .courses-hero-content {
         position: relative;
         z-index: 2;
         text-align: center;
         max-width: 800px;
         margin: 0 auto;
+        padding: 0 20px;
     }
 
     .courses-hero-badge {
@@ -172,12 +210,20 @@
         font-size: 0.9rem;
         margin-bottom: 20px;
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(251, 198, 12, 0.3);
         color: var(--pure-white);
     }
 
+    @media (max-width: 576px) {
+        .courses-hero-badge {
+            font-size: 0.8rem;
+            padding: 6px 16px;
+        }
+    }
+
     .courses-hero-title {
-        font-size: clamp(2rem, 6vw, 3rem);
+        font-size: clamp(1.8rem, 6vw, 3rem);
         font-weight: 800;
         margin-bottom: 15px;
         line-height: 1.2;
@@ -188,7 +234,7 @@
     }
 
     .courses-hero-text {
-        font-size: 1.2rem;
+        font-size: clamp(1rem, 3vw, 1.2rem);
         opacity: 0.95;
         margin-bottom: 30px;
         color: var(--ivory);
@@ -209,6 +255,14 @@
         box-shadow: var(--shadow-lg);
         transition: var(--transition);
         color: var(--text-primary);
+        background: var(--pure-white);
+    }
+
+    @media (max-width: 576px) {
+        .courses-hero-search input {
+            padding: 14px 50px 14px 20px;
+            font-size: 0.95rem;
+        }
     }
 
     .courses-hero-search input:focus {
@@ -232,6 +286,14 @@
         transition: var(--transition);
     }
 
+    @media (max-width: 576px) {
+        .courses-hero-search button {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+    }
+
     .courses-hero-search button:hover {
         background: var(--gradient-2);
         color: var(--prussian-blue);
@@ -249,6 +311,25 @@
         gap: 30px;
     }
 
+    @media (max-width: 1200px) {
+        .courses-wrapper {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .courses-wrapper {
+            flex-direction: column;
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .courses-wrapper {
+            padding: 15px;
+        }
+    }
+
     /* ===== SIDEBAR STYLES ===== */
     .courses-sidebar {
         width: var(--sidebar-width);
@@ -259,6 +340,31 @@
         height: fit-content;
         border: 1px solid rgba(251, 198, 12, 0.1);
         transition: var(--transition);
+    }
+
+    @media (max-width: 992px) {
+        .courses-sidebar {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 300px;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .courses-sidebar.active {
+            left: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .courses-sidebar {
+            width: 280px;
+        }
     }
 
     .courses-sidebar::-webkit-scrollbar {
@@ -284,6 +390,12 @@
         align-items: center;
     }
 
+    @media (max-width: 576px) {
+        .sidebar-header {
+            padding: 15px;
+        }
+    }
+
     .sidebar-title {
         font-size: 1.2rem;
         font-weight: 700;
@@ -292,6 +404,12 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+
+    @media (max-width: 576px) {
+        .sidebar-title {
+            font-size: 1.1rem;
+        }
     }
 
     .sidebar-title i {
@@ -304,6 +422,14 @@
         align-items: center;
         justify-content: center;
         font-size: 1rem;
+    }
+
+    @media (max-width: 576px) {
+        .sidebar-title i {
+            width: 28px;
+            height: 28px;
+            font-size: 0.9rem;
+        }
     }
 
     .clear-filters {
@@ -319,6 +445,13 @@
         background: var(--pure-white);
     }
 
+    @media (max-width: 576px) {
+        .clear-filters {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+        }
+    }
+
     .clear-filters:hover {
         color: var(--bright-amber);
         transform: translateX(5px);
@@ -328,6 +461,12 @@
     .filter-section {
         padding: 20px;
         border-bottom: 1px solid rgba(251, 198, 12, 0.1);
+    }
+
+    @media (max-width: 576px) {
+        .filter-section {
+            padding: 15px;
+        }
     }
 
     .filter-section:last-child {
@@ -372,6 +511,13 @@
         border-radius: var(--radius-md);
     }
 
+    @media (max-width: 576px) {
+        .filter-option label {
+            font-size: 0.9rem;
+            padding: 8px 10px; /* Larger touch target */
+        }
+    }
+
     .filter-option label:hover {
         color: var(--bright-amber);
         background: var(--ivory);
@@ -383,6 +529,13 @@
         height: 18px;
         cursor: pointer;
         accent-color: var(--bright-amber);
+    }
+
+    @media (max-width: 576px) {
+        .filter-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px; /* Larger touch target */
+        }
     }
 
     .filter-count {
@@ -402,6 +555,13 @@
         padding: 20px;
         margin: 20px;
         border: 1px solid rgba(251, 198, 12, 0.2);
+    }
+
+    @media (max-width: 576px) {
+        .stats-card {
+            padding: 15px;
+            margin: 15px;
+        }
     }
 
     .stats-header {
@@ -467,9 +627,31 @@
         border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
+    @media (max-width: 768px) {
+        .sort-bar {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 15px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .sort-bar {
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+    }
+
     .results-count {
         color: var(--text-muted);
         font-size: 0.95rem;
+    }
+
+    @media (max-width: 576px) {
+        .results-count {
+            font-size: 0.9rem;
+            text-align: center;
+        }
     }
 
     .results-count strong {
@@ -493,6 +675,19 @@
         color: var(--text-primary);
     }
 
+    @media (max-width: 768px) {
+        .sort-select {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .sort-select {
+            padding: 12px 40px 12px 15px; /* Larger touch target */
+            font-size: 0.95rem;
+        }
+    }
+
     .sort-select:focus {
         outline: none;
         border-color: var(--bright-amber);
@@ -505,6 +700,26 @@
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 30px;
         margin-bottom: 40px;
+    }
+
+    @media (max-width: 992px) {
+        .course-grid {
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .course-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-grid {
+            gap: 15px;
+        }
     }
 
     .course-card {
@@ -540,6 +755,15 @@
         box-shadow: var(--shadow-md);
     }
 
+    @media (max-width: 576px) {
+        .course-badge {
+            top: 10px;
+            left: 10px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+        }
+    }
+
     .course-badge.free {
         background: var(--gradient-3);
         color: var(--prussian-blue);
@@ -557,6 +781,13 @@
         z-index: 2;
     }
 
+    @media (max-width: 576px) {
+        .course-bookmark {
+            top: 10px;
+            right: 10px;
+        }
+    }
+
     .bookmark-btn {
         width: 40px;
         height: 40px;
@@ -570,6 +801,14 @@
         color: var(--text-muted);
         transition: var(--transition);
         box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 576px) {
+        .bookmark-btn {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+        }
     }
 
     .bookmark-btn:hover {
@@ -636,11 +875,25 @@
         flex-direction: column;
     }
 
+    @media (max-width: 768px) {
+        .course-content {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-content {
+            padding: 15px;
+        }
+    }
+
     .course-meta-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
     .course-category {
@@ -655,6 +908,7 @@
         display: flex;
         align-items: center;
         gap: 5px;
+        flex-wrap: wrap;
     }
 
     .course-rating .stars {
@@ -679,6 +933,12 @@
         line-height: 1.4;
     }
 
+    @media (max-width: 576px) {
+        .course-title {
+            font-size: 1.1rem;
+        }
+    }
+
     .course-title a {
         color: var(--prussian-blue);
         text-decoration: none;
@@ -700,6 +960,12 @@
         overflow: hidden;
     }
 
+    @media (max-width: 576px) {
+        .course-description {
+            font-size: 0.9rem;
+        }
+    }
+
     .course-meta {
         display: flex;
         gap: 15px;
@@ -707,6 +973,13 @@
         color: var(--text-muted);
         font-size: 0.9rem;
         flex-wrap: wrap;
+    }
+
+    @media (max-width: 576px) {
+        .course-meta {
+            gap: 12px;
+            font-size: 0.85rem;
+        }
     }
 
     .course-meta i {
@@ -735,10 +1008,20 @@
         justify-content: center;
         font-weight: 600;
         font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 576px) {
+        .instructor-avatar {
+            width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+        }
     }
 
     .instructor-info {
         flex: 1;
+        min-width: 0;
     }
 
     .instructor-name {
@@ -747,6 +1030,10 @@
         color: var(--prussian-blue);
         text-decoration: none;
         transition: var(--transition);
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .instructor-name:hover {
@@ -765,12 +1052,28 @@
         align-items: center;
         justify-content: space-between;
         background: var(--ivory);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    @media (max-width: 576px) {
+        .course-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px;
+        }
     }
 
     .course-price {
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--prussian-blue);
+    }
+
+    @media (max-width: 576px) {
+        .course-price {
+            font-size: 1.2rem;
+        }
     }
 
     .course-price.free {
@@ -810,6 +1113,14 @@
         box-shadow: var(--shadow-md);
     }
 
+    @media (max-width: 576px) {
+        .enroll-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px 20px;
+        }
+    }
+
     .enroll-btn:hover {
         background: var(--gradient-2);
         color: var(--prussian-blue);
@@ -836,6 +1147,12 @@
         border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
+    @media (max-width: 576px) {
+        .no-results {
+            padding: 40px 15px;
+        }
+    }
+
     .no-results-icon {
         width: 120px;
         height: 120px;
@@ -852,16 +1169,36 @@
         border: 2px solid var(--bright-amber);
     }
 
+    @media (max-width: 576px) {
+        .no-results-icon {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+    }
+
     .no-results h3 {
         font-size: 1.8rem;
         margin-bottom: 10px;
         color: var(--prussian-blue);
     }
 
+    @media (max-width: 576px) {
+        .no-results h3 {
+            font-size: 1.5rem;
+        }
+    }
+
     .no-results p {
         color: var(--text-muted);
         margin-bottom: 25px;
         font-size: 1.1rem;
+    }
+
+    @media (max-width: 576px) {
+        .no-results p {
+            font-size: 1rem;
+        }
     }
 
     .reset-btn {
@@ -876,6 +1213,14 @@
         font-weight: 600;
         transition: var(--transition);
         box-shadow: var(--shadow-md);
+    }
+
+    @media (max-width: 576px) {
+        .reset-btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px 20px;
+        }
     }
 
     .reset-btn:hover {
@@ -922,6 +1267,14 @@
         font-weight: 600;
     }
 
+    @media (max-width: 576px) {
+        .pagination .page-link {
+            min-width: 36px;
+            height: 36px;
+            font-size: 0.9rem;
+        }
+    }
+
     .pagination .page-link:hover {
         background: var(--gradient-2);
         color: var(--prussian-blue);
@@ -950,6 +1303,12 @@
         margin-bottom: 20px;
     }
 
+    @media (max-width: 992px) {
+        .mobile-filter-toggle {
+            display: block;
+        }
+    }
+
     .filter-toggle-btn {
         display: flex;
         align-items: center;
@@ -965,6 +1324,13 @@
         box-shadow: var(--shadow-sm);
         transition: var(--transition);
         color: var(--prussian-blue);
+    }
+
+    @media (max-width: 576px) {
+        .filter-toggle-btn {
+            padding: 12px 15px;
+            font-size: 0.95rem;
+        }
     }
 
     .filter-toggle-btn:hover {
@@ -992,6 +1358,12 @@
         z-index: 9998;
         opacity: 0;
         transition: opacity 0.3s;
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+    }
+
+    .filter-overlay.active {
+        opacity: 1;
     }
 
     /* ===== LOADING SPINNER ===== */
@@ -1028,6 +1400,16 @@
         z-index: 10000;
         animation: slideInRight 0.3s ease;
         border: 1px solid rgba(251, 198, 12, 0.3);
+        max-width: 90%;
+    }
+
+    @media (max-width: 576px) {
+        .notification {
+            left: 20px;
+            right: 20px;
+            text-align: center;
+            padding: 12px 20px;
+        }
     }
 
     .notification.success {
@@ -1065,85 +1447,30 @@
         }
     }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 1200px) {
-        .courses-wrapper {
-            padding: 20px;
-        }
+    /* ===== ANIMATION ON SCROLL ===== */
+    .course-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
     }
 
-    @media (max-width: 992px) {
-        .courses-wrapper {
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .courses-sidebar {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 300px;
-            height: 100vh;
-            z-index: 9999;
-            border-radius: 0;
-            overflow-y: auto;
-            transition: left 0.3s ease;
-        }
-
-        .courses-sidebar.active {
-            left: 0;
-        }
-
-        .mobile-filter-toggle {
-            display: block;
-        }
-
-        .course-grid {
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        }
+    .course-card.visible {
+        opacity: 1;
+        transform: translateY(0);
     }
 
-    @media (max-width: 768px) {
-        .courses-hero {
-            padding: 60px 0;
-        }
-
-        .courses-hero-title {
-            font-size: 2rem;
-        }
-
-        .courses-hero-text {
-            font-size: 1rem;
-        }
-
-        .sort-bar {
-            flex-direction: column;
-            align-items: stretch;
-        }
-
-        .sort-select {
-            width: 100%;
-        }
-
-        .course-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .courses-wrapper {
-            padding: 15px;
+    /* ===== TOUCH OPTIMIZATIONS ===== */
+    @media (hover: none) and (pointer: coarse) {
+        .filter-option label:hover,
+        .bookmark-btn:hover,
+        .enroll-btn:hover {
+            transform: none;
         }
         
-        .course-footer {
-            flex-direction: column;
-            gap: 15px;
-            align-items: flex-start;
-        }
-        
-        .enroll-btn {
-            width: 100%;
-            justify-content: center;
+        .filter-option label:active,
+        .bookmark-btn:active,
+        .enroll-btn:active {
+            opacity: 0.7;
         }
     }
 </style>
@@ -1167,7 +1494,7 @@
             </p>
 
             <form id="searchForm" method="GET" action="{{ route('courses') }}" class="courses-hero-search">
-                <input type="text" name="keyword" id="searchInput" placeholder="What do you want to learn?" value="{{ $filters['keyword'] ?? '' }}">
+                <input type="text" name="keyword" id="searchInput" placeholder="What do you want to learn?" value="{{ $filters['keyword'] ?? '' }}" autocomplete="off">
                 <button type="submit"><i class="fas fa-search"></i></button>
             </form>
         </div>
@@ -1293,7 +1620,7 @@
                     @if($paginatedCourses->count() > 0)
                     <div class="course-grid">
                         @foreach($paginatedCourses as $course)
-                        <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                        <div class="course-card" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 50, 300) }}">
                             @if($course->featured)
                             <span class="course-badge popular">Popular</span>
                             @elseif($course->is_free)
@@ -1305,13 +1632,13 @@
                             @endif
 
                             <div class="course-bookmark">
-                                <button class="bookmark-btn" data-course-id="{{ $course->id }}">
-                                    <i class="far fa-bookmark"></i>
+                                <button class="bookmark-btn" data-course-id="{{ $course->id }}" data-bookmarked="{{ $course->isBookmarked ? 'true' : 'false' }}">
+                                    <i class="{{ $course->isBookmarked ? 'fas' : 'far' }} fa-bookmark"></i>
                                 </button>
                             </div>
 
                             <div class="course-thumbnail">
-                                <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}">
+                                <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
                                 <div class="course-overlay">
                                     <span class="course-preview"><i class="far fa-play-circle"></i> Preview Course</span>
                                 </div>
@@ -1354,7 +1681,7 @@
                                         {{ substr($course->instructor->name ?? 'ED', 0, 1) }}
                                     </div>
                                     <div class="instructor-info">
-                                        <span class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</span>
+                                        <a href="#" class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</a>
                                         <div class="instructor-title">Expert Instructor</div>
                                     </div>
                                 </div>
@@ -1451,7 +1778,7 @@
 
                     // Fade in overlay
                     setTimeout(() => {
-                        filterOverlay.style.opacity = '1';
+                        filterOverlay.classList.add('active');
                     }, 10);
 
                     // Close on overlay click
@@ -1465,11 +1792,11 @@
         }
 
         function closeFilterSidebar() {
-            filterToggle?.classList.remove('active');
-            filterSidebar?.classList.remove('active');
+            if (filterToggle) filterToggle.classList.remove('active');
+            if (filterSidebar) filterSidebar.classList.remove('active');
 
             if (filterOverlay) {
-                filterOverlay.style.opacity = '0';
+                filterOverlay.classList.remove('active');
                 setTimeout(() => {
                     filterOverlay?.remove();
                     filterOverlay = null;
@@ -1482,6 +1809,13 @@
         // Close filter sidebar on window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth > 992 && filterSidebar?.classList.contains('active')) {
+                closeFilterSidebar();
+            }
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && filterSidebar?.classList.contains('active')) {
                 closeFilterSidebar();
             }
         });
@@ -1508,7 +1842,7 @@
         function updateCourses() {
             // Show loading spinner
             loadingSpinner.classList.add('show');
-            coursesContainer.style.opacity = '0.5';
+            if (coursesContainer) coursesContainer.style.opacity = '0.5';
 
             // Collect filter values
             const categories = [];
@@ -1558,8 +1892,11 @@
 
                         // Update stats
                         if (data.count !== undefined) {
-                            document.getElementById('totalResults').textContent = data.count;
-                            document.getElementById('totalCoursesCount').textContent = data.count;
+                            const totalResults = document.getElementById('totalResults');
+                            const totalCoursesCount = document.getElementById('totalCoursesCount');
+                            
+                            if (totalResults) totalResults.textContent = data.count;
+                            if (totalCoursesCount) totalCoursesCount.textContent = data.count;
                         }
 
                         // Reinitialize bookmark buttons for new content
@@ -1568,10 +1905,17 @@
                         initializeRippleEffects();
                         // Reinitialize pagination links
                         initializePaginationLinks();
+                        // Reinitialize course card observers
+                        initializeCardObservers();
+
+                        // Close mobile filter sidebar after filter
+                        if (window.innerWidth <= 992) {
+                            closeFilterSidebar();
+                        }
 
                         // Hide loading spinner
                         loadingSpinner.classList.remove('show');
-                        coursesContainer.style.opacity = '1';
+                        if (coursesContainer) coursesContainer.style.opacity = '1';
 
                         // Show notification
                         showNotification('Filters applied successfully', 'success');
@@ -1582,7 +1926,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     loadingSpinner.classList.remove('show');
-                    coursesContainer.style.opacity = '1';
+                    if (coursesContainer) coursesContainer.style.opacity = '1';
                     showNotification('Error applying filters. Please try again.', 'error');
 
                     // Fallback to form submission
@@ -1692,7 +2036,7 @@
 
                     // Show loading spinner
                     loadingSpinner.classList.add('show');
-                    coursesContainer.style.opacity = '0.5';
+                    if (coursesContainer) coursesContainer.style.opacity = '0.5';
 
                     // Get the URL
                     const url = this.href;
@@ -1713,6 +2057,7 @@
                                 initializeBookmarkButtons();
                                 initializeRippleEffects();
                                 initializePaginationLinks();
+                                initializeCardObservers();
 
                                 // Scroll to top of courses
                                 document.querySelector('.courses-main').scrollIntoView({
@@ -1727,7 +2072,7 @@
                         })
                         .finally(() => {
                             loadingSpinner.classList.remove('show');
-                            coursesContainer.style.opacity = '1';
+                            if (coursesContainer) coursesContainer.style.opacity = '1';
                         });
                 });
             });
@@ -1743,9 +2088,22 @@
             bookmarkBtns.forEach(btn => {
                 btn.classList.add('position-relative', 'overflow-hidden');
 
+                // Set initial state
+                const isBookmarked = btn.dataset.bookmarked === 'true';
+                const icon = btn.querySelector('i');
+                
+                if (isBookmarked) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    btn.classList.add('active');
+                }
+
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
+                    
                     createRipple(e);
+                    
                     const courseId = this.dataset.courseId;
 
                     // Check if user is logged in
@@ -1885,27 +2243,28 @@
         }
 
         // ========== ANIMATION ON SCROLL ==========
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+        function initializeCardObservers() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe course cards
+            document.querySelectorAll('.course-card').forEach(el => {
+                observer.observe(el);
             });
-        }, observerOptions);
+        }
 
-        // Observe course cards
-        document.querySelectorAll('.course-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(el);
-        });
+        // Initialize card observers
+        initializeCardObservers();
 
         // ========== HANDLE BROWSER BACK/FORWARD ==========
         window.addEventListener('popstate', function() {
@@ -1944,6 +2303,38 @@
 
         // Initialize filters from URL on page load
         initializeFiltersFromURL();
+
+        // ========== TOUCH OPTIMIZATIONS ==========
+        if ('ontouchstart' in window) {
+            const touchElements = document.querySelectorAll('.btn, .enroll-btn, .bookmark-btn, .filter-toggle-btn, .filter-option label');
+            
+            touchElements.forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.7';
+                }, { passive: true });
+                
+                element.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                }, { passive: true });
+                
+                element.addEventListener('touchcancel', function() {
+                    this.style.opacity = '1';
+                }, { passive: true });
+            });
+        }
+
+        // ========== ANIMATION PAUSE FOR REDUCED MOTION ==========
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefersReducedMotion) {
+            const animatedElements = document.querySelectorAll('.courses-hero-particle, .no-results-icon');
+            
+            animatedElements.forEach(element => {
+                if (element.style) {
+                    element.style.animation = 'none';
+                }
+            });
+        }
     });
 </script>
 @endpush
