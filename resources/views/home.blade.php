@@ -77,6 +77,12 @@
         margin-bottom: 50px;
     }
 
+    @media (max-width: 768px) {
+        .section-header {
+            margin-bottom: 35px;
+        }
+    }
+
     .section-subtitle {
         display: inline-block;
         background: var(--gradient-liquid-2);
@@ -90,8 +96,15 @@
         margin-bottom: 15px;
     }
 
+    @media (max-width: 576px) {
+        .section-subtitle {
+            font-size: 0.75rem;
+            padding: 5px 14px;
+        }
+    }
+
     .section-title {
-        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-size: clamp(1.8rem, 5vw, 2.8rem);
         font-weight: 700;
         color: var(--prussian-blue);
         line-height: 1.2;
@@ -109,6 +122,21 @@
         align-items: center;
         background: var(--gradient-liquid-1);
         overflow: hidden;
+        padding: 80px 0;
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            min-height: 80vh;
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero {
+            min-height: 70vh;
+            padding: 40px 0;
+        }
     }
 
     .hero-content {
@@ -121,6 +149,18 @@
         padding: 100px 0;
     }
 
+    @media (max-width: 768px) {
+        .hero-content {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-content {
+            padding: 40px 0;
+        }
+    }
+
     .hero-badge {
         display: inline-flex;
         align-items: center;
@@ -130,6 +170,16 @@
         border-radius: var(--radius-full);
         margin-bottom: 30px;
         backdrop-filter: blur(10px);
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    @media (max-width: 576px) {
+        .hero-badge {
+            gap: 10px;
+            padding: 6px 15px 6px 10px;
+            margin-bottom: 20px;
+        }
     }
 
     .avatar-group {
@@ -150,6 +200,14 @@
         margin-left: 0;
     }
 
+    @media (max-width: 576px) {
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-width: 2px;
+        }
+    }
+
     .stars {
         color: var(--bright-amber);
         font-size: 0.9rem;
@@ -161,10 +219,16 @@
     }
 
     .hero-title {
-        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-size: clamp(2rem, 8vw, 4rem);
         font-weight: 800;
         line-height: 1.1;
         margin-bottom: 20px;
+    }
+
+    @media (max-width: 576px) {
+        .hero-title {
+            margin-bottom: 15px;
+        }
     }
 
     .hero-title-gradient {
@@ -180,12 +244,34 @@
         margin-right: auto;
     }
 
+    @media (max-width: 768px) {
+        .hero-text {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-text {
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .hero-features {
         display: flex;
         flex-wrap: wrap;
         gap: 15px;
         justify-content: center;
         margin-bottom: 30px;
+    }
+
+    @media (max-width: 576px) {
+        .hero-features {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
     }
 
     .hero-feature {
@@ -198,8 +284,37 @@
         font-size: 0.95rem;
     }
 
+    @media (max-width: 576px) {
+        .hero-feature {
+            width: 100%;
+            justify-content: center;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+        }
+    }
+
     .hero-feature i {
         color: var(--bright-amber);
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 576px) {
+        .hero-buttons {
+            gap: 15px;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .hero-buttons .btn {
+            width: 100%;
+            max-width: 280px;
+        }
     }
 
     /* Buttons */
@@ -216,6 +331,20 @@
         text-decoration: none;
         cursor: pointer;
         border: none;
+    }
+
+    @media (max-width: 768px) {
+        .btn {
+            padding: 10px 24px;
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .btn {
+            padding: 12px 24px;
+            width: 100%;
+        }
     }
 
     .btn-primary {
@@ -246,11 +375,43 @@
         background: var(--ivory);
     }
 
+    @media (max-width: 768px) {
+        .process-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .process-section {
+            padding: 50px 0;
+        }
+    }
+
     .process-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         margin-top: 40px;
+    }
+
+    @media (max-width: 992px) {
+        .process-grid {
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .process-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .process-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .process-card {
@@ -261,6 +422,13 @@
         text-align: center;
         transition: var(--transition);
         border: 1px solid rgba(251, 198, 12, 0.1);
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .process-card {
+            padding: 30px 20px;
+        }
     }
 
     .process-card:hover {
@@ -282,11 +450,27 @@
         margin: 0 auto 25px;
     }
 
+    @media (max-width: 768px) {
+        .process-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .process-title {
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--prussian-blue);
         margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .process-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
     }
 
     .process-text {
@@ -301,11 +485,29 @@
         background: var(--pure-white);
     }
 
+    @media (max-width: 768px) {
+        .features-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .features-section {
+            padding: 50px 0;
+        }
+    }
+
     .features-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 30px;
         margin-top: 40px;
+    }
+
+    @media (max-width: 576px) {
+        .features-grid {
+            gap: 20px;
+        }
     }
 
     .feature-card {
@@ -316,6 +518,13 @@
         text-align: center;
         transition: var(--transition);
         border: 1px solid rgba(90, 209, 228, 0.1);
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .feature-card {
+            padding: 30px 20px;
+        }
     }
 
     .feature-card:hover {
@@ -337,11 +546,27 @@
         margin: 0 auto 25px;
     }
 
+    @media (max-width: 768px) {
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .feature-title {
         font-size: 1.3rem;
         font-weight: 700;
         color: var(--prussian-blue);
         margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
     }
 
     .feature-text {
@@ -356,11 +581,37 @@
         background: var(--ivory);
     }
 
+    @media (max-width: 768px) {
+        .courses-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .courses-section {
+            padding: 50px 0;
+        }
+    }
+
     .grid-3 {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         margin-top: 40px;
+    }
+
+    @media (max-width: 992px) {
+        .grid-3 {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .grid-3 {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .course-card {
@@ -385,10 +636,21 @@
         overflow: hidden;
     }
 
+    @media (max-width: 576px) {
+        .course-image {
+            height: 180px;
+        }
+    }
+
     .course-image img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .course-card:hover .course-image img {
+        transform: scale(1.05);
     }
 
     .course-category {
@@ -401,6 +663,7 @@
         border-radius: var(--radius-full);
         font-size: 0.75rem;
         font-weight: 600;
+        z-index: 2;
     }
 
     .course-discount-badge {
@@ -413,10 +676,17 @@
         border-radius: var(--radius-full);
         font-size: 0.75rem;
         font-weight: 700;
+        z-index: 2;
     }
 
     .course-content {
         padding: 25px;
+    }
+
+    @media (max-width: 768px) {
+        .course-content {
+            padding: 20px;
+        }
     }
 
     .course-meta {
@@ -440,9 +710,16 @@
         line-height: 1.4;
     }
 
+    @media (max-width: 768px) {
+        .course-title {
+            font-size: 1.1rem;
+        }
+    }
+
     .course-title a {
         color: var(--prussian-blue);
         text-decoration: none;
+        transition: var(--transition);
     }
 
     .course-title a:hover {
@@ -462,6 +739,7 @@
         font-size: 0.8rem;
         color: var(--text-muted);
         margin-bottom: 15px;
+        flex-wrap: wrap;
     }
 
     .course-stats i {
@@ -475,12 +753,20 @@
         align-items: center;
         padding-top: 15px;
         border-top: 1px solid var(--pale-slate);
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
     .course-price {
         font-size: 1.4rem;
         font-weight: 700;
         color: var(--prussian-blue);
+    }
+
+    @media (max-width: 576px) {
+        .course-price {
+            font-size: 1.2rem;
+        }
     }
 
     .course-price small {
@@ -518,6 +804,18 @@
         color: var(--pure-white);
     }
 
+    @media (max-width: 768px) {
+        .offer-banner {
+            padding: 40px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .offer-banner {
+            padding: 30px 0;
+        }
+    }
+
     .offer-content {
         display: flex;
         align-items: center;
@@ -526,9 +824,23 @@
         flex-wrap: wrap;
     }
 
+    @media (max-width: 768px) {
+        .offer-content {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+    }
+
     .offer-content i {
         font-size: 3rem;
         color: var(--bright-amber);
+    }
+
+    @media (max-width: 768px) {
+        .offer-content i {
+            font-size: 2.5rem;
+        }
     }
 
     .offer-content h3 {
@@ -536,10 +848,28 @@
         font-weight: 700;
     }
 
+    @media (max-width: 768px) {
+        .offer-content h3 {
+            font-size: 1.8rem;
+        }
+    }
+
     .offer-content p {
         font-size: 1.5rem;
         font-weight: 600;
         color: var(--light-gold);
+    }
+
+    @media (max-width: 768px) {
+        .offer-content p {
+            font-size: 1.3rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .offer-content p {
+            font-size: 1.1rem;
+        }
     }
 
     /* Stats Section */
@@ -549,6 +879,18 @@
         color: var(--pure-white);
     }
 
+    @media (max-width: 768px) {
+        .stats-section {
+            padding: 50px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-section {
+            padding: 40px 0;
+        }
+    }
+
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -556,8 +898,20 @@
         text-align: center;
     }
 
+    @media (max-width: 576px) {
+        .stats-grid {
+            gap: 20px;
+        }
+    }
+
     .stats-item {
         padding: 20px;
+    }
+
+    @media (max-width: 576px) {
+        .stats-item {
+            padding: 15px;
+        }
     }
 
     .stats-icon {
@@ -566,10 +920,28 @@
         margin-bottom: 15px;
     }
 
+    @media (max-width: 768px) {
+        .stats-icon {
+            font-size: 2.2rem;
+        }
+    }
+
     .stats-number {
         font-size: 2.5rem;
         font-weight: 800;
         margin-bottom: 5px;
+    }
+
+    @media (max-width: 768px) {
+        .stats-number {
+            font-size: 2.2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-number {
+            font-size: 2rem;
+        }
     }
 
     .stats-label {
@@ -583,11 +955,36 @@
         background: var(--pure-white);
     }
 
+    @media (max-width: 768px) {
+        .about-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .about-section {
+            padding: 50px 0;
+        }
+    }
+
     .about-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 50px;
         align-items: center;
+    }
+
+    @media (max-width: 992px) {
+        .about-grid {
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .about-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
     }
 
     .about-content p {
@@ -607,6 +1004,13 @@
         margin: 30px 0;
     }
 
+    @media (max-width: 576px) {
+        .about-features {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+    }
+
     .about-feature {
         display: flex;
         align-items: center;
@@ -616,6 +1020,7 @@
 
     .about-feature i {
         color: var(--bright-amber);
+        font-size: 1.1rem;
     }
 
     .about-image {
@@ -642,6 +1047,14 @@
         text-align: center;
     }
 
+    @media (max-width: 576px) {
+        .experience-badge {
+            bottom: 10px;
+            right: 10px;
+            padding: 15px;
+        }
+    }
+
     .experience-badge .years {
         display: block;
         font-size: 2rem;
@@ -649,8 +1062,20 @@
         line-height: 1;
     }
 
+    @media (max-width: 576px) {
+        .experience-badge .years {
+            font-size: 1.5rem;
+        }
+    }
+
     .experience-badge .text {
         font-size: 0.9rem;
+    }
+
+    @media (max-width: 576px) {
+        .experience-badge .text {
+            font-size: 0.8rem;
+        }
     }
 
     /* Testimonials Section */
@@ -659,11 +1084,29 @@
         background: var(--ivory);
     }
 
+    @media (max-width: 768px) {
+        .testimonials-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .testimonials-section {
+            padding: 50px 0;
+        }
+    }
+
     .testimonials-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 30px;
         margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .testimonials-grid {
+            gap: 20px;
+        }
     }
 
     .testimonial-card {
@@ -672,6 +1115,13 @@
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-md);
         border: 1px solid rgba(251, 198, 12, 0.1);
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .testimonial-card {
+            padding: 25px;
+        }
     }
 
     .testimonial-card:hover {
@@ -704,6 +1154,14 @@
         border-radius: 50%;
         overflow: hidden;
         border: 3px solid var(--bright-amber);
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 576px) {
+        .author-image {
+            width: 50px;
+            height: 50px;
+        }
     }
 
     .author-image img {
@@ -732,6 +1190,18 @@
         text-align: center;
     }
 
+    @media (max-width: 768px) {
+        .cta-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .cta-section {
+            padding: 50px 0;
+        }
+    }
+
     .cta-content {
         max-width: 600px;
         margin: 0 auto;
@@ -747,7 +1217,7 @@
     }
 
     .cta-title {
-        font-size: clamp(2rem, 5vw, 2.8rem);
+        font-size: clamp(1.8rem, 5vw, 2.8rem);
         font-weight: 800;
         margin-bottom: 20px;
     }
@@ -762,6 +1232,12 @@
         opacity: 0.95;
     }
 
+    @media (max-width: 768px) {
+        .cta-text {
+            font-size: 1rem;
+        }
+    }
+
     .cta-buttons {
         display: flex;
         gap: 20px;
@@ -769,10 +1245,33 @@
         flex-wrap: wrap;
     }
 
+    @media (max-width: 576px) {
+        .cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .cta-buttons .btn {
+            width: 100%;
+        }
+    }
+
     /* FAQ Section */
     .faq-section {
         padding: 80px 0;
         background: var(--pure-white);
+    }
+
+    @media (max-width: 768px) {
+        .faq-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .faq-section {
+            padding: 50px 0;
+        }
     }
 
     .faq-grid {
@@ -796,6 +1295,14 @@
         align-items: center;
         font-weight: 600;
         color: var(--prussian-blue);
+        transition: var(--transition);
+    }
+
+    @media (max-width: 576px) {
+        .faq-question {
+            padding: 15px 20px;
+            font-size: 0.95rem;
+        }
     }
 
     .faq-question:hover {
@@ -806,6 +1313,8 @@
     .faq-question i {
         color: var(--bright-amber);
         transition: transform 0.3s;
+        flex-shrink: 0;
+        margin-left: 15px;
     }
 
     .faq-item.active .faq-question {
@@ -823,6 +1332,13 @@
         line-height: 1.7;
     }
 
+    @media (max-width: 576px) {
+        .faq-answer {
+            padding: 0 20px 15px;
+            font-size: 0.9rem;
+        }
+    }
+
     .faq-item.active .faq-answer {
         display: block;
     }
@@ -833,6 +1349,20 @@
         margin-top: -80px;
         padding-bottom: 60px;
         z-index: 10;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-section {
+            margin-top: -60px;
+            padding-bottom: 40px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .carousel-section {
+            margin-top: -40px;
+            padding-bottom: 30px;
+        }
     }
 
     .carousel-mask {
@@ -846,6 +1376,14 @@
         gap: 20px;
         animation: marquee 40s linear infinite;
         width: fit-content;
+        padding: 10px 0;
+    }
+
+    @media (max-width: 768px) {
+        .carousel-track {
+            animation-duration: 30s;
+            gap: 15px;
+        }
     }
 
     @keyframes marquee {
@@ -862,12 +1400,6 @@
         box-shadow: var(--shadow-lg);
     }
 
-    .carousel-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
     @media (min-width: 768px) {
         .carousel-item {
             width: 280px;
@@ -875,153 +1407,181 @@
         }
     }
 
-    /* Logo Cloud */
-    /* Logo Cloud - Fixed for full-width sliding */
-.logo-cloud-section {
-    padding: 50px 0;
-    background: var(--pure-white);
-    width: 100%;
-    overflow: hidden;
-}
-
-.logo-cloud-title {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-}
-
-.logo-cloud {
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
-}
-
-.logo-track {
-    display: flex;
-    gap: 50px;
-    animation: marquee 45s linear infinite;
-    width: max-content;
-    /* This ensures the track takes the full width of its content */
-    padding-left: 20px;
-    /* Add some padding to prevent items from touching the edges */
-}
-
-@keyframes marquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
-
-.logo-item {
-    flex-shrink: 0;
-    filter: grayscale(100%) opacity(0.6);
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 120px;
-    /* Ensure consistent width for text fallback */
-}
-
-.logo-item:hover {
-    filter: grayscale(0%) opacity(1);
-}
-
-.logo-item img {
-    height: 40px;
-    width: auto;
-    max-width: 120px;
-    object-fit: contain;
-}
-
-.logo-item span {
-    font-size: 1.1rem;
-    font-weight: 600;
-    white-space: nowrap;
-    color: var(--prussian-blue);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .logo-track {
-        gap: 30px;
-        animation-duration: 35s;
-        /* Slightly faster on mobile */
-    }
-    
-    .logo-item {
-        min-width: 100px;
-    }
-    
-    .logo-item img {
-        height: 30px;
-    }
-    
-    .logo-item span {
-        font-size: 1rem;
-    }
-}
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .grid-3 {
-            grid-template-columns: repeat(2, 1fr);
+    @media (max-width: 576px) {
+        .carousel-item {
+            width: 180px;
+            height: 250px;
         }
+    }
+
+    .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .carousel-item:hover img {
+        transform: scale(1.05);
+    }
+
+    /* Logo Cloud */
+    .logo-cloud-section {
+        padding: 50px 0;
+        background: var(--pure-white);
+        width: 100%;
+        overflow: hidden;
     }
 
     @media (max-width: 768px) {
-        .process-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .grid-3 {
-            grid-template-columns: 1fr;
-        }
-
-        .about-grid {
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        .about-features {
-            grid-template-columns: 1fr;
-        }
-
-        .testimonials-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .hero-buttons .btn {
-            min-width: 200px;
-        }
-
-        .offer-content {
-            flex-direction: column;
-            gap: 15px;
-            text-align: center;
+        .logo-cloud-section {
+            padding: 40px 0;
         }
     }
 
     @media (max-width: 576px) {
-        .hero-features {
-            flex-direction: column;
-            align-items: center;
+        .logo-cloud-section {
+            padding: 30px 0;
         }
+    }
 
-        .hero-feature {
-            width: 100%;
-            justify-content: center;
+    .logo-cloud-title {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 30px;
+    }
+
+    @media (max-width: 576px) {
+        .logo-cloud-title {
+            font-size: 0.75rem;
+            margin-bottom: 20px;
         }
+    }
 
-        .cta-buttons {
-            flex-direction: column;
+    .logo-cloud {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+    }
+
+    .logo-track {
+        display: flex;
+        gap: 50px;
+        animation: marquee 45s linear infinite;
+        width: max-content;
+        padding-left: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .logo-track {
+            gap: 30px;
+            animation-duration: 35s;
         }
+    }
 
-        .cta-buttons .btn {
-            width: 100%;
+    @media (max-width: 576px) {
+        .logo-track {
+            gap: 25px;
+            animation-duration: 30s;
+        }
+    }
+
+    .logo-item {
+        flex-shrink: 0;
+        filter: grayscale(100%) opacity(0.6);
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 120px;
+    }
+
+    @media (max-width: 768px) {
+        .logo-item {
+            min-width: 100px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .logo-item {
+            min-width: 80px;
+        }
+    }
+
+    .logo-item:hover {
+        filter: grayscale(0%) opacity(1);
+    }
+
+    .logo-item img {
+        height: 40px;
+        width: auto;
+        max-width: 120px;
+        object-fit: contain;
+    }
+
+    @media (max-width: 768px) {
+        .logo-item img {
+            height: 30px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .logo-item img {
+            height: 25px;
+        }
+    }
+
+    .logo-item span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        white-space: nowrap;
+        color: var(--prussian-blue);
+    }
+
+    @media (max-width: 768px) {
+        .logo-item span {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .logo-item span {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Responsive Spacing */
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+    }
+
+    /* Pause animation on hover for accessibility */
+    .carousel-track:hover,
+    .logo-track:hover {
+        animation-play-state: paused;
+    }
+
+    /* Ensure buttons have proper touch targets on mobile */
+    @media (max-width: 576px) {
+        .btn,
+        .course-btn,
+        .faq-question {
+            min-height: 44px;
         }
     }
 </style>
@@ -1034,9 +1594,9 @@
         <div class="hero-content" data-aos="fade-up">
             <div class="hero-badge">
                 <div class="avatar-group">
-                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop" alt="Student" class="avatar">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop" alt="Student" class="avatar">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop" alt="Student" class="avatar">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop" alt="Student" class="avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop" alt="Student" class="avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop" alt="Student" class="avatar" loading="lazy">
                 </div>
                 <div>
                     <div class="stars">
@@ -1104,13 +1664,13 @@
 
             @foreach($courseImages as $image)
             <div class="carousel-item">
-                <img src="{{ $image }}" alt="Course">
+                <img src="{{ $image }}" alt="Course preview" loading="lazy">
             </div>
             @endforeach
 
             @foreach($courseImages as $image)
             <div class="carousel-item">
-                <img src="{{ $image }}" alt="Course">
+                <img src="{{ $image }}" alt="Course preview" loading="lazy">
             </div>
             @endforeach
         </div>
@@ -1129,7 +1689,7 @@
                         $harvardPath = public_path('storage/home-page-svgs/Harvard_shield_wreath.svg');
                     @endphp
                     @if(file_exists($harvardPath))
-                        <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard University" style="height: 40px;">
+                        <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard University" style="height: 40px;" loading="lazy">
                     @else
                         <span style="font-weight: 600; color: var(--prussian-blue);">Harvard</span>
                     @endif
@@ -1141,7 +1701,7 @@
                         $stanfordPath = public_path('storage/home-page-svgs/Stanford_University_seal_2003.svg');
                     @endphp
                     @if(file_exists($stanfordPath))
-                        <img src="{{ asset('storage/home-page-svgs/Stanford_University_seal_2003.svg') }}" alt="Stanford University" style="height: 40px;">
+                        <img src="{{ asset('storage/home-page-svgs/Stanford_University_seal_2003.svg') }}" alt="Stanford University" style="height: 40px;" loading="lazy">
                     @else
                         <span style="font-weight: 600; color: var(--prussian-blue);">Stanford</span>
                     @endif
@@ -1153,7 +1713,7 @@
                         $mitPath = public_path('storage/home-page-svgs/MIT_seal.svg');
                     @endphp
                     @if(file_exists($mitPath))
-                        <img src="{{ asset('storage/home-page-svgs/MIT_seal.svg') }}" alt="MIT" style="height: 40px;">
+                        <img src="{{ asset('storage/home-page-svgs/MIT_seal.svg') }}" alt="MIT" style="height: 40px;" loading="lazy">
                     @else
                         <span style="font-weight: 600; color: var(--prussian-blue);">MIT</span>
                     @endif
@@ -1165,7 +1725,7 @@
                         $cambridgePath = public_path('storage/home-page-pngs/University_of_Cambridge_seal.png');
                     @endphp
                     @if(file_exists($cambridgePath))
-                        <img src="{{ asset('storage/home-page-pngs/University_of_Cambridge_seal.png') }}" alt="University of Cambridge" style="height: 40px;">
+                        <img src="{{ asset('storage/home-page-pngs/University_of_Cambridge_seal.png') }}" alt="University of Cambridge" style="height: 40px;" loading="lazy">
                     @else
                         <span style="font-weight: 600; color: var(--prussian-blue);">Cambridge</span>
                     @endif
@@ -1177,17 +1737,16 @@
                         $oxfordPath = public_path('storage/home-page-pngs/Oxford-University-Circlet.png');
                     @endphp
                     @if(file_exists($oxfordPath))
-                        <img src="{{ asset('storage/home-page-pngs/Oxford-University-Circlet.png') }}" alt="University of Oxford" style="height: 40px;">
+                        <img src="{{ asset('storage/home-page-pngs/Oxford-University-Circlet.png') }}" alt="University of Oxford" style="height: 40px;" loading="lazy">
                     @else
                         <span style="font-weight: 600; color: var(--prussian-blue);">Oxford</span>
                     @endif
                 </div>
                 
                 <!-- Duplicate for seamless looping -->
-                <!-- Harvard (duplicate) -->
                 <div class="logo-item">
                     @if(file_exists($harvardPath))
-                        <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard University" style="height: 40px;">
+                        <img src="{{ asset('storage/home-page-svgs/Harvard_shield_wreath.svg') }}" alt="Harvard University" style="height: 40px;" loading="lazy">
                     @else
                         <span style="font-weight: 600; color: var(--prussian-blue);">Harvard</span>
                     @endif
@@ -1284,7 +1843,7 @@
             <i class="fas fa-gift"></i>
             <h3>Limited Time Offer</h3>
             <p>Unlimited Access To All Courses – Only $22</p>
-            <a href="#" class="btn btn-primary">Get Started Now</a>
+            <a href="{{ route('academy') }}" class="btn btn-primary">Get Started Now</a>
         </div>
     </div>
 </section>
@@ -1298,29 +1857,29 @@
         </div>
 
         <div class="grid-3">
-            @forelse($featuredCourses as $course)
+            @forelse($featuredCourses ?? [] as $course)
             <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="course-image">
-                    <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
+                    <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop' }}" alt="{{ $course->title }}" loading="lazy">
                     <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
-                    @if($course->hasDiscount)
-                    <span class="course-discount-badge">-{{ $course->discount_percentage }}%</span>
+                    @if(isset($course->hasDiscount) && $course->hasDiscount)
+                    <span class="course-discount-badge">-{{ $course->discount_percentage ?? 20 }}%</span>
                     @endif
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> {{ $course->duration }} Hours</span>
-                        <span><i class="fas fa-signal"></i> {{ $course->level }}</span>
+                        <span><i class="far fa-clock"></i> {{ $course->duration ?? '10' }} Hours</span>
+                        <span><i class="fas fa-signal"></i> {{ $course->level ?? 'Beginner' }}</span>
                     </div>
                     <h3 class="course-title">
-                        <a href="{{ route('courses.show', $course->slug) }}">{{ $course->title }}</a>
+                        <a href="{{ route('courses.show', $course->slug ?? '#') }}">{{ $course->title ?? 'Course Title' }}</a>
                     </h3>
-                    <p>{{ Str::limit($course->excerpt, 80) }}</p>
+                    <p>{{ Str::limit($course->excerpt ?? 'Course description goes here...', 80) }}</p>
 
-                    @if($course->total_students > 0)
+                    @if(isset($course->total_students) && $course->total_students > 0)
                     <div class="course-stats">
                         <span><i class="fas fa-users"></i> {{ number_format($course->total_students) }} students</span>
-                        @if($course->average_rating > 0)
+                        @if(isset($course->average_rating) && $course->average_rating > 0)
                         <span>
                             <i class="fas fa-star"></i>
                             {{ number_format($course->average_rating, 1) }}
@@ -1331,25 +1890,117 @@
 
                     <div class="course-footer">
                         <div class="course-price">
-                            @if($course->hasDiscount)
-                            ${{ number_format($course->sale_price, 2) }}
-                            <small>${{ number_format($course->price, 2) }}</small>
-                            @elseif($course->price > 0)
+                            @if(isset($course->hasDiscount) && $course->hasDiscount)
+                            ${{ number_format($course->sale_price ?? 19.99, 2) }}
+                            <small>${{ number_format($course->price ?? 29.99, 2) }}</small>
+                            @elseif(isset($course->price) && $course->price > 0)
                             ${{ number_format($course->price, 2) }}
                             @else
                             Free
                             @endif
                         </div>
-                        <a href="{{ route('courses.show', $course->slug) }}" class="course-btn">
-                            {{ $course->price > 0 ? 'Enroll' : 'Start' }}
+                        <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="course-btn">
+                            {{ isset($course->price) && $course->price > 0 ? 'Enroll' : 'Start' }}
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
             </div>
             @empty
-            <div class="text-center" style="grid-column: 1/-1;">
-                <p>No featured courses available at the moment.</p>
+            <!-- Sample courses for demonstration -->
+            <div class="course-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="course-image">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" alt="Business English" loading="lazy">
+                    <span class="course-category">Language</span>
+                    <span class="course-discount-badge">-20%</span>
+                </div>
+                <div class="course-content">
+                    <div class="course-meta">
+                        <span><i class="far fa-clock"></i> 20 Hours</span>
+                        <span><i class="fas fa-signal"></i> Intermediate</span>
+                    </div>
+                    <h3 class="course-title">
+                        <a href="#">Business English Mastery</a>
+                    </h3>
+                    <p>Master professional English communication for global business success.</p>
+
+                    <div class="course-stats">
+                        <span><i class="fas fa-users"></i> 1,234 students</span>
+                        <span><i class="fas fa-star"></i> 4.8</span>
+                    </div>
+
+                    <div class="course-footer">
+                        <div class="course-price">
+                            $39.99
+                            <small>$49.99</small>
+                        </div>
+                        <a href="#" class="course-btn">
+                            Enroll <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="course-image">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop" alt="Digital Marketing" loading="lazy">
+                    <span class="course-category">Business</span>
+                </div>
+                <div class="course-content">
+                    <div class="course-meta">
+                        <span><i class="far fa-clock"></i> 15 Hours</span>
+                        <span><i class="fas fa-signal"></i> Beginner</span>
+                    </div>
+                    <h3 class="course-title">
+                        <a href="#">Digital Marketing Fundamentals</a>
+                    </h3>
+                    <p>Learn the essentials of digital marketing and grow your business online.</p>
+
+                    <div class="course-stats">
+                        <span><i class="fas fa-users"></i> 2,567 students</span>
+                        <span><i class="fas fa-star"></i> 4.9</span>
+                    </div>
+
+                    <div class="course-footer">
+                        <div class="course-price">
+                            $29.99
+                        </div>
+                        <a href="#" class="course-btn">
+                            Enroll <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="course-image">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=250&fit=crop" alt="French Language" loading="lazy">
+                    <span class="course-category">Language</span>
+                </div>
+                <div class="course-content">
+                    <div class="course-meta">
+                        <span><i class="far fa-clock"></i> 25 Hours</span>
+                        <span><i class="fas fa-signal"></i> All Levels</span>
+                    </div>
+                    <h3 class="course-title">
+                        <a href="#">Complete French Course</a>
+                    </h3>
+                    <p>From beginner to fluent - learn French with AI-powered guidance.</p>
+
+                    <div class="course-stats">
+                        <span><i class="fas fa-users"></i> 3,892 students</span>
+                        <span><i class="fas fa-star"></i> 4.7</span>
+                    </div>
+
+                    <div class="course-footer">
+                        <div class="course-price">
+                            $44.99
+                        </div>
+                        <a href="#" class="course-btn">
+                            Enroll <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
             @endforelse
         </div>
@@ -1430,7 +2081,7 @@
                 </a>
             </div>
             <div class="about-image" data-aos="fade-left">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" alt="About EDUCONECX">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" alt="About EDUCONECX" loading="lazy">
                 <div class="experience-badge">
                     <span class="years">5+</span>
                     <span class="text">Years of Excellence</span>
@@ -1463,7 +2114,7 @@
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop" alt="Sarah M.">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop" alt="Sarah M." loading="lazy">
                     </div>
                     <div class="author-info">
                         <h4>Sarah M.</h4>
@@ -1486,7 +2137,7 @@
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80" alt="Daniel K.">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop" alt="Daniel K." loading="lazy">
                     </div>
                     <div class="author-info">
                         <h4>Daniel K.</h4>
@@ -1509,7 +2160,7 @@
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80" alt="Aisha R.">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Aisha R." loading="lazy">
                     </div>
                     <div class="author-info">
                         <h4>Aisha R.</h4>
@@ -1599,75 +2250,145 @@
 
 @push('scripts')
 <script>
-    // FAQ Accordion
-    document.querySelectorAll('.faq-question').forEach(question => {
-        question.addEventListener('click', () => {
-            const faqItem = question.parentElement;
-            const wasActive = faqItem.classList.contains('active');
-
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            if (!wasActive) {
-                faqItem.classList.add('active');
-            }
-        });
-    });
-
-    // Counter Animation
-    function animateValue(element, start, end, duration) {
-        if (start === end) return;
-        const range = end - start;
-        const increment = range / (duration / 16);
-        let current = start;
-
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= end) {
-                element.textContent = end.toLocaleString() + (element.textContent.includes('+') ? '+' : '');
-                clearInterval(timer);
-            } else {
-                element.textContent = Math.floor(current).toLocaleString() + (element.textContent.includes('+') ? '+' : '');
-            }
-        }, 16);
-    }
-
-    // Stats Observer
-    const statsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                document.querySelectorAll('.stats-number').forEach(stat => {
-                    const value = parseFloat(stat.getAttribute('data-target'));
-                    animateValue(stat, 0, value, 2000);
+    document.addEventListener('DOMContentLoaded', function() {
+        // FAQ Accordion
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            
+            question.addEventListener('click', () => {
+                const wasActive = item.classList.contains('active');
+                
+                // Close all FAQ items
+                faqItems.forEach(faq => {
+                    faq.classList.remove('active');
                 });
-                statsObserver.unobserve(entry.target);
-            }
+                
+                // Open clicked item if it wasn't active
+                if (!wasActive) {
+                    item.classList.add('active');
+                }
+            });
         });
-    }, { threshold: 0.5 });
 
-    const statsSection = document.querySelector('.stats-section');
-    if (statsSection) statsObserver.observe(statsSection);
+        // Counter Animation with Intersection Observer
+        function animateValue(element, start, end, duration) {
+            if (start === end) return;
+            
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            const target = element.getAttribute('data-target');
+            const hasPlus = element.textContent.includes('+');
 
-    // Header scroll effect
-    window.addEventListener('scroll', () => {
+            const timer = setInterval(() => {
+                current += increment;
+                
+                if (current >= end) {
+                    element.textContent = end.toLocaleString() + (hasPlus ? '+' : '');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString() + (hasPlus ? '+' : '');
+                }
+            }, 16);
+        }
+
+        // Stats Observer
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statsNumbers = document.querySelectorAll('.stats-number');
+                    
+                    statsNumbers.forEach(stat => {
+                        const targetValue = parseFloat(stat.getAttribute('data-target'));
+                        const currentValue = parseFloat(stat.textContent.replace(/[+,]/g, ''));
+                        
+                        if (!isNaN(targetValue) && !isNaN(currentValue)) {
+                            animateValue(stat, 0, targetValue, 2000);
+                        }
+                    });
+                    
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) statsObserver.observe(statsSection);
+
+        // Header scroll effect
         const header = document.querySelector('header');
+        
         if (header) {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // AOS initialization with mobile optimization
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: window.innerWidth < 768 ? 400 : 800,
+                once: true,
+                offset: window.innerWidth < 768 ? 20 : 50,
+                disable: window.innerWidth < 576 // Disable on very small screens for performance
+            });
+        }
+
+        // Pause carousel animations on hover for accessibility
+        const carouselTrack = document.querySelector('.carousel-track');
+        const logoTrack = document.querySelector('.logo-track');
+        
+        if (carouselTrack) {
+            carouselTrack.addEventListener('mouseenter', () => {
+                carouselTrack.style.animationPlayState = 'paused';
+            });
+            
+            carouselTrack.addEventListener('mouseleave', () => {
+                carouselTrack.style.animationPlayState = 'running';
+            });
+        }
+        
+        if (logoTrack) {
+            logoTrack.addEventListener('mouseenter', () => {
+                logoTrack.style.animationPlayState = 'paused';
+            });
+            
+            logoTrack.addEventListener('mouseleave', () => {
+                logoTrack.style.animationPlayState = 'running';
+            });
+        }
+
+        // Handle touch events for mobile
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('.btn, .course-btn, .faq-question').forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    // Add active state for touch feedback
+                    this.style.opacity = '0.8';
+                });
+                
+                element.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                });
+            });
         }
     });
 
-    // AOS initialization
-    if (typeof AOS !== 'undefined') {
-        AOS.init({
-            duration: 800,
-            once: true,
-            offset: 50
+    // Lazy loading for images
+    if ('loading' in HTMLImageElement.prototype) {
+        // Browser supports native lazy loading
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        images.forEach(img => {
+            img.loading = 'lazy';
         });
+    } else {
+        // Fallback for browsers that don't support lazy loading
+        // You could implement a library like lazysizes here
     }
 </script>
 @endpush
