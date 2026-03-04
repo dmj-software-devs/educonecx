@@ -95,6 +95,24 @@
         color: var(--pure-white);
     }
 
+    @media (max-width: 992px) {
+        .academy-hero {
+            padding: 100px 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .academy-hero {
+            padding: 80px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .academy-hero {
+            padding: 60px 0;
+        }
+    }
+
     .academy-hero-particles {
         position: absolute;
         top: 0;
@@ -118,6 +136,15 @@
         animation: float 10s ease-in-out infinite;
     }
 
+    @media (max-width: 768px) {
+        .academy-hero-particle:nth-child(1) {
+            width: 250px;
+            height: 250px;
+            top: -100px;
+            right: -50px;
+        }
+    }
+
     .academy-hero-particle:nth-child(2) {
         width: 300px;
         height: 300px;
@@ -125,6 +152,15 @@
         left: -100px;
         background: rgba(90, 209, 228, 0.1);
         animation: float 12s ease-in-out infinite reverse;
+    }
+
+    @media (max-width: 768px) {
+        .academy-hero-particle:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            bottom: -80px;
+            left: -50px;
+        }
     }
 
     .academy-hero-particle:nth-child(3) {
@@ -136,6 +172,13 @@
         animation: float 8s ease-in-out infinite;
     }
 
+    @media (max-width: 768px) {
+        .academy-hero-particle:nth-child(3) {
+            width: 150px;
+            height: 150px;
+        }
+    }
+
     .academy-hero-particle:nth-child(4) {
         width: 150px;
         height: 150px;
@@ -145,12 +188,20 @@
         animation: float 9s ease-in-out infinite reverse;
     }
 
+    @media (max-width: 768px) {
+        .academy-hero-particle:nth-child(4) {
+            width: 100px;
+            height: 100px;
+        }
+    }
+
     .academy-hero-content {
         position: relative;
         z-index: 2;
         text-align: center;
         max-width: 900px;
         margin: 0 auto;
+        padding: 0 20px;
     }
 
     .academy-hero-badge {
@@ -162,13 +213,22 @@
         font-size: 0.9rem;
         margin-bottom: 25px;
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(251, 198, 12, 0.3);
         animation: fadeInDown 1s ease-out;
         color: var(--pure-white);
     }
 
+    @media (max-width: 576px) {
+        .academy-hero-badge {
+            font-size: 0.8rem;
+            padding: 6px 16px;
+            margin-bottom: 20px;
+        }
+    }
+
     .academy-hero-title {
-        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-size: clamp(2rem, 8vw, 4rem);
         font-weight: 800;
         margin-bottom: 20px;
         line-height: 1.1;
@@ -176,12 +236,18 @@
         animation: fadeInUp 1s ease-out 0.2s both;
     }
 
+    @media (max-width: 576px) {
+        .academy-hero-title {
+            margin-bottom: 15px;
+        }
+    }
+
     .academy-hero-title span {
         color: var(--bright-amber);
     }
 
     .academy-hero-text {
-        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        font-size: clamp(1rem, 3vw, 1.3rem);
         opacity: 0.95;
         line-height: 1.8;
         max-width: 700px;
@@ -190,12 +256,31 @@
         color: var(--ivory);
     }
 
+    @media (max-width: 576px) {
+        .academy-hero-text {
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+    }
+
     .academy-hero-stats {
         display: flex;
         justify-content: center;
         gap: 60px;
         flex-wrap: wrap;
         animation: fadeInUp 1s ease-out 0.6s both;
+    }
+
+    @media (max-width: 768px) {
+        .academy-hero-stats {
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .academy-hero-stats {
+            gap: 20px;
+        }
     }
 
     .hero-stat-item {
@@ -209,6 +294,19 @@
         background: linear-gradient(135deg, var(--bright-amber), var(--light-gold));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    @media (max-width: 768px) {
+        .hero-stat-number {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-stat-number {
+            font-size: 1.3rem;
+        }
     }
 
     .hero-stat-label {
@@ -217,10 +315,23 @@
         color: var(--ivory);
     }
 
+    @media (max-width: 576px) {
+        .hero-stat-label {
+            font-size: 0.8rem;
+        }
+    }
+
     /* Section Header */
     .section-header {
         text-align: center;
         margin-bottom: 50px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+        .section-header {
+            margin-bottom: 35px;
+        }
     }
 
     .section-subtitle {
@@ -233,8 +344,15 @@
         display: block;
     }
 
+    @media (max-width: 576px) {
+        .section-subtitle {
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+    }
+
     .section-title {
-        font-size: clamp(2rem, 5vw, 2.5rem);
+        font-size: clamp(1.8rem, 5vw, 2.5rem);
         font-weight: 800;
         margin-bottom: 15px;
         color: var(--prussian-blue);
@@ -252,10 +370,28 @@
         line-height: 1.8;
     }
 
+    @media (max-width: 768px) {
+        .section-description {
+            font-size: 1rem;
+        }
+    }
+
     /* Features Section */
     .features-section {
         padding: 80px 0;
         background: var(--pure-white);
+    }
+
+    @media (max-width: 768px) {
+        .features-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .features-section {
+            padding: 50px 0;
+        }
     }
 
     .features-grid {
@@ -263,6 +399,21 @@
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 30px;
         margin-top: 50px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .features-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .feature-card {
@@ -275,6 +426,13 @@
         position: relative;
         overflow: hidden;
         border: 1px solid rgba(251, 198, 12, 0.1);
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .feature-card {
+            padding: 30px 20px;
+        }
     }
 
     .feature-card::before {
@@ -313,6 +471,15 @@
         transition: var(--transition);
     }
 
+    @media (max-width: 768px) {
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .feature-card:hover .feature-icon {
         transform: scale(1.1);
         background: var(--gradient-2);
@@ -326,9 +493,17 @@
         color: var(--prussian-blue);
     }
 
+    @media (max-width: 768px) {
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+    }
+
     .feature-text {
         color: var(--text-muted);
         line-height: 1.6;
+        font-size: 0.95rem;
     }
 
     /* Categories Section */
@@ -337,11 +512,37 @@
         background: var(--ivory);
     }
 
+    @media (max-width: 768px) {
+        .categories-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .categories-section {
+            padding: 50px 0;
+        }
+    }
+
     .category-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         gap: 30px;
         margin-top: 50px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 992px) {
+        .category-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .category-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .category-card {
@@ -412,6 +613,15 @@
         box-shadow: var(--shadow-md);
     }
 
+    @media (max-width: 576px) {
+        .category-badge {
+            top: 15px;
+            right: 15px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+        }
+    }
+
     .category-icon {
         position: absolute;
         bottom: 20px;
@@ -431,6 +641,14 @@
         box-shadow: var(--shadow-lg);
     }
 
+    @media (max-width: 576px) {
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+    }
+
     .category-card:hover .category-icon {
         transform: translateY(0);
         opacity: 1;
@@ -441,6 +659,12 @@
         flex: 1;
         display: flex;
         flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+        .category-content {
+            padding: 20px;
+        }
     }
 
     .category-name {
@@ -460,19 +684,33 @@
         color: var(--prussian-blue);
     }
 
+    @media (max-width: 768px) {
+        .category-title {
+            font-size: 1.3rem;
+        }
+    }
+
     .category-description {
         color: var(--text-muted);
         line-height: 1.8;
         margin-bottom: 20px;
         flex: 1;
+        font-size: 0.95rem;
     }
 
     .category-meta {
         display: flex;
+        flex-wrap: wrap;
         gap: 20px;
         margin-bottom: 20px;
         padding-bottom: 20px;
         border-bottom: 1px solid rgba(251, 198, 12, 0.2);
+    }
+
+    @media (max-width: 576px) {
+        .category-meta {
+            gap: 15px;
+        }
     }
 
     .category-meta-item {
@@ -485,6 +723,7 @@
 
     .category-meta-item i {
         color: var(--bright-amber);
+        flex-shrink: 0;
     }
 
     .category-link {
@@ -509,11 +748,31 @@
         background: var(--pure-white);
     }
 
+    @media (max-width: 768px) {
+        .paths-section {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .paths-section {
+            padding: 50px 0;
+        }
+    }
+
     .paths-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 30px;
         margin-top: 50px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+        .paths-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .path-card {
@@ -528,6 +787,12 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+        .path-card {
+            padding: 30px 25px;
+        }
     }
 
     .path-card::before {
@@ -569,6 +834,15 @@
         transition: var(--transition);
     }
 
+    @media (max-width: 768px) {
+        .path-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .path-card:hover .path-icon {
         transform: scale(1.1);
         background: var(--gradient-2);
@@ -582,11 +856,18 @@
         color: var(--prussian-blue);
     }
 
+    @media (max-width: 768px) {
+        .path-title {
+            font-size: 1.3rem;
+        }
+    }
+
     .path-description {
         color: var(--text-muted);
         line-height: 1.8;
         margin-bottom: 20px;
         flex: 1;
+        font-size: 0.95rem;
     }
 
     .path-features {
@@ -606,6 +887,7 @@
     .path-features li i {
         color: var(--bright-amber);
         font-size: 1rem;
+        flex-shrink: 0;
     }
 
     .path-level {
@@ -628,6 +910,18 @@
         text-align: center;
         position: relative;
         overflow: hidden;
+    }
+
+    @media (max-width: 768px) {
+        .academy-cta {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .academy-cta {
+            padding: 50px 0;
+        }
     }
 
     .academy-cta::before {
@@ -659,10 +953,11 @@
         z-index: 2;
         max-width: 700px;
         margin: 0 auto;
+        padding: 0 20px;
     }
 
     .academy-cta h2 {
-        font-size: clamp(2rem, 5vw, 3rem);
+        font-size: clamp(1.8rem, 5vw, 3rem);
         margin-bottom: 20px;
         color: var(--pure-white);
     }
@@ -678,6 +973,18 @@
         color: var(--ivory);
     }
 
+    @media (max-width: 768px) {
+        .academy-cta p {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .academy-cta p {
+            font-size: 1rem;
+        }
+    }
+
     .academy-cta-buttons {
         display: flex;
         gap: 20px;
@@ -685,24 +992,47 @@
         flex-wrap: wrap;
     }
 
+    @media (max-width: 576px) {
+        .academy-cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+
     .academy-cta-buttons .btn {
         min-width: 200px;
         padding: 14px 28px;
     }
 
+    @media (max-width: 768px) {
+        .academy-cta-buttons .btn {
+            min-width: 150px;
+            padding: 12px 24px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .academy-cta-buttons .btn {
+            min-width: auto;
+            width: 100%;
+        }
+    }
+
     .academy-cta-buttons .btn-primary {
         background: var(--gradient-2);
         color: var(--prussian-blue);
+        border: 2px solid transparent;
     }
 
     .academy-cta-buttons .btn-primary:hover {
         background: transparent;
         color: var(--pure-white);
         border: 2px solid var(--bright-amber);
+        transform: translateY(-3px);
     }
 
     .academy-cta-buttons .btn-secondary {
-        border-color: var(--pure-white);
+        border: 2px solid var(--pure-white);
         color: var(--pure-white);
         background: transparent;
     }
@@ -710,52 +1040,64 @@
     .academy-cta-buttons .btn-secondary:hover {
         background: var(--pure-white);
         color: var(--prussian-blue);
+        border-color: var(--pure-white);
+        transform: translateY(-3px);
     }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .category-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .academy-hero-stats {
-            gap: 30px;
-        }
-
-        .hero-stat-number {
-            font-size: 1.5rem;
-        }
-
-        .category-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .paths-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .academy-cta-buttons .btn {
-            min-width: 150px;
-        }
-
-        .features-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
+    /* Button Styles */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: var(--transition);
+        text-decoration: none;
+        cursor: pointer;
+        border: 2px solid transparent;
     }
 
     @media (max-width: 576px) {
-        .features-grid {
-            grid-template-columns: 1fr;
+        .btn {
+            padding: 10px 24px;
+            font-size: 0.95rem;
         }
+    }
 
-        .academy-cta-buttons {
-            flex-direction: column;
+    /* Container Padding */
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding-left: 15px;
+            padding-right: 15px;
         }
+    }
 
-        .academy-cta-buttons .btn {
-            width: 100%;
+    /* Animation pauses on hover for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+        .academy-hero-particle,
+        .academy-cta::before,
+        .academy-cta::after,
+        .feature-card,
+        .category-card,
+        .path-card,
+        .btn {
+            animation: none;
+            transition: none;
+        }
+        
+        .feature-card:hover,
+        .category-card:hover,
+        .path-card:hover,
+        .btn:hover {
+            transform: none;
         }
     }
 </style>
@@ -861,13 +1203,13 @@
         </div>
 
         <div class="category-grid">
-            @forelse($categories as $category)
+            @forelse($categories ?? [] as $category)
             <div class="category-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="category-image">
-                    <img src="{{ $category->image_url }}" alt="{{ $category->name }}">
+                    <img src="{{ $category->image_url ?? 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop' }}" alt="{{ $category->name }}" loading="lazy">
                     <div class="category-overlay"></div>
 
-                    @if($category->courses->count() > 5)
+                    @if(isset($category->courses) && $category->courses->count() > 5)
                     <span class="category-badge">Popular</span>
                     @endif
 
@@ -888,7 +1230,7 @@
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>{{ $category->courses->sum('duration') ?? 20 }}+ Hours</span>
+                            <span>{{ isset($category->courses) ? $category->courses->sum('duration') : 20 }}+ Hours</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
@@ -896,17 +1238,152 @@
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>{{ $category->courses->count() }} Courses</span>
+                            <span>{{ isset($category->courses) ? $category->courses->count() : 10 }} Courses</span>
                         </div>
                     </div>
-                    <a href="{{ route('courses', ['category' => $category->slug]) }}" class="category-link">
+                    <a href="{{ route('courses', ['category' => $category->slug ?? '#']) }}" class="category-link">
                         Explore {{ $category->name }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
             @empty
-            <div class="text-center" style="grid-column: 1/-1;">
-                <p>No categories available at the moment.</p>
+            <!-- Sample categories for demonstration -->
+            <div class="category-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" alt="Business" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <span class="category-badge">Featured</span>
+                    <div class="category-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                </div>
+                <div class="category-content">
+                    <div class="category-name">Business</div>
+                    <h3 class="category-title">Master Business Fundamentals</h3>
+                    <p class="category-description">
+                        Learn essential business skills including management, strategy, and entrepreneurship.
+                    </p>
+                    <div class="category-meta">
+                        <div class="category-meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>45+ Hours</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-signal"></i>
+                            <span>All Levels</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-video"></i>
+                            <span>12 Courses</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('courses') }}" class="category-link">
+                        Explore Business <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="category-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&h=400&fit=crop" alt="English" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <span class="category-badge">Popular</span>
+                    <div class="category-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                </div>
+                <div class="category-content">
+                    <div class="category-name">English</div>
+                    <h3 class="category-title">English for Professionals</h3>
+                    <p class="category-description">
+                        Improve your English communication skills for business and everyday use.
+                    </p>
+                    <div class="category-meta">
+                        <div class="category-meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>50+ Hours</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-signal"></i>
+                            <span>All Levels</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-video"></i>
+                            <span>15 Courses</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('courses') }}" class="category-link">
+                        Explore English <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="category-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop" alt="Finance" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <div class="category-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="category-content">
+                    <div class="category-name">Finance</div>
+                    <h3 class="category-title">Financial Literacy & Analysis</h3>
+                    <p class="category-description">
+                        Master personal finance, investment strategies, and financial analysis.
+                    </p>
+                    <div class="category-meta">
+                        <div class="category-meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>32+ Hours</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-signal"></i>
+                            <span>All Levels</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-video"></i>
+                            <span>8 Courses</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('courses') }}" class="category-link">
+                        Explore Finance <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="category-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop" alt="Technology" loading="lazy">
+                    <div class="category-overlay"></div>
+                    <div class="category-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                </div>
+                <div class="category-content">
+                    <div class="category-name">Technology</div>
+                    <h3 class="category-title">Digital Skills for the Future</h3>
+                    <p class="category-description">
+                        Learn web development, AI basics, and essential tech skills.
+                    </p>
+                    <div class="category-meta">
+                        <div class="category-meta-item">
+                            <i class="far fa-clock"></i>
+                            <span>40+ Hours</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-signal"></i>
+                            <span>All Levels</span>
+                        </div>
+                        <div class="category-meta-item">
+                            <i class="fas fa-video"></i>
+                            <span>10 Courses</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('courses') }}" class="category-link">
+                        Explore Technology <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
             </div>
             @endforelse
         </div>
@@ -925,7 +1402,7 @@
         </div>
 
         <div class="paths-grid">
-            @forelse($learningPaths as $path)
+            @forelse($learningPaths ?? [] as $path)
             <div class="path-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="path-icon">
                     <i class="{{ $path->icon_class ?? 'fas fa-graduation-cap' }}"></i>
@@ -936,21 +1413,21 @@
                 </p>
                 <ul class="path-features">
                     @php
-                    $features = $path->courses->take(4);
+                    $features = isset($path->courses) ? $path->courses->take(4) : [];
                     @endphp
 
                     @forelse($features as $course)
                     <li><i class="fas fa-check-circle"></i> {{ $course->title }}</li>
                     @empty
-                    <li><i class="fas fa-check-circle"></i> {{ $path->name }} Fundamentals</li>
-                    <li><i class="fas fa-check-circle"></i> Advanced {{ $path->name }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ $path->name ?? 'Business' }} Fundamentals</li>
+                    <li><i class="fas fa-check-circle"></i> Advanced {{ $path->name ?? 'Business' }}</li>
                     <li><i class="fas fa-check-circle"></i> Professional Practice</li>
                     <li><i class="fas fa-check-circle"></i> Industry Certification</li>
                     @endforelse
                 </ul>
                 <span class="path-level">
-                    {{ $path->courses->count() ?: 12 }} Courses •
-                    {{ $path->courses->sum('duration') ?: 40 }} Hours
+                    {{ isset($path->courses) ? $path->courses->count() : 12 }} Courses •
+                    {{ isset($path->courses) ? $path->courses->sum('duration') : 40 }} Hours
                 </span>
             </div>
             @empty
@@ -1045,3 +1522,98 @@
     </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // AOS initialization with mobile optimization
+        if (typeof AOS !== 'undefined') {
+            AOS.init({
+                duration: window.innerWidth < 768 ? 400 : 800,
+                once: true,
+                offset: window.innerWidth < 768 ? 20 : 50,
+                disable: window.innerWidth < 576 // Disable on very small screens for performance
+            });
+        }
+
+        // Handle touch events for mobile
+        if ('ontouchstart' in window) {
+            const touchElements = document.querySelectorAll('.btn, .feature-card, .category-card, .path-card, .category-link');
+            
+            touchElements.forEach(element => {
+                element.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                }, { passive: true });
+                
+                element.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                }, { passive: true });
+                
+                element.addEventListener('touchcancel', function() {
+                    this.style.opacity = '1';
+                }, { passive: true });
+            });
+        }
+
+        // Animation pause for users who prefer reduced motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefersReducedMotion) {
+            const animatedElements = document.querySelectorAll('.academy-hero-particle, .academy-cta::before, .academy-cta::after');
+            
+            animatedElements.forEach(element => {
+                if (element.style) {
+                    element.style.animation = 'none';
+                }
+            });
+        }
+
+        // Lazy loading for images
+        if ('loading' in HTMLImageElement.prototype) {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            images.forEach(img => {
+                img.loading = 'lazy';
+            });
+        }
+
+        // Header scroll effect
+        const header = document.querySelector('header');
+        
+        if (header) {
+            let scrollTimeout;
+            
+            window.addEventListener('scroll', function() {
+                if (!scrollTimeout) {
+                    scrollTimeout = setTimeout(function() {
+                        if (window.scrollY > 50) {
+                            header.classList.add('scrolled');
+                        } else {
+                            header.classList.remove('scrolled');
+                        }
+                        scrollTimeout = null;
+                    }, 10);
+                }
+            });
+        }
+    });
+
+    // Window resize handler for AOS
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (typeof AOS !== 'undefined') {
+                if (window.innerWidth < 576) {
+                    AOS.init({ disable: true });
+                } else {
+                    AOS.init({ 
+                        disable: false,
+                        duration: window.innerWidth < 768 ? 400 : 800,
+                        offset: window.innerWidth < 768 ? 20 : 50
+                    });
+                }
+            }
+        }, 250);
+    });
+</script>
+@endpush
