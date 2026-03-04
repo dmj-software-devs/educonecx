@@ -1463,7 +1463,7 @@
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=200&q=80" alt="Sarah M.">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&h=40&fit=crop" alt="Sarah M.">
                     </div>
                     <div class="author-info">
                         <h4>Sarah M.</h4>
