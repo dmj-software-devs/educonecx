@@ -99,8 +99,8 @@
                     @else
                     <!-- Auth Buttons -->
                     <div class="auth-buttons">
-                        <a href="{{ route('login') }}" class="btn-login"><span class="translate-text" data-original="Login">Login</span></a>
-                        <a href="{{ route('register') }}" class="btn-register"><span class="translate-text" data-original="Register">Register</span></a>
+                        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-sign-in-alt d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="Login">Login</span></a>
+                        <a href="{{ route('register') }}" class="btn-register"><i class="fas fa-user-plus d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="Register">Register</span></a>
                     </div>
                     @endauth
 
@@ -135,6 +135,9 @@
                     <span class="translate-text" data-original="Guest">Guest</span>
                 </div>
                 @endauth
+                <button class="mobile-menu-close" id="mobileMenuClose">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
         </div>
 
@@ -168,8 +171,8 @@
         <div class="mobile-menu-section">
             <h3 class="mobile-section-title"><span class="translate-text" data-original="Account">Account</span></h3>
             <div class="mobile-auth-buttons">
-                <a href="{{ route('login') }}" class="mobile-btn-login"><span class="translate-text" data-original="Login">Login</span></a>
-                <a href="{{ route('register') }}" class="mobile-btn-register"><span class="translate-text" data-original="Register">Register</span></a>
+                <a href="{{ route('login') }}" class="mobile-btn-login"><i class="fas fa-sign-in-alt"></i> <span class="translate-text" data-original="Login">Login</span></a>
+                <a href="{{ route('register') }}" class="mobile-btn-register"><i class="fas fa-user-plus"></i> <span class="translate-text" data-original="Register">Register</span></a>
             </div>
         </div>
         @endauth
@@ -193,6 +196,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
 
     <style>
         /* Root Variables - Your Beautiful Colors */
@@ -233,6 +239,18 @@
             width: 100%;
         }
 
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 12px;
+            }
+        }
+
         /* Top Bar */
         .top-bar {
             background: var(--prussian-blue);
@@ -254,6 +272,7 @@
         .contact-info {
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .contact-info a {
@@ -279,6 +298,7 @@
         .social-links {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .social-links a {
@@ -320,7 +340,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 12px 0;
-            gap: 20px;
+            gap: 15px;
         }
 
         /* Logo */
@@ -334,11 +354,23 @@
             display: block;
         }
 
+        @media (max-width: 480px) {
+            .logo-img {
+                height: 35px;
+            }
+        }
+
         /* Desktop Navigation */
         .desktop-nav {
             flex: 1;
             display: flex;
             justify-content: center;
+        }
+
+        @media (max-width: 1200px) {
+            .desktop-nav {
+                display: none;
+            }
         }
 
         .nav-menu {
@@ -385,6 +417,12 @@
             align-items: center;
             gap: 12px;
             flex-shrink: 0;
+        }
+
+        @media (max-width: 480px) {
+            .header-actions {
+                gap: 6px;
+            }
         }
 
         /* Language Selector */
@@ -451,6 +489,25 @@
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .lang-dropdown {
+                width: 240px;
+                right: -10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lang-btn {
+                padding: 6px 8px;
+            }
+            .current-lang {
+                display: none;
+            }
+            .lang-dropdown {
+                width: 220px;
+            }
         }
 
         .lang-search {
@@ -543,6 +600,7 @@
             height: 40px;
             display: flex;
             align-items: center;
+            gap: 6px;
         }
 
         .btn-login {
@@ -568,6 +626,24 @@
             border-color: var(--bright-amber);
             color: var(--prussian-blue);
             transform: translateY(-2px);
+        }
+
+        @media (max-width: 992px) {
+            .btn-login span,
+            .btn-register span {
+                display: none;
+            }
+            .btn-login,
+            .btn-register {
+                padding: 8px 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-login,
+            .btn-register {
+                padding: 6px 10px;
+            }
         }
 
         /* User Menu */
@@ -653,6 +729,15 @@
             transform: translateY(0);
         }
 
+        @media (max-width: 1200px) {
+            .user-name {
+                display: none;
+            }
+            .user-btn {
+                padding: 5px 8px;
+            }
+        }
+
         .user-dropdown a {
             display: flex;
             align-items: center;
@@ -696,6 +781,20 @@
             transition: var(--transition);
         }
 
+        @media (max-width: 1200px) {
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-toggle {
+                width: 36px;
+                height: 36px;
+                padding: 6px;
+            }
+        }
+
         .menu-toggle:hover {
             border-color: var(--bright-amber);
         }
@@ -734,11 +833,23 @@
             overflow-y: auto;
             transition: right 0.3s ease;
             box-shadow: var(--shadow-lg);
-            display: none;
+            display: block;
         }
 
         .mobile-menu.active {
             right: 0;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-menu {
+                width: 260px;
+            }
         }
 
         .mobile-menu-header {
@@ -751,6 +862,31 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            position: relative;
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bright-amber);
+            border: none;
+            color: var(--prussian-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .mobile-menu-close:hover {
+            transform: scale(1.1);
+            background: var(--prussian-blue);
+            color: var(--bright-amber);
         }
 
         .mobile-avatar {
@@ -797,6 +933,7 @@
             gap: 10px;
             color: var(--text-dark);
             font-size: 1rem;
+            flex: 1;
         }
 
         .mobile-guest i {
@@ -860,7 +997,10 @@
 
         .mobile-btn-login,
         .mobile-btn-register {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             padding: 14px;
             border-radius: var(--radius-lg);
             text-align: center;
@@ -923,6 +1063,7 @@
         .mobile-social {
             display: flex;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .mobile-social a {
@@ -957,6 +1098,7 @@
             opacity: 0;
             visibility: hidden;
             transition: var(--transition);
+            backdrop-filter: blur(3px);
         }
 
         .menu-overlay.active {
@@ -964,52 +1106,46 @@
             visibility: visible;
         }
 
-        /* Responsive Breakpoints */
-        @media (min-width: 1200px) {
-            .user-name {
-                display: inline-block;
+        /* Body scroll lock */
+        body.menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Utility Classes */
+        .d-none {
+            display: none !important;
+        }
+
+        .d-inline {
+            display: inline !important;
+        }
+
+        .d-md-none {
+            display: none !important;
+        }
+
+        @media (min-width: 992px) {
+            .d-md-none {
+                display: none !important;
+            }
+            .d-md-inline {
+                display: inline !important;
             }
         }
 
-        @media (max-width: 1200px) {
-            .desktop-nav {
-                display: none;
+        @media (max-width: 991px) {
+            .d-md-none {
+                display: inline !important;
             }
-
-            .menu-toggle {
-                display: flex;
-            }
-
-            .mobile-menu {
-                display: block;
-            }
-
-            .user-name {
-                display: none;
-            }
-
-            .user-btn {
-                padding: 5px 8px;
+            .d-md-inline {
+                display: none !important;
             }
         }
 
-        @media (max-width: 992px) {
-            .btn-login span,
-            .btn-register span {
-                display: none;
-            }
-
-            .btn-login,
-            .btn-register {
-                padding: 8px 12px;
-            }
-
-            .btn-login i,
-            .btn-register i {
-                margin: 0;
-            }
-        }
-
+        /* Responsive Top Bar */
         @media (max-width: 768px) {
             .top-bar-content {
                 flex-direction: column;
@@ -1018,7 +1154,6 @@
 
             .contact-info {
                 justify-content: center;
-                flex-wrap: wrap;
                 gap: 15px;
             }
 
@@ -1028,31 +1163,6 @@
 
             .social-links {
                 justify-content: center;
-            }
-
-            .header-content {
-                padding: 10px 0;
-            }
-
-            .logo-img {
-                height: 40px;
-            }
-
-            .lang-btn {
-                padding: 6px 10px;
-            }
-
-            .current-lang {
-                display: none;
-            }
-
-            .lang-dropdown {
-                width: 240px;
-                right: -10px;
-            }
-
-            .mobile-menu {
-                width: 280px;
             }
         }
 
@@ -1065,33 +1175,6 @@
             .contact-info a {
                 justify-content: center;
             }
-
-            .header-actions {
-                gap: 6px;
-            }
-
-            .btn-login,
-            .btn-register {
-                padding: 6px 10px;
-            }
-
-            .menu-toggle {
-                width: 36px;
-                height: 36px;
-            }
-
-            .mobile-menu {
-                width: 260px;
-            }
-
-            .lang-dropdown {
-                width: 220px;
-            }
-        }
-
-        /* Body scroll lock */
-        body.menu-open {
-            overflow: hidden;
         }
     </style>
 
@@ -1117,42 +1200,21 @@
             // ===== MOBILE MENU =====
             const menuToggle = document.getElementById('menuToggle');
             const mobileMenu = document.getElementById('mobileMenu');
-            let overlay = null;
-
-            function createOverlay() {
-                overlay = document.createElement('div');
-                overlay.className = 'menu-overlay';
-                document.body.appendChild(overlay);
-
-                setTimeout(() => {
-                    overlay.classList.add('active');
-                }, 10);
-
-                overlay.addEventListener('click', closeMenu);
-            }
-
-            function removeOverlay() {
-                if (overlay) {
-                    overlay.classList.remove('active');
-                    setTimeout(() => {
-                        overlay.remove();
-                        overlay = null;
-                    }, 300);
-                }
-            }
+            const menuOverlay = document.getElementById('menuOverlay');
+            const mobileMenuClose = document.getElementById('mobileMenuClose');
 
             function openMenu() {
                 menuToggle.classList.add('active');
                 mobileMenu.classList.add('active');
+                menuOverlay.classList.add('active');
                 document.body.classList.add('menu-open');
-                createOverlay();
             }
 
             function closeMenu() {
                 menuToggle.classList.remove('active');
                 mobileMenu.classList.remove('active');
+                menuOverlay.classList.remove('active');
                 document.body.classList.remove('menu-open');
-                removeOverlay();
             }
 
             if (menuToggle) {
@@ -1164,6 +1226,14 @@
                         openMenu();
                     }
                 });
+            }
+
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMenu);
+            }
+
+            if (menuOverlay) {
+                menuOverlay.addEventListener('click', closeMenu);
             }
 
             // Close menu on link click
@@ -1311,24 +1381,6 @@
                 .catch(() => {
                     populateLanguages('en');
                 });
-
-            // ===== USER DROPDOWN =====
-            // Close user dropdown on outside click
-            const userMenu = document.querySelector('.user-menu');
-            if (userMenu) {
-                document.addEventListener('click', function(e) {
-                    if (!userMenu.contains(e.target)) {
-                        // User dropdown is hover-based, no need to close programmatically
-                    }
-                });
-            }
-
-            // ===== PREVENT SCROLL WHEN MENU OPEN =====
-            window.addEventListener('touchmove', function(e) {
-                if (document.body.classList.contains('menu-open')) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
         });
     </script>
 </header>
