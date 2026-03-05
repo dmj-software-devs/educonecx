@@ -29,16 +29,23 @@ class GoogleController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
             
+            // Split the full name into first and last name
+            $fullName = $googleUser->name;
+            $nameParts = explode(' ', $fullName, 2);
+            $firstName = $nameParts[0];
+            $lastName = $nameParts[1] ?? '';
+            
             // Check if user exists
             $user = User::where('email', $googleUser->email)->first();
-            $isNewUser = false;
             
             if ($user) {
                 // Update Google ID if not set
                 if (!$user->google_id) {
-                    $user->update(['google_id' => $googleUser->id]);
+                    $user->update([
+                        'google_id' => $googleUser->id,
+                        'avatar' => $googleUser->avatar,
+                    ]);
                     
-                    // User existed but Google ID was not set (linked Google account)
                     Auth::login($user, true);
                     return redirect('/')->with('success', 'Google account linked successfully! You can now login with Google anytime.');
                 }
@@ -48,14 +55,18 @@ class GoogleController extends Controller
                 return redirect('/')->with('success', 'Welcome back! You\'ve successfully logged in with Google.');
                 
             } else {
-                // Create new user
+                // Create new user with all required fields
                 $user = User::create([
-                    'name' => $googleUser->name,
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'name' => $fullName, // Keep the full name as well
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'password' => Hash::make(Str::random(24)),
                     'email_verified_at' => now(),
                     'avatar' => $googleUser->avatar,
+                    'role' => 'student', // Default role
+                    'status' => 'active', // Default status
                 ]);
                 
                 Auth::login($user, true);
@@ -64,8 +75,9 @@ class GoogleController extends Controller
             }
             
         } catch (\Exception $e) {
-            // Log the error
+            // Log the error with more details
             \Log::error('Google Login Error: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
             
             return redirect()->route('login')
                 ->with('error', 'Google login failed. Please try again.');
