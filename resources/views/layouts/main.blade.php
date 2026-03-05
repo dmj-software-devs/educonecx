@@ -51,9 +51,9 @@
             --secondary: var(--sky-blue);
             --accent: var(--bright-amber);
             --accent-soft: var(--light-gold);
-            --success: #5AD1E4;
+            --success: #10b981;
             --warning: #FBC60C;
-            --danger: #EBD789;
+            --danger: #ef4444;
             --dark: var(--prussian-blue);
             --dark-light: var(--regal-navy);
             --gray: var(--khaki-beige);
@@ -74,6 +74,12 @@
             --gradient-liquid-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
             --gradient-liquid-4: linear-gradient(225deg, #0A1D44 0%, #2E5C61 50%, #5AD1E4 100%);
 
+            /* Notification Gradients */
+            --gradient-notification-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-notification-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --gradient-notification-warning: linear-gradient(135deg, #FBC60C 0%, #EBD789 100%);
+            --gradient-notification-info: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 100%);
+
             /* Hero-specific gradients */
             --gradient-hero: linear-gradient(135deg, #0A1D44 0%, #18386E 70%, #2E5C61 100%);
             --gradient-hero-overlay: linear-gradient(135deg, rgba(10, 29, 68, 0.9) 0%, rgba(24, 56, 110, 0.8) 100%);
@@ -82,6 +88,7 @@
             --shadow-liquid: 0 20px 40px -15px rgba(10, 29, 68, 0.3);
             --shadow-liquid-hover: 0 30px 50px -15px rgba(251, 198, 12, 0.3);
             --shadow-liquid-glow: 0 0 30px rgba(90, 209, 228, 0.3);
+            --shadow-notification: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
 
             /* Border Radius */
             --border-radius-sm: 12px;
@@ -658,6 +665,189 @@
             background: var(--gradient-liquid-3);
         }
 
+        /* ========== NOTIFICATION STYLES ========== */
+        .edu-notification-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 30px 0;
+            position: relative;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            .edu-notification-wrapper {
+                padding: 15px 20px 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .edu-notification-wrapper {
+                padding: 10px 15px 0;
+            }
+        }
+
+        .edu-notification {
+            border-radius: var(--border-radius-lg);
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-notification);
+            position: relative;
+            overflow: hidden;
+            animation: edu-notification-slide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .edu-notification::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            z-index: 0;
+        }
+
+        .edu-notification-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .edu-notification-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            flex-shrink: 0;
+        }
+
+        .edu-notification-message {
+            font-weight: 500;
+            font-size: 15px;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .edu-notification-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+            flex-shrink: 0;
+        }
+
+        .edu-notification-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Notification Types */
+        .edu-notification-success {
+            background: var(--gradient-notification-success);
+        }
+
+        .edu-notification-error {
+            background: var(--gradient-notification-error);
+        }
+
+        .edu-notification-warning {
+            background: var(--gradient-notification-warning);
+            color: var(--prussian-blue);
+        }
+
+        .edu-notification-info {
+            background: var(--gradient-notification-info);
+            color: var(--prussian-blue);
+        }
+
+        /* Liquid blob in notification */
+        .edu-notification::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
+            z-index: 0;
+            animation: liquid-blob-notification 8s infinite alternate;
+        }
+
+        @keyframes liquid-blob-notification {
+            0% {
+                border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%;
+                transform: translate(-10px, -10px) rotate(10deg);
+            }
+        }
+
+        @keyframes edu-notification-slide {
+            0% {
+                transform: translateY(-100%) scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Mobile notification adjustments */
+        @media (max-width: 576px) {
+            .edu-notification {
+                padding: 14px 16px;
+            }
+
+            .edu-notification-content {
+                gap: 12px;
+            }
+
+            .edu-notification-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+
+            .edu-notification-message {
+                font-size: 14px;
+            }
+
+            .edu-notification-close {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+        }
+
         /* Liquid Animations */
         @keyframes liquid-wave {
             0% {
@@ -1019,33 +1209,78 @@
     <main>
 
         {{-- Session Notifications --}}
-        @if(session('success'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm flex items-center justify-between" role="alert">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                    <span>{{ session('success') }}</span>
+        @if(session('success') || session('google_success'))
+        <div class="edu-notification-wrapper">
+            <div class="edu-notification edu-notification-success" role="alert">
+                <div class="edu-notification-content">
+                    <div class="edu-notification-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="edu-notification-message">
+                        {{ session('success') ?? session('google_success') }}
+                    </div>
                 </div>
-                <button type="button" class="text-green-700 hover:text-green-900" onclick="this.parentElement.style.display='none'">
+                <button type="button" class="edu-notification-close" onclick="this.closest('.edu-notification').remove()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
         @endif
 
-        @if(session('error'))
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm flex items-center justify-between" role="alert">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-                    <span>{{ session('error') }}</span>
+        @if(session('error') || session('google_error'))
+        <div class="edu-notification-wrapper">
+            <div class="edu-notification edu-notification-error" role="alert">
+                <div class="edu-notification-content">
+                    <div class="edu-notification-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="edu-notification-message">
+                        {{ session('error') ?? session('google_error') }}
+                    </div>
                 </div>
-                <button type="button" class="text-red-700 hover:text-red-900" onclick="this.parentElement.style.display='none'">
+                <button type="button" class="edu-notification-close" onclick="this.closest('.edu-notification').remove()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
         @endif
+
+        @if(session('status'))
+        <div class="edu-notification-wrapper">
+            <div class="edu-notification edu-notification-info" role="alert">
+                <div class="edu-notification-content">
+                    <div class="edu-notification-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="edu-notification-message">
+                        {{ session('status') }}
+                    </div>
+                </div>
+                <button type="button" class="edu-notification-close" onclick="this.closest('.edu-notification').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        @endif
+
+        @if(session('warning'))
+        <div class="edu-notification-wrapper">
+            <div class="edu-notification edu-notification-warning" role="alert">
+                <div class="edu-notification-content">
+                    <div class="edu-notification-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="edu-notification-message">
+                        {{ session('warning') }}
+                    </div>
+                </div>
+                <button type="button" class="edu-notification-close" onclick="this.closest('.edu-notification').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        @endif
+
         @yield('content')
     </main>
 
@@ -1079,6 +1314,20 @@
                     disable: false
                 });
             }
+        });
+
+        // Auto-hide notifications after 8 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                document.querySelectorAll('.edu-notification').forEach(function(notification) {
+                    notification.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(-100%)';
+                    setTimeout(function() {
+                        notification.remove();
+                    }, 500);
+                });
+            }, 8000);
         });
     </script>
 
