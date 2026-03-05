@@ -13,19 +13,19 @@
     <link rel="canonical" href="{{ url()->current() }}" />
     <link rel="profile" href="https://gmpg.org/xfn/11">
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts - Preconnect and load efficiently -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS - Load with media print then switch -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome 6 - Load with media print then switch -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
 
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- AOS Animation Library - Load with media print then switch -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
 
     <!-- Custom Styles -->
     @stack('styles')
@@ -98,9 +98,9 @@
             --border-radius-full: 9999px;
             --border-radius-liquid: 40% 60% 30% 70% / 50% 40% 60% 50%;
 
-            /* Transitions */
-            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-liquid: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* Transitions - Reduced motion preferences */
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-liquid: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         * {
@@ -215,7 +215,7 @@
             }
         }
 
-        /* Liquid Background Elements - Fixed z-index */
+        /* OPTIMIZED: Liquid Background Elements - Reduced to 2 blobs, smaller size, lower opacity */
         .liquid-bg {
             position: fixed;
             top: 0;
@@ -224,141 +224,74 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
-            opacity: 0.6;
+            opacity: 0.3;
+            /* Reduced from 0.6 */
             pointer-events: none;
+            will-change: transform;
+            /* Performance hint */
         }
 
         .liquid-blob {
             position: absolute;
-            filter: blur(80px);
-            opacity: 0.2;
-            animation: liquid-float 20s infinite alternate ease-in-out;
+            filter: blur(60px);
+            /* Reduced from 80px */
+            opacity: 0.15;
+            /* Reduced from 0.2 */
+            animation: none;
+            /* REMOVED continuous animations - they're too heavy */
+            transform: translateZ(0);
+            /* Force GPU acceleration */
+            backface-visibility: hidden;
         }
 
+        /* OPTIMIZED: Only 2 blobs instead of 4 */
         .liquid-blob-1 {
-            top: -10%;
-            left: -10%;
-            width: 600px;
-            height: 600px;
+            top: -5%;
+            left: -5%;
+            width: 400px;
+            /* Reduced from 600px */
+            height: 400px;
+            /* Reduced from 600px */
             background: var(--bright-amber);
             border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
-            animation: liquid-morph-1 18s infinite alternate;
         }
 
         .liquid-blob-2 {
-            bottom: -10%;
-            right: -10%;
-            width: 700px;
-            height: 700px;
+            bottom: -5%;
+            right: -5%;
+            width: 500px;
+            /* Reduced from 700px */
+            height: 500px;
+            /* Reduced from 700px */
             background: var(--sky-blue);
             border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
-            animation: liquid-morph-2 22s infinite alternate;
         }
 
-        .liquid-blob-3 {
-            top: 40%;
-            right: 20%;
-            width: 400px;
-            height: 400px;
-            background: var(--light-gold);
-            border-radius: 67% 33% 59% 41% / 57% 43% 57% 43%;
-            animation: liquid-morph-3 25s infinite alternate;
-        }
-
-        .liquid-blob-4 {
-            bottom: 20%;
-            left: 15%;
-            width: 500px;
-            height: 500px;
-            background: var(--prussian-blue);
-            opacity: 0.15;
-            border-radius: 44% 56% 31% 69% / 58% 29% 71% 42%;
-            animation: liquid-morph-4 30s infinite alternate;
-        }
+        /* REMOVED: liquid-blob-3 and liquid-blob-4 */
 
         @media (max-width: 768px) {
             .liquid-blob {
-                filter: blur(50px);
+                filter: blur(40px);
+                /* Reduced from 50px */
             }
 
             .liquid-blob-1 {
-                width: 300px;
-                height: 300px;
+                width: 250px;
+                /* Reduced from 300px */
+                height: 250px;
+                /* Reduced from 300px */
             }
 
             .liquid-blob-2 {
-                width: 350px;
-                height: 350px;
-            }
-
-            .liquid-blob-3 {
-                width: 250px;
-                height: 250px;
-            }
-
-            .liquid-blob-4 {
                 width: 300px;
+                /* Reduced from 350px */
                 height: 300px;
+                /* Reduced from 350px */
             }
         }
 
-        @keyframes liquid-morph-1 {
-            0% {
-                border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            100% {
-                border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%;
-                transform: translate(100px, 50px) rotate(20deg);
-            }
-        }
-
-        @keyframes liquid-morph-2 {
-            0% {
-                border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            100% {
-                border-radius: 67% 33% 31% 69% / 48% 62% 38% 52%;
-                transform: translate(-80px, -80px) rotate(-15deg);
-            }
-        }
-
-        @keyframes liquid-morph-3 {
-            0% {
-                border-radius: 67% 33% 59% 41% / 57% 43% 57% 43%;
-                transform: translate(0, 0) scale(1);
-            }
-
-            100% {
-                border-radius: 41% 59% 33% 67% / 43% 62% 38% 57%;
-                transform: translate(60px, -40px) scale(1.2);
-            }
-        }
-
-        @keyframes liquid-morph-4 {
-            0% {
-                border-radius: 44% 56% 31% 69% / 58% 29% 71% 42%;
-                transform: translate(0, 0) scale(1);
-            }
-
-            100% {
-                border-radius: 56% 44% 69% 31% / 42% 71% 29% 58%;
-                transform: translate(-50px, 30px) scale(0.9);
-            }
-        }
-
-        @keyframes liquid-float {
-            0% {
-                transform: translate(0, 0);
-            }
-
-            100% {
-                transform: translate(30px, -30px);
-            }
-        }
+        /* OPTIMIZED: Removed all complex morph animations */
+        /* Kept only simple fade animations for subtle effects */
 
         /* Liquid Typography - Only for non-hero sections */
         .display-1:not(.hero-title),
@@ -377,25 +310,14 @@
             height: 4px;
             background: var(--gradient-liquid-2);
             border-radius: var(--border-radius-liquid);
-            animation: liquid-line 4s infinite alternate;
+            animation: none;
+            /* REMOVED liquid-line animation */
         }
 
         @media (max-width: 768px) {
             .section-title::after {
                 width: 60px;
                 height: 3px;
-            }
-        }
-
-        @keyframes liquid-line {
-            0% {
-                width: 100px;
-                border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
-            }
-
-            100% {
-                width: 150px;
-                border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%;
             }
         }
 
@@ -412,21 +334,8 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             background-size: 200% 200%;
-            animation: liquid-text 8s ease infinite;
-        }
-
-        @keyframes liquid-text {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            animation: none;
+            /* REMOVED liquid-text animation */
         }
 
         /* Liquid Buttons - Fixed for better visibility */
@@ -459,7 +368,8 @@
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.3);
             transform: translate(-50%, -50%);
-            transition: width 0.8s, height 0.8s;
+            transition: width 0.6s, height 0.6s;
+            /* Reduced from 0.8s */
             z-index: -1;
         }
 
@@ -469,7 +379,8 @@
         }
 
         .btn:hover {
-            transform: translateY(-5px) scale(1.02);
+            transform: translateY(-3px) scale(1.01);
+            /* Reduced from -5px and 1.02 */
             box-shadow: var(--shadow-liquid-hover);
         }
 
@@ -561,6 +472,7 @@
         .card {
             background: rgba(254, 253, 254, 0.9);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--border-radius-liquid);
             overflow: hidden;
             box-shadow: var(--shadow-liquid);
@@ -568,6 +480,10 @@
             height: 100%;
             border: 1px solid rgba(251, 198, 12, 0.2);
             position: relative;
+            transform: translateZ(0);
+            /* GPU acceleration */
+            will-change: transform;
+            /* Performance hint */
         }
 
         .card::before {
@@ -580,18 +496,21 @@
             background: var(--gradient-liquid-2);
             border-radius: var(--border-radius-liquid);
             opacity: 0;
-            transition: opacity 0.4s;
+            transition: opacity 0.3s;
+            /* Reduced from 0.4s */
             z-index: -1;
         }
 
         .card:hover {
-            transform: translateY(-15px) scale(1.02);
+            transform: translateY(-8px) scale(1.01);
+            /* Reduced from -15px and 1.02 */
             box-shadow: var(--shadow-liquid-hover);
             background: rgba(254, 253, 254, 0.95);
         }
 
         .card:hover::before {
-            opacity: 0.3;
+            opacity: 0.2;
+            /* Reduced from 0.3 */
         }
 
         .card-image {
@@ -605,11 +524,13 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: var(--transition-liquid);
+            transition: transform 0.5s;
+            /* Reduced from var(--transition-liquid) */
         }
 
         .card:hover .card-image img {
-            transform: scale(1.15) rotate(2deg);
+            transform: scale(1.08) rotate(1deg);
+            /* Reduced from 1.15 and 2deg */
         }
 
         .card-content {
@@ -696,9 +617,10 @@
             box-shadow: var(--shadow-notification);
             position: relative;
             overflow: hidden;
-            animation: edu-notification-slide 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: edu-notification-slide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
+            /* Reduced from 10px */
             color: white;
         }
 
@@ -709,7 +631,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
             z-index: 0;
         }
 
@@ -731,7 +653,8 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(3px);
+            /* Reduced from 5px */
             flex-shrink: 0;
         }
 
@@ -757,13 +680,15 @@
             transition: all 0.2s ease;
             position: relative;
             z-index: 2;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(3px);
+            /* Reduced from 5px */
             flex-shrink: 0;
         }
 
         .edu-notification-close:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+            transform: scale(1.05);
+            /* Reduced from 1.1 */
         }
 
         /* Notification Types */
@@ -785,36 +710,18 @@
             color: var(--prussian-blue);
         }
 
-        /* Liquid blob in notification */
+        /* OPTIMIZED: Removed liquid blob animation in notification */
         .edu-notification::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            right: -20px;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
-            z-index: 0;
-            animation: liquid-blob-notification 8s infinite alternate;
-        }
-
-        @keyframes liquid-blob-notification {
-            0% {
-                border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
-                transform: translate(0, 0) rotate(0deg);
-            }
-            100% {
-                border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%;
-                transform: translate(-10px, -10px) rotate(10deg);
-            }
+            display: none;
+            /* Removed decorative element */
         }
 
         @keyframes edu-notification-slide {
             0% {
-                transform: translateY(-100%) scale(0.8);
+                transform: translateY(-100%) scale(0.9);
                 opacity: 0;
             }
+
             100% {
                 transform: translateY(0) scale(1);
                 opacity: 1;
@@ -848,51 +755,15 @@
             }
         }
 
-        /* Liquid Animations */
-        @keyframes liquid-wave {
-            0% {
-                transform: translateY(0) scale(1);
-            }
+        /* REMOVED: All complex animations */
+        /* .animate-liquid-float, .animate-liquid-pulse removed */
 
-            50% {
-                transform: translateY(-20px) scale(1.05);
-            }
-
-            100% {
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes liquid-pulse {
-            0% {
-                opacity: 0.3;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 0.5;
-                transform: scale(1.1);
-            }
-
-            100% {
-                opacity: 0.3;
-                transform: scale(1);
-            }
-        }
-
-        .animate-liquid-float {
-            animation: liquid-wave 8s ease-in-out infinite;
-        }
-
-        .animate-liquid-pulse {
-            animation: liquid-pulse 6s ease-in-out infinite;
-        }
-
-        /* Glassmorphism */
+        /* Glassmorphism - Reduced blur */
         .glass-liquid {
             background: rgba(254, 253, 254, 0.2);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
+            /* Reduced from 15px */
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(251, 198, 12, 0.2);
             border-radius: var(--border-radius-liquid);
             box-shadow: var(--shadow-liquid);
@@ -900,15 +771,17 @@
 
         .glass-liquid-dark {
             background: rgba(10, 29, 68, 0.2);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
+            /* Reduced from 15px */
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(90, 209, 228, 0.2);
             border-radius: var(--border-radius-liquid);
         }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - Simplified */
         ::-webkit-scrollbar {
-            width: 12px;
+            width: 10px;
+            /* Reduced from 12px */
         }
 
         ::-webkit-scrollbar-track {
@@ -919,60 +792,63 @@
         ::-webkit-scrollbar-thumb {
             background: var(--gradient-liquid-1);
             border-radius: var(--border-radius-full);
-            border: 3px solid var(--pale-slate);
+            border: 2px solid var(--pale-slate);
+            /* Reduced from 3px */
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--gradient-liquid-2);
         }
 
-        /* Loading Spinner */
+        /* Loading Spinner - Simplified */
         .spinner-liquid {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            /* Reduced from 50px */
+            height: 40px;
+            /* Reduced from 50px */
             border-radius: var(--border-radius-liquid);
-            border: 4px solid var(--pale-slate);
+            border: 3px solid var(--pale-slate);
+            /* Reduced from 4px */
             border-top-color: var(--bright-amber);
             border-right-color: var(--sky-blue);
             border-bottom-color: var(--prussian-blue);
-            animation: spin-liquid 1.5s infinite linear;
+            animation: spin-liquid 1s infinite linear;
+            /* Faster animation */
         }
 
         @keyframes spin-liquid {
             0% {
-                transform: rotate(0deg) scale(1);
-                border-radius: var(--border-radius-liquid);
-            }
-
-            50% {
-                transform: rotate(180deg) scale(1.1);
-                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+                transform: rotate(0deg);
             }
 
             100% {
-                transform: rotate(360deg) scale(1);
-                border-radius: var(--border-radius-liquid);
+                transform: rotate(360deg);
             }
+
+            /* REMOVED complex border-radius changes */
         }
 
-        /* Translation Loading Indicator */
+        /* Translation Loading Indicator - Optimized */
         .global-translation-loading {
             position: fixed;
             top: 20px;
             right: 20px;
             background: var(--gradient-liquid-2);
             color: var(--prussian-blue);
-            padding: 14px 28px;
+            padding: 12px 24px;
+            /* Reduced from 14px 28px */
             border-radius: var(--border-radius-liquid);
             box-shadow: var(--shadow-liquid);
             z-index: 9999;
             display: none;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            /* Reduced from 14px */
             font-weight: 600;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
+            /* Reduced from 10px */
             border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: slideInLiquid 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideInLiquid 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             max-width: calc(100% - 40px);
         }
 
@@ -981,7 +857,7 @@
         }
 
         .global-translation-loading i {
-            animation: spin-liquid 1.5s infinite linear;
+            animation: spin-liquid 1s infinite linear;
         }
 
         .global-translation-loading.timeout {
@@ -991,7 +867,7 @@
 
         @keyframes slideInLiquid {
             0% {
-                transform: translateX(100%) scale(0.8);
+                transform: translateX(100%) scale(0.9);
                 opacity: 0;
             }
 
@@ -1005,7 +881,8 @@
             .global-translation-loading {
                 top: 15px;
                 right: 15px;
-                padding: 12px 22px;
+                padding: 10px 20px;
+                /* Reduced from 12px 22px */
             }
         }
 
@@ -1015,14 +892,16 @@
                 right: 10px;
                 left: 10px;
                 width: auto;
-                padding: 12px 20px;
+                padding: 10px 18px;
+                /* Reduced from 12px 20px */
                 justify-content: center;
             }
         }
 
         @media (max-width: 375px) {
             .global-translation-loading {
-                padding: 10px 16px;
+                padding: 8px 14px;
+                /* Reduced from 10px 16px */
                 font-size: 0.9rem;
             }
         }
@@ -1046,7 +925,7 @@
             }
         }
 
-        /* Inputs */
+        /* Inputs - Reduced transitions */
         input,
         textarea,
         select {
@@ -1056,9 +935,11 @@
             border-radius: var(--border-radius-liquid);
             font-family: 'Inter', sans-serif;
             font-size: 1rem;
-            transition: var(--transition-liquid);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            /* Simplified from var(--transition-liquid) */
             background: rgba(254, 253, 254, 0.8);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(3px);
+            /* Added for consistency, reduced */
         }
 
         input:focus,
@@ -1067,7 +948,8 @@
             outline: none;
             border-color: var(--sky-blue);
             box-shadow: var(--shadow-liquid-glow);
-            transform: scale(1.02);
+            transform: scale(1.01);
+            /* Reduced from 1.02 */
         }
 
         @media (max-width: 768px) {
@@ -1079,13 +961,14 @@
             }
         }
 
-        /* Dividers */
+        /* Dividers - Simplified */
         .liquid-divider {
-            height: 4px;
+            height: 3px;
+            /* Reduced from 4px */
             background: var(--gradient-liquid-2);
             border-radius: var(--border-radius-liquid);
             margin: 40px 0;
-            animation: liquid-pulse 4s infinite;
+            /* REMOVED animation */
         }
 
         /* Fix for white space */
@@ -1127,11 +1010,13 @@
 
         /* Translation specific styles */
         .translate-text {
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
+            /* Reduced from 0.3s */
         }
 
         .translate-text.translating {
-            opacity: 0.7;
+            opacity: 0.8;
+            /* Reduced from 0.7 (less change) */
         }
 
         .no-translate {
@@ -1172,7 +1057,6 @@
         /* Page content padding */
         main {
             min-height: 60vh;
-            padding: 40px 0;
         }
 
         @media (max-width: 768px) {
@@ -1186,16 +1070,22 @@
                 padding: 20px 0;
             }
         }
+
+        /* Add will-change for elements that animate */
+        .card,
+        .btn,
+        .global-translation-loading {
+            will-change: transform, opacity;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Liquid Background Elements -->
+    <!-- OPTIMIZED: Liquid Background Elements - Only 2 instead of 4 -->
     <div class="liquid-bg">
         <div class="liquid-blob liquid-blob-1"></div>
         <div class="liquid-blob liquid-blob-2"></div>
-        <div class="liquid-blob liquid-blob-3"></div>
-        <div class="liquid-blob liquid-blob-4"></div>
+        <!-- Removed liquid-blob-3 and liquid-blob-4 -->
     </div>
 
     <!-- Global Translation Loading Indicator -->
@@ -1286,52 +1176,45 @@
 
     @include('layouts.footer')
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Scripts - Load with defer to not block rendering -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
 
     <!-- Initialize AOS -->
     <script>
-        AOS.init({
-            duration: 1000,
-            once: true,
-            offset: 100,
-            easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
-            disable: function() {
-                return window.innerWidth < 768;
-            }
-        });
-
-        // Refresh AOS on window resize
-        window.addEventListener('resize', function() {
-            if (window.innerWidth < 768) {
-                AOS.init({
-                    disable: true
-                });
-            } else {
-                AOS.init({
-                    disable: false
-                });
-            }
-        });
-
-        // Auto-hide notifications after 8 seconds
+        // OPTIMIZED: Initialize AOS with better settings
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user prefers reduced motion
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            AOS.init({
+                duration: prefersReducedMotion ? 0 : 800, // Reduced from 1000
+                once: true,
+                offset: 50, // Reduced from 100
+                easing: 'ease-out', // Simpler easing
+                disable: function() {
+                    return window.innerWidth < 768;
+                }
+            });
+
+            // Auto-hide notifications after 5 seconds (reduced from 8)
             setTimeout(function() {
                 document.querySelectorAll('.edu-notification').forEach(function(notification) {
-                    notification.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    notification.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                     notification.style.opacity = '0';
-                    notification.style.transform = 'translateY(-100%)';
+                    notification.style.transform = 'translateY(-20px)';
                     setTimeout(function() {
-                        notification.remove();
-                    }, 500);
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
                 });
-            }, 8000);
+            }, 5000);
         });
     </script>
 
-    <!-- Global Translation System - Enhanced -->
+    <!-- OPTIMIZED: Global Translation System - Simplified and more efficient -->
     <script>
         // Translation API endpoint
         const TRANSLATE_API_URL = "{{ route('translate') }}";
@@ -1342,169 +1225,110 @@
         // Cache for translations
         const translationCache = new Map();
 
-        // Store original texts for all translatable elements
-        let translatableElements = [];
-
         // Flag to prevent multiple simultaneous translations
         let isTranslating = false;
 
-        // Store the base English texts
-        let englishTexts = new Map();
+        // OPTIMIZED: Use a Set for faster lookups and store elements more efficiently
+        let translatableElements = [];
+
+        // OPTIMIZED: Reduced selectors to only common content elements
+        const TRANSLATABLE_SELECTORS = [
+            'h1:not(.no-translate)', 'h2:not(.no-translate)', 'h3:not(.no-translate)',
+            'p:not(.no-translate)', '.btn:not(.no-translate)',
+            '.section-title:not(.no-translate)', '.card-title:not(.no-translate)',
+            '.card-text:not(.no-translate)', '.badge:not(.no-translate)'
+        ];
 
         // Batch size for translation API calls
-        const BATCH_SIZE = 20;
-        const BATCH_DELAY = 500;
+        const BATCH_SIZE = 15; // Reduced from 20
+        const BATCH_DELAY = 300; // Reduced from 500
 
         // Language display mapping
         const languageDisplay = {
             'en': {
                 flag: '🇺🇸',
-                code: 'EN',
-                name: 'English'
+                code: 'EN'
             },
             'es': {
                 flag: '🇪🇸',
-                code: 'ES',
-                name: 'Español'
+                code: 'ES'
             },
             'fr': {
                 flag: '🇫🇷',
-                code: 'FR',
-                name: 'Français'
+                code: 'FR'
             },
             'de': {
                 flag: '🇩🇪',
-                code: 'DE',
-                name: 'Deutsch'
+                code: 'DE'
             },
             'it': {
                 flag: '🇮🇹',
-                code: 'IT',
-                name: 'Italiano'
+                code: 'IT'
             },
             'pt': {
                 flag: '🇵🇹',
-                code: 'PT',
-                name: 'Português'
+                code: 'PT'
             },
             'zh': {
                 flag: '🇨🇳',
-                code: 'ZH',
-                name: '中文'
+                code: 'ZH'
             }
         };
 
         document.addEventListener('DOMContentLoaded', function() {
-            initializeTranslatableElements();
-            storeEnglishTexts();
+            // OPTIMIZED: Defer heavy operations
+            setTimeout(() => {
+                initializeTranslatableElements();
 
-            if (currentLanguage !== 'en') {
-                setTimeout(() => {
+                if (currentLanguage !== 'en') {
                     translatePage(currentLanguage);
-                }, 100);
-            }
+                }
 
-            updateLanguageDisplay(currentLanguage);
+                updateLanguageDisplay(currentLanguage);
+            }, 500); // Wait 500ms after page load
         });
 
-        // Simple function to check if text should be translated
+        // OPTIMIZED: Simplified text check
         function shouldTranslate(text) {
-            if (!text || text.trim().length < 2) return false;
-
-            // Don't translate if it's just numbers and symbols
-            if (/^[\d\s\W]+$/.test(text)) return false;
-
-            // Don't translate email addresses
-            if (text.includes('@') && text.includes('.')) return false;
-
-            // Don't translate phone numbers
-            if (text.match(/[\d-+()\s]{7,}/) && text.includes('+1')) return false;
-
-            // Translate everything else
+            if (!text || text.trim().length < 3) return false;
+            // Skip if it's just numbers, email, or phone
+            if (/^[\d\s]+$/.test(text) || text.includes('@') || text.match(/[\d-+()\s]{7,}/)) return false;
             return true;
         }
 
+        // OPTIMIZED: More efficient element collection
         function initializeTranslatableElements() {
             translatableElements = [];
 
-            const selectors = [
-                'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-                'p', 'span', 'a', 'button', 'label', 'div',
-                '.btn', '.section-title', '.card-title', '.card-text',
-                '.nav-menu a', '.contact-info a', '.footer-links a',
-                '.badge', '.hero-title', '.hero-subtitle',
-                '.mobile-nav-list a', '.mobile-section-title',
-                '.mobile-contact a', '.auth-buttons a'
-            ];
-
-            selectors.forEach(selector => {
+            TRANSLATABLE_SELECTORS.forEach(selector => {
                 document.querySelectorAll(selector).forEach(element => {
-                    // Skip elements that should not be translated
-                    if (element.closest('.language-selector') ||
-                        element.closest('.user-menu') ||
-                        element.closest('.profile-dropdown') ||
-                        element.classList.contains('current-flag') ||
-                        element.classList.contains('current-lang') ||
-                        element.classList.contains('user-name') ||
-                        element.id === 'currentFlag' ||
-                        element.id === 'currentLang' ||
-                        element.id === 'langBtn' ||
-                        element.id === 'userBtn') {
+                    // Skip if inside excluded areas
+                    if (element.closest('.language-selector, .user-menu, .profile-dropdown')) {
                         return;
                     }
 
-                    // Get the text content, ignoring child elements
-                    let text = '';
-                    element.childNodes.forEach(node => {
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            text += node.textContent;
-                        }
-                    });
+                    // Get clean text content
+                    const text = element.childNodes[0]?.nodeType === Node.TEXT_NODE ?
+                        element.childNodes[0].textContent.trim() :
+                        element.textContent.trim();
 
-                    text = text.trim();
-                    if (!text || text.length < 2) return;
-
-                    // Skip if it's just whitespace or numbers
-                    if (/^[\s\d]+$/.test(text)) return;
-
-                    // Check if we should translate this text
                     if (!shouldTranslate(text)) return;
 
-                    // Get or set original text
-                    let originalText = element.getAttribute('data-original');
-                    if (!originalText) {
-                        originalText = text;
+                    // Store original if not already stored
+                    if (!element.hasAttribute('data-original')) {
                         element.setAttribute('data-original', text);
                     }
 
-                    // Store base English text
-                    let baseOriginal = element.getAttribute('data-base-original');
-                    if (!baseOriginal) {
-                        baseOriginal = text;
-                        element.setAttribute('data-base-original', text);
-                    }
-
-                    // Mark as translatable
                     element.classList.add('translate-text');
 
                     translatableElements.push({
-                        element: element,
-                        original: originalText,
-                        baseOriginal: baseOriginal,
-                        text: text
+                        el: element,
+                        original: text
                     });
                 });
             });
 
-            console.log('Translatable elements found:', translatableElements.length);
-        }
-
-        function storeEnglishTexts() {
-            translatableElements.forEach(item => {
-                if (item.element && item.baseOriginal) {
-                    englishTexts.set(item.element, item.baseOriginal);
-                }
-            });
+            console.log(`Found ${translatableElements.length} translatable elements`);
         }
 
         function updateLanguageDisplay(lang) {
@@ -1517,150 +1341,99 @@
         }
 
         async function translatePage(targetLang) {
-            if (isTranslating) return;
+            if (isTranslating || translatableElements.length === 0) return;
             isTranslating = true;
 
             const loadingEl = document.getElementById('globalTranslationLoading');
             if (loadingEl) {
                 loadingEl.classList.add('show');
-                loadingEl.innerHTML = '<i class="fas fa-spinner"></i><span>Translating page...</span>';
+                loadingEl.innerHTML = '<i class="fas fa-spinner"></i><span>Translating...</span>';
             }
 
-            // Add translating class
-            translatableElements.forEach(item => {
-                if (item.element) item.element.classList.add('translating');
-            });
-
+            // OPTIMIZED: Reduced timeout to 15 seconds
             const timeoutId = setTimeout(() => {
                 if (loadingEl) {
-                    loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Translation taking longer than expected...</span>';
+                    loadingEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Taking longer...</span>';
                 }
-            }, 30000);
+            }, 15000);
 
             try {
-                // Update session
+                // Update session in background (don't wait)
                 fetch(`/language/${targetLang}`, {
                     method: 'GET',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
-                }).catch(err => console.log('Session update error:', err));
-
-                console.log(`Translating page from ${currentLanguage} to ${targetLang}`);
-                console.log(`Elements to translate: ${translatableElements.length}`);
+                }).catch(() => {});
 
                 // Get all texts to translate
-                const textsToTranslate = translatableElements.map(item => item.baseOriginal);
-
-                if (textsToTranslate.length === 0) {
-                    console.log('No elements to translate');
-                    return true;
-                }
-
-                console.log(`Processing ${Math.ceil(textsToTranslate.length / BATCH_SIZE)} batches`);
+                const textsToTranslate = translatableElements.map(item => item.original);
 
                 // Process in batches
                 const totalBatches = Math.ceil(textsToTranslate.length / BATCH_SIZE);
-                let allTranslatedTexts = new Array(textsToTranslate.length).fill(null);
+                let allTranslatedTexts = [];
 
                 for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
                     const start = batchIndex * BATCH_SIZE;
                     const end = Math.min(start + BATCH_SIZE, textsToTranslate.length);
                     const batchTexts = textsToTranslate.slice(start, end);
 
-                    if (loadingEl) {
-                        loadingEl.innerHTML = `<i class="fas fa-spinner"></i><span>Translating... Batch ${batchIndex + 1}/${totalBatches}</span>`;
-                    }
-
-                    console.log(`Processing batch ${batchIndex + 1}/${totalBatches} (${batchTexts.length} texts)`);
-
                     try {
                         const batchResults = await translateBatch(batchTexts, 'en', targetLang);
-
-                        for (let i = 0; i < batchResults.length; i++) {
-                            allTranslatedTexts[start + i] = batchResults[i];
-                        }
+                        allTranslatedTexts = [...allTranslatedTexts, ...batchResults];
 
                         // Delay between batches
                         if (batchIndex < totalBatches - 1) {
                             await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
                         }
                     } catch (error) {
-                        console.error(`Batch ${batchIndex + 1} failed:`, error);
-                        // Fallback to original texts
-                        for (let i = 0; i < batchTexts.length; i++) {
-                            allTranslatedTexts[start + i] = batchTexts[i];
-                        }
+                        console.error(`Batch ${batchIndex + 1} failed`);
+                        allTranslatedTexts = [...allTranslatedTexts, ...batchTexts];
                     }
                 }
 
                 // Apply translations
                 let appliedCount = 0;
-
                 for (let i = 0; i < translatableElements.length; i++) {
                     const item = translatableElements[i];
                     const translated = allTranslatedTexts[i];
 
-                    if (item.element && translated && translated.trim().length > 0) {
-                        // Check if translation is different from original
-                        if (translated !== item.baseOriginal) {
-                            // Update the text content only
-                            item.element.innerHTML = item.element.innerHTML.replace(item.baseOriginal, translated);
-                            item.element.setAttribute('data-original', translated);
-                            appliedCount++;
-
-                            if (appliedCount <= 10) {
-                                console.log(`✅ Translated ${i}: "${item.baseOriginal.substring(0, 30)}..." -> "${translated.substring(0, 30)}..."`);
-                            }
-                        }
+                    if (item.el && translated && translated !== item.original) {
+                        // OPTIMIZED: Simple text replacement
+                        item.el.textContent = translated;
+                        appliedCount++;
                     }
                 }
 
-                // Update current language
                 currentLanguage = targetLang;
                 updateLanguageDisplay(targetLang);
 
-                console.log(`✅ Translation complete: ${appliedCount}/${translatableElements.length} elements updated`);
-
-                if (appliedCount === 0 && textsToTranslate.length > 0) {
-                    console.warn('⚠️ No elements were updated. Checking API...');
-                    testTranslationAPI();
-                }
-
-                return true;
+                console.log(`Translated ${appliedCount} elements`);
 
             } catch (error) {
-                console.error('Page translation error:', error);
+                console.error('Translation error:', error);
             } finally {
                 clearTimeout(timeoutId);
-
-                translatableElements.forEach(item => {
-                    if (item.element) item.element.classList.remove('translating');
-                });
-
                 if (loadingEl) loadingEl.classList.remove('show');
                 isTranslating = false;
             }
         }
 
         async function translateBatch(texts, sourceLang, targetLang) {
-            if (texts.length === 0) return [];
-            if (sourceLang === targetLang) return texts;
+            if (texts.length === 0 || sourceLang === targetLang) return texts;
 
             // Check cache
-            const uncachedIndices = [];
+            const results = [];
             const uncachedTexts = [];
-            const results = new Array(texts.length);
+            const uncachedIndices = [];
 
             texts.forEach((text, index) => {
                 const cacheKey = `${text}_${sourceLang}_${targetLang}`;
                 if (translationCache.has(cacheKey)) {
                     results[index] = translationCache.get(cacheKey);
-                } else if (text && text.trim().length >= 2) {
+                } else {
                     uncachedIndices.push(index);
                     uncachedTexts.push(text);
-                } else {
-                    results[index] = text;
                 }
             });
 
@@ -1669,14 +1442,11 @@
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-                console.log(`Sending ${uncachedTexts.length} texts to translation API...`);
-
                 const response = await fetch(TRANSLATE_API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({
                         q: uncachedTexts,
@@ -1686,9 +1456,7 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Translation failed: ${response.status}`);
-                }
+                if (!response.ok) throw new Error('Translation failed');
 
                 const data = await response.json();
 
@@ -1702,57 +1470,22 @@
                         const cacheKey = `${uncachedTexts[idx]}_${sourceLang}_${targetLang}`;
                         translationCache.set(cacheKey, finalTranslation);
                     });
-
-                    console.log(`Received ${data.translatedTexts.length} translations`);
-                } else {
-                    console.error('Invalid API response:', data);
-                    uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
                 }
 
                 return results;
             } catch (error) {
                 console.error('Batch translation error:', error);
+                // Return original texts for failed batch
                 uncachedIndices.forEach((idx, i) => results[idx] = uncachedTexts[i]);
                 return results;
-            }
-        }
-
-        // Test API function
-        async function testTranslationAPI() {
-            console.log('🔍 Testing translation API...');
-
-            try {
-                const testTexts = ['Hello', 'Welcome to our site', 'Learn more'];
-                const results = await translateBatch(testTexts, 'en', 'es');
-
-                console.log('Test results:', results);
-
-                if (results[0] !== 'Hello') {
-                    console.log('✅ API is working!');
-                } else {
-                    console.error('❌ API is not translating');
-                }
-            } catch (error) {
-                console.error('Test failed:', error);
             }
         }
 
         // Public API
         window.translationSystem = {
             translatePage,
-            currentLanguage: () => currentLanguage,
-            elements: () => translatableElements.length,
-            refresh: () => {
-                initializeTranslatableElements();
-                storeEnglishTexts();
-            },
-            test: testTranslationAPI
+            currentLanguage: () => currentLanguage
         };
-
-        console.log('Translation system ready. Current language:', currentLanguage);
-
-        // Run test after 2 seconds
-        setTimeout(testTranslationAPI, 2000);
     </script>
 
     @stack('scripts')
