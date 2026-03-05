@@ -19,12 +19,11 @@ class TranslationController extends Controller
     public function translate(Request $request)
     {
         // Log the request for debugging
-        Log::info('Translation request received', [
-            'q_type' => gettype($request->q),
-            'source' => $request->source,
-            'target' => $request->target,
-            'batch' => $request->boolean('batch'),
-            'has_array' => is_array($request->q)
+        Log::info('=== TRANSLATION REQUEST ===', [
+            'full_request' => $request->all(),
+            'headers' => $request->headers->all(),
+            'ip' => $request->ip(),
+            'url' => $request->fullUrl()
         ]);
 
         // Custom validation - allow array for batch, string for single
@@ -39,9 +38,11 @@ class TranslationController extends Controller
         if ($request->boolean('batch') && is_array($request->q)) {
             $rules['q'] = 'required|array|min:1';
             $rules['q.*'] = 'required|string|min:1';
+            Log::info('Processing batch request with ' . count($request->q) . ' items');
         } else {
             // Otherwise validate as string
             $rules['q'] = 'required|string|min:1';
+            Log::info('Processing single text request');
         }
 
         // Validate the request
@@ -80,11 +81,17 @@ class TranslationController extends Controller
                     'target' => $target
                 ]);
 
+                // IMPORTANT FIX: Remove unsupported parameters
                 $options = [
                     'formality' => $formality !== 'default' ? $formality : null,
-                    'preserve_formatting' => true,
-                    'split_sentences' => '0' // Don't split sentences to preserve structure
+                    // 'preserve_formatting' => true,  // REMOVED - not supported
+                    // 'split_sentences' => '0'        // REMOVED - not supported in this context
                 ];
+
+                // Only add formality if it's set and supported
+                if (empty($options['formality'])) {
+                    unset($options['formality']);
+                }
 
                 $translatedTexts = $this->deepLService->translateBatch($text, $source, $target, $options);
 
@@ -121,14 +128,26 @@ class TranslationController extends Controller
                     'trace' => $e->getTraceAsString()
                 ]);
 
+                // Check if it's a quota exceeded error
+                $isQuotaError = strpos($e->getMessage(), 'quota exceeded') !== false || strpos($e->getMessage(), '456') !== false;
+                $isUnsupportedParameter = strpos($e->getMessage(), 'not supported') !== false;
+
+                $errorMessage = 'Translation service temporarily unavailable';
+                if ($isQuotaError) {
+                    $errorMessage = 'Translation quota exceeded. Please try again later.';
+                } elseif ($isUnsupportedParameter) {
+                    $errorMessage = 'Translation service configuration issue. Please contact support.';
+                }
+
                 // Return original texts as fallback
                 return response()->json([
-                    'error' => 'Translation failed',
+                    'error' => $errorMessage,
                     'message' => $e->getMessage(),
                     'translatedTexts' => $text, // Return original as fallback
                     'source' => $source,
                     'target' => $target,
-                    'batch' => true
+                    'batch' => true,
+                    'quota_exceeded' => $isQuotaError
                 ], 200); // Return 200 with original text to avoid breaking UI
             }
         }
@@ -142,15 +161,20 @@ class TranslationController extends Controller
                 'target' => $target
             ]);
 
-            // Check if text contains HTML
-            $tagHandling = $this->containsHtml($text) ? 'html' : null;
-
+            // IMPORTANT FIX: Remove unsupported parameters
             $options = [
                 'formality' => $formality !== 'default' ? $formality : null,
-                'preserve_formatting' => true,
-                'split_sentences' => '0' // Don't split sentences to preserve structure
+                // 'preserve_formatting' => true,  // REMOVED - not supported
+                // 'split_sentences' => '0'        // REMOVED - not supported in this context
             ];
 
+            // Only add formality if it's set
+            if (empty($options['formality'])) {
+                unset($options['formality']);
+            }
+
+            // Check if text contains HTML - this is supported
+            $tagHandling = $this->containsHtml($text) ? 'html' : null;
             if ($tagHandling) {
                 $options['tag_handling'] = $tagHandling;
             }
@@ -182,13 +206,20 @@ class TranslationController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
+            // Check if it's a quota exceeded error
+            $isQuotaError = strpos($e->getMessage(), 'quota exceeded') !== false || strpos($e->getMessage(), '456') !== false;
+            $errorMessage = $isQuotaError 
+                ? 'Translation quota exceeded. Please try again later.' 
+                : 'Translation service temporarily unavailable';
+
             return response()->json([
                 'translatedText' => $text,
-                'error' => 'Translation service temporarily unavailable',
+                'error' => $errorMessage,
                 'message' => $e->getMessage(),
                 'source' => $source,
                 'target' => $target,
-                'batch' => false
+                'batch' => false,
+                'quota_exceeded' => $isQuotaError
             ], 200); // Return 200 with original text to avoid breaking the UI
         }
     }
@@ -207,8 +238,9 @@ class TranslationController extends Controller
             $deepL = new \DeepL\Translator(config('deepl.api_key'));
 
             $result = $deepL->translateText($text, $source, $target, [
-                'preserve_formatting' => true,
-                'split_sentences' => '0'
+                // Only use supported parameters
+                // 'preserve_formatting' => true, // REMOVED
+                // 'split_sentences' => '0'       // REMOVED
             ]);
 
             return response()->json([

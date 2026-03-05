@@ -21,6 +21,24 @@ use App\Http\Controllers\Auth\GoogleController;
 
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
+// routes/web.php
+Route::get('/deepl-usage', function() {
+    try {
+        $deepLService = app(App\Services\DeepLService::class);
+        $usage = $deepLService->getUsage();
+        
+        return response()->json([
+            'success' => true,
+            'usage' => $usage
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+});
 /*
 |--------------------------------------------------------------------------
 | Web Routes
