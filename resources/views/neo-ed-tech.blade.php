@@ -122,6 +122,7 @@
         right: 0;
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         z-index: 9999;
         transition: var(--transition);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -141,6 +142,12 @@
         width: 100%;
     }
 
+    @media (max-width: 768px) {
+        .neo-header .container {
+            padding: 15px 20px;
+        }
+    }
+
     .logo {
         flex-shrink: 0;
     }
@@ -150,15 +157,58 @@
         width: auto;
     }
 
+    @media (max-width: 576px) {
+        .logo img {
+            height: 40px;
+        }
+    }
+
     .nav-menu {
         display: flex;
         align-items: center;
         gap: 40px;
     }
 
+    @media (max-width: 768px) {
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--white);
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 100px 30px 30px;
+            transition: right 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+        }
+
+        .nav-menu.active {
+            right: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .nav-menu {
+            width: 85%;
+            padding: 80px 20px 20px;
+        }
+    }
+
     .nav-links {
         display: flex;
         gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            flex-direction: column;
+            width: 100%;
+            gap: 20px;
+        }
     }
 
     .nav-links a {
@@ -168,6 +218,14 @@
         transition: var(--transition);
         position: relative;
         text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links a {
+            font-size: 1.1rem;
+            padding: 10px 0;
+            display: block;
+        }
     }
 
     .nav-links a:hover,
@@ -186,6 +244,12 @@
         transition: var(--transition);
     }
 
+    @media (max-width: 768px) {
+        .nav-links a::after {
+            bottom: 5px;
+        }
+    }
+
     .nav-links a:hover::after,
     .nav-links a.active::after {
         width: 100%;
@@ -194,6 +258,7 @@
     .contact-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         padding: 12px 30px;
         background: var(--gradient-1);
         color: var(--white);
@@ -203,6 +268,14 @@
         transition: var(--transition);
         box-shadow: var(--shadow-sm);
         text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .contact-btn {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
     }
 
     .contact-btn:hover {
@@ -217,6 +290,12 @@
         gap: 6px;
         cursor: pointer;
         z-index: 10000;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-menu-btn {
+            display: flex;
+        }
     }
 
     .mobile-menu-btn span {
@@ -249,6 +328,20 @@
         overflow: hidden;
         padding: 120px 0 60px;
         margin-top: 0;
+    }
+
+    @media (max-width: 768px) {
+        .neo-hero {
+            padding: 100px 0 50px;
+            min-height: 90vh;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-hero {
+            padding: 80px 0 40px;
+            min-height: 85vh;
+        }
     }
 
     .neo-hero::before {
@@ -287,6 +380,15 @@
         animation: float 8s ease-in-out infinite;
     }
 
+    @media (max-width: 768px) {
+        .neo-hero-particle:nth-child(1) {
+            width: 200px;
+            height: 200px;
+            top: -50px;
+            right: -50px;
+        }
+    }
+
     .neo-hero-particle:nth-child(2) {
         width: 200px;
         height: 200px;
@@ -295,12 +397,28 @@
         animation: float 10s ease-in-out infinite reverse;
     }
 
+    @media (max-width: 768px) {
+        .neo-hero-particle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            bottom: -30px;
+            left: -30px;
+        }
+    }
+
     .neo-hero-particle:nth-child(3) {
         width: 150px;
         height: 150px;
         top: 50%;
         left: 20%;
         animation: float 12s ease-in-out infinite;
+    }
+
+    @media (max-width: 768px) {
+        .neo-hero-particle:nth-child(3) {
+            width: 100px;
+            height: 100px;
+        }
     }
 
     .neo-hero-particle:nth-child(4) {
@@ -316,10 +434,11 @@
         z-index: 2;
         color: var(--white);
         max-width: 900px;
+        padding: 0 20px;
     }
 
     .neo-hero-title {
-        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        font-size: clamp(2rem, 8vw, 4.5rem);
         font-weight: 800;
         line-height: 1.1;
         margin-bottom: 20px;
@@ -334,10 +453,16 @@
     }
 
     .neo-hero-subtitle {
-        font-size: clamp(1.1rem, 3vw, 1.3rem);
+        font-size: clamp(1rem, 3vw, 1.3rem);
         margin-bottom: 40px;
         opacity: 0.9;
         max-width: 700px;
+    }
+
+    @media (max-width: 768px) {
+        .neo-hero-subtitle {
+            margin-bottom: 30px;
+        }
     }
 
     .neo-hero-buttons {
@@ -347,11 +472,36 @@
         margin-bottom: 40px;
     }
 
+    @media (max-width: 768px) {
+        .neo-hero-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+
     .neo-hero-buttons .btn {
         min-width: 200px;
         position: relative;
         overflow: hidden;
         text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px 30px;
+        border-radius: var(--border-radius-full);
+        font-weight: 600;
+        font-size: 1rem;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .neo-hero-buttons .btn {
+            width: 100%;
+            min-width: auto;
+            padding: 14px 20px;
+        }
     }
 
     .neo-hero-buttons .btn::before {
@@ -404,6 +554,14 @@
         flex-wrap: wrap;
     }
 
+    @media (max-width: 768px) {
+        .neo-trust-badge {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+        }
+    }
+
     .neo-counter {
         font-size: 1.5rem;
         font-weight: 600;
@@ -413,6 +571,12 @@
         font-size: 2.5rem;
         font-weight: 800;
         margin-right: 5px;
+    }
+
+    @media (max-width: 576px) {
+        .neo-counter .number {
+            font-size: 2rem;
+        }
     }
 
     .neo-avatar-group {
@@ -440,15 +604,41 @@
         z-index: 10;
     }
 
+    @media (max-width: 576px) {
+        .neo-avatar {
+            width: 35px;
+            height: 35px;
+        }
+    }
+
     /* Services Section */
     .neo-services {
         padding: 80px 0;
         background: var(--white);
     }
 
+    @media (max-width: 768px) {
+        .neo-services {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-services {
+            padding: 50px 0;
+        }
+    }
+
     .neo-section-header {
         text-align: center;
         margin-bottom: 60px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+        .neo-section-header {
+            margin-bottom: 40px;
+        }
     }
 
     .neo-section-subtitle {
@@ -461,8 +651,14 @@
         font-size: 0.9rem;
     }
 
+    @media (max-width: 576px) {
+        .neo-section-subtitle {
+            font-size: 0.8rem;
+        }
+    }
+
     .neo-section-title {
-        font-size: clamp(2rem, 5vw, 3rem);
+        font-size: clamp(1.8rem, 5vw, 3rem);
         font-weight: 800;
         line-height: 1.2;
         margin-bottom: 20px;
@@ -482,11 +678,32 @@
         line-height: 1.8;
     }
 
+    @media (max-width: 768px) {
+        .neo-section-description {
+            font-size: 1rem;
+        }
+    }
+
     .neo-services-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 30px;
         margin-top: 50px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .neo-services-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .neo-services-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .neo-service-card {
@@ -498,6 +715,19 @@
         border: 1px solid rgba(0, 0, 0, 0.05);
         position: relative;
         overflow: hidden;
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .neo-service-card {
+            padding: 30px 25px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-service-card {
+            padding: 30px 20px;
+        }
     }
 
     .neo-service-card::before {
@@ -535,6 +765,15 @@
         transition: var(--transition);
     }
 
+    @media (max-width: 768px) {
+        .neo-service-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+    }
+
     .neo-service-card:hover .neo-service-icon {
         transform: rotateY(180deg) scale(1.1);
     }
@@ -545,10 +784,17 @@
         margin-bottom: 15px;
     }
 
+    @media (max-width: 768px) {
+        .neo-service-title {
+            font-size: 1.2rem;
+        }
+    }
+
     .neo-service-text {
         color: var(--gray);
         line-height: 1.6;
         margin-bottom: 25px;
+        font-size: 0.95rem;
     }
 
     .neo-service-list {
@@ -571,10 +817,28 @@
         flex-shrink: 0;
     }
 
+    @media (max-width: 576px) {
+        .neo-service-list li {
+            font-size: 0.9rem;
+        }
+    }
+
     /* About Section */
     .neo-about {
         padding: 80px 0;
         background: var(--light);
+    }
+
+    @media (max-width: 768px) {
+        .neo-about {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-about {
+            padding: 50px 0;
+        }
     }
 
     .neo-about-grid {
@@ -582,6 +846,20 @@
         grid-template-columns: 1fr 1fr;
         gap: 60px;
         align-items: center;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .neo-about-grid {
+            gap: 40px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .neo-about-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
     }
 
     .neo-about-content p {
@@ -597,6 +875,13 @@
         margin: 30px 0;
     }
 
+    @media (max-width: 768px) {
+        .neo-about-features {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+
     .neo-about-feature {
         display: flex;
         align-items: center;
@@ -606,6 +891,7 @@
     .neo-about-feature i {
         color: var(--success);
         font-size: 1.1rem;
+        flex-shrink: 0;
     }
 
     .neo-about-cards {
@@ -614,12 +900,25 @@
         gap: 20px;
     }
 
+    @media (max-width: 768px) {
+        .neo-about-cards {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+    }
+
     .neo-about-card {
         background: var(--white);
         padding: 30px;
         border-radius: var(--border-radius-lg);
         box-shadow: var(--shadow-md);
         transition: var(--transition);
+    }
+
+    @media (max-width: 768px) {
+        .neo-about-card {
+            padding: 25px;
+        }
     }
 
     .neo-about-card:hover {
@@ -657,11 +956,31 @@
         background: var(--white);
     }
 
+    @media (max-width: 768px) {
+        .neo-testimonials {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-testimonials {
+            padding: 50px 0;
+        }
+    }
+
     .neo-testimonials-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
         margin-top: 50px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 768px) {
+        .neo-testimonials-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
     }
 
     .neo-testimonial-card {
@@ -673,6 +992,18 @@
         position: relative;
         overflow: hidden;
         border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 768px) {
+        .neo-testimonial-card {
+            padding: 30px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-testimonial-card {
+            padding: 30px 20px;
+        }
     }
 
     .neo-testimonial-card:hover {
@@ -704,6 +1035,7 @@
         margin-bottom: 25px;
         position: relative;
         z-index: 1;
+        font-size: 0.95rem;
     }
 
     .neo-testimonial-author {
@@ -718,6 +1050,14 @@
         border-radius: 50%;
         overflow: hidden;
         border: 3px solid var(--primary);
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 576px) {
+        .neo-author-image {
+            width: 50px;
+            height: 50px;
+        }
     }
 
     .neo-author-image img {
@@ -745,6 +1085,18 @@
         overflow: hidden;
     }
 
+    @media (max-width: 768px) {
+        .neo-contact {
+            padding: 60px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-contact {
+            padding: 50px 0;
+        }
+    }
+
     .neo-contact::before {
         content: '';
         position: absolute;
@@ -762,14 +1114,34 @@
         gap: 60px;
         position: relative;
         z-index: 1;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .neo-contact-grid {
+            gap: 40px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .neo-contact-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
     }
 
     .neo-contact-info {
         padding-right: 40px;
     }
 
+    @media (max-width: 768px) {
+        .neo-contact-info {
+            padding-right: 0;
+        }
+    }
+
     .neo-contact-title {
-        font-size: 2.5rem;
+        font-size: clamp(2rem, 5vw, 2.5rem);
         font-weight: 800;
         margin-bottom: 20px;
         line-height: 1.2;
@@ -786,6 +1158,13 @@
         opacity: 0.9;
         margin-bottom: 40px;
         line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+        .neo-contact-text {
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
     }
 
     .neo-contact-details {
@@ -810,6 +1189,8 @@
         justify-content: center;
         font-size: 1.2rem;
         backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        flex-shrink: 0;
     }
 
     .neo-contact-item h3 {
@@ -828,6 +1209,18 @@
         padding: 40px;
         border-radius: var(--border-radius-lg);
         box-shadow: var(--shadow-lg);
+    }
+
+    @media (max-width: 768px) {
+        .neo-contact-form {
+            padding: 30px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .neo-contact-form {
+            padding: 30px 20px;
+        }
     }
 
     .neo-form-title {
@@ -903,11 +1296,32 @@
         padding: 60px 0 30px;
     }
 
+    @media (max-width: 768px) {
+        .neo-footer {
+            padding: 50px 0 30px;
+        }
+    }
+
     .neo-footer-grid {
         display: grid;
         grid-template-columns: 2fr 1fr 1fr 2fr;
         gap: 40px;
         margin-bottom: 40px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .neo-footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .neo-footer-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
     }
 
     .neo-footer-logo img {
@@ -954,6 +1368,7 @@
         transition: var(--transition);
         font-size: 0.95rem;
         text-decoration: none;
+        display: inline-block;
     }
 
     .neo-footer-links a:hover {
@@ -973,12 +1388,14 @@
     .neo-footer-contact i {
         width: 20px;
         color: var(--primary);
+        flex-shrink: 0;
     }
 
     .neo-social-links {
         display: flex;
         gap: 15px;
         margin-top: 25px;
+        flex-wrap: wrap;
     }
 
     .neo-social-link {
@@ -1072,107 +1489,9 @@
         transform: scale(1);
     }
 
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .neo-services-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .neo-footer-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .mobile-menu-btn {
-            display: flex;
-        }
-
-        .nav-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 80%;
-            max-width: 400px;
-            height: 100vh;
-            background: var(--white);
-            flex-direction: column;
-            justify-content: flex-start;
-            padding: 100px 30px 30px;
-            transition: right 0.3s ease;
-            box-shadow: var(--shadow-lg);
-            z-index: 9999;
-        }
-
-        .nav-menu.active {
-            right: 0;
-        }
-
-        .nav-links {
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .contact-btn {
-            width: 100%;
-            text-align: center;
-        }
-
-        .neo-services-grid,
-        .neo-about-grid,
-        .neo-testimonials-grid,
-        .neo-contact-grid,
-        .neo-footer-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .neo-about-cards {
-            grid-template-columns: 1fr;
-        }
-
-        .neo-about-features {
-            grid-template-columns: 1fr;
-        }
-
-        .neo-contact-info {
-            padding-right: 0;
-        }
-
-        .neo-hero-buttons {
-            flex-direction: column;
-        }
-
-        .neo-hero-buttons .btn {
-            width: 100%;
-        }
-
-        .neo-trust-badge {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 20px;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .neo-service-card {
-            padding: 30px 20px;
-        }
-
-        .neo-testimonial-card {
-            padding: 30px 20px;
-        }
-
-        .neo-contact-form {
-            padding: 30px 20px;
-        }
-
-        .neo-footer-grid {
-            gap: 30px;
-        }
-        
-        .neo-header .container {
-            padding: 15px 20px;
-        }
+    /* Body menu open state */
+    body.menu-open {
+        overflow: hidden;
     }
 </style>
 @endpush
@@ -1182,7 +1501,7 @@
 <header class="neo-header" id="neoHeader">
     <div class="container">
         <a href="{{ route('home') }}" class="logo">
-            <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="NEO ED-TECH Logo">
+            <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="NEO ED-TECH Logo" loading="lazy">
         </a>
 
         <div class="mobile-menu-btn" id="mobileMenuBtn">
@@ -1194,11 +1513,12 @@
         <nav class="nav-menu" id="navMenu">
             <div class="nav-links">
                 <a href="{{ route('home') }}">Home</a>
-                <a href="#services" class="active">Services</a>
+                <a href="#services">Services</a>
                 <a href="#about">About</a>
                 <a href="#testimonials">Testimonials</a>
+                <a href="#contact">Contact</a>
             </div>
-            <a href="#contact" class="contact-btn">Contact Us</a>
+            <a href="#contact" class="contact-btn">Get Free Consultation</a>
         </nav>
     </div>
 </header>
@@ -1243,13 +1563,13 @@
                 </div>
 
                 <div class="neo-avatar-group">
-                    <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
-                    <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
-                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
-                    <img src="https://images.unsplash.com/photo-1527203561188-dae1bc1a417f?w=40&h=40&fit=crop" alt="Client" class="neo-avatar">
+                    <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1527203561188-dae1bc1a417f?w=40&h=40&fit=crop" alt="Client" class="neo-avatar" loading="lazy">
                 </div>
             </div>
         </div>
@@ -1539,7 +1859,7 @@
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
-                        <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=60&h=60&fit=crop" alt="Sarah Mitchell">
+                        <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=60&h=60&fit=crop" alt="Sarah Mitchell" loading="lazy">
                     </div>
                     <div class="neo-author-info">
                         <h4>Sarah Mitchell</h4>
@@ -1562,7 +1882,7 @@
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop" alt="Michael Rodriguez">
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop" alt="Michael Rodriguez" loading="lazy">
                     </div>
                     <div class="neo-author-info">
                         <h4>Michael Rodriguez</h4>
@@ -1585,7 +1905,7 @@
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Emma Thompson">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Emma Thompson" loading="lazy">
                     </div>
                     <div class="neo-author-info">
                         <h4>Emma Thompson</h4>
@@ -1608,7 +1928,7 @@
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
-                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=60&h=60&fit=crop" alt="Jessica Davis">
+                        <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=60&h=60&fit=crop" alt="Jessica Davis" loading="lazy">
                     </div>
                     <div class="neo-author-info">
                         <h4>Jessica Davis</h4>
@@ -1724,7 +2044,7 @@
         <div class="neo-footer-grid">
             <div class="neo-footer-col">
                 <div class="neo-footer-logo">
-                    <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="NEO ED-TECH">
+                    <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="NEO ED-TECH" loading="lazy">
                 </div>
                 <p class="neo-footer-about">
                     Empowering businesses with smart digital solutions. From websites to marketing campaigns, we help you grow your online presence and achieve your business goals.
@@ -1811,15 +2131,31 @@
                     body.classList.remove('menu-open');
                 });
             });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && navMenu.classList.contains('active')) {
+                    mobileMenuBtn.classList.remove('active');
+                    navMenu.classList.remove('active');
+                    body.classList.remove('menu-open');
+                }
+            });
         }
 
         // Header scroll effect
         const header = document.getElementById('neoHeader');
+        let scrollTimeout;
+        
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
+            if (!scrollTimeout) {
+                scrollTimeout = setTimeout(() => {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                    scrollTimeout = null;
+                }, 10);
             }
         });
 
@@ -1829,9 +2165,13 @@
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                    const headerOffset = 80;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
                     });
                 }
             });
@@ -1852,10 +2192,10 @@
                         const timer = setInterval(() => {
                             current += increment;
                             if (current >= target) {
-                                counter.textContent = target;
+                                counter.textContent = target + '+';
                                 clearInterval(timer);
                             } else {
-                                counter.textContent = Math.floor(current);
+                                counter.textContent = Math.floor(current) + '+';
                             }
                         }, 16);
                         observer.unobserve(entry.target);
@@ -1863,7 +2203,7 @@
                 });
             }, { threshold: 0.5 });
 
-            observer.observe(counter);
+            observer.observe(counter.parentElement);
         }
 
         // Form submission with AJAX
@@ -1883,7 +2223,8 @@
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 })
                 .then(response => response.json())
@@ -1892,7 +2233,7 @@
                         alert('Thank you for your message. We will get back to you soon!');
                         this.reset();
                     } else {
-                        alert('Something went wrong. Please try again.');
+                        alert(data.message || 'Something went wrong. Please try again.');
                     }
                 })
                 .catch(error => {
@@ -1906,49 +2247,119 @@
             });
         }
 
-        // Parallax effect for hero particles
-        document.addEventListener('mousemove', (e) => {
-            const particles = document.querySelectorAll('.neo-hero-particle');
-            const mouseX = e.clientX / window.innerWidth - 0.5;
-            const mouseY = e.clientY / window.innerHeight - 0.5;
+        // Parallax effect for hero particles (disable on mobile for performance)
+        if (window.innerWidth > 768) {
+            document.addEventListener('mousemove', (e) => {
+                const particles = document.querySelectorAll('.neo-hero-particle');
+                const mouseX = e.clientX / window.innerWidth - 0.5;
+                const mouseY = e.clientY / window.innerHeight - 0.5;
 
-            particles.forEach((particle, index) => {
-                const speed = (index + 1) * 20;
-                const x = mouseX * speed;
-                const y = mouseY * speed;
-                particle.style.transform = `translate(${x}px, ${y}px)`;
+                particles.forEach((particle, index) => {
+                    const speed = (index + 1) * 20;
+                    const x = mouseX * speed;
+                    const y = mouseY * speed;
+                    particle.style.transform = `translate(${x}px, ${y}px)`;
+                });
             });
-        });
+        }
 
         // Active nav link on scroll
         const sections = document.querySelectorAll('section[id]');
-        window.addEventListener('scroll', () => {
+        const navLinks = document.querySelectorAll('.nav-links a');
+        
+        function updateActiveNavLink() {
             let current = '';
+            const scrollPosition = window.scrollY + 100;
+
             sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                const sectionHeight = section.clientHeight;
-                if (pageYOffset >= sectionTop && pageYOffset < sectionTop + sectionHeight) {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
                     current = section.getAttribute('id');
                 }
             });
 
-            document.querySelectorAll('.nav-links a').forEach(link => {
+            navLinks.forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === `#${current}`) {
+                const href = link.getAttribute('href').substring(1);
+                if (href === current) {
                     link.classList.add('active');
                 }
             });
-        });
+        }
+
+        window.addEventListener('scroll', updateActiveNavLink);
+        updateActiveNavLink();
+
+        // Touch optimizations
+        if ('ontouchstart' in window) {
+            const buttons = document.querySelectorAll('.btn, .contact-btn, .neo-social-link, .neo-form-submit');
+            
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.style.opacity = '0.8';
+                }, { passive: true });
+                
+                button.addEventListener('touchend', function() {
+                    this.style.opacity = '1';
+                }, { passive: true });
+                
+                button.addEventListener('touchcancel', function() {
+                    this.style.opacity = '1';
+                }, { passive: true });
+            });
+        }
+
+        // Lazy loading for images
+        if ('loading' in HTMLImageElement.prototype) {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            images.forEach(img => {
+                img.loading = 'lazy';
+            });
+        }
+
+        // Reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (prefersReducedMotion) {
+            const animatedElements = document.querySelectorAll('.neo-hero-particle, [data-aos]');
+            animatedElements.forEach(element => {
+                if (element.style) {
+                    element.style.animation = 'none';
+                }
+                if (element.hasAttribute('data-aos')) {
+                    element.setAttribute('data-aos', '');
+                }
+            });
+        }
     });
 
-    // Initialize AOS
+    // Initialize AOS with mobile optimization
     if (typeof AOS !== 'undefined') {
         AOS.init({
-            duration: 1000,
+            duration: window.innerWidth < 768 ? 400 : 1000,
             once: true,
-            offset: 100,
-            easing: 'ease-in-out'
+            offset: window.innerWidth < 768 ? 20 : 100,
+            easing: 'ease-in-out',
+            disable: window.innerWidth < 576
         });
     }
+
+    // Handle window resize
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            if (window.innerWidth > 768) {
+                // Re-enable parallax on desktop
+            }
+            
+            // Update AOS
+            if (typeof AOS !== 'undefined') {
+                AOS.refresh();
+            }
+        }, 250);
+    });
 </script>
 @endpush
