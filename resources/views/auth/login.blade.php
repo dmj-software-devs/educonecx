@@ -255,12 +255,111 @@
         border-radius: 50%;
         border-top-color: #ffffff;
         animation: login-page-spin 0.8s linear infinite;
+        margin-right: 8px;
     }
 
     @keyframes login-page-spin {
         to {
             transform: rotate(360deg);
         }
+    }
+
+    /* Divider */
+    .login-page-divider {
+        position: relative;
+        margin: 32px 0;
+        text-align: center;
+    }
+
+    .login-page-divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e5e7eb;
+        z-index: 1;
+    }
+
+    .login-page-divider span {
+        position: relative;
+        z-index: 2;
+        background: #ffffff;
+        padding: 0 16px;
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Google Button */
+    .login-page-google-btn {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        width: 100% !important;
+        height: 48px !important;
+        padding: 0 20px !important;
+        background: #ffffff !important;
+        border: 2px solid #e5e7eb !important;
+        border-radius: 12px !important;
+        color: #1f2937 !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease !important;
+        margin: 0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .login-page-google-btn:hover {
+        background: #f9fafb !important;
+        border-color: #2563eb !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15) !important;
+    }
+
+    .login-page-google-btn:active {
+        transform: translateY(0) !important;
+    }
+
+    .login-page-google-btn.loading {
+        opacity: 0.7;
+        cursor: wait;
+        pointer-events: none;
+    }
+
+    .login-page-google-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Google Loading State */
+    .login-page-google-loading {
+        display: none;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        width: 100% !important;
+        height: 48px !important;
+        padding: 0 20px !important;
+        background: #f9fafb !important;
+        border: 2px solid #2563eb !important;
+        border-radius: 12px !important;
+        color: #2563eb !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+    }
+
+    .login-page-google-loading .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(37, 99, 235, 0.2);
+        border-radius: 50%;
+        border-top-color: #2563eb;
+        animation: login-page-spin 0.8s linear infinite;
     }
 
     /* Notification */
@@ -283,7 +382,6 @@
             transform: translateX(100%);
             opacity: 0;
         }
-
         to {
             transform: translateX(0);
             opacity: 1;
@@ -333,7 +431,29 @@
             {{ session('status') }}
         </div>
         @endif
-        <!-- Update the error message section -->
+
+        <!-- Google Session Messages -->
+        @if(session('google_success'))
+        <div class="login-page-alert login-page-alert-success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            {{ session('google_success') }}
+        </div>
+        @endif
+
+        @if(session('google_error'))
+        <div class="login-page-alert login-page-alert-error">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            {{ session('google_error') }}
+        </div>
+        @endif
+
+        <!-- Error Messages -->
         @if($errors->any())
         <div class="login-page-alert login-page-alert-error">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -408,6 +528,37 @@
                 <span>Log in</span>
             </button>
         </form>
+
+        <!-- Divider -->
+        <div class="login-page-divider">
+            <span>Or continue with</span>
+        </div>
+
+        <!-- Google Login Button Container -->
+        <div id="googleButtonContainer" class="mt-2">
+            <a href="{{ route('google.login') }}"
+                class="login-page-google-btn"
+                id="googleLoginBtn">
+                <svg class="login-page-google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                <span>Sign in with Google</span>
+            </a>
+        </div>
+
+        <!-- Trust Badge -->
+        <div style="text-align: center; margin-top: 24px;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                <svg style="display: inline; width: 12px; height: 12px; margin-right: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                Your information is secure and encrypted
+            </p>
+        </div>
     </div>
 </section>
 
@@ -436,16 +587,80 @@
         }, 3000);
     };
 
-    // Form loading state
-    document.getElementById('loginForm')?.addEventListener('submit', function() {
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.innerHTML = '<span class="login-page-spinner"></span> Logging in...';
-        submitBtn.disabled = true;
-    });
-
-    // Prevent double submission
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
+    // Check if we're returning from Google (has code in URL)
+    function isReturningFromGoogle() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.has('code') || urlParams.has('error');
     }
+
+    // Reset Google button if returning from Google (failed login)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Only reset if we're on the login page and not in the middle of OAuth flow
+        if (!isReturningFromGoogle()) {
+            // Ensure Google button is visible
+            const container = document.getElementById('googleButtonContainer');
+            if (container) {
+                container.innerHTML = `
+                    <a href="{{ route('google.login') }}"
+                        class="login-page-google-btn"
+                        id="googleLoginBtn">
+                        <svg class="login-page-google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        <span>Sign in with Google</span>
+                    </a>
+                `;
+            }
+        }
+
+        // Add click handler to Google button
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('#googleLoginBtn')) {
+                e.preventDefault();
+                
+                const container = document.getElementById('googleButtonContainer');
+                const googleBtn = e.target.closest('#googleLoginBtn');
+                const href = googleBtn.getAttribute('href');
+                
+                // Show loading state
+                container.innerHTML = `
+                    <div class="login-page-google-loading">
+                        <div class="spinner"></div>
+                        <span>Redirecting to Google...</span>
+                    </div>
+                `;
+                
+                // Redirect after a brief delay to show loading state
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 100);
+            }
+        });
+
+        // Form loading state
+        document.getElementById('loginForm')?.addEventListener('submit', function() {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<span class="login-page-spinner"></span> Logging in...';
+            submitBtn.disabled = true;
+        });
+
+        // Prevent double submission
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        // Auto-hide success messages after 5 seconds
+        const alerts = document.querySelectorAll('.login-page-alert-success');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.3s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        });
+    });
 </script>
 @endsection

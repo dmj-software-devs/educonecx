@@ -273,18 +273,22 @@
             .liquid-blob {
                 filter: blur(50px);
             }
+
             .liquid-blob-1 {
                 width: 300px;
                 height: 300px;
             }
+
             .liquid-blob-2 {
                 width: 350px;
                 height: 350px;
             }
+
             .liquid-blob-3 {
                 width: 250px;
                 height: 250px;
             }
+
             .liquid-blob-4 {
                 width: 300px;
                 height: 300px;
@@ -296,6 +300,7 @@
                 border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
                 transform: translate(0, 0) rotate(0deg);
             }
+
             100% {
                 border-radius: 33% 67% 58% 42% / 53% 41% 59% 47%;
                 transform: translate(100px, 50px) rotate(20deg);
@@ -307,6 +312,7 @@
                 border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
                 transform: translate(0, 0) rotate(0deg);
             }
+
             100% {
                 border-radius: 67% 33% 31% 69% / 48% 62% 38% 52%;
                 transform: translate(-80px, -80px) rotate(-15deg);
@@ -318,6 +324,7 @@
                 border-radius: 67% 33% 59% 41% / 57% 43% 57% 43%;
                 transform: translate(0, 0) scale(1);
             }
+
             100% {
                 border-radius: 41% 59% 33% 67% / 43% 62% 38% 57%;
                 transform: translate(60px, -40px) scale(1.2);
@@ -329,6 +336,7 @@
                 border-radius: 44% 56% 31% 69% / 58% 29% 71% 42%;
                 transform: translate(0, 0) scale(1);
             }
+
             100% {
                 border-radius: 56% 44% 69% 31% / 42% 71% 29% 58%;
                 transform: translate(-50px, 30px) scale(0.9);
@@ -339,6 +347,7 @@
             0% {
                 transform: translate(0, 0);
             }
+
             100% {
                 transform: translate(30px, -30px);
             }
@@ -376,6 +385,7 @@
                 width: 100px;
                 border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
             }
+
             100% {
                 width: 150px;
                 border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%;
@@ -402,9 +412,11 @@
             0% {
                 background-position: 0% 50%;
             }
+
             50% {
                 background-position: 100% 50%;
             }
+
             100% {
                 background-position: 0% 50%;
             }
@@ -651,9 +663,11 @@
             0% {
                 transform: translateY(0) scale(1);
             }
+
             50% {
                 transform: translateY(-20px) scale(1.05);
             }
+
             100% {
                 transform: translateY(0) scale(1);
             }
@@ -664,10 +678,12 @@
                 opacity: 0.3;
                 transform: scale(1);
             }
+
             50% {
                 opacity: 0.5;
                 transform: scale(1.1);
             }
+
             100% {
                 opacity: 0.3;
                 transform: scale(1);
@@ -737,10 +753,12 @@
                 transform: rotate(0deg) scale(1);
                 border-radius: var(--border-radius-liquid);
             }
+
             50% {
                 transform: rotate(180deg) scale(1.1);
                 border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
             }
+
             100% {
                 transform: rotate(360deg) scale(1);
                 border-radius: var(--border-radius-liquid);
@@ -786,6 +804,7 @@
                 transform: translateX(100%) scale(0.8);
                 opacity: 0;
             }
+
             100% {
                 transform: translateX(0) scale(1);
                 opacity: 1;
@@ -862,6 +881,7 @@
         }
 
         @media (max-width: 768px) {
+
             input,
             textarea,
             select {
@@ -880,6 +900,7 @@
 
         /* Fix for white space */
         @media (max-width: 1024px) {
+
             body,
             html {
                 overflow-x: hidden;
@@ -933,7 +954,7 @@
                 margin-right: -10px;
                 margin-left: -10px;
             }
-            
+
             .col,
             [class*="col-"] {
                 padding-right: 10px;
@@ -952,8 +973,8 @@
             .footer {
                 padding: 40px 0 20px;
             }
-            
-            .footer .row > div {
+
+            .footer .row>div {
                 margin-bottom: 30px;
             }
         }
@@ -996,6 +1017,35 @@
     @include('layouts.header')
 
     <main>
+
+        {{-- Session Notifications --}}
+        @if(session('success'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg shadow-sm flex items-center justify-between" role="alert">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" class="text-green-700 hover:text-green-900" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-sm flex items-center justify-between" role="alert">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+                <button type="button" class="text-red-700 hover:text-red-900" onclick="this.parentElement.style.display='none'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        @endif
         @yield('content')
     </main>
 
@@ -1021,9 +1071,13 @@
         // Refresh AOS on window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth < 768) {
-                AOS.init({ disable: true });
+                AOS.init({
+                    disable: true
+                });
             } else {
-                AOS.init({ disable: false });
+                AOS.init({
+                    disable: false
+                });
             }
         });
     </script>

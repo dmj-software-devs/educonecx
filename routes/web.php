@@ -16,6 +16,11 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\TranslationController;
 use App\Services\DeepLService;
 use Illuminate\Support\Facades\Http;
+
+use App\Http\Controllers\Auth\GoogleController;
+
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 /*
 |--------------------------------------------------------------------------
 | Web Routes
