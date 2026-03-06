@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Contact Us - EDUCONECX | Get in Touch')
+@section('title', App\Helpers\TranslationHelper::trans('contact.title'))
 
-@section('meta_description', 'Get in touch with EDUCONECX. Have questions about our courses, partnerships, or anything else? Our team is here to help.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('contact.meta_description'))
 
 @section('content')
 <style>
@@ -909,11 +909,10 @@
     
     <div class="container">
         <div class="contact-page-hero-content">
-            <span class="contact-page-hero-badge">Get in Touch</span>
-            <h1 class="contact-page-hero-title">We're <span>Here to Help</span></h1>
+            <span class="contact-page-hero-badge">{{ App\Helpers\TranslationHelper::trans('contact.hero_badge') }}</span>
+            <h1 class="contact-page-hero-title">{!! App\Helpers\TranslationHelper::trans('contact.hero_title') !!}</h1>
             <p class="contact-page-hero-text">
-                Have questions about our courses, partnerships, or anything else? 
-                Our team is ready to assist you.
+                {{ App\Helpers\TranslationHelper::trans('contact.hero_description') }}
             </p>
         </div>
     </div>
@@ -927,7 +926,7 @@
             <div class="contact-page-alert-success" id="successAlert">
                 <i class="fas fa-check-circle"></i>
                 <div class="contact-page-alert-success-content">
-                    <h4>Message Sent Successfully!</h4>
+                    <h4>{{ App\Helpers\TranslationHelper::trans('contact.success_title') }}</h4>
                     <p>{{ session('success') }}</p>
                 </div>
                 <button class="contact-page-alert-close" onclick="this.parentElement.remove()">
@@ -944,35 +943,34 @@
                     <div class="contact-page-info-icon">
                         <i class="fas fa-phone"></i>
                     </div>
-                    <h2 class="contact-page-info-title">Let's Connect</h2>
+                    <h2 class="contact-page-info-title">{{ App\Helpers\TranslationHelper::trans('contact.contact_card_title') }}</h2>
                     <p class="contact-page-info-description">
-                        Whether you have questions about our courses, want to discuss partnership 
-                        opportunities, or need technical support, our team is ready to assist you.
+                        {{ App\Helpers\TranslationHelper::trans('contact.contact_card_description') }}
                     </p>
                     
                     <ul class="contact-page-info-list">
                         <li>
                             <i class="fas fa-phone"></i>
-                            <a href="tel:+18335338228">+1 (833) 533-8228</a>
+                            <a href="tel:+18335338228">{{ App\Helpers\TranslationHelper::trans('contact.contact_phone') }}</a>
                         </li>
                         <li>
                             <i class="far fa-envelope"></i>
-                            <a href="mailto:contact@educonecx.com">contact@educonecx.com</a>
+                            <a href="mailto:contact@educonecx.com">{{ App\Helpers\TranslationHelper::trans('contact.contact_email') }}</a>
                         </li>
                         <li>
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>1200 Brickell Ave, Miami, FL 33131, USA</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('contact.contact_address') }}</span>
                         </li>
                     </ul>
 
                     <div class="contact-page-info-highlights">
-                        <h4><i class="fas fa-star"></i> What You Can Ask Us:</h4>
+                        <h4><i class="fas fa-star"></i> {{ App\Helpers\TranslationHelper::trans('contact.highlights_title') }}</h4>
                         <ul>
-                            <li><i class="fas fa-check-circle"></i> Course offerings and pricing</li>
-                            <li><i class="fas fa-check-circle"></i> Partnership opportunities</li>
-                            <li><i class="fas fa-check-circle"></i> Technical support</li>
-                            <li><i class="fas fa-check-circle"></i> Billing inquiries</li>
-                            <li><i class="fas fa-check-circle"></i> Schedule a consultation</li>
+                            <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('contact.highlight_1') }}</li>
+                            <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('contact.highlight_2') }}</li>
+                            <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('contact.highlight_3') }}</li>
+                            <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('contact.highlight_4') }}</li>
+                            <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('contact.highlight_5') }}</li>
                         </ul>
                     </div>
                 </div>
@@ -981,31 +979,31 @@
                 <div class="contact-page-hours-card" data-aos="fade-right" data-aos-delay="100">
                     <h3 class="contact-page-hours-title">
                         <i class="fas fa-clock"></i>
-                        Business Hours
+                        {{ App\Helpers\TranslationHelper::trans('contact.hours_title') }}
                     </h3>
                     <div class="contact-page-hours-grid">
                         <div class="contact-page-hours-item">
-                            <span class="contact-page-hours-day">Monday - Friday</span>
-                            <span class="contact-page-hours-time">9:00 AM - 6:00 PM</span>
+                            <span class="contact-page-hours-day">{{ App\Helpers\TranslationHelper::trans('contact.hours_weekday') }}</span>
+                            <span class="contact-page-hours-time">{{ App\Helpers\TranslationHelper::trans('contact.hours_weekday_time') }}</span>
                         </div>
                         <div class="contact-page-hours-item">
-                            <span class="contact-page-hours-day">Saturday</span>
-                            <span class="contact-page-hours-time">10:00 AM - 4:00 PM</span>
+                            <span class="contact-page-hours-day">{{ App\Helpers\TranslationHelper::trans('contact.hours_saturday') }}</span>
+                            <span class="contact-page-hours-time">{{ App\Helpers\TranslationHelper::trans('contact.hours_saturday_time') }}</span>
                         </div>
                         <div class="contact-page-hours-item">
-                            <span class="contact-page-hours-day">Sunday</span>
-                            <span class="contact-page-hours-time">Closed</span>
+                            <span class="contact-page-hours-day">{{ App\Helpers\TranslationHelper::trans('contact.hours_sunday') }}</span>
+                            <span class="contact-page-hours-time">{{ App\Helpers\TranslationHelper::trans('contact.hours_sunday_time') }}</span>
                         </div>
                     </div>
                     <div class="contact-page-hours-note">
                         <i class="fas fa-info-circle"></i>
-                        <span>We respond to all inquiries within 24 hours on business days.</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('contact.hours_note') }}</span>
                     </div>
                 </div>
 
                 <!-- Social Media Card -->
                 <div class="contact-page-social-card" data-aos="fade-right" data-aos-delay="200">
-                    <h3 class="contact-page-social-title">Follow Us</h3>
+                    <h3 class="contact-page-social-title">{{ App\Helpers\TranslationHelper::trans('contact.social_title') }}</h3>
                     <div class="contact-page-social-grid">
                         <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="contact-page-social-link">
                             <i class="fab fa-facebook-f"></i>
@@ -1029,8 +1027,8 @@
             <!-- Right Column - Contact Form -->
             <div class="contact-page-form-container" data-aos="fade-left">
                 <div class="contact-page-form-header">
-                    <h2 class="contact-page-form-title">Send Us <span>a Message</span></h2>
-                    <p class="contact-page-form-subtitle">We'll get back to you within 24 hours</p>
+                    <h2 class="contact-page-form-title">{!! App\Helpers\TranslationHelper::trans('contact.form_title') !!}</h2>
+                    <p class="contact-page-form-subtitle">{{ App\Helpers\TranslationHelper::trans('contact.form_subtitle') }}</p>
                 </div>
                 
                 <form action="{{ route('contact.submit') }}" method="POST" id="contactForm">
@@ -1039,14 +1037,14 @@
                     <div class="contact-page-form-row">
                         <div class="contact-page-form-group">
                             <label for="first_name" class="contact-page-form-label">
-                                <i class="fas fa-user"></i> First Name <span class="required">*</span>
+                                <i class="fas fa-user"></i> {{ App\Helpers\TranslationHelper::trans('contact.form_first_name') }} <span class="required">{{ App\Helpers\TranslationHelper::trans('contact.required') }}</span>
                             </label>
                             <input 
                                 type="text" 
                                 class="contact-page-form-control @error('first_name') is-invalid @enderror" 
                                 id="first_name" 
                                 name="first_name" 
-                                placeholder="John"
+                                placeholder="{{ App\Helpers\TranslationHelper::trans('contact.form_placeholder_first_name') }}"
                                 value="{{ old('first_name') }}"
                                 required
                             >
@@ -1060,14 +1058,14 @@
                         
                         <div class="contact-page-form-group">
                             <label for="last_name" class="contact-page-form-label">
-                                <i class="fas fa-user"></i> Last Name <span class="required">*</span>
+                                <i class="fas fa-user"></i> {{ App\Helpers\TranslationHelper::trans('contact.form_last_name') }} <span class="required">{{ App\Helpers\TranslationHelper::trans('contact.required') }}</span>
                             </label>
                             <input 
                                 type="text" 
                                 class="contact-page-form-control @error('last_name') is-invalid @enderror" 
                                 id="last_name" 
                                 name="last_name" 
-                                placeholder="Doe"
+                                placeholder="{{ App\Helpers\TranslationHelper::trans('contact.form_placeholder_last_name') }}"
                                 value="{{ old('last_name') }}"
                                 required
                             >
@@ -1082,14 +1080,14 @@
                     
                     <div class="contact-page-form-group">
                         <label for="email" class="contact-page-form-label">
-                            <i class="fas fa-envelope"></i> Email Address <span class="required">*</span>
+                            <i class="fas fa-envelope"></i> {{ App\Helpers\TranslationHelper::trans('contact.form_email') }} <span class="required">{{ App\Helpers\TranslationHelper::trans('contact.required') }}</span>
                         </label>
                         <input 
                             type="email" 
                             class="contact-page-form-control @error('email') is-invalid @enderror" 
                             id="email" 
                             name="email" 
-                            placeholder="john.doe@example.com"
+                            placeholder="{{ App\Helpers\TranslationHelper::trans('contact.form_placeholder_email') }}"
                             value="{{ old('email') }}"
                             required
                         >
@@ -1103,14 +1101,14 @@
                     
                     <div class="contact-page-form-group">
                         <label for="phone" class="contact-page-form-label">
-                            <i class="fas fa-phone"></i> Phone Number (Optional)
+                            <i class="fas fa-phone"></i> {{ App\Helpers\TranslationHelper::trans('contact.form_phone') }}
                         </label>
                         <input 
                             type="tel" 
                             class="contact-page-form-control @error('phone') is-invalid @enderror" 
                             id="phone" 
                             name="phone" 
-                            placeholder="+1 (833) 533-8228"
+                            placeholder="{{ App\Helpers\TranslationHelper::trans('contact.form_placeholder_phone') }}"
                             value="{{ old('phone') }}"
                         >
                         @error('phone')
@@ -1123,28 +1121,28 @@
                     
                     <div class="contact-page-form-group">
                         <label for="subject" class="contact-page-form-label">
-                            <i class="fas fa-tag"></i> Subject (Optional)
+                            <i class="fas fa-tag"></i> {{ App\Helpers\TranslationHelper::trans('contact.form_subject') }}
                         </label>
                         <select class="contact-page-form-control" id="subject" name="subject">
-                            <option value="">Select a subject</option>
-                            <option value="course-inquiry">Course Inquiry</option>
-                            <option value="partnership">Partnership Opportunity</option>
-                            <option value="technical-support">Technical Support</option>
-                            <option value="billing">Billing Question</option>
-                            <option value="other">Other</option>
+                            <option value="">{{ App\Helpers\TranslationHelper::trans('contact.form_subject_select') }}</option>
+                            <option value="course-inquiry">{{ App\Helpers\TranslationHelper::trans('contact.form_subject_course') }}</option>
+                            <option value="partnership">{{ App\Helpers\TranslationHelper::trans('contact.form_subject_partnership') }}</option>
+                            <option value="technical-support">{{ App\Helpers\TranslationHelper::trans('contact.form_subject_support') }}</option>
+                            <option value="billing">{{ App\Helpers\TranslationHelper::trans('contact.form_subject_billing') }}</option>
+                            <option value="other">{{ App\Helpers\TranslationHelper::trans('contact.form_subject_other') }}</option>
                         </select>
                     </div>
                     
                     <div class="contact-page-form-group">
                         <label for="message" class="contact-page-form-label">
-                            <i class="fas fa-comment"></i> Message <span class="required">*</span>
+                            <i class="fas fa-comment"></i> {{ App\Helpers\TranslationHelper::trans('contact.form_message') }} <span class="required">{{ App\Helpers\TranslationHelper::trans('contact.required') }}</span>
                         </label>
                         <textarea 
                             class="contact-page-form-control @error('message') is-invalid @enderror" 
                             id="message" 
                             name="message" 
                             rows="5" 
-                            placeholder="How can we help you?"
+                            placeholder="{{ App\Helpers\TranslationHelper::trans('contact.form_placeholder_message') }}"
                             required
                         >{{ old('message') }}</textarea>
                         @error('message')
@@ -1156,7 +1154,7 @@
                     </div>
                     
                     <button type="submit" class="contact-page-submit-btn" id="submitBtn">
-                        <span>Send Message</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('contact.form_submit') }}</span>
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </form>
@@ -1188,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             // Show loading state
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span>Sending...</span> <i class="fas fa-spinner fa-spin"></i>';
+            submitBtn.innerHTML = '<span>{{ App\Helpers\TranslationHelper::trans('contact.form_submitting') }}</span> <i class="fas fa-spinner fa-spin"></i>';
             submitBtn.disabled = true;
             
             // Form will submit normally, but we show loading state

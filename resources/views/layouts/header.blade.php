@@ -6,11 +6,11 @@
                 <div class="contact-info">
                     <a href="tel:+18335338228">
                         <i class="fas fa-phone-alt"></i>
-                        <span class="translate-text" data-original="+1 (833) 533-8228">+1 (833) 533-8228</span>
+                        <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.phone') }}">{{ App\Helpers\TranslationHelper::trans('header.phone') }}</span>
                     </a>
                     <a href="mailto:contact@educonecx.com">
                         <i class="fas fa-envelope"></i>
-                        <span class="translate-text" data-original="contact@educonecx.com">contact@educonecx.com</span>
+                        <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.email') }}">{{ App\Helpers\TranslationHelper::trans('header.email') }}</span>
                     </a>
                 </div>
                 <div class="social-links">
@@ -38,16 +38,16 @@
                 <!-- Desktop Navigation -->
                 <nav class="desktop-nav">
                     <ul class="nav-menu">
-                        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><span class="translate-text" data-original="Home">Home</span></a></li>
-                        <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="About">About</span></a></li>
-                        <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="Academy">Academy</span></a></li>
-                        <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="Courses">Courses</span></a></li>
-                        <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><span class="translate-text" data-original="Neo Ed Tech">Neo Ed Tech</span></a></li>
-                        <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="Blog">Blog</span></a></li>
-                        <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="Team">Team</span></a></li>
-                        <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="Contact">Contact</span></a></li>
+                        <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.home') }}">{{ App\Helpers\TranslationHelper::trans('header.home') }}</span></a></li>
+                        <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.about') }}">{{ App\Helpers\TranslationHelper::trans('header.about') }}</span></a></li>
+                        <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.academy') }}">{{ App\Helpers\TranslationHelper::trans('header.academy') }}</span></a></li>
+                        <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') || request()->routeIs('courses.*') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.courses') }}">{{ App\Helpers\TranslationHelper::trans('header.courses') }}</span></a></li>
+                        <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}">{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}</span></a></li>
+                        <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.blog') }}">{{ App\Helpers\TranslationHelper::trans('header.blog') }}</span></a></li>
+                        <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.team') }}">{{ App\Helpers\TranslationHelper::trans('header.team') }}</span></a></li>
+                        <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                         @auth
-                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="Quiz">Quiz</span></a></li>
+                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li>
                         @endauth
                     </ul>
                 </nav>
@@ -57,14 +57,14 @@
                     <!-- Language Selector -->
                     <div class="language-selector">
                         <button class="lang-btn" id="langBtn">
-                            <span class="current-flag" id="currentFlag">🇺🇸</span>
-                            <span class="current-lang" id="currentLang">EN</span>
+                            <span class="current-flag" id="currentFlag">{{ App\Helpers\TranslationHelper::getFlag() }}</span>
+                            <span class="current-lang" id="currentLang">{{ App\Helpers\TranslationHelper::getCode() }}</span>
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="lang-dropdown" id="langDropdown">
                             <div class="lang-search">
                                 <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Search language..." id="langSearch">
+                                <input type="text" placeholder="{{ App\Helpers\TranslationHelper::trans('common.search') }}" id="langSearch">
                             </div>
                             <div class="lang-list" id="langList"></div>
                         </div>
@@ -85,13 +85,13 @@
                             <i class="fas fa-chevron-down"></i>
                         </button>
                         <div class="user-dropdown" id="userDropdown">
-                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="Dashboard">Dashboard</span></a>
-                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="Settings">Settings</span></a>
-                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="My Courses">My Courses</span></a>
-                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="Certificates">Certificates</span></a>
+                            <a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.dashboard') }}">{{ App\Helpers\TranslationHelper::trans('header.dashboard') }}</span></a>
+                            <a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.settings') }}">{{ App\Helpers\TranslationHelper::trans('header.settings') }}</span></a>
+                            <a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.my_courses') }}">{{ App\Helpers\TranslationHelper::trans('header.my_courses') }}</span></a>
+                            <a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.certificates') }}">{{ App\Helpers\TranslationHelper::trans('header.certificates') }}</span></a>
                             <div class="dropdown-divider"></div>
                             <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i> <span class="translate-text" data-original="Logout">Logout</span>
+                                <i class="fas fa-sign-out-alt"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.logout') }}">{{ App\Helpers\TranslationHelper::trans('header.logout') }}</span>
                             </a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
                         </div>
@@ -99,8 +99,8 @@
                     @else
                     <!-- Auth Buttons -->
                     <div class="auth-buttons">
-                        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-sign-in-alt d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="Login">Login</span></a>
-                        <a href="{{ route('register') }}" class="btn-register"><i class="fas fa-user-plus d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="Register">Register</span></a>
+                        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-sign-in-alt d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="{{ App\Helpers\TranslationHelper::trans('header.login') }}">{{ App\Helpers\TranslationHelper::trans('header.login') }}</span></a>
+                        <a href="{{ route('register') }}" class="btn-register"><i class="fas fa-user-plus d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="{{ App\Helpers\TranslationHelper::trans('header.register') }}">{{ App\Helpers\TranslationHelper::trans('header.register') }}</span></a>
                     </div>
                     @endauth
 
@@ -132,7 +132,7 @@
                 @else
                 <div class="mobile-guest">
                     <i class="fas fa-user-circle"></i>
-                    <span class="translate-text" data-original="Guest">Guest</span>
+                    <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.guest') }}">{{ App\Helpers\TranslationHelper::trans('header.guest') }}</span>
                 </div>
                 @endauth
                 <button class="mobile-menu-close" id="mobileMenuClose">
@@ -143,50 +143,50 @@
 
         <nav class="mobile-nav">
             <ul class="mobile-nav-list">
-                <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="fas fa-home"></i> <span class="translate-text" data-original="Home">Home</span></a></li>
-                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><i class="fas fa-info-circle"></i> <span class="translate-text" data-original="About">About</span></a></li>
-                <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><i class="fas fa-graduation-cap"></i> <span class="translate-text" data-original="Academy">Academy</span></a></li>
-                <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') ? 'active' : '' }}"><i class="fas fa-book"></i> <span class="translate-text" data-original="Courses">Courses</span></a></li>
-                <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><i class="fas fa-microchip"></i> <span class="translate-text" data-original="Neo Ed Tech">Neo Ed Tech</span></a></li>
-                <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}"><i class="fas fa-blog"></i> <span class="translate-text" data-original="Blog">Blog</span></a></li>
-                <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><i class="fas fa-users"></i> <span class="translate-text" data-original="Team">Team</span></a></li>
-                <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="Contact">Contact</span></a></li>
+                <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="fas fa-home"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.home') }}">{{ App\Helpers\TranslationHelper::trans('header.home') }}</span></a></li>
+                <li><a href="{{ route('about') }}" class="{{ request()->routeIs('about') ? 'active' : '' }}"><i class="fas fa-info-circle"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.about') }}">{{ App\Helpers\TranslationHelper::trans('header.about') }}</span></a></li>
+                <li><a href="{{ route('academy') }}" class="{{ request()->routeIs('academy') ? 'active' : '' }}"><i class="fas fa-graduation-cap"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.academy') }}">{{ App\Helpers\TranslationHelper::trans('header.academy') }}</span></a></li>
+                <li><a href="{{ route('courses') }}" class="{{ request()->routeIs('courses') ? 'active' : '' }}"><i class="fas fa-book"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.courses') }}">{{ App\Helpers\TranslationHelper::trans('header.courses') }}</span></a></li>
+                <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><i class="fas fa-microchip"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}">{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}</span></a></li>
+                <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}"><i class="fas fa-blog"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.blog') }}">{{ App\Helpers\TranslationHelper::trans('header.blog') }}</span></a></li>
+                <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><i class="fas fa-users"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.team') }}">{{ App\Helpers\TranslationHelper::trans('header.team') }}</span></a></li>
+                <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                 @auth
-                <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><i class="fas fa-question-circle"></i> <span class="translate-text" data-original="Quiz">Quiz</span></a></li>
+                <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><i class="fas fa-question-circle"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li>
                 @endauth
             </ul>
         </nav>
 
         @auth
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title"><span class="translate-text" data-original="Account">Account</span></h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.account') }}">{{ App\Helpers\TranslationHelper::trans('header.account') }}</span></h3>
             <ul class="mobile-nav-list">
-                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="Dashboard">Dashboard</span></a></li>
-                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="Settings">Settings</span></a></li>
-                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="My Courses">My Courses</span></a></li>
-                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="Certificates">Certificates</span></a></li>
+                <li><a href="{{ route('dashboard') }}"><i class="fas fa-user"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.dashboard') }}">{{ App\Helpers\TranslationHelper::trans('header.dashboard') }}</span></a></li>
+                <li><a href="{{ route('profile') }}"><i class="fas fa-cog"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.settings') }}">{{ App\Helpers\TranslationHelper::trans('header.settings') }}</span></a></li>
+                <li><a href="{{ route('my-courses') }}"><i class="fas fa-book-open"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.my_courses') }}">{{ App\Helpers\TranslationHelper::trans('header.my_courses') }}</span></a></li>
+                <li><a href="{{ route('certificates') }}"><i class="fas fa-certificate"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.certificates') }}">{{ App\Helpers\TranslationHelper::trans('header.certificates') }}</span></a></li>
             </ul>
         </div>
         @else
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title"><span class="translate-text" data-original="Account">Account</span></h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.account') }}">{{ App\Helpers\TranslationHelper::trans('header.account') }}</span></h3>
             <div class="mobile-auth-buttons">
-                <a href="{{ route('login') }}" class="mobile-btn-login"><i class="fas fa-sign-in-alt"></i> <span class="translate-text" data-original="Login">Login</span></a>
-                <a href="{{ route('register') }}" class="mobile-btn-register"><i class="fas fa-user-plus"></i> <span class="translate-text" data-original="Register">Register</span></a>
+                <a href="{{ route('login') }}" class="mobile-btn-login"><i class="fas fa-sign-in-alt"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.login') }}">{{ App\Helpers\TranslationHelper::trans('header.login') }}</span></a>
+                <a href="{{ route('register') }}" class="mobile-btn-register"><i class="fas fa-user-plus"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.register') }}">{{ App\Helpers\TranslationHelper::trans('header.register') }}</span></a>
             </div>
         </div>
         @endauth
 
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title"><span class="translate-text" data-original="Contact">Contact</span></h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></h3>
             <div class="mobile-contact">
-                <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> <span class="translate-text" data-original="+1 (833) 533-8228">+1 (833) 533-8228</span></a>
-                <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="contact@educonecx.com">contact@educonecx.com</span></a>
+                <a href="tel:+18335338228"><i class="fas fa-phone-alt"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.phone') }}">{{ App\Helpers\TranslationHelper::trans('header.phone') }}</span></a>
+                <a href="mailto:contact@educonecx.com"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.email') }}">{{ App\Helpers\TranslationHelper::trans('header.email') }}</span></a>
             </div>
         </div>
 
         <div class="mobile-menu-section">
-            <h3 class="mobile-section-title"><span class="translate-text" data-original="Follow Us">Follow Us</span></h3>
+            <h3 class="mobile-section-title"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.follow_us') }}">{{ App\Helpers\TranslationHelper::trans('header.follow_us') }}</span></h3>
             <div class="mobile-social">
                 <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank"><i class="fab fa-facebook-f"></i></a>
                 <a href="https://www.tiktok.com/@educonecx.officia" target="_blank"><i class="fab fa-tiktok"></i></a>
@@ -200,6 +200,7 @@
     <!-- Menu Overlay -->
     <div class="menu-overlay" id="menuOverlay"></div>
 
+    <!-- Keep existing styles - they remain unchanged -->
     <style>
         /* Root Variables - Your Beautiful Colors */
         :root {
@@ -1252,14 +1253,10 @@
             const languages = {
                 'en': { name: 'English', flag: '🇺🇸', native: 'English' },
                 'es': { name: 'Spanish', flag: '🇪🇸', native: 'Español' },
-                'fr': { name: 'French', flag: '🇫🇷', native: 'Français' },
-                'de': { name: 'German', flag: '🇩🇪', native: 'Deutsch' },
-                'it': { name: 'Italian', flag: '🇮🇹', native: 'Italiano' },
-                'pt': { name: 'Portuguese', flag: '🇵🇹', native: 'Português' },
-                'zh': { name: 'Chinese', flag: '🇨🇳', native: '中文' }
+                'fr': { name: 'French', flag: '🇫🇷', native: 'Français' }
             };
 
-            let currentLang = 'en';
+            let currentLang = '{{ app()->getLocale() }}';
 
             function populateLanguages(activeLang) {
                 const list = document.getElementById('langList');
@@ -1309,7 +1306,7 @@
 
                 // Update button
                 document.getElementById('currentFlag').textContent = langInfo.flag;
-                document.getElementById('currentLang').textContent = langInfo.native.substring(0, 2).toUpperCase();
+                document.getElementById('currentLang').textContent = code.toUpperCase();
 
                 // Update active states
                 document.querySelectorAll('.lang-item').forEach(item => {
@@ -1326,16 +1323,8 @@
                 // Close dropdown
                 document.querySelector('.language-selector').classList.remove('active');
 
-                // Call translation system if available
-                if (window.translationSystem) {
-                    window.translationSystem.translatePage(code).catch(() => {
-                        window.location.href = `/language/${code}`;
-                    });
-                } else {
-                    window.location.href = `/language/${code}`;
-                }
-
-                currentLang = code;
+                // Redirect to language switch route
+                window.location.href = `/language/${code}`;
             }
 
             // Language selector toggle
@@ -1369,18 +1358,18 @@
             }
 
             // Initialize languages
-            fetch('/api/current-language')
-                .then(res => res.json())
-                .then(data => {
-                    currentLang = data.current || 'en';
-                    const langInfo = languages[currentLang] || languages['en'];
-                    document.getElementById('currentFlag').textContent = langInfo.flag;
-                    document.getElementById('currentLang').textContent = langInfo.native.substring(0, 2).toUpperCase();
-                    populateLanguages(currentLang);
-                })
-                .catch(() => {
-                    populateLanguages('en');
-                });
+            const currentFlag = document.getElementById('currentFlag');
+            const currentLangEl = document.getElementById('currentLang');
+            
+            // Set initial values from server
+            const initialLang = '{{ app()->getLocale() }}';
+            const initialFlag = '{{ App\Helpers\TranslationHelper::getFlag() }}';
+            const initialCode = '{{ App\Helpers\TranslationHelper::getCode() }}';
+            
+            if (currentFlag) currentFlag.textContent = initialFlag;
+            if (currentLangEl) currentLangEl.textContent = initialCode;
+            
+            populateLanguages(initialLang);
         });
     </script>
 </header>

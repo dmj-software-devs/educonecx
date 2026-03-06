@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Empower Your Learning Journey Today - EDUCONECX')
+@section('title', App\Helpers\TranslationHelper::trans('home.title', [], 'en') ?? 'Empower Your Learning Journey Today - EDUCONECX')
 
-@section('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('home.meta_description', [], 'en') ?? 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')
 
 @push('styles')
 <style>
@@ -1606,41 +1606,40 @@
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
                     </div>
-                    <span class="rating-text">10,000+ students</span>
+                    <span class="rating-text">{{ App\Helpers\TranslationHelper::trans('home.hero_rating_text') }}</span>
                 </div>
             </div>
 
             <h1 class="hero-title">
-                Empower Your <span class="hero-title-gradient">Learning</span><br>
-                Journey Today
+                {{ App\Helpers\TranslationHelper::trans('home.hero_title_1') }} <span class="hero-title-gradient">{{ App\Helpers\TranslationHelper::trans('home.hero_title_highlight') }}</span><br>
+                {{ App\Helpers\TranslationHelper::trans('home.hero_title_2') }}
             </h1>
 
             <p class="hero-text">
-                Join thousands of learners worldwide and master practical language
-                and digital business skills with our AI-powered platform.
+                {{ App\Helpers\TranslationHelper::trans('home.hero_description') }}
             </p>
 
             <div class="hero-features">
                 <div class="hero-feature">
                     <i class="fas fa-check-circle"></i>
-                    <span>AI-Powered Learning</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.hero_feature_ai') }}</span>
                 </div>
                 <div class="hero-feature">
                     <i class="fas fa-check-circle"></i>
-                    <span>Expert Instructors</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.hero_feature_expert') }}</span>
                 </div>
                 <div class="hero-feature">
                     <i class="fas fa-check-circle"></i>
-                    <span>Practical Skills</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.hero_feature_practical') }}</span>
                 </div>
             </div>
 
             <div class="hero-buttons">
                 <a href="{{ route('academy') }}" class="btn btn-primary">
-                    <i class="fas fa-graduation-cap"></i> Join Academy
+                    <i class="fas fa-graduation-cap"></i> {{ App\Helpers\TranslationHelper::trans('home.hero_btn_academy') }}
                 </a>
                 <a href="{{ route('courses') }}" class="btn btn-secondary">
-                    <i class="fas fa-play-circle"></i> Explore Courses
+                    <i class="fas fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('home.hero_btn_courses') }}
                 </a>
             </div>
         </div>
@@ -1680,7 +1679,7 @@
 <!-- Logo Cloud Section -->
 <section class="logo-cloud-section">
     <div class="container">
-        <p class="logo-cloud-title">Trusted by students from</p>
+        <p class="logo-cloud-title">{{ App\Helpers\TranslationHelper::trans('home.trusted_by') ?? 'Trusted by students from' }}</p>
         <div class="logo-cloud">
             <div class="logo-track">
                 <!-- Harvard -->
@@ -1760,8 +1759,8 @@
 <section class="process-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">How It Works</span>
-            <h2 class="section-title">Your <span>Learning Journey</span> in 3 Simple Steps</h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('home.process_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('home.process_title') !!}</h2>
         </div>
 
         <div class="process-grid">
@@ -1769,24 +1768,24 @@
                 <div class="process-icon">
                     <i class="fas fa-user-plus"></i>
                 </div>
-                <h3 class="process-title">Create Account</h3>
-                <p class="process-text">Sign up for free and get instant access to our platform with a 3-day trial period.</p>
+                <h3 class="process-title">{{ App\Helpers\TranslationHelper::trans('home.process_1_title') }}</h3>
+                <p class="process-text">{{ App\Helpers\TranslationHelper::trans('home.process_1_desc') }}</p>
             </div>
 
             <div class="process-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="process-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <h3 class="process-title">Choose Your Path</h3>
-                <p class="process-text">Select from our curated courses in language learning or digital business skills.</p>
+                <h3 class="process-title">{{ App\Helpers\TranslationHelper::trans('home.process_2_title') }}</h3>
+                <p class="process-text">{{ App\Helpers\TranslationHelper::trans('home.process_2_desc') }}</p>
             </div>
 
             <div class="process-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="process-icon">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
-                <h3 class="process-title">Start Learning</h3>
-                <p class="process-text">Begin your journey with AI-powered guidance and expert instructor support.</p>
+                <h3 class="process-title">{{ App\Helpers\TranslationHelper::trans('home.process_3_title') }}</h3>
+                <p class="process-text">{{ App\Helpers\TranslationHelper::trans('home.process_3_desc') }}</p>
             </div>
         </div>
     </div>
@@ -1796,8 +1795,8 @@
 <section class="features-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Why Choose Us</span>
-            <h2 class="section-title">Learning Experience <span>Like Never Before</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('home.features_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('home.features_title') !!}</h2>
         </div>
 
         <div class="features-grid">
@@ -1805,32 +1804,32 @@
                 <div class="feature-icon">
                     <i class="fas fa-brain"></i>
                 </div>
-                <h3 class="feature-title">AI-Powered Learning</h3>
-                <p class="feature-text">Personalized learning paths powered by advanced AI technology adapt to your pace and style.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('home.feature_1_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('home.feature_1_desc') }}</p>
             </div>
 
             <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="feature-icon">
                     <i class="fas fa-language"></i>
                 </div>
-                <h3 class="feature-title">Multiple Languages</h3>
-                <p class="feature-text">Courses available in English, French, Haitian Creole, and Spanish for global accessibility.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('home.feature_2_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('home.feature_2_desc') }}</p>
             </div>
 
             <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="feature-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="feature-title">Practical Skills</h3>
-                <p class="feature-text">Learn real-world skills that you can apply immediately in your career or business.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('home.feature_3_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('home.feature_3_desc') }}</p>
             </div>
 
             <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="feature-icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <h3 class="feature-title">Expert Instructors</h3>
-                <p class="feature-text">Learn from industry experts with years of practical experience in their fields.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('home.feature_4_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('home.feature_4_desc') }}</p>
             </div>
         </div>
     </div>
@@ -1841,9 +1840,9 @@
     <div class="container">
         <div class="offer-content">
             <i class="fas fa-gift"></i>
-            <h3>Limited Time Offer</h3>
-            <p>Unlimited Access To All Courses – Only $22</p>
-            <a href="{{ route('academy') }}" class="btn btn-primary">Get Started Now</a>
+            <h3>{{ App\Helpers\TranslationHelper::trans('home.offer_title') }}</h3>
+            <p>{{ App\Helpers\TranslationHelper::trans('home.offer_description') }}</p>
+            <a href="{{ route('academy') }}" class="btn btn-primary">{{ App\Helpers\TranslationHelper::trans('home.offer_btn') }}</a>
         </div>
     </div>
 </section>
@@ -1852,8 +1851,8 @@
 <section class="courses-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Our Courses</span>
-            <h2 class="section-title">Featured <span>Learning Paths</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('home.courses_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('home.courses_title') !!}</h2>
         </div>
 
         <div class="grid-3">
@@ -1861,28 +1860,28 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="course-image">
                     <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop' }}" alt="{{ $course->title }}" loading="lazy">
-                    <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
+                    <span class="course-category">{{ $course->category->name ?? App\Helpers\TranslationHelper::trans('common.general') }}</span>
                     @if(isset($course->hasDiscount) && $course->hasDiscount)
                     <span class="course-discount-badge">-{{ $course->discount_percentage ?? 20 }}%</span>
                     @endif
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> {{ $course->duration ?? '10' }} Hours</span>
-                        <span><i class="fas fa-signal"></i> {{ $course->level ?? 'Beginner' }}</span>
+                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => $course->duration ?? '10']) }}</span>
+                        <span><i class="fas fa-signal"></i> {{ $course->level ?? __('common.beginner') }}</span>
                     </div>
                     <h3 class="course-title">
-                        <a href="{{ route('courses.show', $course->slug ?? '#') }}">{{ $course->title ?? 'Course Title' }}</a>
+                        <a href="{{ route('courses.show', $course->slug ?? '#') }}">{{ $course->title ?? App\Helpers\TranslationHelper::trans('home.course_title_placeholder') }}</a>
                     </h3>
-                    <p>{{ Str::limit($course->excerpt ?? 'Course description goes here...', 80) }}</p>
+                    <p>{{ Str::limit($course->excerpt ?? App\Helpers\TranslationHelper::trans('home.course_desc_placeholder'), 80) }}</p>
 
                     @if(isset($course->total_students) && $course->total_students > 0)
                     <div class="course-stats">
-                        <span><i class="fas fa-users"></i> {{ number_format($course->total_students) }} students</span>
+                        <span><i class="fas fa-users"></i> {{ App\Helpers\TranslationHelper::trans('home.course_students', ['count' => number_format($course->total_students)]) }}</span>
                         @if(isset($course->average_rating) && $course->average_rating > 0)
                         <span>
                             <i class="fas fa-star"></i>
-                            {{ number_format($course->average_rating, 1) }}
+                            {{ App\Helpers\TranslationHelper::trans('home.course_rating', ['rating' => number_format($course->average_rating, 1)]) }}
                         </span>
                         @endif
                     </div>
@@ -1896,11 +1895,11 @@
                             @elseif(isset($course->price) && $course->price > 0)
                             ${{ number_format($course->price, 2) }}
                             @else
-                            Free
+                            {{ App\Helpers\TranslationHelper::trans('home.course_free') }}
                             @endif
                         </div>
                         <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="course-btn">
-                            {{ isset($course->price) && $course->price > 0 ? 'Enroll' : 'Start' }}
+                            {{ isset($course->price) && $course->price > 0 ? App\Helpers\TranslationHelper::trans('home.course_enroll') : App\Helpers\TranslationHelper::trans('home.course_start') }}
                             <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -1911,22 +1910,22 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="course-image">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" alt="Business English" loading="lazy">
-                    <span class="course-category">Language</span>
+                    <span class="course-category">{{ App\Helpers\TranslationHelper::trans('common.language') }}</span>
                     <span class="course-discount-badge">-20%</span>
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> 20 Hours</span>
-                        <span><i class="fas fa-signal"></i> Intermediate</span>
+                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => '20']) }}</span>
+                        <span><i class="fas fa-signal"></i> {{ App\Helpers\TranslationHelper::trans('common.intermediate') }}</span>
                     </div>
                     <h3 class="course-title">
-                        <a href="#">Business English Mastery</a>
+                        <a href="#">{{ App\Helpers\TranslationHelper::trans('home.course_1_title') }}</a>
                     </h3>
-                    <p>Master professional English communication for global business success.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.course_1_desc') }}</p>
 
                     <div class="course-stats">
-                        <span><i class="fas fa-users"></i> 1,234 students</span>
-                        <span><i class="fas fa-star"></i> 4.8</span>
+                        <span><i class="fas fa-users"></i> {{ App\Helpers\TranslationHelper::trans('home.course_students', ['count' => '1,234']) }}</span>
+                        <span><i class="fas fa-star"></i> {{ App\Helpers\TranslationHelper::trans('home.course_rating', ['rating' => '4.8']) }}</span>
                     </div>
 
                     <div class="course-footer">
@@ -1935,7 +1934,7 @@
                             <small>$49.99</small>
                         </div>
                         <a href="#" class="course-btn">
-                            Enroll <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('home.course_enroll') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -1944,21 +1943,21 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="course-image">
                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop" alt="Digital Marketing" loading="lazy">
-                    <span class="course-category">Business</span>
+                    <span class="course-category">{{ App\Helpers\TranslationHelper::trans('common.business') }}</span>
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> 15 Hours</span>
-                        <span><i class="fas fa-signal"></i> Beginner</span>
+                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => '15']) }}</span>
+                        <span><i class="fas fa-signal"></i> {{ App\Helpers\TranslationHelper::trans('common.beginner') }}</span>
                     </div>
                     <h3 class="course-title">
-                        <a href="#">Digital Marketing Fundamentals</a>
+                        <a href="#">{{ App\Helpers\TranslationHelper::trans('home.course_2_title') }}</a>
                     </h3>
-                    <p>Learn the essentials of digital marketing and grow your business online.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.course_2_desc') }}</p>
 
                     <div class="course-stats">
-                        <span><i class="fas fa-users"></i> 2,567 students</span>
-                        <span><i class="fas fa-star"></i> 4.9</span>
+                        <span><i class="fas fa-users"></i> {{ App\Helpers\TranslationHelper::trans('home.course_students', ['count' => '2,567']) }}</span>
+                        <span><i class="fas fa-star"></i> {{ App\Helpers\TranslationHelper::trans('home.course_rating', ['rating' => '4.9']) }}</span>
                     </div>
 
                     <div class="course-footer">
@@ -1966,7 +1965,7 @@
                             $29.99
                         </div>
                         <a href="#" class="course-btn">
-                            Enroll <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('home.course_enroll') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -1975,21 +1974,21 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="course-image">
                     <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=250&fit=crop" alt="French Language" loading="lazy">
-                    <span class="course-category">Language</span>
+                    <span class="course-category">{{ App\Helpers\TranslationHelper::trans('common.language') }}</span>
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> 25 Hours</span>
-                        <span><i class="fas fa-signal"></i> All Levels</span>
+                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => '25']) }}</span>
+                        <span><i class="fas fa-signal"></i> {{ App\Helpers\TranslationHelper::trans('common.all_levels') }}</span>
                     </div>
                     <h3 class="course-title">
-                        <a href="#">Complete French Course</a>
+                        <a href="#">{{ App\Helpers\TranslationHelper::trans('home.course_3_title') }}</a>
                     </h3>
-                    <p>From beginner to fluent - learn French with AI-powered guidance.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.course_3_desc') }}</p>
 
                     <div class="course-stats">
-                        <span><i class="fas fa-users"></i> 3,892 students</span>
-                        <span><i class="fas fa-star"></i> 4.7</span>
+                        <span><i class="fas fa-users"></i> {{ App\Helpers\TranslationHelper::trans('home.course_students', ['count' => '3,892']) }}</span>
+                        <span><i class="fas fa-star"></i> {{ App\Helpers\TranslationHelper::trans('home.course_rating', ['rating' => '4.7']) }}</span>
                     </div>
 
                     <div class="course-footer">
@@ -1997,7 +1996,7 @@
                             $44.99
                         </div>
                         <a href="#" class="course-btn">
-                            Enroll <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('home.course_enroll') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -2007,7 +2006,7 @@
 
         <div style="text-align: center; margin-top: 40px;">
             <a href="{{ route('courses') }}" class="btn btn-primary">
-                View All Courses <i class="fas fa-arrow-right"></i>
+                {{ App\Helpers\TranslationHelper::trans('home.course_view_all') }} <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
@@ -2022,28 +2021,28 @@
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stats-number" data-target="10000">10,000+</div>
-                <div class="stats-label">Students Enrolled</div>
+                <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_students') }}</div>
             </div>
             <div class="stats-item" data-aos="zoom-in" data-aos-delay="200">
                 <div class="stats-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
                 <div class="stats-number" data-target="50">50+</div>
-                <div class="stats-label">Expert Instructors</div>
+                <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_instructors') }}</div>
             </div>
             <div class="stats-item" data-aos="zoom-in" data-aos-delay="300">
                 <div class="stats-icon">
                     <i class="fas fa-globe"></i>
                 </div>
                 <div class="stats-number" data-target="15">15+</div>
-                <div class="stats-label">Countries</div>
+                <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_countries') }}</div>
             </div>
             <div class="stats-item" data-aos="zoom-in" data-aos-delay="400">
                 <div class="stats-icon">
                     <i class="fas fa-award"></i>
                 </div>
                 <div class="stats-number" data-target="4.9">4.9</div>
-                <div class="stats-label">Average Rating</div>
+                <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_rating') }}</div>
             </div>
         </div>
     </div>
@@ -2054,37 +2053,37 @@
     <div class="container">
         <div class="about-grid">
             <div class="about-content" data-aos="fade-right">
-                <span class="section-subtitle">About Us</span>
-                <h2 class="section-title">Empowering learners,<br><span>connecting futures</span></h2>
-                <p><strong>EDUCONECX</strong> is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.</p>
-                <p>Our mission is to help individuals break through language barriers and thrive in today's global digital economy. We combine cutting-edge technology with expert instruction to create an unparalleled learning experience.</p>
+                <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('home.about_subtitle') }}</span>
+                <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('home.about_title') !!}</h2>
+                <p>{!! App\Helpers\TranslationHelper::trans('home.about_description_1') !!}</p>
+                <p>{!! App\Helpers\TranslationHelper::trans('home.about_description_2') !!}</p>
                 <div class="about-features">
                     <div class="about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>AI-Powered Learning Paths</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('home.about_feature_1') }}</span>
                     </div>
                     <div class="about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Multi-Language Support</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('home.about_feature_2') }}</span>
                     </div>
                     <div class="about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Practical Skills Focus</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('home.about_feature_3') }}</span>
                     </div>
                     <div class="about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Expert Instructors</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('home.about_feature_4') }}</span>
                     </div>
                 </div>
                 <a href="{{ route('about') }}" class="btn btn-primary">
-                    Learn More About Us <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('home.about_btn') }} <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             <div class="about-image" data-aos="fade-left">
                 <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" alt="About EDUCONECX" loading="lazy">
                 <div class="experience-badge">
                     <span class="years">5+</span>
-                    <span class="text">Years of Excellence</span>
+                    <span class="text">{{ App\Helpers\TranslationHelper::trans('home.about_experience') }}</span>
                 </div>
             </div>
         </div>
@@ -2095,8 +2094,8 @@
 <section class="testimonials-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Testimonials</span>
-            <h2 class="section-title">What Our <span>Students Say</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('home.testimonials_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('home.testimonials_title') !!}</h2>
         </div>
 
         <div class="testimonials-grid">
@@ -2109,16 +2108,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="testimonial-text">
-                    "The Academy made learning so easy! Courses are practical and well-structured.
-                    I was able to learn at my own pace even with slow internet."
+                    "{{ App\Helpers\TranslationHelper::trans('home.testimonial_1_text') }}"
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
                         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop" alt="Sarah M." loading="lazy">
                     </div>
                     <div class="author-info">
-                        <h4>Sarah M.</h4>
-                        <p>Business Student</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('home.testimonial_1_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('home.testimonial_1_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -2132,16 +2130,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="testimonial-text">
-                    "Their guidance is a game-changer. The daily insights and AI companion keep me
-                    motivated and focused. It feels personal and uplifting."
+                    "{{ App\Helpers\TranslationHelper::trans('home.testimonial_2_text') }}"
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
                         <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop" alt="Daniel K." loading="lazy">
                     </div>
                     <div class="author-info">
-                        <h4>Daniel K.</h4>
-                        <p>Graduate Student</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('home.testimonial_2_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('home.testimonial_2_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -2155,16 +2152,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="testimonial-text">
-                    "One platform for everything I need. Instead of jumping between sites, I can
-                    access courses, guidance, and digital services all in one place."
+                    "{{ App\Helpers\TranslationHelper::trans('home.testimonial_3_text') }}"
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
                         <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Aisha R." loading="lazy">
                     </div>
                     <div class="author-info">
-                        <h4>Aisha R.</h4>
-                        <p>Entrepreneur</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('home.testimonial_3_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('home.testimonial_3_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -2176,19 +2172,19 @@
 <section class="cta-section">
     <div class="container">
         <div class="cta-content" data-aos="zoom-in">
-            <div class="cta-badge">Join 10,000+ Students Worldwide</div>
+            <div class="cta-badge">{{ App\Helpers\TranslationHelper::trans('home.cta_badge') }}</div>
             <h2 class="cta-title">
-                Ready to Start Your <span>Learning Journey?</span>
+                {!! App\Helpers\TranslationHelper::trans('home.cta_title') !!}
             </h2>
             <p class="cta-text">
-                Join thousands of students worldwide and transform your skills with our AI-powered platform.
+                {{ App\Helpers\TranslationHelper::trans('home.cta_description') }}
             </p>
             <div class="cta-buttons">
                 <a href="{{ route('academy') }}" class="btn btn-primary">
-                    <i class="fas fa-graduation-cap"></i> Get Started Free
+                    <i class="fas fa-graduation-cap"></i> {{ App\Helpers\TranslationHelper::trans('home.cta_btn_start') }}
                 </a>
                 <a href="{{ route('contact') }}" class="btn btn-secondary">
-                    <i class="fas fa-headset"></i> Talk to Advisor
+                    <i class="fas fa-headset"></i> {{ App\Helpers\TranslationHelper::trans('home.cta_btn_advisor') }}
                 </a>
             </div>
         </div>
@@ -2199,48 +2195,48 @@
 <section class="faq-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">FAQ</span>
-            <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('home.faq_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('home.faq_title') !!}</h2>
         </div>
 
         <div class="faq-grid">
             <div class="faq-item" data-aos="fade-up">
                 <div class="faq-question">
-                    <span>What is EDUCONECX?</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.faq_1_q') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>EDUCONECX is an innovative online educational platform that combines AI-powered learning with specialized training programs. We offer both free and premium educational content designed to accelerate your professional development in language skills and digital business.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.faq_1_a') }}</p>
                 </div>
             </div>
 
             <div class="faq-item" data-aos="fade-up" data-aos-delay="100">
                 <div class="faq-question">
-                    <span>In which languages are the courses available?</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.faq_2_q') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Our courses are available in English, French, Haitian Creole, and Spanish to serve our diverse international community of learners.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.faq_2_a') }}</p>
                 </div>
             </div>
 
             <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
                 <div class="faq-question">
-                    <span>How do I get started?</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.faq_3_q') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Getting started is simple: create your account, select your preferred course, and begin with our 3-day free trial to explore the platform risk-free.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.faq_3_a') }}</p>
                 </div>
             </div>
 
             <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
                 <div class="faq-question">
-                    <span>Can I access courses on mobile?</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.faq_4_q') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Yes! Our platform is fully responsive and optimized for all devices. You can access your courses on desktop, tablet, or smartphone anytime, anywhere.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.faq_4_a') }}</p>
                 </div>
             </div>
         </div>

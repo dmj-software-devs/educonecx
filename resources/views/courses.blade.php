@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'All Courses - EDUCONECX | Browse Our Learning Programs')
+@section('title', App\Helpers\TranslationHelper::trans('courses.title'))
 
-@section('meta_description', 'Browse our comprehensive collection of courses in business, technology, design, language, and more. Start your learning journey today with EDUCONECX.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('courses.meta_description'))
 
 @push('styles')
 <style>
@@ -1487,14 +1487,14 @@
 
     <div class="container">
         <div class="courses-hero-content" data-aos="fade-up">
-            <span class="courses-hero-badge">Start Learning Today</span>
-            <h1 class="courses-hero-title">Browse Our <span>Course Library</span></h1>
+            <span class="courses-hero-badge">{{ App\Helpers\TranslationHelper::trans('courses.hero_badge') }}</span>
+            <h1 class="courses-hero-title">{!! App\Helpers\TranslationHelper::trans('courses.hero_title') !!}</h1>
             <p class="courses-hero-text">
-                Discover expert-led courses designed to help you master new skills and advance your career
+                {{ App\Helpers\TranslationHelper::trans('courses.hero_description') }}
             </p>
 
             <form id="searchForm" method="GET" action="{{ route('courses') }}" class="courses-hero-search">
-                <input type="text" name="keyword" id="searchInput" placeholder="What do you want to learn?" value="{{ $filters['keyword'] ?? '' }}" autocomplete="off">
+                <input type="text" name="keyword" id="searchInput" placeholder="{{ App\Helpers\TranslationHelper::trans('courses.hero_search_placeholder') }}" value="{{ $filters['keyword'] ?? '' }}" autocomplete="off">
                 <button type="submit"><i class="fas fa-search"></i></button>
             </form>
         </div>
@@ -1508,7 +1508,7 @@
             <!-- Mobile Filter Toggle -->
             <div class="mobile-filter-toggle">
                 <button class="filter-toggle-btn" id="filterToggle">
-                    <span><i class="fas fa-sliders-h"></i> Filter Courses</span>
+                    <span><i class="fas fa-sliders-h"></i> {{ App\Helpers\TranslationHelper::trans('courses.filter_toggle') }}</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
             </div>
@@ -1518,17 +1518,17 @@
                 <div class="sidebar-header">
                     <h3 class="sidebar-title">
                         <i class="fas fa-filter"></i>
-                        Filters
+                        {{ App\Helpers\TranslationHelper::trans('courses.sidebar_title') }}
                     </h3>
                     <a href="{{ route('courses') }}" class="clear-filters" id="clearAllFilters">
-                        <i class="fas fa-times"></i> Clear All
+                        <i class="fas fa-times"></i> {{ App\Helpers\TranslationHelper::trans('courses.clear_all') }}
                     </a>
                 </div>
 
                 <!-- Categories Filter -->
                 <div class="filter-section">
                     <h4 class="filter-section-title">
-                        <i class="fas fa-folder"></i> Categories
+                        <i class="fas fa-folder"></i> {{ App\Helpers\TranslationHelper::trans('courses.categories_title') }}
                     </h4>
                     <ul class="filter-options" id="categoryFilter">
                         @foreach($categories as $category)
@@ -1547,14 +1547,14 @@
                 <!-- Price Filter -->
                 <div class="filter-section">
                     <h4 class="filter-section-title">
-                        <i class="fas fa-tag"></i> Price
+                        <i class="fas fa-tag"></i> {{ App\Helpers\TranslationHelper::trans('courses.price_title') }}
                     </h4>
                     <ul class="filter-options" id="priceFilter">
                         <li class="filter-option">
                             <label>
                                 <input type="checkbox" name="price[]" value="free" class="price-checkbox"
                                     {{ in_array('free', $filters['price'] ?? []) ? 'checked' : '' }}>
-                                Free Courses
+                                {{ App\Helpers\TranslationHelper::trans('courses.price_free') }}
                                 <span class="filter-count">{{ $freeCoursesCount }}</span>
                             </label>
                         </li>
@@ -1562,7 +1562,7 @@
                             <label>
                                 <input type="checkbox" name="price[]" value="paid" class="price-checkbox"
                                     {{ in_array('paid', $filters['price'] ?? []) ? 'checked' : '' }}>
-                                Subscription Required
+                                {{ App\Helpers\TranslationHelper::trans('courses.price_paid') }}
                                 <span class="filter-count">{{ $paidCoursesCount }}</span>
                             </label>
                         </li>
@@ -1573,18 +1573,18 @@
                 <div class="stats-card">
                     <div class="stats-header">
                         <i class="fas fa-chart-line"></i>
-                        Course Stats
+                        {{ App\Helpers\TranslationHelper::trans('courses.stats_title') }}
                     </div>
                     <div class="stats-item">
-                        <span class="stats-label">Total Courses</span>
+                        <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('courses.stats_total') }}</span>
                         <span class="stats-value" id="totalCoursesCount">{{ $paginatedCourses->total() ?? 0 }}</span>
                     </div>
                     <div class="stats-item">
-                        <span class="stats-label">Free Courses</span>
+                        <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('courses.stats_free') }}</span>
                         <span class="stats-value success" id="freeCoursesCount">{{ $freeCoursesCount ?? 0 }}</span>
                     </div>
                     <div class="stats-item">
-                        <span class="stats-label">Categories</span>
+                        <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('courses.stats_categories') }}</span>
                         <span class="stats-value">{{ count($categories) }}</span>
                     </div>
                 </div>
@@ -1595,17 +1595,21 @@
                 <!-- Sort Bar -->
                 <div class="sort-bar" data-aos="fade-up">
                     <div class="results-count">
-                        Showing <strong id="showingFrom">{{ $paginatedCourses->firstItem() ?? 0 }}</strong> - <strong id="showingTo">{{ $paginatedCourses->lastItem() ?? 0 }}</strong> of <strong id="totalResults">{{ $paginatedCourses->total() }}</strong> courses
+                        {!! App\Helpers\TranslationHelper::trans('courses.results_showing', [
+                            'from' => '<strong id="showingFrom">' . ($paginatedCourses->firstItem() ?? 0) . '</strong>',
+                            'to' => '<strong id="showingTo">' . ($paginatedCourses->lastItem() ?? 0) . '</strong>',
+                            'total' => '<strong id="totalResults">' . $paginatedCourses->total() . '</strong>'
+                        ]) !!}
                     </div>
 
                     <div class="sort-wrapper">
                         <select name="sort" class="sort-select" id="sortSelect">
-                            <option value="newest_first" {{ ($filters['sort'] ?? '') == 'newest_first' ? 'selected' : '' }}>Most Recent</option>
-                            <option value="oldest_first" {{ ($filters['sort'] ?? '') == 'oldest_first' ? 'selected' : '' }}>Oldest First</option>
-                            <option value="course_title_az" {{ ($filters['sort'] ?? '') == 'course_title_az' ? 'selected' : '' }}>Course Title (A-Z)</option>
-                            <option value="course_title_za" {{ ($filters['sort'] ?? '') == 'course_title_za' ? 'selected' : '' }}>Course Title (Z-A)</option>
-                            <option value="popular" {{ ($filters['sort'] ?? '') == 'popular' ? 'selected' : '' }}>Most Popular</option>
-                            <option value="top_rated" {{ ($filters['sort'] ?? '') == 'top_rated' ? 'selected' : '' }}>Top Rated</option>
+                            <option value="newest_first" {{ ($filters['sort'] ?? '') == 'newest_first' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('courses.sort_newest') }}</option>
+                            <option value="oldest_first" {{ ($filters['sort'] ?? '') == 'oldest_first' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('courses.sort_oldest') }}</option>
+                            <option value="course_title_az" {{ ($filters['sort'] ?? '') == 'course_title_az' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('courses.sort_title_az') }}</option>
+                            <option value="course_title_za" {{ ($filters['sort'] ?? '') == 'course_title_za' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('courses.sort_title_za') }}</option>
+                            <option value="popular" {{ ($filters['sort'] ?? '') == 'popular' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('courses.sort_popular') }}</option>
+                            <option value="top_rated" {{ ($filters['sort'] ?? '') == 'top_rated' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('courses.sort_rated') }}</option>
                         </select>
                     </div>
                 </div>
@@ -1622,12 +1626,12 @@
                         @foreach($paginatedCourses as $course)
                         <div class="course-card" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 50, 300) }}">
                             @if($course->featured)
-                            <span class="course-badge popular">Popular</span>
+                            <span class="course-badge popular">{{ App\Helpers\TranslationHelper::trans('courses.badge_popular') }}</span>
                             @elseif($course->is_free)
-                            <span class="course-badge free">Free</span>
+                            <span class="course-badge free">{{ App\Helpers\TranslationHelper::trans('courses.badge_free') }}</span>
                             @elseif(Auth::check() && Auth::user()->has_active_subscription)
                             <span class="course-badge" style="background: var(--gradient-3); color: var(--prussian-blue);">
-                                <i class="fas fa-check-circle"></i> Subscribed
+                                <i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.badge_subscribed') }}
                             </span>
                             @endif
 
@@ -1640,13 +1644,13 @@
                             <div class="course-thumbnail">
                                 <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
                                 <div class="course-overlay">
-                                    <span class="course-preview"><i class="far fa-play-circle"></i> Preview Course</span>
+                                    <span class="course-preview"><i class="far fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.preview_course') }}</span>
                                 </div>
                             </div>
 
                             <div class="course-content">
                                 <div class="course-meta-top">
-                                    <span class="course-category">{{ $course->category->name ?? 'General' }}</span>
+                                    <span class="course-category">{{ $course->category->name ?? App\Helpers\TranslationHelper::trans('courses.course_category') }}</span>
                                     <div class="course-rating">
                                         <span class="stars">
                                             @for($i = 1; $i <= 5; $i++)
@@ -1671,9 +1675,9 @@
                                 <p class="course-description">{{ $course->excerpt ?? Str::limit($course->description, 100) }}</p>
 
                                 <div class="course-meta">
-                                    <span><i class="far fa-clock"></i> {{ $course->duration_hours ?? 0 }} hours</span>
+                                    <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_hours', ['count' => $course->duration_hours ?? 0]) }}</span>
                                     <span><i class="fas fa-signal"></i> {{ ucfirst($course->level ?? 'Beginner') }}</span>
-                                    <span><i class="fas fa-video"></i> {{ $course->lessons_count ?? 0 }} lessons</span>
+                                    <span><i class="fas fa-video"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_lessons', ['count' => $course->lessons_count ?? 0]) }}</span>
                                 </div>
 
                                 <div class="course-instructor">
@@ -1681,8 +1685,8 @@
                                         {{ substr($course->instructor->name ?? 'ED', 0, 1) }}
                                     </div>
                                     <div class="instructor-info">
-                                        <a href="#" class="instructor-name">{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</a>
-                                        <div class="instructor-title">Expert Instructor</div>
+                                        <a href="#" class="instructor-name">{{ $course->instructor->name ?? App\Helpers\TranslationHelper::trans('courses.instructor_default') }}</a>
+                                        <div class="instructor-title">{{ App\Helpers\TranslationHelper::trans('courses.instructor_title') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -1690,22 +1694,22 @@
                             <div class="course-footer">
                                 <div class="course-price {{ $course->is_free ? 'free' : '' }}">
                                     @if($course->is_free)
-                                    Free
+                                    {{ App\Helpers\TranslationHelper::trans('courses.price_free_label') }}
                                     @else
                                     @auth
-                                    {{ Auth::user()->has_active_subscription ? 'Subscribed' : 'Subscription' }}
+                                    {{ Auth::user()->has_active_subscription ? App\Helpers\TranslationHelper::trans('courses.badge_subscribed') : App\Helpers\TranslationHelper::trans('courses.price_subscription') }}
                                     @else
-                                    Subscription
+                                    {{ App\Helpers\TranslationHelper::trans('courses.price_subscription') }}
                                     @endauth
                                     @endif
                                     <span class="price-label">
                                         @if($course->is_free)
-                                        No payment required
+                                        {{ App\Helpers\TranslationHelper::trans('courses.price_free_detail') }}
                                         @else
                                         @auth
-                                        {{ Auth::user()->has_active_subscription ? 'Active - Access all courses' : 'One payment - all courses' }}
+                                        {{ Auth::user()->has_active_subscription ? App\Helpers\TranslationHelper::trans('courses.price_subscribed_detail') : App\Helpers\TranslationHelper::trans('courses.price_subscription_detail') }}
                                         @else
-                                        One payment - all courses
+                                        {{ App\Helpers\TranslationHelper::trans('courses.price_subscription_detail') }}
                                         @endauth
                                         @endif
                                     </span>
@@ -1714,16 +1718,16 @@
                                 @auth
                                 @if(!$course->is_free && Auth::user()->has_active_subscription)
                                 <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn" style="background: var(--gradient-3); color: var(--prussian-blue);">
-                                    <i class="fas fa-play-circle"></i> Start Learning
+                                    <i class="fas fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.btn_start_learning') }}
                                 </a>
                                 @else
                                 <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
-                                    View Details <i class="fas fa-arrow-right"></i>
+                                    {{ App\Helpers\TranslationHelper::trans('courses.btn_view_details') }} <i class="fas fa-arrow-right"></i>
                                 </a>
                                 @endif
                                 @else
                                 <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
-                                    View Details <i class="fas fa-arrow-right"></i>
+                                    {{ App\Helpers\TranslationHelper::trans('courses.btn_view_details') }} <i class="fas fa-arrow-right"></i>
                                 </a>
                                 @endauth
                             </div>
@@ -1743,10 +1747,10 @@
                         <div class="no-results-icon">
                             <i class="fas fa-search"></i>
                         </div>
-                        <h3>No Courses Found</h3>
-                        <p>We couldn't find any courses matching your criteria. Try adjusting your filters.</p>
+                        <h3>{{ App\Helpers\TranslationHelper::trans('courses.no_results_title') }}</h3>
+                        <p>{{ App\Helpers\TranslationHelper::trans('courses.no_results_description') }}</p>
                         <a href="{{ route('courses') }}" class="reset-btn" id="resetFiltersBtn">
-                            <i class="fas fa-redo-alt"></i> Reset All Filters
+                            <i class="fas fa-redo-alt"></i> {{ App\Helpers\TranslationHelper::trans('courses.btn_reset_filters') }}
                         </a>
                     </div>
                     @endif
@@ -1918,7 +1922,7 @@
                         if (coursesContainer) coursesContainer.style.opacity = '1';
 
                         // Show notification
-                        showNotification('Filters applied successfully', 'success');
+                        showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_filters_applied') }}', 'success');
                     } else {
                         throw new Error('Invalid response from server');
                     }
@@ -1927,7 +1931,7 @@
                     console.error('Error:', error);
                     loadingSpinner.classList.remove('show');
                     if (coursesContainer) coursesContainer.style.opacity = '1';
-                    showNotification('Error applying filters. Please try again.', 'error');
+                    showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_filter_error') }}', 'error');
 
                     // Fallback to form submission
                     if (searchForm) {
@@ -2131,13 +2135,13 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    showNotification('Course added to bookmarks', 'success');
+                                    showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_added') }}', 'success');
                                 } else {
                                     // Revert if failed
                                     this.classList.remove('active');
                                     icon.classList.remove('fas');
                                     icon.classList.add('far');
-                                    showNotification(data.message || 'Failed to add to bookmarks', 'error');
+                                    showNotification(data.message || '{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_error') }}', 'error');
                                 }
                             })
                             .catch(error => {
@@ -2146,7 +2150,7 @@
                                 this.classList.remove('active');
                                 icon.classList.remove('fas');
                                 icon.classList.add('far');
-                                showNotification('Error adding to bookmarks', 'error');
+                                showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_error') }}', 'error');
                             });
 
                     } else {
@@ -2165,19 +2169,19 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    showNotification('Course removed from bookmarks', 'info');
+                                    showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_removed') }}', 'info');
                                 } else {
-                                    showNotification(data.message || 'Failed to remove from bookmarks', 'error');
+                                    showNotification(data.message || '{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_remove_error') }}', 'error');
                                 }
                             })
                             .catch(error => {
                                 console.error('Error:', error);
-                                showNotification('Error removing from bookmarks', 'error');
+                                showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_remove_error') }}', 'error');
                             });
                     }
                     @else
                     // Redirect to login
-                    showNotification('Please login to bookmark courses', 'info');
+                    showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_bookmark_login') }}', 'info');
                     setTimeout(() => {
                         window.location.href = '{{ route("login") }}';
                     }, 1500);

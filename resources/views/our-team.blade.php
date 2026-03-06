@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Our Team - EDUCONECX | Meet the Minds Behind the Platform')
+@section('title', App\Helpers\TranslationHelper::trans('team.title'))
 
-@section('meta_description', 'Meet the passionate minds behind EDUCONECX - a team of educators, creators, and AI visionaries working together to break language barriers and build a brighter, more inclusive future.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('team.meta_description'))
 
 @push('styles')
 <style>
@@ -825,12 +825,12 @@
         
         <div class="container">
             <div class="team-hero-content">
-                <span class="team-hero-badge">Our Team</span>
-                <h1 class="team-hero-title">Meet the Minds Behind <span>EDUCONECX</span></h1>
+                <span class="team-hero-badge">{{ App\Helpers\TranslationHelper::trans('team.hero_badge') }}</span>
+                <h1 class="team-hero-title">{!! App\Helpers\TranslationHelper::trans('team.hero_title') !!}</h1>
                 <div class="team-hero-text">
-                    <p><strong>A team of educators, creators, and AI visionaries</strong></p>
-                    <p>Working together to break language barriers and build a brighter, more inclusive future.</p>
-                    <p>We blend technology, heart, and purpose to serve communities with clarity, care, and confidence.</p>
+                    <p>{!! App\Helpers\TranslationHelper::trans('team.hero_text_1') !!}</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('team.hero_text_2') }}</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('team.hero_text_3') }}</p>
                 </div>
             </div>
         </div>
@@ -842,12 +842,10 @@
             <div class="mission-content" data-aos="fade-up">
                 <div class="mission-quote">
                     <i class="fas fa-quote-left"></i>
-                    Our mission is to make quality education accessible to everyone, everywhere.
+                    {{ App\Helpers\TranslationHelper::trans('team.mission_quote') }}
                 </div>
                 <p class="mission-text">
-                    We believe that the right education, combined with the right technology and the right people, 
-                    can transform lives and communities. Our team is dedicated to creating a platform that empowers 
-                    learners worldwide to achieve their dreams.
+                    {{ App\Helpers\TranslationHelper::trans('team.mission_text') }}
                 </p>
             </div>
         </div>
@@ -862,28 +860,28 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-number">15+</div>
-                    <div class="stat-label">Team Members</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('team.stats_members') }}</div>
                 </div>
                 <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
                     <div class="stat-icon">
                         <i class="fas fa-globe"></i>
                     </div>
                     <div class="stat-number">8+</div>
-                    <div class="stat-label">Countries</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('team.stats_countries') }}</div>
                 </div>
                 <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
                     <div class="stat-icon">
                         <i class="fas fa-graduation-cap"></i>
                     </div>
                     <div class="stat-number">50+</div>
-                    <div class="stat-label">Years Combined Experience</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('team.stats_experience') }}</div>
                 </div>
                 <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
                     <div class="stat-icon">
                         <i class="fas fa-heart"></i>
                     </div>
                     <div class="stat-number">10K+</div>
-                    <div class="stat-label">Lives Impacted</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('team.stats_impact') }}</div>
                 </div>
             </div>
         </div>
@@ -893,10 +891,10 @@
     <section class="team-section">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <span class="section-subtitle">Our People</span>
-                <h2 class="section-title">The Passionate Minds <span>Behind the Platform</span></h2>
+                <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('team.team_subtitle') }}</span>
+                <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('team.team_title') !!}</h2>
                 <p class="section-description">
-                    Dedicated professionals committed to transforming education through technology and innovation
+                    {{ App\Helpers\TranslationHelper::trans('team.team_description') }}
                 </p>
             </div>
 
@@ -939,10 +937,10 @@
     <section class="values-section">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <span class="section-subtitle">Our Values</span>
-                <h2 class="section-title">What <span>Guides</span> Our Work</h2>
+                <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('team.values_subtitle') }}</span>
+                <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('team.values_title') !!}</h2>
                 <p class="section-description">
-                    The principles that drive our team and shape our platform
+                    {{ App\Helpers\TranslationHelper::trans('team.values_description') }}
                 </p>
             </div>
 
@@ -951,28 +949,22 @@
                     <div class="value-icon">
                         <i class="fas fa-heart"></i>
                     </div>
-                    <h3 class="value-title">Passion for Education</h3>
-                    <p class="value-text">
-                        We believe in the transformative power of learning and are dedicated to making it accessible to all.
-                    </p>
+                    <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('team.value_1_title') }}</h3>
+                    <p class="value-text">{{ App\Helpers\TranslationHelper::trans('team.value_1_text') }}</p>
                 </div>
                 <div class="value-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="value-icon">
                         <i class="fas fa-lightbulb"></i>
                     </div>
-                    <h3 class="value-title">Innovation First</h3>
-                    <p class="value-text">
-                        We continuously push boundaries to create better learning experiences through technology.
-                    </p>
+                    <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('team.value_2_title') }}</h3>
+                    <p class="value-text">{{ App\Helpers\TranslationHelper::trans('team.value_2_text') }}</p>
                 </div>
                 <div class="value-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="value-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3 class="value-title">Community Focused</h3>
-                    <p class="value-text">
-                        We build with and for our community, ensuring our solutions meet real needs.
-                    </p>
+                    <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('team.value_3_title') }}</h3>
+                    <p class="value-text">{{ App\Helpers\TranslationHelper::trans('team.value_3_text') }}</p>
                 </div>
             </div>
         </div>
@@ -982,10 +974,10 @@
     <section class="join-team">
         <div class="container">
             <div class="join-team-content" data-aos="zoom-in">
-                <h2>Join <span>Our Mission</span></h2>
-                <p>We're always looking for passionate individuals to join our team</p>
+                <h2>{!! App\Helpers\TranslationHelper::trans('team.join_title') !!}</h2>
+                <p>{{ App\Helpers\TranslationHelper::trans('team.join_description') }}</p>
                 <a href="{{ route('contact') }}" class="btn">
-                    <i class="fas fa-paper-plane"></i> Get in Touch
+                    <i class="fas fa-paper-plane"></i> {{ App\Helpers\TranslationHelper::trans('team.join_button') }}
                 </a>
             </div>
         </div>

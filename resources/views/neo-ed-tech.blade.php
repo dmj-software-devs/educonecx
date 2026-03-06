@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'NEO ED-TECH - Digital Solutions for Business Growth')
+@section('title', App\Helpers\TranslationHelper::trans('neo.title'))
 
-@section('meta_description', 'Empowering Your Business with Smart Digital Solutions. Websites, Marketing, E-commerce — Everything You Need to Grow Your Business Online')
+@section('meta_description', App\Helpers\TranslationHelper::trans('neo.meta_description'))
 
 @push('styles')
 <style>
@@ -1512,13 +1512,13 @@
 
         <nav class="nav-menu" id="navMenu">
             <div class="nav-links">
-                <a href="{{ route('home') }}">Home</a>
-                <a href="#services">Services</a>
-                <a href="#about">About</a>
-                <a href="#testimonials">Testimonials</a>
-                <a href="#contact">Contact</a>
+                <a href="{{ route('home') }}">{{ App\Helpers\TranslationHelper::trans('neo.nav_home') }}</a>
+                <a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.nav_services') }}</a>
+                <a href="#about">{{ App\Helpers\TranslationHelper::trans('neo.nav_about') }}</a>
+                <a href="#testimonials">{{ App\Helpers\TranslationHelper::trans('neo.nav_testimonials') }}</a>
+                <a href="#contact">{{ App\Helpers\TranslationHelper::trans('neo.nav_contact') }}</a>
             </div>
-            <a href="#contact" class="contact-btn">Get Free Consultation</a>
+            <a href="#contact" class="contact-btn">{{ App\Helpers\TranslationHelper::trans('neo.nav_btn') }}</a>
         </nav>
     </div>
 </header>
@@ -1535,21 +1535,20 @@
     <div class="container">
         <div class="neo-hero-content" data-aos="fade-up">
             <h1 class="neo-hero-title">
-                Empowering Your<br>Business with<br>
-                <span>Smart Digital<br>Solutions</span>
+                {!! App\Helpers\TranslationHelper::trans('neo.hero_title') !!}
             </h1>
 
             <p class="neo-hero-subtitle">
-                Websites, Marketing, E-commerce — Everything You Need to Grow Your Business Online
+                {{ App\Helpers\TranslationHelper::trans('neo.hero_subtitle') }}
             </p>
 
             <div class="neo-hero-buttons">
                 <a href="#contact" class="btn btn-primary">
-                    Get a Free Consultation
+                    {{ App\Helpers\TranslationHelper::trans('neo.hero_btn_consultation') }}
                     <i class="fas fa-arrow-right"></i>
                 </a>
                 <a href="#services" class="btn btn-secondary">
-                    See Our Services
+                    {{ App\Helpers\TranslationHelper::trans('neo.hero_btn_services') }}
                     <i class="fas fa-play-circle"></i>
                 </a>
             </div>
@@ -1559,7 +1558,7 @@
             <div class="neo-trust-badge">
                 <div class="neo-counter">
                     <span class="number" data-target="800">800</span>
-                    <span>+ businesses</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('neo.hero_counter') }}</span>
                 </div>
 
                 <div class="neo-avatar-group">
@@ -1580,10 +1579,10 @@
 <section class="neo-services" id="services">
     <div class="container">
         <div class="neo-section-header" data-aos="fade-up">
-            <span class="neo-section-subtitle">Our Expertise</span>
-            <h2 class="neo-section-title">Complete Digital <span>Solutions</span></h2>
+            <span class="neo-section-subtitle">{{ App\Helpers\TranslationHelper::trans('neo.services_subtitle') }}</span>
+            <h2 class="neo-section-title">{!! App\Helpers\TranslationHelper::trans('neo.services_title') !!}</h2>
             <p class="neo-section-description">
-                NEO ED-TECH manages social media end-to-end and creates professional, platform-native content that promotes your business and drives growth. We also implement AI across your website and WhatsApp—smart chatbots, automations, and analytics—so you serve customers 24/7, convert more leads, and scale efficiently.
+                {{ App\Helpers\TranslationHelper::trans('neo.services_description') }}
             </p>
         </div>
 
@@ -1593,15 +1592,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <h3 class="neo-service-title">Social Media Management</h3>
-                <p class="neo-service-text">Complete end-to-end social media management that builds your brand presence and engages your audience.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_1_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_1_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Account setup & optimization</li>
-                    <li><i class="fas fa-check"></i> Brand guidelines development</li>
-                    <li><i class="fas fa-check"></i> Content calendar planning</li>
-                    <li><i class="fas fa-check"></i> Daily posting & scheduling</li>
-                    <li><i class="fas fa-check"></i> Community management</li>
-                    <li><i class="fas fa-check"></i> DMs & social listening</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_1_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_1_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_1_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_1_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_1_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_1_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1610,15 +1609,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-camera"></i>
                 </div>
-                <h3 class="neo-service-title">Content Studio</h3>
-                <p class="neo-service-text">Professional, platform-native content creation that promotes your business and drives engagement.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_2_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_2_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Short-form videos (Reels/TikTok/Shorts)</li>
-                    <li><i class="fas fa-check"></i> UGC-style ads & content</li>
-                    <li><i class="fas fa-check"></i> Product photography</li>
-                    <li><i class="fas fa-check"></i> Motion graphics & animations</li>
-                    <li><i class="fas fa-check"></i> Carousels & infographics</li>
-                    <li><i class="fas fa-check"></i> Blog posts & email copy</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_2_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_2_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_2_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_2_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_2_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_2_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1627,15 +1626,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-rocket"></i>
                 </div>
-                <h3 class="neo-service-title">Paid Growth</h3>
-                <p class="neo-service-text">Strategic advertising campaigns across all major platforms with advanced optimization and testing.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_3_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_3_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Meta advertising campaigns</li>
-                    <li><i class="fas fa-check"></i> TikTok advertising</li>
-                    <li><i class="fas fa-check"></i> Google (Search/Display/YouTube)</li>
-                    <li><i class="fas fa-check"></i> Retargeting campaigns</li>
-                    <li><i class="fas fa-check"></i> A/B testing & optimization</li>
-                    <li><i class="fas fa-check"></i> Landing pages & funnels</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_3_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_3_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_3_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_3_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_3_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_3_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1644,15 +1643,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-globe"></i>
                 </div>
-                <h3 class="neo-service-title">Website & Funnels</h3>
-                <p class="neo-service-text">Conversion-optimized websites and e-commerce solutions built for maximum performance.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_4_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_4_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> WordPress/Wix/Webflow sites</li>
-                    <li><i class="fas fa-check"></i> E-commerce (Shopify/WooCommerce)</li>
-                    <li><i class="fas fa-check"></i> Speed optimization</li>
-                    <li><i class="fas fa-check"></i> CRO improvements</li>
-                    <li><i class="fas fa-check"></i> Mobile-first design</li>
-                    <li><i class="fas fa-check"></i> Performance analytics</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_4_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_4_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_4_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_4_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_4_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_4_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1661,15 +1660,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-search"></i>
                 </div>
-                <h3 class="neo-service-title">SEO & Local Presence</h3>
-                <p class="neo-service-text">Complete search engine optimization and local business visibility enhancement.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_5_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_5_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> On-page + technical SEO</li>
-                    <li><i class="fas fa-check"></i> Local SEO optimization</li>
-                    <li><i class="fas fa-check"></i> Google Business Profile management</li>
-                    <li><i class="fas fa-check"></i> Reviews & reputation management</li>
-                    <li><i class="fas fa-check"></i> Keyword research & strategy</li>
-                    <li><i class="fas fa-check"></i> Basic ASO (if needed)</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_5_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_5_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_5_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_5_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_5_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_5_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1678,16 +1677,16 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-robot"></i>
                 </div>
-                <h3 class="neo-service-title">AI & Automation</h3>
-                <p class="neo-service-text">Smart AI implementation across your website and WhatsApp for 24/7 customer service.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_6_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Website AI assistant</li>
-                    <li><i class="fas fa-check"></i> WhatsApp Business chatbot</li>
-                    <li><i class="fas fa-check"></i> Lead capture & qualification</li>
-                    <li><i class="fas fa-check"></i> Appointment scheduling</li>
-                    <li><i class="fas fa-check"></i> CRM integration</li>
-                    <li><i class="fas fa-check"></i> Automated email/SMS sequences</li>
-                    <li><i class="fas fa-check"></i> AI knowledge base</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_6') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_6_feature_7') }}</li>
                 </ul>
             </div>
 
@@ -1696,15 +1695,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-chart-bar"></i>
                 </div>
-                <h3 class="neo-service-title">Analytics & Reporting</h3>
-                <p class="neo-service-text">Comprehensive tracking setup and detailed reporting to measure performance.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_7_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_7_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> GA4/Tag Manager/pixels setup</li>
-                    <li><i class="fas fa-check"></i> Custom dashboards</li>
-                    <li><i class="fas fa-check"></i> KPI tracking & monitoring</li>
-                    <li><i class="fas fa-check"></i> Monthly performance reports</li>
-                    <li><i class="fas fa-check"></i> Cohort analysis</li>
-                    <li><i class="fas fa-check"></i> Attribution analysis</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_7_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_7_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_7_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_7_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_7_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_7_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1713,15 +1712,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-palette"></i>
                 </div>
-                <h3 class="neo-service-title">Branding & Design</h3>
-                <p class="neo-service-text">Complete brand identity development and design assets that make your business stand out.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_8_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_8_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Logo design & brand identity</li>
-                    <li><i class="fas fa-check"></i> Brand kit & guidelines</li>
-                    <li><i class="fas fa-check"></i> Social media templates</li>
-                    <li><i class="fas fa-check"></i> Ad creatives & visuals</li>
-                    <li><i class="fas fa-check"></i> Sales collateral design</li>
-                    <li><i class="fas fa-check"></i> Digital asset library</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_8_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_8_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_8_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_8_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_8_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_8_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1730,15 +1729,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-handshake"></i>
                 </div>
-                <h3 class="neo-service-title">Influencer & Partnerships</h3>
-                <p class="neo-service-text">Strategic creator partnerships and affiliate program management to expand your reach.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_9_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_9_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Creator outreach & management</li>
-                    <li><i class="fas fa-check"></i> Influencer campaign strategy</li>
-                    <li><i class="fas fa-check"></i> Affiliate program setup</li>
-                    <li><i class="fas fa-check"></i> Partnership tracking & analytics</li>
-                    <li><i class="fas fa-check"></i> Collaboration management</li>
-                    <li><i class="fas fa-check"></i> ROI optimization</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_9_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_9_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_9_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_9_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_9_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_9_feature_6') }}</li>
                 </ul>
             </div>
 
@@ -1747,15 +1746,15 @@
                 <div class="neo-service-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <h3 class="neo-service-title">Training & Playbooks</h3>
-                <p class="neo-service-text">Comprehensive team training and custom playbooks tailored to your brand.</p>
+                <h3 class="neo-service-title">{{ App\Helpers\TranslationHelper::trans('neo.service_10_title') }}</h3>
+                <p class="neo-service-text">{{ App\Helpers\TranslationHelper::trans('neo.service_10_text') }}</p>
                 <ul class="neo-service-list">
-                    <li><i class="fas fa-check"></i> Team upskilling & training</li>
-                    <li><i class="fas fa-check"></i> Standard Operating Procedures (SOPs)</li>
-                    <li><i class="fas fa-check"></i> Content creation playbooks</li>
-                    <li><i class="fas fa-check"></i> Advertising strategy guides</li>
-                    <li><i class="fas fa-check"></i> Brand-specific best practices</li>
-                    <li><i class="fas fa-check"></i> Performance optimization guides</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_10_feature_1') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_10_feature_2') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_10_feature_3') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_10_feature_4') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_10_feature_5') }}</li>
+                    <li><i class="fas fa-check"></i> {{ App\Helpers\TranslationHelper::trans('neo.service_10_feature_6') }}</li>
                 </ul>
             </div>
         </div>
@@ -1767,31 +1766,31 @@
     <div class="container">
         <div class="neo-about-grid">
             <div class="neo-about-content" data-aos="fade-right">
-                <span class="neo-section-subtitle">Why NEO ED-TECH?</span>
-                <h2 class="neo-section-title">Your Success is Our <span>Mission</span></h2>
-                <p>We don't just build websites and run campaigns. We create digital experiences that drive real business growth and deliver measurable results.</p>
+                <span class="neo-section-subtitle">{{ App\Helpers\TranslationHelper::trans('neo.about_subtitle') }}</span>
+                <h2 class="neo-section-title">{!! App\Helpers\TranslationHelper::trans('neo.about_title') !!}</h2>
+                <p>{{ App\Helpers\TranslationHelper::trans('neo.about_text_1') }}</p>
                 
                 <h3 style="font-size: 1.5rem; margin: 30px 0 15px;">Who We Are</h3>
-                <p>NEO is an Ed-Tech & Digital Solutions agency specializing in modern website creation, smart automation, online store setup, and high-performance digital systems. We help entrepreneurs and businesses launch their platforms, sell online, optimize workflows, integrate AI, and build efficient, accessible, ready-to-use tech solutions.</p>
+                <p>{{ App\Helpers\TranslationHelper::trans('neo.about_text_2') }}</p>
                 
                 <div class="neo-divider" style="background: linear-gradient(90deg, transparent, var(--primary), transparent); margin: 30px 0;"></div>
                 
                 <div class="neo-about-features">
                     <div class="neo-about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>100+ Projects Delivered</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('neo.about_feature_1') }}</span>
                     </div>
                     <div class="neo-about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>95% Client Satisfaction</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('neo.about_feature_2') }}</span>
                     </div>
                     <div class="neo-about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Expert Team</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('neo.about_feature_3') }}</span>
                     </div>
                     <div class="neo-about-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Latest Technologies</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('neo.about_feature_4') }}</span>
                     </div>
                 </div>
             </div>
@@ -1801,32 +1800,32 @@
                     <div class="neo-about-card-icon">
                         <i class="fas fa-dollar-sign"></i>
                     </div>
-                    <h3>Affordable Pricing</h3>
-                    <p>Transparent, competitive rates with flexible payment options that work for businesses of all sizes.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('neo.about_card_1_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('neo.about_card_1_text') }}</p>
                 </div>
 
                 <div class="neo-about-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="neo-about-card-icon">
                         <i class="fas fa-heart"></i>
                     </div>
-                    <h3>Personalized Service</h3>
-                    <p>Dedicated account manager and customized solutions tailored to your specific business goals.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('neo.about_card_2_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('neo.about_card_2_text') }}</p>
                 </div>
 
                 <div class="neo-about-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="neo-about-card-icon">
                         <i class="fas fa-clock"></i>
                     </div>
-                    <h3>Fast Delivery</h3>
-                    <p>Quick turnaround times without compromising quality. Most projects completed within 2-4 weeks.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('neo.about_card_3_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('neo.about_card_3_text') }}</p>
                 </div>
 
                 <div class="neo-about-card" data-aos="fade-up" data-aos-delay="400">
                     <div class="neo-about-card-icon">
                         <i class="fas fa-headset"></i>
                     </div>
-                    <h3>Ongoing Support</h3>
-                    <p>24/7 technical support and maintenance to keep your digital presence running smoothly.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('neo.about_card_4_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('neo.about_card_4_text') }}</p>
                 </div>
             </div>
         </div>
@@ -1837,10 +1836,10 @@
 <section class="neo-testimonials" id="testimonials">
     <div class="container">
         <div class="neo-section-header" data-aos="fade-up">
-            <span class="neo-section-subtitle">What Our Clients Say</span>
-            <h2 class="neo-section-title">Client <span>Success Stories</span></h2>
+            <span class="neo-section-subtitle">{{ App\Helpers\TranslationHelper::trans('neo.testimonials_subtitle') }}</span>
+            <h2 class="neo-section-title">{!! App\Helpers\TranslationHelper::trans('neo.testimonials_title') !!}</h2>
             <p class="neo-section-description">
-                Don't just take our word for it. Here's what business owners say about working with NEO ED-TECH.
+                {{ App\Helpers\TranslationHelper::trans('neo.testimonials_description') }}
             </p>
         </div>
 
@@ -1855,15 +1854,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="neo-testimonial-text">
-                    "NEO ED-TECH transformed our online presence completely. Our new website increased orders by 150% in just 3 months!"
+                    "{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_text') }}"
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
                         <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=60&h=60&fit=crop" alt="Sarah Mitchell" loading="lazy">
                     </div>
                     <div class="neo-author-info">
-                        <h4>Sarah Mitchell</h4>
-                        <p>Bloom Bakery</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -1878,15 +1877,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="neo-testimonial-text">
-                    "Professional, fast, and affordable. They delivered exactly what we needed for our e-commerce store. Highly recommended!"
+                    "{{ App\Helpers\TranslationHelper::trans('neo.testimonial_2_text') }}"
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
                         <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&h=60&fit=crop" alt="Michael Rodriguez" loading="lazy">
                     </div>
                     <div class="neo-author-info">
-                        <h4>Michael Rodriguez</h4>
-                        <p>TechStart Solutions</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_2_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_2_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -1901,15 +1900,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="neo-testimonial-text">
-                    "The marketing campaigns they created boosted our lead generation by 200%. Amazing results and great communication throughout."
+                    "{{ App\Helpers\TranslationHelper::trans('neo.testimonial_3_text') }}"
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
                         <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop" alt="Emma Thompson" loading="lazy">
                     </div>
                     <div class="neo-author-info">
-                        <h4>Emma Thompson</h4>
-                        <p>Green Leaf Consulting</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_3_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_3_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -1924,15 +1923,15 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <p class="neo-testimonial-text">
-                    "Their custom software solution streamlined our operations and saved us countless hours every week. The ROI has been incredible."
+                    "{{ App\Helpers\TranslationHelper::trans('neo.testimonial_4_text') }}"
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
                         <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=60&h=60&fit=crop" alt="Jessica Davis" loading="lazy">
                     </div>
                     <div class="neo-author-info">
-                        <h4>Jessica Davis</h4>
-                        <p>Urban Fitness Studio</p>
+                        <h4>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_4_name') }}</h4>
+                        <p>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_4_role') }}</p>
                     </div>
                 </div>
             </div>
@@ -1945,9 +1944,9 @@
     <div class="container">
         <div class="neo-contact-grid">
             <div class="neo-contact-info" data-aos="fade-right">
-                <h2 class="neo-contact-title">Ready to Transform Your<br><span>Digital Presence?</span></h2>
+                <h2 class="neo-contact-title">{!! App\Helpers\TranslationHelper::trans('neo.contact_title') !!}</h2>
                 <p class="neo-contact-text">
-                    Let's discuss your project and create a custom solution that drives real business growth. Get your free consultation now.
+                    {{ App\Helpers\TranslationHelper::trans('neo.contact_text') }}
                 </p>
 
                 <div class="neo-contact-details">
@@ -1956,8 +1955,8 @@
                             <i class="fas fa-envelope"></i>
                         </div>
                         <div>
-                            <h3>Email Us</h3>
-                            <p>neoedtech22@gmail.com</p>
+                            <h3>{{ App\Helpers\TranslationHelper::trans('neo.contact_email_label') }}</h3>
+                            <p>{{ App\Helpers\TranslationHelper::trans('neo.contact_email') }}</p>
                         </div>
                     </div>
 
@@ -1966,8 +1965,8 @@
                             <i class="fas fa-phone-alt"></i>
                         </div>
                         <div>
-                            <h3>Call Us</h3>
-                            <p>+1 (833) 533-8228</p>
+                            <h3>{{ App\Helpers\TranslationHelper::trans('neo.contact_phone_label') }}</h3>
+                            <p>{{ App\Helpers\TranslationHelper::trans('neo.contact_phone') }}</p>
                         </div>
                     </div>
 
@@ -1976,62 +1975,62 @@
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
                         <div>
-                            <h3>Visit Us</h3>
-                            <p>1200 Brickell Ave, Miami, FL 33131, USA</p>
+                            <h3>{{ App\Helpers\TranslationHelper::trans('neo.contact_address_label') }}</h3>
+                            <p>{{ App\Helpers\TranslationHelper::trans('neo.contact_address') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="neo-contact-form" data-aos="fade-left">
-                <h3 class="neo-form-title">Send us a message</h3>
+                <h3 class="neo-form-title">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_title') }}</h3>
                 
                 <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
                     @csrf
                     
                     <div class="neo-form-group">
-                        <label for="first_name">First Name</label>
+                        <label for="first_name">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_first_name') }}</label>
                         <input type="text" id="first_name" name="first_name" class="neo-form-control" placeholder="John" required>
                     </div>
 
                     <div class="neo-form-group">
-                        <label for="last_name">Last Name</label>
+                        <label for="last_name">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_last_name') }}</label>
                         <input type="text" id="last_name" name="last_name" class="neo-form-control" placeholder="Doe">
                     </div>
 
                     <div class="neo-form-group">
-                        <label for="email">Email</label>
+                        <label for="email">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_email') }}</label>
                         <input type="email" id="email" name="email" class="neo-form-control" placeholder="john@company.com" required>
                     </div>
 
                     <div class="neo-form-group">
-                        <label for="company">Company (Optional)</label>
+                        <label for="company">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_company') }}</label>
                         <input type="text" id="company" name="company" class="neo-form-control" placeholder="Your Company Name">
                     </div>
 
                     <div class="neo-form-group">
-                        <label for="service">Service Interested In</label>
+                        <label for="service">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_service') }}</label>
                         <select id="service" name="service" class="neo-form-control" required>
-                            <option value="">Select an option</option>
-                            <option value="Social Media Management">Social Media Management</option>
-                            <option value="Content Studio">Content Studio</option>
-                            <option value="Paid Growth">Paid Growth</option>
-                            <option value="Website & Funnels">Website & Funnels</option>
-                            <option value="SEO & Local Presence">SEO & Local Presence</option>
-                            <option value="AI & Automation">AI & Automation</option>
-                            <option value="Analytics & Reporting">Analytics & Reporting</option>
-                            <option value="Branding & Design">Branding & Design</option>
-                            <option value="Influencer & Partnerships">Influencer & Partnerships</option>
-                            <option value="Training & Playbooks">Training & Playbooks</option>
+                            <option value="">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_service_select') }}</option>
+                            <option value="Social Media Management">{{ App\Helpers\TranslationHelper::trans('neo.service_1_title') }}</option>
+                            <option value="Content Studio">{{ App\Helpers\TranslationHelper::trans('neo.service_2_title') }}</option>
+                            <option value="Paid Growth">{{ App\Helpers\TranslationHelper::trans('neo.service_3_title') }}</option>
+                            <option value="Website & Funnels">{{ App\Helpers\TranslationHelper::trans('neo.service_4_title') }}</option>
+                            <option value="SEO & Local Presence">{{ App\Helpers\TranslationHelper::trans('neo.service_5_title') }}</option>
+                            <option value="AI & Automation">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</option>
+                            <option value="Analytics & Reporting">{{ App\Helpers\TranslationHelper::trans('neo.service_7_title') }}</option>
+                            <option value="Branding & Design">{{ App\Helpers\TranslationHelper::trans('neo.service_8_title') }}</option>
+                            <option value="Influencer & Partnerships">{{ App\Helpers\TranslationHelper::trans('neo.service_9_title') }}</option>
+                            <option value="Training & Playbooks">{{ App\Helpers\TranslationHelper::trans('neo.service_10_title') }}</option>
                         </select>
                     </div>
 
                     <div class="neo-form-group">
-                        <label for="message">Message</label>
+                        <label for="message">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_message') }}</label>
                         <textarea id="message" name="message" class="neo-form-control" placeholder="Tell us about your project and goals..." required></textarea>
                     </div>
 
-                    <button type="submit" class="neo-form-submit">Submit Now</button>
+                    <button type="submit" class="neo-form-submit">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_submit') }}</button>
                 </form>
             </div>
         </div>
@@ -2047,38 +2046,38 @@
                     <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="NEO ED-TECH" loading="lazy">
                 </div>
                 <p class="neo-footer-about">
-                    Empowering businesses with smart digital solutions. From websites to marketing campaigns, we help you grow your online presence and achieve your business goals.
+                    {{ App\Helpers\TranslationHelper::trans('neo.footer_about') }}
                 </p>
             </div>
 
             <div class="neo-footer-col">
-                <h4 class="neo-footer-title">Our Services</h4>
+                <h4 class="neo-footer-title">{{ App\Helpers\TranslationHelper::trans('neo.footer_services_title') }}</h4>
                 <ul class="neo-footer-links">
-                    <li><a href="#services">Social Media Management</a></li>
-                    <li><a href="#services">Content Studio</a></li>
-                    <li><a href="#services">Paid Growth</a></li>
-                    <li><a href="#services">Website & Funnels</a></li>
-                    <li><a href="#services">SEO & Local Presence</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_1_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_2_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_3_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_4_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_5_title') }}</a></li>
                 </ul>
             </div>
 
             <div class="neo-footer-col">
                 <h4 class="neo-footer-title">&nbsp;</h4>
                 <ul class="neo-footer-links">
-                    <li><a href="#services">AI & Automation</a></li>
-                    <li><a href="#services">Analytics & Reporting</a></li>
-                    <li><a href="#services">Branding & Design</a></li>
-                    <li><a href="#services">Influencer & Partnerships</a></li>
-                    <li><a href="#services">Training & Playbooks</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_7_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_8_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_9_title') }}</a></li>
+                    <li><a href="#services">{{ App\Helpers\TranslationHelper::trans('neo.service_10_title') }}</a></li>
                 </ul>
             </div>
 
             <div class="neo-footer-col">
-                <h4 class="neo-footer-title">Contact Info</h4>
+                <h4 class="neo-footer-title">{{ App\Helpers\TranslationHelper::trans('neo.footer_contact_title') }}</h4>
                 <div class="neo-footer-contact">
-                    <p><i class="fas fa-envelope"></i> neoedtech22@gmail.com</p>
-                    <p><i class="fas fa-phone"></i> +1 (833) 533-8228</p>
-                    <p><i class="fas fa-map-marker-alt"></i> 1200 Brickell Ave, Miami, FL 33131, USA</p>
+                    <p><i class="fas fa-envelope"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_email') }}</p>
+                    <p><i class="fas fa-phone"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_phone') }}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_address') }}</p>
                 </div>
 
                 <div class="neo-social-links">
@@ -2102,7 +2101,7 @@
         </div>
 
         <div class="neo-footer-bottom">
-            <p>&copy; 2024 NEO ED-TECH. All rights reserved. <a href="{{ route('privacy') }}">Privacy Policy</a> | <a href="{{ route('terms') }}">Terms of Service</a></p>
+            <p>{!! App\Helpers\TranslationHelper::trans('neo.footer_copyright') !!} <a href="{{ route('privacy') }}">{{ App\Helpers\TranslationHelper::trans('neo.footer_privacy') }}</a> | <a href="{{ route('terms') }}">{{ App\Helpers\TranslationHelper::trans('neo.footer_terms') }}</a></p>
         </div>
     </div>
 </footer>
@@ -2215,7 +2214,7 @@
                 const submitBtn = this.querySelector('button[type="submit"]');
                 const originalText = submitBtn.textContent;
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Sending...';
+                submitBtn.textContent = '{{ App\Helpers\TranslationHelper::trans('neo.contact_form_submitting') }}';
 
                 const formData = new FormData(this);
 

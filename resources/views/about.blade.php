@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'About Us - EDUCONECX | Empowering Global Learners')
+@section('title', App\Helpers\TranslationHelper::trans('about.title', [], 'en') ?? 'About Us - EDUCONECX | Empowering Global Learners')
 
-@section('meta_description', 'Learn about EDUCONECX, an international AI-powered educational platform dedicated to supporting learners worldwide with practical language and digital business skills.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('about.meta_description', [], 'en') ?? 'Learn about EDUCONECX, an international AI-powered educational platform dedicated to supporting learners worldwide with practical language and digital business skills.')
 
 @push('styles')
 <style>
@@ -1540,11 +1540,10 @@
 
     <div class="container">
         <div class="about-hero-content" data-aos="fade-up">
-            <span class="about-hero-badge">About EDUCONECX</span>
-            <h1 class="about-hero-title">Empowering <span>Learners Worldwide</span></h1>
+            <span class="about-hero-badge">{{ App\Helpers\TranslationHelper::trans('about.hero_badge') }}</span>
+            <h1 class="about-hero-title">{!! App\Helpers\TranslationHelper::trans('about.hero_title') !!}</h1>
             <p class="about-hero-text">
-                We're on a mission to make quality education accessible to everyone,
-                everywhere through AI-powered learning and practical skill development.
+                {{ App\Helpers\TranslationHelper::trans('about.hero_description') }}
             </p>
         </div>
     </div>
@@ -1555,42 +1554,36 @@
     <div class="container">
         <div class="mission-grid">
             <div class="mission-content" data-aos="fade-right">
-                <span class="mission-subtitle">Our Mission</span>
-                <h2 class="mission-title">Breaking Barriers, <span>Building Futures</span></h2>
+                <span class="mission-subtitle">{{ App\Helpers\TranslationHelper::trans('about.mission_subtitle') }}</span>
+                <h2 class="mission-title">{!! App\Helpers\TranslationHelper::trans('about.mission_title') !!}</h2>
                 <p class="mission-text">
-                    EDUCONECX is an international, AI-powered educational platform dedicated to
-                    supporting learners worldwide with practical language and digital business skills.
-                    Our mission is to help individuals overcome language barriers, build real-world
-                    competencies, and succeed in today's global digital economy.
+                    {{ App\Helpers\TranslationHelper::trans('about.mission_text_1') }}
                 </p>
                 <p class="mission-text">
-                    We believe that access to practical education is essential for personal and
-                    economic growth. By combining AI-powered learning tools with a practical,
-                    skill-focused approach, we help learners build capabilities that open opportunities
-                    in customer service, freelancing, online business, and global professional collaboration.
+                    {{ App\Helpers\TranslationHelper::trans('about.mission_text_2') }}
                 </p>
 
                 <div class="mission-stats">
                     <div class="mission-stat">
                         <div class="mission-stat-number">10K+</div>
-                        <div class="mission-stat-label">Active Learners</div>
+                        <div class="mission-stat-label">{{ App\Helpers\TranslationHelper::trans('about.mission_stat_1') }}</div>
                     </div>
                     <div class="mission-stat">
                         <div class="mission-stat-number">50+</div>
-                        <div class="mission-stat-label">Expert Instructors</div>
+                        <div class="mission-stat-label">{{ App\Helpers\TranslationHelper::trans('about.mission_stat_2') }}</div>
                     </div>
                     <div class="mission-stat">
                         <div class="mission-stat-number">15+</div>
-                        <div class="mission-stat-label">Countries</div>
+                        <div class="mission-stat-label">{{ App\Helpers\TranslationHelper::trans('about.mission_stat_3') }}</div>
                     </div>
                 </div>
             </div>
 
             <div class="mission-image" data-aos="fade-left">
-                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Our Mission" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.mission_subtitle') }}" loading="lazy">
                 <div class="mission-image-badge">
                     <i class="fas fa-robot"></i>
-                    <span>AI-Powered Learning</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('about.mission_badge') }}</span>
                 </div>
             </div>
         </div>
@@ -1601,10 +1594,10 @@
 <section class="values-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Our Values</span>
-            <h2 class="section-title">What <span>Drives Us</span> Forward</h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('about.values_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('about.values_title') !!}</h2>
             <p class="section-description">
-                These core principles guide everything we do at EDUCONECX
+                {{ App\Helpers\TranslationHelper::trans('about.values_description') }}
             </p>
         </div>
 
@@ -1613,66 +1606,48 @@
                 <div class="value-icon">
                     <i class="fas fa-heart"></i>
                 </div>
-                <h3 class="value-title">Accessibility</h3>
-                <p class="value-text">
-                    We believe quality education should be accessible to everyone, regardless of
-                    their location, background, or financial situation.
-                </p>
+                <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('about.value_1_title') }}</h3>
+                <p class="value-text">{{ App\Helpers\TranslationHelper::trans('about.value_1_text') }}</p>
             </div>
 
             <div class="value-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="value-icon">
                     <i class="fas fa-lightbulb"></i>
                 </div>
-                <h3 class="value-title">Innovation</h3>
-                <p class="value-text">
-                    We continuously leverage AI and cutting-edge technology to create more effective
-                    and engaging learning experiences.
-                </p>
+                <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('about.value_2_title') }}</h3>
+                <p class="value-text">{{ App\Helpers\TranslationHelper::trans('about.value_2_text') }}</p>
             </div>
 
             <div class="value-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="value-icon">
                     <i class="fas fa-handshake"></i>
                 </div>
-                <h3 class="value-title">Integrity</h3>
-                <p class="value-text">
-                    We are committed to transparency, honesty, and ethical practices in everything
-                    we do, from content creation to learner support.
-                </p>
+                <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('about.value_3_title') }}</h3>
+                <p class="value-text">{{ App\Helpers\TranslationHelper::trans('about.value_3_text') }}</p>
             </div>
 
             <div class="value-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="value-icon">
                     <i class="fas fa-globe"></i>
                 </div>
-                <h3 class="value-title">Global Community</h3>
-                <p class="value-text">
-                    We foster a diverse, inclusive community where learners from all backgrounds
-                    can connect, share, and grow together.
-                </p>
+                <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('about.value_4_title') }}</h3>
+                <p class="value-text">{{ App\Helpers\TranslationHelper::trans('about.value_4_text') }}</p>
             </div>
 
             <div class="value-card" data-aos="fade-up" data-aos-delay="500">
                 <div class="value-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="value-title">Practical Excellence</h3>
-                <p class="value-text">
-                    We focus on real-world skills that learners can immediately apply to advance
-                    their careers and businesses.
-                </p>
+                <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('about.value_5_title') }}</h3>
+                <p class="value-text">{{ App\Helpers\TranslationHelper::trans('about.value_5_text') }}</p>
             </div>
 
             <div class="value-card" data-aos="fade-up" data-aos-delay="600">
                 <div class="value-icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <h3 class="value-title">Learner-Centered</h3>
-                <p class="value-text">
-                    Every decision we make is focused on providing the best possible experience
-                    and outcomes for our learners.
-                </p>
+                <h3 class="value-title">{{ App\Helpers\TranslationHelper::trans('about.value_6_title') }}</h3>
+                <p class="value-text">{{ App\Helpers\TranslationHelper::trans('about.value_6_text') }}</p>
             </div>
         </div>
     </div>
@@ -1683,30 +1658,23 @@
     <div class="container">
         <div class="story-grid">
             <div class="story-image" data-aos="fade-right">
-                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Our Story" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.story_subtitle') }}" loading="lazy">
             </div>
 
             <div class="story-content" data-aos="fade-left">
-                <span class="section-subtitle">Our Story</span>
-                <h2 class="story-title">Why We Created <span>This Platform</span></h2>
+                <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('about.story_subtitle') }}</span>
+                <h2 class="story-title">{!! App\Helpers\TranslationHelper::trans('about.story_title') !!}</h2>
                 <p class="story-text">
-                    Many individuals face challenges due to limited access to relevant learning
-                    resources or training that connects directly to real-world applications.
-                    EDUCONECX was created to address this gap.
+                    {{ App\Helpers\TranslationHelper::trans('about.story_text_1') }}
                 </p>
                 <p class="story-text">
-                    We saw a world where talented individuals were held back not by their ability,
-                    but by their access to quality education. So we built a platform that combines
-                    AI-powered learning tools with practical, skill-focused programs that prepare
-                    learners for the digital economy.
+                    {{ App\Helpers\TranslationHelper::trans('about.story_text_2') }}
                 </p>
 
                 <div class="story-quote">
                     <i class="fas fa-quote-left"></i>
                     <p>
-                        Our learning programs are curated from trusted educational sources and platforms,
-                        reviewed and updated to ensure relevance, practicality, and alignment with real-world
-                        needs. We bring essential knowledge together in one accessible platform.
+                        {{ App\Helpers\TranslationHelper::trans('about.story_quote') }}
                     </p>
                 </div>
             </div>
@@ -1718,10 +1686,10 @@
 <section class="services-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Our Services</span>
-            <h2 class="section-title">Comprehensive <span>Learning Solutions</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('about.services_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('about.services_title') !!}</h2>
             <p class="section-description">
-                Empowering Learners with Practical Language and Digital Business Skills
+                {{ App\Helpers\TranslationHelper::trans('about.services_description') }}
             </p>
         </div>
 
@@ -1732,18 +1700,18 @@
                     <div class="service-icon">
                         <i class="fas fa-language"></i>
                     </div>
-                    <h3>Language Learning Programs</h3>
-                    <p>Master practical communication skills</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('about.service_1_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('about.service_1_subtitle') }}</p>
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
-                        <li><i class="fas fa-check-circle"></i> <span>English, French, Spanish & Haitian Creole</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Professional & everyday communication</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>AI-powered speaking practice</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Cultural context integration</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Progress tracking & certification</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_1_feature_1') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_1_feature_2') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_1_feature_3') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_1_feature_4') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_1_feature_5') }}</span></li>
                     </ul>
-                    <a href="{{ route('courses') }}" class="service-btn">Explore Programs <i class="fas fa-arrow-right"></i></a>
+                    <a href="{{ route('courses') }}" class="service-btn">{{ App\Helpers\TranslationHelper::trans('about.service_1_btn') }} <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1753,18 +1721,18 @@
                     <div class="service-icon">
                         <i class="fas fa-headset"></i>
                     </div>
-                    <h3>Call Center & Customer Service</h3>
-                    <p>Prepare for international support roles</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('about.service_2_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('about.service_2_subtitle') }}</p>
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
-                        <li><i class="fas fa-check-circle"></i> <span>Communication skills mastery</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Customer engagement strategies</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Remote work readiness</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Conflict resolution techniques</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Industry certification</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_2_feature_1') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_2_feature_2') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_2_feature_3') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_2_feature_4') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_2_feature_5') }}</span></li>
                     </ul>
-                    <a href="{{ route('courses') }}" class="service-btn">Start Training <i class="fas fa-arrow-right"></i></a>
+                    <a href="{{ route('courses') }}" class="service-btn">{{ App\Helpers\TranslationHelper::trans('about.service_2_btn') }} <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -1774,18 +1742,18 @@
                     <div class="service-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3>Digital Business & Entrepreneurship</h3>
-                    <p>Build and scale your online business</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('about.service_3_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('about.service_3_subtitle') }}</p>
                 </div>
                 <div class="service-body">
                     <ul class="service-features">
-                        <li><i class="fas fa-check-circle"></i> <span>E-commerce fundamentals</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Digital marketing strategies</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>AI integration for business</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Freelancing mastery</span></li>
-                        <li><i class="fas fa-check-circle"></i> <span>Business planning & execution</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_3_feature_1') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_3_feature_2') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_3_feature_3') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_3_feature_4') }}</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>{{ App\Helpers\TranslationHelper::trans('about.service_3_feature_5') }}</span></li>
                     </ul>
-                    <a href="{{ route('courses') }}" class="service-btn">Learn More <i class="fas fa-arrow-right"></i></a>
+                    <a href="{{ route('courses') }}" class="service-btn">{{ App\Helpers\TranslationHelper::trans('about.service_3_btn') }} <i class="fas fa-arrow-right"></i></a>
                 </div>
             </div>
         </div>
@@ -1797,46 +1765,42 @@
     <div class="container">
         <div class="neo-grid">
             <div class="neo-content" data-aos="fade-right">
-                <span class="neo-subtitle">NEO-EDTECH</span>
-                <h2 class="neo-title">Professional <span>Agency Services</span></h2>
+                <span class="neo-subtitle">{{ App\Helpers\TranslationHelper::trans('about.neo_subtitle') }}</span>
+                <h2 class="neo-title">{!! App\Helpers\TranslationHelper::trans('about.neo_title') !!}</h2>
                 <p class="neo-text">
-                    In addition to our educational platform, EDUCONECX operates NEO-EDTECH,
-                    a professional agency providing digital marketing, AI-powered solutions,
-                    web and e-commerce services, and business support.
+                    {{ App\Helpers\TranslationHelper::trans('about.neo_text_1') }}
                 </p>
                 <p class="neo-text">
-                    This initiative complements the learning experience by helping individuals
-                    and organizations apply knowledge in practical contexts and translate skills
-                    into measurable outcomes.
+                    {{ App\Helpers\TranslationHelper::trans('about.neo_text_2') }}
                 </p>
                 <div class="neo-features">
                     <div class="neo-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Digital Marketing Strategy</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('about.neo_feature_1') }}</span>
                     </div>
                     <div class="neo-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>AI-Powered Business Solutions</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('about.neo_feature_2') }}</span>
                     </div>
                     <div class="neo-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Web Development & E-commerce</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('about.neo_feature_3') }}</span>
                     </div>
                     <div class="neo-feature">
                         <i class="fas fa-check-circle"></i>
-                        <span>Business Consulting</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('about.neo_feature_4') }}</span>
                     </div>
                 </div>
                 <a href="{{ route('neo-ed-tech') }}" class="btn btn-primary">
-                    Explore NEO-EDTECH <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('about.neo_btn') }} <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
             <div class="neo-image" data-aos="fade-left">
-                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="NEO-EDTECH" loading="lazy">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.neo_subtitle') }}" loading="lazy">
                 <div class="neo-badge">
                     <i class="fas fa-robot"></i>
-                    <span>AI-Powered</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('about.neo_badge') }}</span>
                 </div>
             </div>
         </div>
@@ -1847,10 +1811,10 @@
 <section class="team-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Our Team</span>
-            <h2 class="section-title">Meet the <span>Experts Behind</span> EDUCONECX</h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('about.team_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('about.team_title') !!}</h2>
             <p class="section-description">
-                Passionate educators and industry professionals dedicated to your success
+                {{ App\Helpers\TranslationHelper::trans('about.team_description') }}
             </p>
         </div>
 
@@ -1858,7 +1822,7 @@
             <!-- Team Member 1 -->
             <div class="team-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="team-image">
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="John Smith" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.team_1_name') }}" loading="lazy">
                     <div class="team-social">
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1866,16 +1830,16 @@
                     </div>
                 </div>
                 <div class="team-info">
-                    <h3 class="team-name">John Smith</h3>
-                    <p class="team-position">Founder & CEO</p>
-                    <p class="team-bio">15+ years in edtech and digital transformation</p>
+                    <h3 class="team-name">{{ App\Helpers\TranslationHelper::trans('about.team_1_name') }}</h3>
+                    <p class="team-position">{{ App\Helpers\TranslationHelper::trans('about.team_1_position') }}</p>
+                    <p class="team-bio">{{ App\Helpers\TranslationHelper::trans('about.team_1_bio') }}</p>
                 </div>
             </div>
 
             <!-- Team Member 2 -->
             <div class="team-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="team-image">
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Sarah Johnson" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.team_2_name') }}" loading="lazy">
                     <div class="team-social">
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1883,16 +1847,16 @@
                     </div>
                 </div>
                 <div class="team-info">
-                    <h3 class="team-name">Sarah Johnson</h3>
-                    <p class="team-position">Head of Curriculum</p>
-                    <p class="team-bio">Former university professor, PhD in Education</p>
+                    <h3 class="team-name">{{ App\Helpers\TranslationHelper::trans('about.team_2_name') }}</h3>
+                    <p class="team-position">{{ App\Helpers\TranslationHelper::trans('about.team_2_position') }}</p>
+                    <p class="team-bio">{{ App\Helpers\TranslationHelper::trans('about.team_2_bio') }}</p>
                 </div>
             </div>
 
             <!-- Team Member 3 -->
             <div class="team-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="team-image">
-                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Michael Chen" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.team_3_name') }}" loading="lazy">
                     <div class="team-social">
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1900,16 +1864,16 @@
                     </div>
                 </div>
                 <div class="team-info">
-                    <h3 class="team-name">Michael Chen</h3>
-                    <p class="team-position">AI & Technology Lead</p>
-                    <p class="team-bio">AI researcher and machine learning expert</p>
+                    <h3 class="team-name">{{ App\Helpers\TranslationHelper::trans('about.team_3_name') }}</h3>
+                    <p class="team-position">{{ App\Helpers\TranslationHelper::trans('about.team_3_position') }}</p>
+                    <p class="team-bio">{{ App\Helpers\TranslationHelper::trans('about.team_3_bio') }}</p>
                 </div>
             </div>
 
             <!-- Team Member 4 -->
             <div class="team-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="team-image">
-                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="Maria Garcia" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80" alt="{{ App\Helpers\TranslationHelper::trans('about.team_4_name') }}" loading="lazy">
                     <div class="team-social">
                         <a href="#"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
@@ -1917,9 +1881,9 @@
                     </div>
                 </div>
                 <div class="team-info">
-                    <h3 class="team-name">Maria Garcia</h3>
-                    <p class="team-position">Language Programs Director</p>
-                    <p class="team-bio">Linguistics expert, multilingual educator</p>
+                    <h3 class="team-name">{{ App\Helpers\TranslationHelper::trans('about.team_4_name') }}</h3>
+                    <p class="team-position">{{ App\Helpers\TranslationHelper::trans('about.team_4_position') }}</p>
+                    <p class="team-bio">{{ App\Helpers\TranslationHelper::trans('about.team_4_bio') }}</p>
                 </div>
             </div>
         </div>
@@ -1930,14 +1894,14 @@
 <section class="about-cta">
     <div class="container">
         <div class="about-cta-content" data-aos="zoom-in">
-            <h2>Ready to Start Your <span>Learning Journey?</span></h2>
-            <p>Join thousands of students worldwide and transform your future with EDUCONECX</p>
+            <h2>{!! App\Helpers\TranslationHelper::trans('about.cta_title') !!}</h2>
+            <p>{{ App\Helpers\TranslationHelper::trans('about.cta_description') }}</p>
             <div class="about-cta-buttons">
                 <a href="{{ route('academy') }}" class="btn btn-primary">
-                    <i class="fas fa-graduation-cap"></i> Join Academy
+                    <i class="fas fa-graduation-cap"></i> {{ App\Helpers\TranslationHelper::trans('about.cta_btn_academy') }}
                 </a>
                 <a href="{{ route('contact') }}" class="btn btn-secondary">
-                    <i class="fas fa-headset"></i> Contact Us
+                    <i class="fas fa-headset"></i> {{ App\Helpers\TranslationHelper::trans('about.cta_btn_contact') }}
                 </a>
             </div>
         </div>

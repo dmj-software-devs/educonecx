@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'EDUCONECX Academy - Practical Online Courses for Digital Success')
+@section('title', App\Helpers\TranslationHelper::trans('academy.title'))
 
-@section('meta_description', 'Join EDUCONECX Academy for practical online courses in English, finance, business, and technology. Learn practical skills with AI-powered guidance and expert instruction.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('academy.meta_description'))
 
 @push('styles')
 <style>
@@ -1115,29 +1115,28 @@
 
     <div class="container">
         <div class="academy-hero-content">
-            <span class="academy-hero-badge">EDUCONECX Academy</span>
-            <h1 class="academy-hero-title">Master <span>Practical Skills</span> for the Digital Economy</h1>
+            <span class="academy-hero-badge">{{ App\Helpers\TranslationHelper::trans('academy.hero_badge') }}</span>
+            <h1 class="academy-hero-title">{!! App\Helpers\TranslationHelper::trans('academy.hero_title') !!}</h1>
             <p class="academy-hero-text">
-                Practical online courses in English, finance, business, and technology.
-                Learn with AI-powered guidance and expert instruction.
+                {{ App\Helpers\TranslationHelper::trans('academy.hero_description') }}
             </p>
 
             <div class="academy-hero-stats">
                 <div class="hero-stat-item">
                     <div class="hero-stat-number">50+</div>
-                    <div class="hero-stat-label">Expert-Led Courses</div>
+                    <div class="hero-stat-label">{{ App\Helpers\TranslationHelper::trans('academy.hero_stat_1') }}</div>
                 </div>
                 <div class="hero-stat-item">
                     <div class="hero-stat-number">10K+</div>
-                    <div class="hero-stat-label">Active Students</div>
+                    <div class="hero-stat-label">{{ App\Helpers\TranslationHelper::trans('academy.hero_stat_2') }}</div>
                 </div>
                 <div class="hero-stat-item">
                     <div class="hero-stat-number">15+</div>
-                    <div class="hero-stat-label">Countries</div>
+                    <div class="hero-stat-label">{{ App\Helpers\TranslationHelper::trans('academy.hero_stat_3') }}</div>
                 </div>
                 <div class="hero-stat-item">
                     <div class="hero-stat-number">4.9</div>
-                    <div class="hero-stat-label">Student Rating</div>
+                    <div class="hero-stat-label">{{ App\Helpers\TranslationHelper::trans('academy.hero_stat_4') }}</div>
                 </div>
             </div>
         </div>
@@ -1148,10 +1147,10 @@
 <section class="features-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Why Choose Us</span>
-            <h2 class="section-title">The <span>Academy Advantage</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('academy.features_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('academy.features_title') !!}</h2>
             <p class="section-description">
-                Experience a unique learning approach that combines AI technology with practical skills training
+                {{ App\Helpers\TranslationHelper::trans('academy.features_description') }}
             </p>
         </div>
 
@@ -1160,32 +1159,32 @@
                 <div class="feature-icon">
                     <i class="fas fa-robot"></i>
                 </div>
-                <h3 class="feature-title">AI-Powered Learning</h3>
-                <p class="feature-text">Personalized learning paths that adapt to your pace and style with intelligent recommendations.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('academy.feature_1_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('academy.feature_1_text') }}</p>
             </div>
 
             <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="feature-icon">
                     <i class="fas fa-clock"></i>
                 </div>
-                <h3 class="feature-title">Learn at Your Pace</h3>
-                <p class="feature-text">Self-paced courses with lifetime access. Study anytime, anywhere, on any device.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('academy.feature_2_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('academy.feature_2_text') }}</p>
             </div>
 
             <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="feature-icon">
                     <i class="fas fa-award"></i>
                 </div>
-                <h3 class="feature-title">Industry Certification</h3>
-                <p class="feature-text">Earn recognized certificates upon completion to boost your career prospects.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('academy.feature_3_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('academy.feature_3_text') }}</p>
             </div>
 
             <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="feature-icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <h3 class="feature-title">Expert Instructors</h3>
-                <p class="feature-text">Learn from industry professionals with real-world experience and proven track records.</p>
+                <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('academy.feature_4_title') }}</h3>
+                <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('academy.feature_4_text') }}</p>
             </div>
         </div>
     </div>
@@ -1195,10 +1194,10 @@
 <section class="categories-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Our Programs</span>
-            <h2 class="section-title">Explore <span>Learning Categories</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('academy.categories_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('academy.categories_title') !!}</h2>
             <p class="section-description">
-                Choose from our comprehensive range of practical courses designed for your success
+                {{ App\Helpers\TranslationHelper::trans('academy.categories_description') }}
             </p>
         </div>
 
@@ -1210,11 +1209,11 @@
                     <div class="category-overlay"></div>
 
                     @if(isset($category->courses) && $category->courses->count() > 5)
-                    <span class="category-badge">Popular</span>
+                    <span class="category-badge">{{ App\Helpers\TranslationHelper::trans('academy.category_badge_popular') }}</span>
                     @endif
 
                     @if($loop->first)
-                    <span class="category-badge">Featured</span>
+                    <span class="category-badge">{{ App\Helpers\TranslationHelper::trans('academy.category_badge_featured') }}</span>
                     @endif
 
                     <div class="category-icon">
@@ -1223,26 +1222,26 @@
                 </div>
                 <div class="category-content">
                     <div class="category-name">{{ $category->name }}</div>
-                    <h3 class="category-title">{{ $category->description ? Str::limit($category->description, 60) : 'Learn ' . $category->name }}</h3>
+                    <h3 class="category-title">{{ $category->description ? Str::limit($category->description, 60) : App\Helpers\TranslationHelper::trans('academy.category_default_title', ['name' => $category->name]) }}</h3>
                     <p class="category-description">
-                        {{ $category->description ?? 'Master the essential skills in ' . $category->name . ' with our comprehensive courses designed for practical success.' }}
+                        {{ $category->description ?? App\Helpers\TranslationHelper::trans('academy.category_default_description', ['name' => $category->name]) }}
                     </p>
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>{{ isset($category->courses) ? $category->courses->sum('duration') : 20 }}+ Hours</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_hours', ['count' => isset($category->courses) ? $category->courses->sum('duration') : 20]) }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_all_levels') }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>{{ isset($category->courses) ? $category->courses->count() : 10 }} Courses</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_courses', ['count' => isset($category->courses) ? $category->courses->count() : 10]) }}</span>
                         </div>
                     </div>
                     <a href="{{ route('courses', ['category' => $category->slug ?? '#']) }}" class="category-link">
-                        Explore {{ $category->name }} <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_link', ['name' => $category->name]) }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -1250,138 +1249,138 @@
             <!-- Sample categories for demonstration -->
             <div class="category-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" alt="Business" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop" alt="{{ App\Helpers\TranslationHelper::trans('academy.category_business_name') }}" loading="lazy">
                     <div class="category-overlay"></div>
-                    <span class="category-badge">Featured</span>
+                    <span class="category-badge">{{ App\Helpers\TranslationHelper::trans('academy.category_badge_featured') }}</span>
                     <div class="category-icon">
                         <i class="fas fa-briefcase"></i>
                     </div>
                 </div>
                 <div class="category-content">
-                    <div class="category-name">Business</div>
-                    <h3 class="category-title">Master Business Fundamentals</h3>
+                    <div class="category-name">{{ App\Helpers\TranslationHelper::trans('academy.category_business_name') }}</div>
+                    <h3 class="category-title">{{ App\Helpers\TranslationHelper::trans('academy.category_business_title') }}</h3>
                     <p class="category-description">
-                        Learn essential business skills including management, strategy, and entrepreneurship.
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_business_description') }}
                     </p>
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>45+ Hours</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_hours', ['count' => 45]) }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_all_levels') }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>12 Courses</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_courses', ['count' => 12]) }}</span>
                         </div>
                     </div>
                     <a href="{{ route('courses') }}" class="category-link">
-                        Explore Business <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_link', ['name' => App\Helpers\TranslationHelper::trans('academy.category_business_name')]) }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
             <div class="category-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&h=400&fit=crop" alt="English" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&h=400&fit=crop" alt="{{ App\Helpers\TranslationHelper::trans('academy.category_english_name') }}" loading="lazy">
                     <div class="category-overlay"></div>
-                    <span class="category-badge">Popular</span>
+                    <span class="category-badge">{{ App\Helpers\TranslationHelper::trans('academy.category_badge_popular') }}</span>
                     <div class="category-icon">
                         <i class="fas fa-language"></i>
                     </div>
                 </div>
                 <div class="category-content">
-                    <div class="category-name">English</div>
-                    <h3 class="category-title">English for Professionals</h3>
+                    <div class="category-name">{{ App\Helpers\TranslationHelper::trans('academy.category_english_name') }}</div>
+                    <h3 class="category-title">{{ App\Helpers\TranslationHelper::trans('academy.category_english_title') }}</h3>
                     <p class="category-description">
-                        Improve your English communication skills for business and everyday use.
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_english_description') }}
                     </p>
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>50+ Hours</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_hours', ['count' => 50]) }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_all_levels') }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>15 Courses</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_courses', ['count' => 15]) }}</span>
                         </div>
                     </div>
                     <a href="{{ route('courses') }}" class="category-link">
-                        Explore English <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_link', ['name' => App\Helpers\TranslationHelper::trans('academy.category_english_name')]) }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
             <div class="category-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop" alt="Finance" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop" alt="{{ App\Helpers\TranslationHelper::trans('academy.category_finance_name') }}" loading="lazy">
                     <div class="category-overlay"></div>
                     <div class="category-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
                 </div>
                 <div class="category-content">
-                    <div class="category-name">Finance</div>
-                    <h3 class="category-title">Financial Literacy & Analysis</h3>
+                    <div class="category-name">{{ App\Helpers\TranslationHelper::trans('academy.category_finance_name') }}</div>
+                    <h3 class="category-title">{{ App\Helpers\TranslationHelper::trans('academy.category_finance_title') }}</h3>
                     <p class="category-description">
-                        Master personal finance, investment strategies, and financial analysis.
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_finance_description') }}
                     </p>
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>32+ Hours</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_hours', ['count' => 32]) }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_all_levels') }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>8 Courses</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_courses', ['count' => 8]) }}</span>
                         </div>
                     </div>
                     <a href="{{ route('courses') }}" class="category-link">
-                        Explore Finance <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_link', ['name' => App\Helpers\TranslationHelper::trans('academy.category_finance_name')]) }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
             <div class="category-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="category-image">
-                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop" alt="Technology" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=400&fit=crop" alt="{{ App\Helpers\TranslationHelper::trans('academy.category_technology_name') }}" loading="lazy">
                     <div class="category-overlay"></div>
                     <div class="category-icon">
                         <i class="fas fa-code"></i>
                     </div>
                 </div>
                 <div class="category-content">
-                    <div class="category-name">Technology</div>
-                    <h3 class="category-title">Digital Skills for the Future</h3>
+                    <div class="category-name">{{ App\Helpers\TranslationHelper::trans('academy.category_technology_name') }}</div>
+                    <h3 class="category-title">{{ App\Helpers\TranslationHelper::trans('academy.category_technology_title') }}</h3>
                     <p class="category-description">
-                        Learn web development, AI basics, and essential tech skills.
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_technology_description') }}
                     </p>
                     <div class="category-meta">
                         <div class="category-meta-item">
                             <i class="far fa-clock"></i>
-                            <span>40+ Hours</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_hours', ['count' => 40]) }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-signal"></i>
-                            <span>All Levels</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_all_levels') }}</span>
                         </div>
                         <div class="category-meta-item">
                             <i class="fas fa-video"></i>
-                            <span>10 Courses</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('academy.category_courses', ['count' => 10]) }}</span>
                         </div>
                     </div>
                     <a href="{{ route('courses') }}" class="category-link">
-                        Explore Technology <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('academy.category_link', ['name' => App\Helpers\TranslationHelper::trans('academy.category_technology_name')]) }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -1394,10 +1393,10 @@
 <section class="paths-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Learning Paths</span>
-            <h2 class="section-title">Structured Programs <span>for Your Goals</span></h2>
+            <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('academy.paths_subtitle') }}</span>
+            <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('academy.paths_title') !!}</h2>
             <p class="section-description">
-                Follow curated learning paths designed to take you from beginner to expert
+                {{ App\Helpers\TranslationHelper::trans('academy.paths_description') }}
             </p>
         </div>
 
@@ -1409,7 +1408,7 @@
                 </div>
                 <h3 class="path-title">{{ $path->name }}</h3>
                 <p class="path-description">
-                    {{ $path->description ?? 'Complete ' . $path->name . ' training program' }}
+                    {{ $path->description ?? App\Helpers\TranslationHelper::trans('academy.path_default_description', ['name' => $path->name]) }}
                 </p>
                 <ul class="path-features">
                     @php
@@ -1419,15 +1418,17 @@
                     @forelse($features as $course)
                     <li><i class="fas fa-check-circle"></i> {{ $course->title }}</li>
                     @empty
-                    <li><i class="fas fa-check-circle"></i> {{ $path->name ?? 'Business' }} Fundamentals</li>
-                    <li><i class="fas fa-check-circle"></i> Advanced {{ $path->name ?? 'Business' }}</li>
-                    <li><i class="fas fa-check-circle"></i> Professional Practice</li>
-                    <li><i class="fas fa-check-circle"></i> Industry Certification</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_default_feature_1', ['name' => $path->name ?? 'Business']) }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_default_feature_2', ['name' => $path->name ?? 'Business']) }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_default_feature_3') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_default_feature_4') }}</li>
                     @endforelse
                 </ul>
                 <span class="path-level">
-                    {{ isset($path->courses) ? $path->courses->count() : 12 }} Courses •
-                    {{ isset($path->courses) ? $path->courses->sum('duration') : 40 }} Hours
+                    {{ App\Helpers\TranslationHelper::trans('academy.path_courses_count', [
+                        'count' => isset($path->courses) ? $path->courses->count() : 12,
+                        'hours' => isset($path->courses) ? $path->courses->sum('duration') : 40
+                    ]) }}
                 </span>
             </div>
             @empty
@@ -1436,68 +1437,68 @@
                 <div class="path-icon">
                     <i class="fas fa-briefcase"></i>
                 </div>
-                <h3 class="path-title">Business Professional</h3>
+                <h3 class="path-title">{{ App\Helpers\TranslationHelper::trans('academy.path_business_title') }}</h3>
                 <p class="path-description">
-                    Complete business training for entrepreneurs and professionals
+                    {{ App\Helpers\TranslationHelper::trans('academy.path_business_description') }}
                 </p>
                 <ul class="path-features">
-                    <li><i class="fas fa-check-circle"></i> Business Fundamentals</li>
-                    <li><i class="fas fa-check-circle"></i> Strategic Management</li>
-                    <li><i class="fas fa-check-circle"></i> Entrepreneurship</li>
-                    <li><i class="fas fa-check-circle"></i> Business Communication</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_business_feature_1') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_business_feature_2') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_business_feature_3') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_business_feature_4') }}</li>
                 </ul>
-                <span class="path-level">12 Courses • 45 Hours</span>
+                <span class="path-level">{{ App\Helpers\TranslationHelper::trans('academy.path_courses_count', ['count' => 12, 'hours' => 45]) }}</span>
             </div>
 
             <div class="path-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="path-icon">
                     <i class="fas fa-chart-pie"></i>
                 </div>
-                <h3 class="path-title">Financial Analyst</h3>
+                <h3 class="path-title">{{ App\Helpers\TranslationHelper::trans('academy.path_finance_title') }}</h3>
                 <p class="path-description">
-                    Master financial analysis and investment strategies
+                    {{ App\Helpers\TranslationHelper::trans('academy.path_finance_description') }}
                 </p>
                 <ul class="path-features">
-                    <li><i class="fas fa-check-circle"></i> Financial Accounting</li>
-                    <li><i class="fas fa-check-circle"></i> Investment Analysis</li>
-                    <li><i class="fas fa-check-circle"></i> Risk Management</li>
-                    <li><i class="fas fa-check-circle"></i> Corporate Finance</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_finance_feature_1') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_finance_feature_2') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_finance_feature_3') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_finance_feature_4') }}</li>
                 </ul>
-                <span class="path-level">8 Courses • 32 Hours</span>
+                <span class="path-level">{{ App\Helpers\TranslationHelper::trans('academy.path_courses_count', ['count' => 8, 'hours' => 32]) }}</span>
             </div>
 
             <div class="path-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="path-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <h3 class="path-title">English Mastery</h3>
+                <h3 class="path-title">{{ App\Helpers\TranslationHelper::trans('academy.path_english_title') }}</h3>
                 <p class="path-description">
-                    Complete English language program for all levels
+                    {{ App\Helpers\TranslationHelper::trans('academy.path_english_description') }}
                 </p>
                 <ul class="path-features">
-                    <li><i class="fas fa-check-circle"></i> Business English</li>
-                    <li><i class="fas fa-check-circle"></i> Academic Writing</li>
-                    <li><i class="fas fa-check-circle"></i> Conversation Practice</li>
-                    <li><i class="fas fa-check-circle"></i> Pronunciation</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_english_feature_1') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_english_feature_2') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_english_feature_3') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_english_feature_4') }}</li>
                 </ul>
-                <span class="path-level">15 Courses • 50 Hours</span>
+                <span class="path-level">{{ App\Helpers\TranslationHelper::trans('academy.path_courses_count', ['count' => 15, 'hours' => 50]) }}</span>
             </div>
 
             <div class="path-card" data-aos="fade-up" data-aos-delay="400">
                 <div class="path-icon">
                     <i class="fas fa-code"></i>
                 </div>
-                <h3 class="path-title">Tech Innovator</h3>
+                <h3 class="path-title">{{ App\Helpers\TranslationHelper::trans('academy.path_technology_title') }}</h3>
                 <p class="path-description">
-                    Comprehensive technology and innovation training
+                    {{ App\Helpers\TranslationHelper::trans('academy.path_technology_description') }}
                 </p>
                 <ul class="path-features">
-                    <li><i class="fas fa-check-circle"></i> Web Development</li>
-                    <li><i class="fas fa-check-circle"></i> AI & Machine Learning</li>
-                    <li><i class="fas fa-check-circle"></i> Cloud Computing</li>
-                    <li><i class="fas fa-check-circle"></i> Cybersecurity</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_technology_feature_1') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_technology_feature_2') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_technology_feature_3') }}</li>
+                    <li><i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.path_technology_feature_4') }}</li>
                 </ul>
-                <span class="path-level">10 Courses • 40 Hours</span>
+                <span class="path-level">{{ App\Helpers\TranslationHelper::trans('academy.path_courses_count', ['count' => 10, 'hours' => 40]) }}</span>
             </div>
             @endforelse
         </div>
@@ -1508,14 +1509,14 @@
 <section class="academy-cta">
     <div class="container">
         <div class="academy-cta-content" data-aos="zoom-in">
-            <h2>Ready to <span>Transform Your Future?</span></h2>
-            <p>Join thousands of students and start mastering practical skills today</p>
+            <h2>{!! App\Helpers\TranslationHelper::trans('academy.cta_title') !!}</h2>
+            <p>{{ App\Helpers\TranslationHelper::trans('academy.cta_description') }}</p>
             <div class="academy-cta-buttons">
                 <a href="{{ route('courses') }}" class="btn btn-primary">
-                    <i class="fas fa-play-circle"></i> Start Learning Free
+                    <i class="fas fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('academy.cta_btn_courses') }}
                 </a>
                 <a href="{{ route('contact') }}" class="btn btn-secondary">
-                    <i class="fas fa-calendar-alt"></i> Schedule Consultation
+                    <i class="fas fa-calendar-alt"></i> {{ App\Helpers\TranslationHelper::trans('academy.cta_btn_contact') }}
                 </a>
             </div>
         </div>

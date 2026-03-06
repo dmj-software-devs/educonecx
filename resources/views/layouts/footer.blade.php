@@ -5,12 +5,12 @@
             <div class="newsletter-content" data-aos="fade-up">
                 <div class="newsletter-text">
                     <h3>Stay Updated with <span>EDUCONECX</span></h3>
-                    <p>Subscribe to our newsletter and get the latest updates, courses, and exclusive offers.</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('footer.newsletter_desc') }}</p>
                 </div>
                 <form class="newsletter-form">
                     <div class="form-group">
-                        <input type="email" placeholder="Enter your email address" required>
-                        <button type="submit" class="btn btn-primary">Subscribe</button>
+                        <input type="email" placeholder="{{ App\Helpers\TranslationHelper::trans('footer.your_email') }}" required>
+                        <button type="submit" class="btn btn-primary">{{ App\Helpers\TranslationHelper::trans('footer.subscribe') }}</button>
                     </div>
                 </form>
             </div>
@@ -27,7 +27,7 @@
                         <img src="{{ asset('images/logo.jpg') }}" alt="EDUCONECX Logo">
                         <span>EDUCONECX</span>
                     </div>
-                    <p class="footer-desc">Empowering learning, connecting futures. International AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.</p>
+                    <p class="footer-desc">{{ App\Helpers\TranslationHelper::trans('footer.company_desc') ?? 'Empowering learning, connecting futures. International AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.' }}</p>
                     <div class="footer-social">
                         <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.tiktok.com/@educonecx.officia" target="_blank" class="social-icon" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
@@ -39,51 +39,51 @@
 
                 <!-- Quick Links -->
                 <div class="footer-col" data-aos="fade-up" data-aos-delay="200">
-                    <h4>Quick Links</h4>
+                    <h4>{{ App\Helpers\TranslationHelper::trans('footer.quick_links') }}</h4>
                     <ul class="footer-links">
-                        <li><a href="{{ route('about') }}"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                        <li><a href="{{ route('courses') }}"><i class="fas fa-chevron-right"></i> Courses</a></li>
-                        <li><a href="{{ route('blog') }}"><i class="fas fa-chevron-right"></i> Blog</a></li>
-                        <li><a href="{{ route('our-team') }}"><i class="fas fa-chevron-right"></i> Our Team</a></li>
-                        <li><a href="{{ route('contact') }}"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a href="{{ route('about') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.about_us') }}</a></li>
+                        <li><a href="{{ route('courses') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('header.courses') }}</a></li>
+                        <li><a href="{{ route('blog') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('header.blog') }}</a></li>
+                        <li><a href="{{ route('our-team') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.our_team') }}</a></li>
+                        <li><a href="{{ route('contact') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('header.contact') }}</a></li>
                     </ul>
                 </div>
 
                 <!-- Support -->
                 <div class="footer-col" data-aos="fade-up" data-aos-delay="300">
-                    <h4>Support</h4>
+                    <h4>{{ App\Helpers\TranslationHelper::trans('footer.support') }}</h4>
                     <ul class="footer-links">
-                        <li><a href="{{ route('faqs') }}"><i class="fas fa-chevron-right"></i> FAQs</a></li>
-                        <li><a href="{{ route('pricing') }}"><i class="fas fa-chevron-right"></i> Pricing</a></li>
-                        <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
-                        <li><a href="{{ route('refund') }}"><i class="fas fa-chevron-right"></i> Refund Policy</a></li>
-                        <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right"></i> Terms & Conditions</a></li>
+                        <li><a href="{{ route('faqs') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.faqs') }}</a></li>
+                        <li><a href="{{ route('pricing') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.pricing') }}</a></li>
+                        <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.privacy_policy') }}</a></li>
+                        <li><a href="{{ route('refund') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.refund_policy') }}</a></li>
+                        <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.terms_conditions') }}</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact Info -->
                 <div class="footer-col" data-aos="fade-up" data-aos-delay="400">
-                    <h4>Contact Info</h4>
+                    <h4>{{ App\Helpers\TranslationHelper::trans('footer.contact_info') }}</h4>
                     <ul class="footer-contact">
                         <li>
                             <i class="fas fa-phone-alt"></i>
                             <div>
-                                <span>Phone</span>
-                                <a href="tel:+18335338228">+1 (833) 533-8228</a>
+                                <span>{{ App\Helpers\TranslationHelper::trans('common.phone') }}</span>
+                                <a href="tel:+18335338228">{{ App\Helpers\TranslationHelper::trans('header.phone') }}</a>
                             </div>
                         </li>
                         <li>
                             <i class="fas fa-envelope"></i>
                             <div>
-                                <span>Email</span>
-                                <a href="mailto:contact@educonecx.com">contact@educonecx.com</a>
+                                <span>{{ App\Helpers\TranslationHelper::trans('common.email') }}</span>
+                                <a href="mailto:contact@educonecx.com">{{ App\Helpers\TranslationHelper::trans('header.email') }}</a>
                             </div>
                         </li>
                         <li>
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
-                                <span>Address</span>
-                                <p>1200 Brickell Ave, Miami, FL 33131, USA</p>
+                                <span>{{ App\Helpers\TranslationHelper::trans('common.address') }}</span>
+                                <p>{{ App\Helpers\TranslationHelper::trans('header.address') }}</p>
                             </div>
                         </li>
                     </ul>
@@ -96,11 +96,11 @@
     <div class="footer-bottom">
         <div class="container">
             <div class="footer-bottom-content">
-                <p>&copy; {{ date('Y') }} EDUCONECX, LLC. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ App\Helpers\TranslationHelper::trans('footer.copyright', ['year' => date('Y')]) }}</p>
                 <div class="footer-bottom-links">
-                    <a href="{{ route('privacy') }}">Privacy</a>
-                    <a href="{{ route('terms') }}">Terms</a>
-                    <a href="{{ route('refund') }}">Refund Policy</a>
+                    <a href="{{ route('privacy') }}">{{ App\Helpers\TranslationHelper::trans('footer.privacy') }}</a>
+                    <a href="{{ route('terms') }}">{{ App\Helpers\TranslationHelper::trans('footer.terms') }}</a>
+                    <a href="{{ route('refund') }}">{{ App\Helpers\TranslationHelper::trans('footer.refund_policy') }}</a>
                 </div>
             </div>
         </div>
@@ -111,6 +111,7 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <!-- Keep existing styles - they remain unchanged -->
     <style>
         /* Root Variables - Your Beautiful Colors */
         :root {

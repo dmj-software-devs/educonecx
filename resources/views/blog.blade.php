@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Blog - EDUCONECX | Insights & Updates')
+@section('title', App\Helpers\TranslationHelper::trans('blog.title'))
 
-@section('meta_description', 'Explore the latest articles, insights, and updates from EDUCONECX. Stay informed about learning, technology, and digital innovation.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('blog.meta_description'))
 
 @push('styles')
 <style>
@@ -912,10 +912,10 @@
         
         <div class="container">
             <div class="blog-hero-content">
-                <span class="blog-hero-badge">Our Blog</span>
-                <h1 class="blog-hero-title">Insights & <span>Updates</span></h1>
+                <span class="blog-hero-badge">{{ App\Helpers\TranslationHelper::trans('blog.hero_badge') }}</span>
+                <h1 class="blog-hero-title">{!! App\Helpers\TranslationHelper::trans('blog.hero_title') !!}</h1>
                 <p class="blog-hero-text">
-                    Explore the latest articles, insights, and stories from the EDUCONECX community
+                    {{ App\Helpers\TranslationHelper::trans('blog.hero_description') }}
                 </p>
             </div>
         </div>
@@ -929,13 +929,13 @@
                     type="text" 
                     name="s" 
                     class="blog-search-input" 
-                    placeholder="Search for articles..." 
+                    placeholder="{{ App\Helpers\TranslationHelper::trans('blog.search_placeholder') }}" 
                     value="{{ $searchTerm ?? '' }}"
                     autocomplete="off"
                 >
                 <button type="submit" class="blog-search-button">
                     <i class="fas fa-search"></i>
-                    <span>Search</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('blog.search_button') }}</span>
                 </button>
             </form>
         </div>
@@ -950,13 +950,13 @@
                     <img src="{{ $featuredPost['featured_image'] }}" alt="{{ $featuredPost['title'] }}">
                 </div>
                 <div class="featured-post-content">
-                    <span class="featured-badge">Featured Article</span>
+                    <span class="featured-badge">{{ App\Helpers\TranslationHelper::trans('blog.featured_badge') }}</span>
                     <h2 class="featured-post-title">
                         <a href="{{ route('blog.show', $featuredPost['slug']) }}">{{ $featuredPost['title'] }}</a>
                     </h2>
                     <div class="featured-post-meta">
-                        <span><i class="far fa-calendar-alt"></i> {{ date('M d, Y', strtotime($featuredPost['published_at'])) }}</span>
-                        <span><i class="far fa-clock"></i> {{ $featuredPost['read_time'] ?? '5' }} min read</span>
+                        <span><i class="far fa-calendar-alt"></i> {{ date(App\Helpers\TranslationHelper::trans('blog.posted_on'), strtotime($featuredPost['published_at'])) }}</span>
+                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('blog.featured_min_read', ['count' => $featuredPost['read_time'] ?? '5']) }}</span>
                         <span><i class="far fa-folder"></i> {{ $featuredPost['category'] }}</span>
                     </div>
                     <p class="featured-post-excerpt">{{ $featuredPost['excerpt'] }}</p>
@@ -967,11 +967,11 @@
                             </div>
                             <div class="author-info">
                                 <h4>{{ $featuredPost['author'] }}</h4>
-                                <p>Author</p>
+                                <p>{{ App\Helpers\TranslationHelper::trans('blog.author_label') }}</p>
                             </div>
                         </div>
                         <a href="{{ route('blog.show', $featuredPost['slug']) }}" class="featured-read-more">
-                            Read Full Article <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('blog.featured_read_more') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -984,10 +984,10 @@
     <section class="blog-grid-section">
         <div class="container">
             <div class="section-header" data-aos="fade-up">
-                <span class="section-subtitle">Latest Articles</span>
-                <h2 class="section-title">Recent <span>Posts</span></h2>
+                <span class="section-subtitle">{{ App\Helpers\TranslationHelper::trans('blog.posts_subtitle') }}</span>
+                <h2 class="section-title">{!! App\Helpers\TranslationHelper::trans('blog.posts_title') !!}</h2>
                 <p class="section-description">
-                    Stay up to date with the latest insights from our team
+                    {{ App\Helpers\TranslationHelper::trans('blog.posts_description') }}
                 </p>
             </div>
 
@@ -1002,8 +1002,8 @@
                             </div>
                             <div class="blog-card-content">
                                 <div class="blog-card-meta">
-                                    <span><i class="far fa-calendar-alt"></i> {{ date('M d, Y', strtotime($post['published_at'] ?? now())) }}</span>
-                                    <span><i class="far fa-clock"></i> {{ $post['read_time'] ?? '5' }} min read</span>
+                                    <span><i class="far fa-calendar-alt"></i> {{ date(App\Helpers\TranslationHelper::trans('blog.posted_on'), strtotime($post['published_at'] ?? now())) }}</span>
+                                    <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('blog.min_read', ['count' => $post['read_time'] ?? '5']) }}</span>
                                 </div>
                                 <h3 class="blog-card-title">
                                     <a href="{{ route('blog.show', $post['slug']) }}">{{ $post['title'] }}</a>
@@ -1012,15 +1012,15 @@
                                 <div class="blog-card-footer">
                                     <div class="blog-card-author">
                                         <div class="author-avatar">
-                                            {{ $post['author_avatar'] ?? substr($post['author'] ?? 'ED', 0, 1) }}
+                                            {{ $post['author_avatar'] ?? substr($post['author'] ?? App\Helpers\TranslationHelper::trans('blog.author_default'), 0, 1) }}
                                         </div>
                                         <div class="author-info">
-                                            <h4>{{ $post['author'] ?? 'EDUCONECX' }}</h4>
-                                            <p>Author</p>
+                                            <h4>{{ $post['author'] ?? App\Helpers\TranslationHelper::trans('blog.author_default') }}</h4>
+                                            <p>{{ App\Helpers\TranslationHelper::trans('blog.author_label') }}</p>
                                         </div>
                                     </div>
                                     <a href="{{ route('blog.show', $post['slug']) }}" class="blog-card-read-more">
-                                        Read More <i class="fas fa-arrow-right"></i>
+                                        {{ App\Helpers\TranslationHelper::trans('blog.read_more') }} <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -1031,7 +1031,7 @@
                 <!-- Loading Spinner for Infinite Scroll -->
                 <div class="loading-spinner" id="loadingSpinner">
                     <div class="spinner"></div>
-                    <p style="color: var(--text-muted);">Loading more articles...</p>
+                    <p style="color: var(--text-muted);">{{ App\Helpers\TranslationHelper::trans('blog.loading_more') }}</p>
                 </div>
 
                 <!-- Pagination (fallback if JavaScript fails) -->
@@ -1046,10 +1046,10 @@
                     <div class="no-results-icon">
                         <i class="fas fa-search"></i>
                     </div>
-                    <h3>No Articles Found</h3>
-                    <p>We couldn't find any articles matching your search criteria.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('blog.no_results_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('blog.no_results_description') }}</p>
                     <a href="{{ route('blog') }}" class="reset-search">
-                        <i class="fas fa-redo-alt"></i> Clear Search
+                        <i class="fas fa-redo-alt"></i> {{ App\Helpers\TranslationHelper::trans('blog.clear_search') }}
                     </a>
                 </div>
             @endif
@@ -1152,7 +1152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingSpinner.classList.remove('active');
             
             // Show error notification
-            showNotification('Error loading more articles. Please try again.', 'error');
+            showNotification('{{ App\Helpers\TranslationHelper::trans('blog.notification_error') }}', 'error');
         });
     }
     
@@ -1162,7 +1162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const button = this.querySelector('button[type="submit"]');
             const originalText = button.innerHTML;
             
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ App\Helpers\TranslationHelper::trans('blog.searching') }}';
             button.disabled = true;
             
             // Form will submit normally, but we show loading state
