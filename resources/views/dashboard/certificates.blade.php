@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'My Certificates - EDUCONECX | Your Achievements')
+@section('title', App\Helpers\TranslationHelper::trans('certificates.title'))
 
-@section('meta_description', 'View and download your earned certificates from EDUCONECX. Track your achievements and showcase your learning progress.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('certificates.meta_description'))
 
 @push('styles')
 <style>
@@ -1146,26 +1146,26 @@
         <div class="sidebar-header">
             <h3 class="sidebar-title">
                 <i class="fas fa-trophy"></i>
-                My Achievements
+                {{ App\Helpers\TranslationHelper::trans('certificates.sidebar_title') }}
             </h3>
         </div>
 
         <div class="sidebar-nav">
             <a href="{{ route('dashboard') }}" class="nav-item">
                 <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('certificates.nav_dashboard') }}</span>
             </a>
             <a href="{{ route('my-courses') }}" class="nav-item">
                 <i class="fas fa-book"></i>
-                <span>My Courses</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('certificates.nav_my_courses') }}</span>
             </a>
             <a href="{{ route('my-quizzes') }}" class="nav-item">
                 <i class="fas fa-question-circle"></i>
-                <span>My Quizzes</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('certificates.nav_my_quizzes') }}</span>
             </a>
             <a href="{{ route('certificates') }}" class="nav-item active">
                 <i class="fas fa-certificate"></i>
-                <span>Certificates</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('certificates.nav_certificates') }}</span>
                 @if(($certificates->total() ?? 0) > 0)
                     <span class="nav-badge">{{ $certificates->total() }}</span>
                 @endif
@@ -1176,18 +1176,18 @@
         <div class="stats-card">
             <div class="stats-header">
                 <i class="fas fa-chart-line"></i>
-                Certificate Stats
+                {{ App\Helpers\TranslationHelper::trans('certificates.stats_title') }}
             </div>
             <div class="stats-item">
-                <span class="stats-label">Total Earned</span>
+                <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('certificates.stats_total') }}</span>
                 <span class="stats-value">{{ $certificates->total() ?? 0 }}</span>
             </div>
             <div class="stats-item">
-                <span class="stats-label">This Month</span>
+                <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('certificates.stats_this_month') }}</span>
                 <span class="stats-value success">{{ $thisMonthCount ?? 0 }}</span>
             </div>
             <div class="stats-item">
-                <span class="stats-label">With Honors</span>
+                <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('certificates.stats_with_honors') }}</span>
                 <span class="stats-value warning">{{ $honorsCount ?? 0 }}</span>
             </div>
         </div>
@@ -1197,11 +1197,11 @@
             <div class="share-icon">
                 <i class="fas fa-share-alt"></i>
             </div>
-            <h5 class="share-title">Share Your Achievements</h5>
-            <p class="share-text">Showcase your certificates on LinkedIn</p>
+            <h5 class="share-title">{{ App\Helpers\TranslationHelper::trans('certificates.share_title') }}</h5>
+            <p class="share-text">{{ App\Helpers\TranslationHelper::trans('certificates.share_text') }}</p>
             <button class="share-btn" onclick="shareAllCertificates()">
                 <i class="fab fa-linkedin"></i>
-                Share Profile
+                {{ App\Helpers\TranslationHelper::trans('certificates.share_button') }}
             </button>
         </div>
     </aside>
@@ -1212,12 +1212,16 @@
         <div class="page-header">
             <h1 class="page-title">
                 <i class="fas fa-certificate"></i>
-                My Certificates
+                {{ App\Helpers\TranslationHelper::trans('certificates.page_title') }}
             </h1>
             
             <div class="stats-badge">
                 <i class="fas fa-award"></i>
-                {{ $certificates->total() ?? 0 }} Certificate{{ ($certificates->total() ?? 0) !== 1 ? 's' : '' }} Earned
+                @if(($certificates->total() ?? 0) === 1)
+                    {{ App\Helpers\TranslationHelper::trans('certificates.badge_single', ['count' => $certificates->total() ?? 0]) }}
+                @else
+                    {{ App\Helpers\TranslationHelper::trans('certificates.badge_plural', ['count' => $certificates->total() ?? 0]) }}
+                @endif
             </div>
         </div>
 
@@ -1229,8 +1233,14 @@
                         <i class="fas fa-crown"></i>
                     </div>
                     <div class="achievement-text">
-                        <h3>Congratulations, {{ Auth::user()->first_name ?? 'Learner' }}! 🎉</h3>
-                        <p>You've earned {{ $certificates->total() }} certificate{{ ($certificates->total() ?? 0) !== 1 ? 's' : '' }}. Keep up the great work!</p>
+                        <h3>{{ App\Helpers\TranslationHelper::trans('certificates.achievement_congrats', ['name' => Auth::user()->first_name ?? 'Learner']) }}</h3>
+                        <p>
+                            @if(($certificates->total() ?? 0) === 1)
+                                {{ App\Helpers\TranslationHelper::trans('certificates.achievement_text_single', ['count' => $certificates->total() ?? 0]) }}
+                            @else
+                                {{ App\Helpers\TranslationHelper::trans('certificates.achievement_text_plural', ['count' => $certificates->total() ?? 0]) }}
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>
@@ -1244,14 +1254,14 @@
                         <i class="fas fa-star"></i>
                     </div>
                     <div class="featured-content">
-                        <span class="featured-label">Most Recent</span>
+                        <span class="featured-label">{{ App\Helpers\TranslationHelper::trans('certificates.featured_label') }}</span>
                         <h3 class="featured-title">{{ $featuredCertificate->course->title ?? 'Course Title' }}</h3>
                         <p class="featured-meta">
                             <i class="fas fa-calendar-alt"></i> 
-                            Issued on {{ \Carbon\Carbon::parse($featuredCertificate->issue_date ?? now())->format('F d, Y') }}
+                            {{ App\Helpers\TranslationHelper::trans('certificates.featured_issued', ['date' => \Carbon\Carbon::parse($featuredCertificate->issue_date ?? now())->format('F d, Y')]) }}
                         </p>
                         <a href="{{ route('certificates.show', $featuredCertificate->id ?? '#') }}" class="featured-btn">
-                            View Certificate <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('certificates.featured_button') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -1264,16 +1274,16 @@
                 @foreach($certificates as $certificate)
                     <div class="certificate-card" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                         @if($certificate->with_honors ?? false)
-                            <div class="certificate-ribbon honor">With Honors</div>
+                            <div class="certificate-ribbon honor">{{ App\Helpers\TranslationHelper::trans('certificates.badge_with_honors') }}</div>
                         @elseif($loop->first)
-                            <div class="certificate-ribbon latest">Latest</div>
+                            <div class="certificate-ribbon latest">{{ App\Helpers\TranslationHelper::trans('certificates.badge_latest') }}</div>
                         @endif
                         
                         <div class="certificate-header">
                             <div class="certificate-icon">
                                 <i class="fas fa-certificate"></i>
                             </div>
-                            <span class="certificate-badge">Certificate of Completion</span>
+                            <span class="certificate-badge">{{ App\Helpers\TranslationHelper::trans('certificates.badge_completion') }}</span>
                         </div>
                         
                         <div class="certificate-body">
@@ -1286,28 +1296,28 @@
                                 </span>
                                 <span>
                                     <i class="fas fa-hashtag"></i>
-                                    ID: {{ substr($certificate->certificate_number ?? 'CERT-001', -8) }}
+                                    {{ App\Helpers\TranslationHelper::trans('certificates.certificate_id', ['id' => substr($certificate->certificate_number ?? 'CERT-001', -8)]) }}
                                 </span>
                             </div>
                             
                             <div class="certificate-number">
-                                {{ $certificate->certificate_number ?? 'EDU-CERT-2025-001' }}
+                                {{ App\Helpers\TranslationHelper::trans('certificates.certificate_number', ['number' => $certificate->certificate_number ?? 'EDU-CERT-2025-001']) }}
                             </div>
                         </div>
                         
                         <div class="certificate-footer">
                             @if($certificate->pdf_url ?? false)
                                 <a href="{{ $certificate->pdf_url }}" class="btn-download" download>
-                                    <i class="fas fa-download"></i> PDF
+                                    <i class="fas fa-download"></i> {{ App\Helpers\TranslationHelper::trans('certificates.btn_pdf') }}
                                 </a>
                             @endif
                             
                             <button class="btn-share" onclick="shareCertificate('{{ $certificate->certificate_number ?? '' }}')">
-                                <i class="fas fa-share-alt"></i> Share
+                                <i class="fas fa-share-alt"></i> {{ App\Helpers\TranslationHelper::trans('certificates.btn_share') }}
                             </button>
                             
                             <a href="{{ route('certificates.show', $certificate->id ?? '#') }}" class="btn-view">
-                                <i class="fas fa-eye"></i> View
+                                <i class="fas fa-eye"></i> {{ App\Helpers\TranslationHelper::trans('certificates.btn_view') }}
                             </a>
                         </div>
                     </div>
@@ -1326,13 +1336,13 @@
                 <div class="empty-icon">
                     <i class="fas fa-certificate"></i>
                 </div>
-                <h2 class="empty-title">No Certificates Yet</h2>
+                <h2 class="empty-title">{{ App\Helpers\TranslationHelper::trans('certificates.empty_title') }}</h2>
                 <p class="empty-text">
-                    Complete courses and pass quizzes to earn certificates. Start learning today to build your achievement portfolio!
+                    {{ App\Helpers\TranslationHelper::trans('certificates.empty_text') }}
                 </p>
                 <a href="{{ route('courses') }}" class="empty-btn">
                     <i class="fas fa-graduation-cap"></i>
-                    Browse Courses
+                    {{ App\Helpers\TranslationHelper::trans('certificates.empty_button') }}
                 </a>
             </div>
         @endif
@@ -1357,9 +1367,9 @@
             } else {
                 // Fallback - copy to clipboard
                 navigator.clipboard.writeText(text).then(() => {
-                    showNotification('Certificate link copied to clipboard!', 'success');
+                    showNotification('{{ App\Helpers\TranslationHelper::trans('certificates.notification_copied') }}', 'success');
                 }).catch(() => {
-                    showNotification('Could not share certificate', 'error');
+                    showNotification('{{ App\Helpers\TranslationHelper::trans('certificates.notification_error') }}', 'error');
                 });
             }
         };

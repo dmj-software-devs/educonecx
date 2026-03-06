@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Profile - EDUCONECX | Your Account Settings')
+@section('title', App\Helpers\TranslationHelper::trans('profile.title'))
 
-@section('meta_description', 'Manage your profile information, update your avatar, change password, and customize your account settings on EDUCONECX.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('profile.meta_description'))
 
 @section('content')
 <style>
@@ -1272,22 +1272,22 @@
                 </p>
                 <span class="profile-page-badge">
                     <i class="fas fa-calendar-alt"></i>
-                    Member since {{ \Carbon\Carbon::parse(Auth::user()->created_at ?? now())->format('M Y') }}
+                    {{ App\Helpers\TranslationHelper::trans('profile.member_since', ['date' => \Carbon\Carbon::parse(Auth::user()->created_at ?? now())->format('M Y')]) }}
                 </span>
             </div>
 
             <div class="profile-page-stats">
                 <div class="profile-page-stat-item">
                     <div class="profile-page-stat-value">{{ $stats['courses_completed'] ?? 0 }}</div>
-                    <div class="profile-page-stat-label">Completed</div>
+                    <div class="profile-page-stat-label">{{ App\Helpers\TranslationHelper::trans('profile.stat_completed') }}</div>
                 </div>
                 <div class="profile-page-stat-item">
                     <div class="profile-page-stat-value">{{ $stats['certificates'] ?? 0 }}</div>
-                    <div class="profile-page-stat-label">Certificates</div>
+                    <div class="profile-page-stat-label">{{ App\Helpers\TranslationHelper::trans('profile.stat_certificates') }}</div>
                 </div>
                 <div class="profile-page-stat-item">
                     <div class="profile-page-stat-value">{{ $stats['quizzes_taken'] ?? 0 }}</div>
-                    <div class="profile-page-stat-label">Quizzes</div>
+                    <div class="profile-page-stat-label">{{ App\Helpers\TranslationHelper::trans('profile.stat_quizzes') }}</div>
                 </div>
             </div>
 
@@ -1299,17 +1299,17 @@
                         <input type="file" name="avatar" id="avatarInput" accept="image/*" onchange="previewAvatar(this)">
                         <label for="avatarInput" class="profile-page-file-label">
                             <i class="fas fa-cloud-upload-alt"></i>
-                            Choose New Avatar
+                            {{ App\Helpers\TranslationHelper::trans('profile.avatar_choose') }}
                         </label>
                     </div>
                     <button type="submit" class="profile-page-upload-btn" id="uploadBtn" style="display: none;">
                         <i class="fas fa-upload"></i>
-                        Upload Avatar
+                        {{ App\Helpers\TranslationHelper::trans('profile.avatar_upload') }}
                     </button>
                 </form>
                 <div class="profile-page-upload-note">
                     <i class="fas fa-info-circle"></i>
-                    Max size: 2MB. Supported: JPG, PNG, GIF
+                    {{ App\Helpers\TranslationHelper::trans('profile.avatar_note') }}
                 </div>
             </div>
 
@@ -1317,19 +1317,19 @@
             <div class="profile-page-menu">
                 <a href="#profile-info" class="profile-page-menu-item active" onclick="smoothScroll('profile-info')">
                     <i class="fas fa-user"></i>
-                    <span>Profile Information</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('profile.menu_profile_info') }}</span>
                 </a>
                 <a href="#change-password" class="profile-page-menu-item" onclick="smoothScroll('change-password')">
                     <i class="fas fa-lock"></i>
-                    <span>Change Password</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('profile.menu_change_password') }}</span>
                 </a>
                 <a href="#notification-settings" class="profile-page-menu-item" onclick="smoothScroll('notification-settings')">
                     <i class="fas fa-bell"></i>
-                    <span>Notification Settings</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('profile.menu_notifications') }}</span>
                 </a>
                 <a href="#privacy-settings" class="profile-page-menu-item" onclick="smoothScroll('privacy-settings')">
                     <i class="fas fa-shield-alt"></i>
-                    <span>Privacy Settings</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('profile.menu_privacy') }}</span>
                 </a>
             </div>
         </aside>
@@ -1340,12 +1340,12 @@
             <div class="profile-page-header">
                 <h1 class="profile-page-title">
                     <i class="fas fa-user-circle"></i>
-                    My Profile
+                    {{ App\Helpers\TranslationHelper::trans('profile.page_title') }}
                 </h1>
 
                 <a href="{{ route('dashboard') }}" class="profile-page-back-btn">
                     <i class="fas fa-arrow-left"></i>
-                    Back to Dashboard
+                    {{ App\Helpers\TranslationHelper::trans('profile.back_to_dashboard') }}
                 </a>
             </div>
 
@@ -1366,7 +1366,7 @@
             <div class="profile-page-alert profile-page-alert-danger" id="errorAlert">
                 <i class="fas fa-exclamation-circle"></i>
                 <div class="profile-page-alert-content">
-                    <h4>Please fix the following errors:</h4>
+                    <h4>{{ App\Helpers\TranslationHelper::trans('profile.alert_error_title') }}</h4>
                     <ul>
                         @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -1383,7 +1383,7 @@
             <div id="profile-info" class="profile-page-form-card">
                 <div class="profile-page-form-header">
                     <i class="fas fa-user-edit"></i>
-                    <h3>Profile Information</h3>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('profile.profile_info_title') }}</h3>
                 </div>
 
                 <div class="profile-page-form-body">
@@ -1395,7 +1395,7 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-user"></i>
-                                    First Name
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_first_name') }}
                                 </label>
                                 <input type="text"
                                     name="first_name"
@@ -1413,7 +1413,7 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-user"></i>
-                                    Last Name
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_last_name') }}
                                 </label>
                                 <input type="text"
                                     name="last_name"
@@ -1431,7 +1431,7 @@
                             <div class="profile-page-form-group profile-page-full-width">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-envelope"></i>
-                                    Email Address
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_email') }}
                                 </label>
                                 <input type="email"
                                     name="email"
@@ -1449,13 +1449,13 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-phone"></i>
-                                    Phone Number
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_phone') }}
                                 </label>
                                 <input type="tel"
                                     name="phone"
                                     class="profile-page-input @error('phone') is-invalid @enderror"
                                     value="{{ old('phone', Auth::user()->phone) }}"
-                                    placeholder="+1 (555) 000-0000">
+                                    placeholder="{{ App\Helpers\TranslationHelper::trans('profile.placeholder_phone') }}">
                                 @error('phone')
                                 <div class="profile-page-error-feedback">
                                     <i class="fas fa-exclamation-circle"></i>
@@ -1467,13 +1467,13 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    Address
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_address') }}
                                 </label>
                                 <input type="text"
                                     name="address"
                                     class="profile-page-input @error('address') is-invalid @enderror"
                                     value="{{ old('address', Auth::user()->address) }}"
-                                    placeholder="Street address">
+                                    placeholder="{{ App\Helpers\TranslationHelper::trans('profile.placeholder_address') }}">
                                 @error('address')
                                 <div class="profile-page-error-feedback">
                                     <i class="fas fa-exclamation-circle"></i>
@@ -1485,7 +1485,7 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-city"></i>
-                                    City
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_city') }}
                                 </label>
                                 <input type="text"
                                     name="city"
@@ -1502,7 +1502,7 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-map"></i>
-                                    State
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_state') }}
                                 </label>
                                 <input type="text"
                                     name="state"
@@ -1519,7 +1519,7 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-mail-bulk"></i>
-                                    Postal Code
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_postal_code') }}
                                 </label>
                                 <input type="text"
                                     name="postal_code"
@@ -1536,15 +1536,15 @@
                             <div class="profile-page-form-group">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-globe"></i>
-                                    Country
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_country') }}
                                 </label>
                                 <select name="country" class="profile-page-input @error('country') is-invalid @enderror">
-                                    <option value="">Select Country</option>
-                                    <option value="US" {{ (old('country', Auth::user()->country) == 'US') ? 'selected' : '' }}>United States</option>
-                                    <option value="CA" {{ (old('country', Auth::user()->country) == 'CA') ? 'selected' : '' }}>Canada</option>
-                                    <option value="UK" {{ (old('country', Auth::user()->country) == 'UK') ? 'selected' : '' }}>United Kingdom</option>
-                                    <option value="AU" {{ (old('country', Auth::user()->country) == 'AU') ? 'selected' : '' }}>Australia</option>
-                                    <option value="IN" {{ (old('country', Auth::user()->country) == 'IN') ? 'selected' : '' }}>India</option>
+                                    <option value="">{{ App\Helpers\TranslationHelper::trans('profile.select_country') }}</option>
+                                    <option value="US" {{ (old('country', Auth::user()->country) == 'US') ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('profile.country_us') }}</option>
+                                    <option value="CA" {{ (old('country', Auth::user()->country) == 'CA') ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('profile.country_ca') }}</option>
+                                    <option value="UK" {{ (old('country', Auth::user()->country) == 'UK') ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('profile.country_uk') }}</option>
+                                    <option value="AU" {{ (old('country', Auth::user()->country) == 'AU') ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('profile.country_au') }}</option>
+                                    <option value="IN" {{ (old('country', Auth::user()->country) == 'IN') ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('profile.country_in') }}</option>
                                 </select>
                                 @error('country')
                                 <div class="profile-page-error-feedback">
@@ -1557,12 +1557,12 @@
                             <div class="profile-page-form-group profile-page-full-width">
                                 <label class="profile-page-form-label">
                                     <i class="fas fa-align-left"></i>
-                                    Bio
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_bio') }}
                                 </label>
                                 <textarea name="bio"
                                     class="profile-page-input @error('bio') is-invalid @enderror"
                                     rows="4"
-                                    placeholder="Tell us a little about yourself...">{{ old('bio', Auth::user()->bio) }}</textarea>
+                                    placeholder="{{ App\Helpers\TranslationHelper::trans('profile.placeholder_bio') }}">{{ old('bio', Auth::user()->bio) }}</textarea>
                                 @error('bio')
                                 <div class="profile-page-error-feedback">
                                     <i class="fas fa-exclamation-circle"></i>
@@ -1575,11 +1575,11 @@
                         <div class="profile-page-form-actions">
                             <button type="reset" class="profile-page-btn-secondary" onclick="resetForm('profileForm')">
                                 <i class="fas fa-undo"></i>
-                                Reset
+                                {{ App\Helpers\TranslationHelper::trans('profile.btn_reset') }}
                             </button>
                             <button type="submit" class="profile-page-btn-primary">
                                 <i class="fas fa-save"></i>
-                                Save Changes
+                                {{ App\Helpers\TranslationHelper::trans('profile.btn_save') }}
                             </button>
                         </div>
                     </form>
@@ -1590,7 +1590,7 @@
             <div id="change-password" class="profile-page-form-card">
                 <div class="profile-page-form-header">
                     <i class="fas fa-lock"></i>
-                    <h3>Change Password</h3>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('profile.password_title') }}</h3>
                 </div>
 
                 <div class="profile-page-form-body">
@@ -1600,7 +1600,7 @@
                         <div class="profile-page-form-group">
                             <label class="profile-page-form-label">
                                 <i class="fas fa-key"></i>
-                                Current Password
+                                {{ App\Helpers\TranslationHelper::trans('profile.label_current_password') }}
                             </label>
                             <div class="profile-page-input-group">
                                 <input type="password"
@@ -1623,7 +1623,7 @@
                         <div class="profile-page-form-group">
                             <label class="profile-page-form-label">
                                 <i class="fas fa-lock"></i>
-                                New Password
+                                {{ App\Helpers\TranslationHelper::trans('profile.label_new_password') }}
                             </label>
                             <div class="profile-page-input-group">
                                 <input type="password"
@@ -1645,7 +1645,7 @@
                                     <div class="profile-page-strength-segment" id="strength3"></div>
                                     <div class="profile-page-strength-segment" id="strength4"></div>
                                 </div>
-                                <span class="profile-page-strength-text" id="strengthText">Enter a password</span>
+                                <span class="profile-page-strength-text" id="strengthText">{{ App\Helpers\TranslationHelper::trans('profile.password_strength_empty') }}</span>
                             </div>
                             @error('new_password')
                             <div class="profile-page-error-feedback">
@@ -1658,7 +1658,7 @@
                         <div class="profile-page-form-group">
                             <label class="profile-page-form-label">
                                 <i class="fas fa-lock"></i>
-                                Confirm New Password
+                                {{ App\Helpers\TranslationHelper::trans('profile.label_confirm_password') }}
                             </label>
                             <div class="profile-page-input-group">
                                 <input type="password"
@@ -1675,11 +1675,11 @@
                         <div class="profile-page-form-actions">
                             <button type="reset" class="profile-page-btn-secondary" onclick="resetForm('passwordForm')">
                                 <i class="fas fa-undo"></i>
-                                Reset
+                                {{ App\Helpers\TranslationHelper::trans('profile.btn_reset') }}
                             </button>
                             <button type="submit" class="profile-page-btn-warning">
                                 <i class="fas fa-sync-alt"></i>
-                                Change Password
+                                {{ App\Helpers\TranslationHelper::trans('profile.btn_change_password') }}
                             </button>
                         </div>
                     </form>
@@ -1690,7 +1690,7 @@
             <div id="notification-settings" class="profile-page-form-card">
                 <div class="profile-page-form-header">
                     <i class="fas fa-bell"></i>
-                    <h3>Notification Settings</h3>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('profile.notifications_title') }}</h3>
                 </div>
 
                 <div class="profile-page-form-body">
@@ -1701,8 +1701,8 @@
                             <label class="profile-page-checkbox">
                                 <input type="checkbox" name="email_notifications" {{ Auth::user()->email_notifications ? 'checked' : '' }}>
                                 <span>
-                                    Email Notifications
-                                    <small>Receive updates about new courses and promotions</small>
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_email_notifications') }}
+                                    <small>{{ App\Helpers\TranslationHelper::trans('profile.email_notifications_desc') }}</small>
                                 </span>
                             </label>
                         </div>
@@ -1711,8 +1711,8 @@
                             <label class="profile-page-checkbox">
                                 <input type="checkbox" name="course_updates" {{ Auth::user()->course_updates ? 'checked' : '' }}>
                                 <span>
-                                    Course Updates
-                                    <small>Get notified when your courses have new content</small>
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_course_updates') }}
+                                    <small>{{ App\Helpers\TranslationHelper::trans('profile.course_updates_desc') }}</small>
                                 </span>
                             </label>
                         </div>
@@ -1721,8 +1721,8 @@
                             <label class="profile-page-checkbox">
                                 <input type="checkbox" name="achievement_alerts" {{ Auth::user()->achievement_alerts ? 'checked' : '' }}>
                                 <span>
-                                    Achievement Alerts
-                                    <small>Celebrate when you earn new certificates</small>
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_achievement_alerts') }}
+                                    <small>{{ App\Helpers\TranslationHelper::trans('profile.achievement_alerts_desc') }}</small>
                                 </span>
                             </label>
                         </div>
@@ -1730,7 +1730,7 @@
                         <div class="profile-page-form-actions">
                             <button type="submit" class="profile-page-btn-primary">
                                 <i class="fas fa-save"></i>
-                                Save Preferences
+                                {{ App\Helpers\TranslationHelper::trans('profile.btn_save_preferences') }}
                             </button>
                         </div>
                     </form>
@@ -1741,7 +1741,7 @@
             <div id="privacy-settings" class="profile-page-form-card">
                 <div class="profile-page-form-header">
                     <i class="fas fa-shield-alt"></i>
-                    <h3>Privacy Settings</h3>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('profile.privacy_title') }}</h3>
                 </div>
 
                 <div class="profile-page-form-body">
@@ -1752,8 +1752,8 @@
                             <label class="profile-page-checkbox">
                                 <input type="checkbox" name="public_profile" {{ Auth::user()->public_profile ? 'checked' : '' }}>
                                 <span>
-                                    Public Profile
-                                    <small>Allow others to view your profile and achievements</small>
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_public_profile') }}
+                                    <small>{{ App\Helpers\TranslationHelper::trans('profile.public_profile_desc') }}</small>
                                 </span>
                             </label>
                         </div>
@@ -1762,8 +1762,8 @@
                             <label class="profile-page-checkbox">
                                 <input type="checkbox" name="show_activity" {{ Auth::user()->show_activity ? 'checked' : '' }}>
                                 <span>
-                                    Show Activity
-                                    <small>Display your learning activity on your profile</small>
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_show_activity') }}
+                                    <small>{{ App\Helpers\TranslationHelper::trans('profile.show_activity_desc') }}</small>
                                 </span>
                             </label>
                         </div>
@@ -1772,8 +1772,8 @@
                             <label class="profile-page-checkbox">
                                 <input type="checkbox" name="show_certificates" {{ Auth::user()->show_certificates ? 'checked' : '' }}>
                                 <span>
-                                    Show Certificates
-                                    <small>Display your earned certificates publicly</small>
+                                    {{ App\Helpers\TranslationHelper::trans('profile.label_show_certificates') }}
+                                    <small>{{ App\Helpers\TranslationHelper::trans('profile.show_certificates_desc') }}</small>
                                 </span>
                             </label>
                         </div>
@@ -1781,7 +1781,7 @@
                         <div class="profile-page-form-actions">
                             <button type="submit" class="profile-page-btn-primary">
                                 <i class="fas fa-save"></i>
-                                Save Preferences
+                                {{ App\Helpers\TranslationHelper::trans('profile.btn_save_preferences') }}
                             </button>
                         </div>
                     </form>
@@ -1859,7 +1859,13 @@
                 }
             }
 
-            const messages = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'];
+            const messages = [
+                '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_very_weak') }}',
+                '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_weak') }}',
+                '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_fair') }}',
+                '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_good') }}',
+                '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_strong') }}'
+            ];
             strengthText.textContent = messages[score];
         };
 
@@ -1871,7 +1877,7 @@
                 segment.classList.remove('active', 'weak', 'medium', 'strong');
             });
 
-            strengthText.textContent = 'Enter a password';
+            strengthText.textContent = '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_empty') }}';
         }
 
         // Avatar preview
@@ -1993,7 +1999,7 @@
         document.getElementById('profileForm')?.addEventListener('submit', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="profile-page-spinner"></span> Saving...';
+            submitBtn.innerHTML = '<span class="profile-page-spinner"></span> {{ App\Helpers\TranslationHelper::trans('profile.btn_saving') }}';
             submitBtn.disabled = true;
 
             setTimeout(() => {
@@ -2005,7 +2011,7 @@
         document.getElementById('passwordForm')?.addEventListener('submit', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span class="profile-page-spinner"></span> Changing...';
+            submitBtn.innerHTML = '<span class="profile-page-spinner"></span> {{ App\Helpers\TranslationHelper::trans('profile.btn_changing') }}';
             submitBtn.disabled = true;
         });
     });

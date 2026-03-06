@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'My Quizzes - EDUCONECX | Track Your Quiz Performance')
+@section('title', App\Helpers\TranslationHelper::trans('my-quizzes.title'))
 
-@section('meta_description', 'View your quiz attempts, track your scores, and monitor your progress on EDUCONECX quizzes.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('my-quizzes.meta_description'))
 
 @push('styles')
 <style>
@@ -1180,29 +1180,29 @@
         <div class="sidebar-header">
             <h3 class="sidebar-title">
                 <i class="fas fa-puzzle-piece"></i>
-                My Learning
+                {{ App\Helpers\TranslationHelper::trans('my-quizzes.sidebar_title') }}
             </h3>
         </div>
 
         <div class="sidebar-nav">
             <a href="{{ route('dashboard') }}" class="nav-item">
                 <i class="fas fa-home"></i>
-                <span>Dashboard</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('my-quizzes.nav_dashboard') }}</span>
             </a>
             <a href="{{ route('my-courses') }}" class="nav-item">
                 <i class="fas fa-book"></i>
-                <span>My Courses</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('my-quizzes.nav_my_courses') }}</span>
             </a>
             <a href="{{ route('my-quizzes') }}" class="nav-item active">
                 <i class="fas fa-question-circle"></i>
-                <span>My Quizzes</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('my-quizzes.nav_my_quizzes') }}</span>
                 @if(($attempts->total() ?? 0) > 0)
                     <span class="nav-badge">{{ $attempts->total() }}</span>
                 @endif
             </a>
             <a href="{{ route('certificates') }}" class="nav-item">
                 <i class="fas fa-certificate"></i>
-                <span>Certificates</span>
+                <span>{{ App\Helpers\TranslationHelper::trans('my-quizzes.nav_certificates') }}</span>
             </a>
         </div>
 
@@ -1210,20 +1210,20 @@
         <div class="sidebar-header" style="border-radius: 0; border-top: 1px solid var(--border-color); border-bottom: none;">
             <h3 class="sidebar-title">
                 <i class="fas fa-chart-pie"></i>
-                Performance
+                {{ App\Helpers\TranslationHelper::trans('my-quizzes.performance_title') }}
             </h3>
         </div>
         <div class="quick-stats">
             <div class="stat-row">
-                <span class="stat-label">Average Score</span>
+                <span class="stat-label">{{ App\Helpers\TranslationHelper::trans('my-quizzes.stat_avg_score') }}</span>
                 <span class="stat-value">{{ $averageScore ?? 0 }}%</span>
             </div>
             <div class="stat-row">
-                <span class="stat-label">Pass Rate</span>
+                <span class="stat-label">{{ App\Helpers\TranslationHelper::trans('my-quizzes.stat_pass_rate') }}</span>
                 <span class="stat-value success">{{ $passRate ?? 0 }}%</span>
             </div>
             <div class="stat-row">
-                <span class="stat-label">Best Score</span>
+                <span class="stat-label">{{ App\Helpers\TranslationHelper::trans('my-quizzes.stat_best_score') }}</span>
                 <span class="stat-value primary">{{ $bestScore ?? 0 }}%</span>
             </div>
         </div>
@@ -1235,12 +1235,12 @@
         <div class="page-header">
             <h1 class="page-title">
                 <i class="fas fa-puzzle-piece"></i>
-                My Quiz Attempts
+                {{ App\Helpers\TranslationHelper::trans('my-quizzes.page_title') }}
             </h1>
             
             <div class="stats-badge">
                 <i class="fas fa-chart-line"></i>
-                {{ $attempts->total() ?? 0 }} Total Attempts
+                {{ App\Helpers\TranslationHelper::trans('my-quizzes.total_attempts', ['count' => $attempts->total() ?? 0]) }}
             </div>
         </div>
 
@@ -1251,7 +1251,7 @@
                     <i class="fas fa-puzzle-piece"></i>
                 </div>
                 <div class="stat-value">{{ $totalQuizzes ?? 0 }}</div>
-                <div class="stat-label">Quizzes Taken</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('my-quizzes.stats_quizzes_taken') }}</div>
             </div>
 
             <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #06d6a0, #1b9e6d);">
@@ -1259,7 +1259,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-value">{{ $passedQuizzes ?? 0 }}</div>
-                <div class="stat-label">Passed</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('my-quizzes.stats_passed') }}</div>
             </div>
 
             <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #f72585, #b5179e);">
@@ -1267,7 +1267,7 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <div class="stat-value">{{ $averageScore ?? 0 }}%</div>
-                <div class="stat-label">Average Score</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('my-quizzes.stats_avg_score') }}</div>
             </div>
         </div>
 
@@ -1277,16 +1277,16 @@
                 <div class="chart-header">
                     <h3 class="chart-title">
                         <i class="fas fa-chart-bar"></i>
-                        Recent Performance
+                        {{ App\Helpers\TranslationHelper::trans('my-quizzes.chart_title') }}
                     </h3>
                     <div class="chart-legend">
                         <div class="legend-item">
                             <span class="legend-color passed"></span>
-                            <span>Passed</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('my-quizzes.chart_legend_passed') }}</span>
                         </div>
                         <div class="legend-item">
                             <span class="legend-color failed"></span>
-                            <span>Failed</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('my-quizzes.chart_legend_failed') }}</span>
                         </div>
                     </div>
                 </div>
@@ -1298,8 +1298,7 @@
                                      style="height: {{ $attempt->percentage }}px"
                                      data-score="{{ $attempt->percentage }}%">
                                     <div class="chart-tooltip">
-                                        Score: {{ $attempt->percentage }}%<br>
-                                        {{ \Carbon\Carbon::parse($attempt->created_at)->format('M d, Y') }}
+                                        {!! App\Helpers\TranslationHelper::trans('my-quizzes.chart_tooltip', ['score' => $attempt->percentage, 'date' => \Carbon\Carbon::parse($attempt->created_at)->format('M d, Y')]) !!}
                                     </div>
                                 </div>
                             </div>
@@ -1314,22 +1313,22 @@
                 <div class="filter-group">
                     <span class="filter-icon"><i class="fas fa-filter"></i></span>
                     <select class="filter-select" id="resultFilter">
-                        <option value="">All Results</option>
-                        <option value="passed">Passed</option>
-                        <option value="failed">Failed</option>
+                        <option value="">{{ App\Helpers\TranslationHelper::trans('my-quizzes.filter_all_results') }}</option>
+                        <option value="passed">{{ App\Helpers\TranslationHelper::trans('my-quizzes.filter_passed') }}</option>
+                        <option value="failed">{{ App\Helpers\TranslationHelper::trans('my-quizzes.filter_failed') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
                     <span class="filter-icon"><i class="fas fa-sort"></i></span>
                     <select class="filter-select" id="sortFilter">
-                        <option value="recent">Most Recent</option>
-                        <option value="score-high">Highest Score</option>
-                        <option value="score-low">Lowest Score</option>
+                        <option value="recent">{{ App\Helpers\TranslationHelper::trans('my-quizzes.filter_sort_recent') }}</option>
+                        <option value="score-high">{{ App\Helpers\TranslationHelper::trans('my-quizzes.filter_sort_highest') }}</option>
+                        <option value="score-low">{{ App\Helpers\TranslationHelper::trans('my-quizzes.filter_sort_lowest') }}</option>
                     </select>
                 </div>
                 <div class="filter-search">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Search quizzes...">
+                    <input type="text" id="searchInput" placeholder="{{ App\Helpers\TranslationHelper::trans('my-quizzes.search_placeholder') }}">
                 </div>
             </div>
 
@@ -1338,11 +1337,11 @@
                 <div class="table-header">
                     <h3>
                         <i class="fas fa-history"></i>
-                        Attempt History
+                        {{ App\Helpers\TranslationHelper::trans('my-quizzes.table_title') }}
                     </h3>
                     <button class="export-btn" onclick="exportTableToCSV()">
                         <i class="fas fa-download"></i>
-                        Export Results
+                        {{ App\Helpers\TranslationHelper::trans('my-quizzes.export_btn') }}
                     </button>
                 </div>
 
@@ -1350,12 +1349,12 @@
                     <table class="quiz-table" id="quizTable">
                         <thead>
                             <tr>
-                                <th>Quiz</th>
-                                <th>Attempt</th>
-                                <th>Score</th>
-                                <th>Result</th>
-                                <th>Date</th>
-                                <th>Actions</th>
+                                <th>{{ App\Helpers\TranslationHelper::trans('my-quizzes.col_quiz') }}</th>
+                                <th>{{ App\Helpers\TranslationHelper::trans('my-quizzes.col_attempt') }}</th>
+                                <th>{{ App\Helpers\TranslationHelper::trans('my-quizzes.col_score') }}</th>
+                                <th>{{ App\Helpers\TranslationHelper::trans('my-quizzes.col_result') }}</th>
+                                <th>{{ App\Helpers\TranslationHelper::trans('my-quizzes.col_date') }}</th>
+                                <th>{{ App\Helpers\TranslationHelper::trans('my-quizzes.col_actions') }}</th>
                             </tr>
                         </thead>
                         <tbody id="quizTableBody">
@@ -1380,7 +1379,7 @@
                                     </td>
                                     <td>
                                         <span class="attempt-badge">
-                                            Attempt #{{ $attempt->attempt_number ?? 1 }}
+                                            {{ App\Helpers\TranslationHelper::trans('my-quizzes.attempt_number', ['number' => $attempt->attempt_number ?? 1]) }}
                                         </span>
                                     </td>
                                     <td>
@@ -1394,7 +1393,7 @@
                                     <td>
                                         <span class="result-badge {{ $attempt->passed ? 'passed' : 'failed' }}">
                                             <i class="fas {{ $attempt->passed ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
-                                            {{ $attempt->passed ? 'Passed' : 'Failed' }}
+                                            {{ $attempt->passed ? App\Helpers\TranslationHelper::trans('my-quizzes.result_passed') : App\Helpers\TranslationHelper::trans('my-quizzes.result_failed') }}
                                         </span>
                                     </td>
                                     <td>
@@ -1406,13 +1405,13 @@
                                             <a href="{{ route('quizzes.results', ['quiz' => $attempt->quiz->id, 'attempt' => $attempt->id]) }}" 
                                                class="action-btn">
                                                 <i class="fas fa-eye"></i>
-                                                View
+                                                {{ App\Helpers\TranslationHelper::trans('my-quizzes.btn_view') }}
                                             </a>
                                             @if(!$attempt->passed)
                                                 <a href="{{ route('quizzes.take', ['quiz' => $attempt->quiz->id, 'attempt' => $attempt->id]) }}" 
                                                    class="retry-btn">
                                                     <i class="fas fa-redo-alt"></i>
-                                                    Retry
+                                                    {{ App\Helpers\TranslationHelper::trans('my-quizzes.btn_retry') }}
                                                 </a>
                                             @endif
                                         </div>
@@ -1436,13 +1435,13 @@
                 <div class="empty-icon">
                     <i class="fas fa-puzzle-piece"></i>
                 </div>
-                <h2 class="empty-title">No Quiz Attempts Yet</h2>
+                <h2 class="empty-title">{{ App\Helpers\TranslationHelper::trans('my-quizzes.empty_title') }}</h2>
                 <p class="empty-text">
-                    You haven't taken any quizzes yet. Start testing your knowledge today!
+                    {{ App\Helpers\TranslationHelper::trans('my-quizzes.empty_text') }}
                 </p>
                 <a href="{{ route('courses') }}" class="empty-btn">
                     <i class="fas fa-play"></i>
-                    Browse Quizzes
+                    {{ App\Helpers\TranslationHelper::trans('my-quizzes.empty_btn') }}
                 </a>
             </div>
         @endif
@@ -1515,7 +1514,7 @@
                     emptyRow.innerHTML = `
                         <td colspan="6" style="text-align: center; padding: 40px;">
                             <i class="fas fa-search" style="font-size: 2rem; color: var(--gray-color); margin-bottom: 10px;"></i>
-                            <p style="color: var(--gray-color);">No matching quiz attempts found</p>
+                            <p style="color: var(--gray-color);">{{ App\Helpers\TranslationHelper::trans('my-quizzes.no_results') }}</p>
                         </td>
                     `;
                     tableBody.appendChild(emptyRow);

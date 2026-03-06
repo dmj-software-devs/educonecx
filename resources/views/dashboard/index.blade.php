@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Dashboard - EDUCONECX | Your Learning Hub')
+@section('title', App\Helpers\TranslationHelper::trans('dashboard.title'))
 
-@section('meta_description', 'Access your courses, track your progress, and manage your learning journey on your EDUCONECX dashboard.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('dashboard.meta_description'))
 
 @push('styles')
 <style>
@@ -1257,7 +1257,7 @@
         <div class="sidebar-header">
             <div class="logo-area">
                 <div class="logo-text">EDUCONECX</div>
-                <div class="logo-subtitle">Learn • Connect • Grow</div>
+                <div class="logo-subtitle">{{ App\Helpers\TranslationHelper::trans('dashboard.logo_subtitle') }}</div>
             </div>
         </div>
 
@@ -1277,34 +1277,34 @@
 
             <a href="{{ route('profile') }}" class="edit-profile-link">
                 <i class="fas fa-user-edit"></i>
-                Edit Profile
+                {{ App\Helpers\TranslationHelper::trans('dashboard.edit_profile') }}
             </a>
         </div>
 
         <div class="sidebar-nav">
             <div class="nav-section">
-                <div class="nav-section-title">Main</div>
+                <div class="nav-section-title">{{ App\Helpers\TranslationHelper::trans('dashboard.nav_main') }}</div>
                 <a href="{{ route('dashboard') }}" class="nav-item active">
                     <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_dashboard') }}</span>
                 </a>
                 <a href="{{ route('my-courses') }}" class="nav-item">
                     <i class="fas fa-book"></i>
-                    <span>My Courses</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_my_courses') }}</span>
                     @if(($stats['enrolled_courses'] ?? 0) > 0)
                     <span class="nav-badge">{{ $stats['enrolled_courses'] }}</span>
                     @endif
                 </a>
                 <a href="{{ route('my-quizzes') }}" class="nav-item">
                     <i class="fas fa-question-circle"></i>
-                    <span>My Quizzes</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_my_quizzes') }}</span>
                     @if(($stats['quizzes_taken'] ?? 0) > 0)
                     <span class="nav-badge">{{ $stats['quizzes_taken'] }}</span>
                     @endif
                 </a>
                 <a href="{{ route('certificates') }}" class="nav-item">
                     <i class="fas fa-certificate"></i>
-                    <span>Certificates</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_certificates') }}</span>
                     @if(($stats['certificates_earned'] ?? 0) > 0)
                     <span class="nav-badge">{{ $stats['certificates_earned'] }}</span>
                     @endif
@@ -1312,22 +1312,22 @@
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Learning</div>
+                <div class="nav-section-title">{{ App\Helpers\TranslationHelper::trans('dashboard.nav_learning') }}</div>
                 <a href="{{ route('courses') }}" class="nav-item">
                     <i class="fas fa-search"></i>
-                    <span>Browse Courses</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_browse_courses') }}</span>
                 </a>
             </div>
 
             <div class="nav-section">
-                <div class="nav-section-title">Account</div>
+                <div class="nav-section-title">{{ App\Helpers\TranslationHelper::trans('dashboard.nav_account') }}</div>
                 <a href="{{ route('profile') }}" class="nav-item">
                     <i class="fas fa-cog"></i>
-                    <span>Settings</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_settings') }}</span>
                 </a>
                 <a href="{{ route('logout') }}" class="nav-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                    <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_logout') }}</span>
                 </a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
@@ -1344,15 +1344,14 @@
                 <h1 class="welcome-title">
                     @php
                     $hour = date('H');
-                    if($hour < 12) $greeting='Good Morning' ;
-                        elseif($hour < 18) $greeting='Good Afternoon' ;
-                        else $greeting='Good Evening' ;
+                    if($hour < 12) $greeting = App\Helpers\TranslationHelper::trans('dashboard.greeting_morning');
+                        elseif($hour < 18) $greeting = App\Helpers\TranslationHelper::trans('dashboard.greeting_afternoon');
+                        else $greeting = App\Helpers\TranslationHelper::trans('dashboard.greeting_evening');
                         @endphp
                         {{ $greeting }}, {{ Auth::user()->first_name ?? Auth::user()->name }}! 👋
                         </h1>
                         <p class="welcome-text">
-                            Here's what's happening with your learning journey today.
-                            You're making great progress!
+                            {{ App\Helpers\TranslationHelper::trans('dashboard.welcome_text') }}
                         </p>
             </div>
         </div>
@@ -1364,7 +1363,7 @@
                     <i class="fas fa-book-open"></i>
                 </div>
                 <div class="stat-value">{{ $stats['enrolled_courses'] ?? 0 }}</div>
-                <div class="stat-label">Enrolled Courses</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('dashboard.stat_enrolled') }}</div>
             </div>
 
             <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #5AD1E4, #2E5C61);">
@@ -1372,7 +1371,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-value">{{ $stats['completed_courses'] ?? 0 }}</div>
-                <div class="stat-label">Completed Courses</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('dashboard.stat_completed') }}</div>
             </div>
 
             <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #FBC60C, #EBD789);">
@@ -1380,7 +1379,7 @@
                     <i class="fas fa-puzzle-piece"></i>
                 </div>
                 <div class="stat-value">{{ $stats['quizzes_taken'] ?? 0 }}</div>
-                <div class="stat-label">Quizzes Taken</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('dashboard.stat_quizzes') }}</div>
             </div>
 
             <div class="stat-card" style="--stat-gradient: linear-gradient(135deg, #2E5C61, #18386E);">
@@ -1388,7 +1387,7 @@
                     <i class="fas fa-award"></i>
                 </div>
                 <div class="stat-value">{{ $stats['certificates_earned'] ?? 0 }}</div>
-                <div class="stat-label">Certificates</div>
+                <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('dashboard.stat_certificates') }}</div>
             </div>
         </div>
 
@@ -1397,11 +1396,11 @@
             <div class="card-header">
                 <h2 class="card-title">
                     <i class="fas fa-clock"></i>
-                    Continue Learning
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.recent_title') }}
                 </h2>
                 @if(($recentCourses ?? collect())->count() > 0)
                 <a href="{{ route('my-courses') }}" class="view-link">
-                    View All <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.view_all') }} <i class="fas fa-arrow-right"></i>
                 </a>
                 @endif
             </div>
@@ -1420,23 +1419,23 @@
                             <div class="course-meta">
                                 <span>
                                     <i class="fas fa-signal"></i>
-                                    {{ $enrollment->course->level ?? 'All Levels' }}
+                                    {{ App\Helpers\TranslationHelper::trans('dashboard.course_level', ['level' => $enrollment->course->level ?? 'All Levels']) }}
                                 </span>
                                 <span>
                                     <i class="fas fa-video"></i>
-                                    {{ $enrollment->course->lessons_count ?? 12 }} Lessons
+                                    {{ App\Helpers\TranslationHelper::trans('dashboard.course_lessons', ['count' => $enrollment->course->lessons_count ?? 12]) }}
                                 </span>
                                 @if(isset($enrollment->course->duration))
                                 <span>
                                     <i class="fas fa-clock"></i>
-                                    {{ $enrollment->course->duration }}
+                                    {{ App\Helpers\TranslationHelper::trans('dashboard.course_duration', ['duration' => $enrollment->course->duration]) }}
                                 </span>
                                 @endif
                             </div>
                         </div>
                         <div class="progress-wrapper">
                             <div class="progress-header">
-                                <span class="progress-label">Progress</span>
+                                <span class="progress-label">{{ App\Helpers\TranslationHelper::trans('dashboard.progress_label') }}</span>
                                 <span class="progress-percent">{{ $enrollment->progress ?? 0 }}%</span>
                             </div>
                             <div class="progress-track">
@@ -1444,7 +1443,7 @@
                             </div>
                         </div>
                         <a href="{{ route('courses.learn', $enrollment->course->slug ?? '#') }}" class="continue-link">
-                            Continue <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('dashboard.continue_btn') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -1455,10 +1454,10 @@
                 <div class="empty-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <h3 class="empty-title">No courses yet</h3>
-                <p class="empty-text">Start your learning journey by enrolling in a course today!</p>
+                <h3 class="empty-title">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_courses_title') }}</h3>
+                <p class="empty-text">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_courses_text') }}</p>
                 <a href="{{ route('courses') }}" class="empty-btn">
-                    Browse Courses <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.empty_courses_btn') }} <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             @endif
@@ -1469,11 +1468,11 @@
             <div class="card-header">
                 <h2 class="card-title">
                     <i class="fas fa-puzzle-piece"></i>
-                    Recent Quiz Attempts
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.quizzes_title') }}
                 </h2>
                 @if(($recentQuizzes ?? collect())->count() > 0)
                 <a href="{{ route('my-quizzes') }}" class="view-link">
-                    View All <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.view_all') }} <i class="fas fa-arrow-right"></i>
                 </a>
                 @endif
             </div>
@@ -1487,12 +1486,12 @@
                             <h4>{{ $attempt->quiz->title ?? 'Quiz Title' }}</h4>
                             <span class="quiz-date">
                                 <i class="far fa-calendar-alt"></i>
-                                {{ \Carbon\Carbon::parse($attempt->created_at ?? now())->format('M d, Y') }}
+                                {{ \Carbon\Carbon::parse($attempt->created_at ?? now())->format(App\Helpers\TranslationHelper::trans('dashboard.quiz_date')) }}
                             </span>
                         </div>
                         <div class="quiz-score">
                             <span class="score-badge {{ ($attempt->passed ?? false) ? 'passed' : 'failed' }}">
-                                {{ ($attempt->passed ?? false) ? 'Passed' : 'Failed' }}
+                                {{ ($attempt->passed ?? false) ? App\Helpers\TranslationHelper::trans('dashboard.quiz_passed') : App\Helpers\TranslationHelper::trans('dashboard.quiz_failed') }}
                             </span>
                             <span class="score-value">{{ $attempt->percentage ?? 0 }}%</span>
                         </div>
@@ -1505,10 +1504,10 @@
                 <div class="empty-icon">
                     <i class="fas fa-puzzle-piece"></i>
                 </div>
-                <h3 class="empty-title">No quiz attempts yet</h3>
-                <p class="empty-text">Test your knowledge by taking a quiz from your courses.</p>
+                <h3 class="empty-title">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_quizzes_title') }}</h3>
+                <p class="empty-text">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_quizzes_text') }}</p>
                 <a href="{{ route('courses') }}" class="empty-btn">
-                    Browse Quizzes <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.empty_quizzes_btn') }} <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             @endif
@@ -1519,7 +1518,7 @@
             <div class="card-header">
                 <h2 class="card-title">
                     <i class="fas fa-star"></i>
-                    Recommended For You
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.recommended_title') }}
                 </h2>
             </div>
 
@@ -1544,7 +1543,7 @@
                     </div>
                     <div class="card-footer">
                         <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="card-btn">
-                            View Course
+                            {{ App\Helpers\TranslationHelper::trans('dashboard.recommended_btn') }}
                         </a>
                     </div>
                 </div>
@@ -1555,10 +1554,10 @@
                 <div class="empty-icon">
                     <i class="fas fa-star"></i>
                 </div>
-                <h3 class="empty-title">No recommendations yet</h3>
-                <p class="empty-text">Complete more courses to get personalized recommendations.</p>
+                <h3 class="empty-title">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_title') }}</h3>
+                <p class="empty-text">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_text') }}</p>
                 <a href="{{ route('courses') }}" class="empty-btn">
-                    Explore Courses <i class="fas fa-arrow-right"></i>
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_btn') }} <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             @endif
@@ -1570,9 +1569,9 @@
             <div class="streak-icon">
                 <i class="fas fa-fire"></i>
             </div>
-            <div class="streak-number">{{ $streak }} Days</div>
-            <div class="streak-label">Learning Streak</div>
-            <p style="margin-top: 15px; opacity: 0.9;">Keep up the amazing work! 🔥</p>
+            <div class="streak-number">{{ App\Helpers\TranslationHelper::trans('dashboard.streak_days', ['count' => $streak]) }}</div>
+            <div class="streak-label">{{ App\Helpers\TranslationHelper::trans('dashboard.streak_label') }}</div>
+            <p style="margin-top: 15px; opacity: 0.9;">{{ App\Helpers\TranslationHelper::trans('dashboard.streak_message') }}</p>
         </div>
         @endif
     </main>

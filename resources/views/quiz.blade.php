@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Quiz - EDUCONECX | Test Your Knowledge')
+@section('title', App\Helpers\TranslationHelper::trans('quiz.title'))
 
-@section('meta_description', 'Explore our interactive quizzes, test your knowledge, and track your progress with EDUCONECX.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('quiz.meta_description'))
 
 @section('content')
 <style>
@@ -600,8 +600,8 @@
     <div class="container">
         <!-- Hero Section -->
         <div class="quiz-hero">
-            <h1>Test Your Knowledge</h1>
-            <p>Challenge yourself with our interactive quizzes and track your progress</p>
+            <h1>{{ App\Helpers\TranslationHelper::trans('quiz.hero_title') }}</h1>
+            <p>{{ App\Helpers\TranslationHelper::trans('quiz.hero_description') }}</p>
         </div>
 
         <!-- Statistics Cards -->
@@ -612,7 +612,7 @@
                 </div>
                 <div class="quiz-stat-details">
                     <h3>{{ $totalQuizzes ?? 24 }}</h3>
-                    <p>Total Quizzes</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_quizzes') }}</p>
                 </div>
             </div>
 
@@ -622,7 +622,7 @@
                 </div>
                 <div class="quiz-stat-details">
                     <h3>{{ $totalQuestions ?? 156 }}</h3>
-                    <p>Total Questions</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_questions') }}</p>
                 </div>
             </div>
 
@@ -632,7 +632,7 @@
                 </div>
                 <div class="quiz-stat-details">
                     <h3>{{ $totalAttempts ?? 1250 }}</h3>
-                    <p>Total Attempts</p>
+                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_attempts') }}</p>
                 </div>
             </div>
         </div>
@@ -644,19 +644,19 @@
                     <input type="text" 
                            name="search" 
                            class="quiz-search-input" 
-                           placeholder="Search for quizzes..." 
+                           placeholder="{{ App\Helpers\TranslationHelper::trans('quiz.search_placeholder') }}" 
                            value="{{ request('search') }}">
                     
                     <select name="type" class="quiz-type-select">
-                        <option value="">All Types</option>
-                        <option value="standalone" {{ request('type') == 'standalone' ? 'selected' : '' }}>Standalone</option>
-                        <option value="course" {{ request('type') == 'course' ? 'selected' : '' }}>Course Quiz</option>
-                        <option value="lesson" {{ request('type') == 'lesson' ? 'selected' : '' }}>Lesson Quiz</option>
+                        <option value="">{{ App\Helpers\TranslationHelper::trans('quiz.filter_all_types') }}</option>
+                        <option value="standalone" {{ request('type') == 'standalone' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('quiz.filter_standalone') }}</option>
+                        <option value="course" {{ request('type') == 'course' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('quiz.filter_course') }}</option>
+                        <option value="lesson" {{ request('type') == 'lesson' ? 'selected' : '' }}>{{ App\Helpers\TranslationHelper::trans('quiz.filter_lesson') }}</option>
                     </select>
                     
                     <button class="quiz-search-btn" type="submit">
                         <i class="fas fa-search"></i>
-                        <span>Search</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('quiz.search_button') }}</span>
                     </button>
                 </div>
             </form>
@@ -668,12 +668,20 @@
                 <div class="quiz-card">
                     <div class="quiz-card-header">
                         <span class="quiz-type-badge">
-                            {{ ucfirst($quiz->type) }}
+                            @if($quiz->type == 'standalone')
+                                {{ App\Helpers\TranslationHelper::trans('quiz.filter_standalone') }}
+                            @elseif($quiz->type == 'course')
+                                {{ App\Helpers\TranslationHelper::trans('quiz.filter_course') }}
+                            @elseif($quiz->type == 'lesson')
+                                {{ App\Helpers\TranslationHelper::trans('quiz.filter_lesson') }}
+                            @else
+                                {{ ucfirst($quiz->type) }}
+                            @endif
                         </span>
                         @if($quiz->time_limit)
                             <span class="quiz-time">
                                 <i class="far fa-clock"></i>
-                                {{ $quiz->time_limit }} min
+                                {{ App\Helpers\TranslationHelper::trans('quiz.time_minutes', ['count' => $quiz->time_limit]) }}
                             </span>
                         @endif
                     </div>
@@ -688,15 +696,21 @@
                         <div class="quiz-meta">
                             <div class="quiz-meta-item">
                                 <i class="fas fa-question-circle"></i>
-                                <span>{{ $quiz->questions_count ?? 0 }} Questions</span>
+                                <span>{{ App\Helpers\TranslationHelper::trans('quiz.questions_count', ['count' => $quiz->questions_count ?? 0]) }}</span>
                             </div>
                             <div class="quiz-meta-item">
                                 <i class="fas fa-trophy"></i>
-                                <span>Pass: {{ $quiz->pass_percentage }}%</span>
+                                <span>{{ App\Helpers\TranslationHelper::trans('quiz.pass_percentage', ['percentage' => $quiz->pass_percentage]) }}</span>
                             </div>
                             <div class="quiz-meta-item">
                                 <i class="fas fa-redo"></i>
-                                <span>{{ $quiz->attempts_allowed == 0 ? 'Unlimited' : $quiz->attempts_allowed . ' attempts' }}</span>
+                                <span>
+                                    @if($quiz->attempts_allowed == 0)
+                                        {{ App\Helpers\TranslationHelper::trans('quiz.attempts_unlimited') }}
+                                    @else
+                                        {{ App\Helpers\TranslationHelper::trans('quiz.attempts_allowed', ['count' => $quiz->attempts_allowed]) }}
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -704,17 +718,17 @@
                     <div class="quiz-card-footer">
                         @auth
                             <a href="{{ route('quizzes.show', $quiz->slug) }}" class="quiz-start-btn">
-                                Start Quiz <i class="fas fa-arrow-right"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz.btn_start') }} <i class="fas fa-arrow-right"></i>
                             </a>
                         @else
                             <a href="{{ route('login') }}" class="quiz-login-btn">
-                                Login to Start <i class="fas fa-sign-in-alt"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz.btn_login') }} <i class="fas fa-sign-in-alt"></i>
                             </a>
                         @endauth
                         
                         <span class="quiz-attempts">
                             <i class="fas fa-users"></i>
-                            {{ $quiz->total_attempts ?? 0 }} attempts
+                            {{ App\Helpers\TranslationHelper::trans('quiz.attempts_count', ['count' => $quiz->total_attempts ?? 0]) }}
                         </span>
                     </div>
                 </div>
@@ -723,12 +737,12 @@
                     <div class="quiz-empty-icon">
                         <i class="fas fa-puzzle-piece"></i>
                     </div>
-                    <h3>No Quizzes Found</h3>
-                    <p>We couldn't find any quizzes matching your search criteria.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('quiz.empty_title') }}</h3>
+                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.empty_description') }}</p>
                     @if(request('search') || request('type'))
                         <a href="{{ route('quiz') }}" class="quiz-clear-btn">
                             <i class="fas fa-times"></i>
-                            Clear Filters
+                            {{ App\Helpers\TranslationHelper::trans('quiz.btn_clear') }}
                         </a>
                     @endif
                 </div>
