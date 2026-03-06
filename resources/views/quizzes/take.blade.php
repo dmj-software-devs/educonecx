@@ -990,7 +990,6 @@
     }
 </style>
 
-<!-- Rest of your HTML remains exactly the same -->
 <div class="quiz-take-container">
     <div class="container">
         <!-- Translation Loading Indicator -->
@@ -1193,22 +1192,37 @@
                             </div>
                             @endif
 
-                            <!-- Image Selection -->
+                            <!-- Image Selection - UPDATED VERSION -->
                             @if($currentQuestion->question_type == 'image_selection')
                             <div class="quiz-take-image-selection">
                                 <div class="quiz-take-image-grid">
                                     @foreach($currentQuestion->options as $option)
-                                    <div class="quiz-take-image-option" onclick="toggleImageSelection(this, '{{ $option->id }}')">
-                                        <input type="{{ $currentQuestion->question_type == 'multiple_choice' ? 'checkbox' : 'radio' }}"
-                                            name="answers[{{ $currentQuestion->id }}]{{ $currentQuestion->question_type == 'multiple_choice' ? '[]' : '' }}"
-                                            value="{{ $option->id }}"
-                                            id="image_option_{{ $option->id }}"
-                                            style="display: none;">
+                                    <div class="quiz-take-image-option {{ in_array($option->id, old('answers.'.$currentQuestion->id, [])) ? 'selected' : '' }}" 
+                                         onclick="toggleImageSelection(this, '{{ $option->id }}', '{{ $currentQuestion->question_type }}')">
+                                        
+                                        @if($currentQuestion->question_type == 'multiple_choice')
+                                        <input type="checkbox"
+                                               name="answers[{{ $currentQuestion->id }}][]"
+                                               value="{{ $option->id }}"
+                                               id="image_option_{{ $option->id }}"
+                                               class="image-selection-input"
+                                               {{ in_array($option->id, old('answers.'.$currentQuestion->id, [])) ? 'checked' : '' }}
+                                               style="display: none;">
+                                        @else
+                                        <input type="radio"
+                                               name="answers[{{ $currentQuestion->id }}]"
+                                               value="{{ $option->id }}"
+                                               id="image_option_{{ $option->id }}"
+                                               class="image-selection-input"
+                                               {{ old('answers.'.$currentQuestion->id) == $option->id ? 'checked' : '' }}
+                                               style="display: none;">
+                                        @endif
+                                        
                                         @if($option->image)
                                         <img src="{{ $option->image_url }}" alt="{{ $option->option_text }}">
                                         <p class="image-option-text"
-                                            data-option-id="{{ $option->id }}"
-                                            data-original="{{ $option->option_text }}">
+                                           data-option-id="{{ $option->id }}"
+                                           data-original="{{ $option->option_text }}">
                                             {{ $option->option_text }}
                                         </p>
                                         @endif
@@ -1348,11 +1362,7 @@
 
         // Timer functionality
         @if($remainingTime)
-        let remainingSeconds = {
-            {
-                $remainingTime
-            }
-        };
+        let remainingSeconds = {{ $remainingTime }};
         const timerDisplay = document.getElementById('timerDisplay');
         const timer = document.getElementById('timer');
         const timeoutForm = document.getElementById('timeoutForm');
@@ -1400,22 +1410,41 @@
             }
         };
 
-        // Image selection toggle
-        window.toggleImageSelection = function(element, optionId) {
-            const input = element.querySelector('input');
-            if (input) {
-                if (input.type === 'radio') {
-                    // Remove selected class from other image options
-                    const name = input.name;
-                    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
-                        inp.closest('.quiz-take-image-option')?.classList.remove('selected');
-                    });
-                }
-
+        // Image selection toggle - UPDATED VERSION
+        window.toggleImageSelection = function(element, optionId, questionType) {
+            const input = element.querySelector('input.image-selection-input');
+            if (!input) return;
+            
+            if (questionType === 'multiple_choice') {
+                // For multiple choice images (checkboxes)
                 input.checked = !input.checked;
                 element.classList.toggle('selected', input.checked);
+            } else {
+                // For single choice images (radio buttons)
+                const name = input.name;
+                
+                // Remove selected class from all options with the same name
+                document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+                    inp.closest('.quiz-take-image-option')?.classList.remove('selected');
+                    inp.checked = false;
+                });
+                
+                // Set this one as checked and selected
+                input.checked = true;
+                element.classList.add('selected');
             }
+            
+            // Optional: Trigger change event for any listeners
+            input.dispatchEvent(new Event('change', { bubbles: true }));
         };
+
+        // Initialize image selections on page load
+        document.querySelectorAll('.quiz-take-image-option').forEach(option => {
+            const input = option.querySelector('input.image-selection-input');
+            if (input && input.checked) {
+                option.classList.add('selected');
+            }
+        });
 
         // Form submission warning
         const quizForm = document.getElementById('quizForm');
@@ -1424,8 +1453,7 @@
                 const action = e.submitter?.value;
 
                 // Check if any answer is selected for required questions
-                const currentQuestionType = '{{ $currentQuestion->question_type ?? '
-                ' }}';
+                const currentQuestionType = '{{ $currentQuestion->question_type ?? '' }}';
                 const isMultipleChoice = currentQuestionType === 'multiple_choice';
                 const isSingleChoice = ['single_choice', 'true_false'].includes(currentQuestionType);
 
@@ -1435,15 +1463,7 @@
                     return false;
                 }
 
-                if (action === 'complete' || (action === 'next' && {
-                        {
-                            $attempt - > answers - > count() + 1
-                        }
-                    } == {
-                        {
-                            $questions - > count()
-                        }
-                    })) {
+                if (action === 'complete' || (action === 'next' && {{ $attempt->answers->count() + 1 }} == {{ $questions->count() }})) {
                     if (!confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
                         e.preventDefault();
                         return false;
@@ -1493,7 +1513,7 @@
 
         // Prevent double form submission
         let formSubmitted = false;
-        quizForm?.addEventListener('submit', function() {
+        quizForm?.addEventListener('submit', function(e) {
             if (formSubmitted) {
                 e.preventDefault();
                 return false;
@@ -1603,7 +1623,7 @@
         // Get loading indicator
         const loadingEl = document.getElementById('translationLoading');
         if (loadingEl) {
-            loadingEl.classList.add('show');
+            loadingEl.style.display = 'flex';
         }
 
         try {
@@ -1647,7 +1667,7 @@
         } finally {
             // Hide loading indicator
             if (loadingEl) {
-                loadingEl.classList.remove('show');
+                loadingEl.style.display = 'none';
             }
         }
     }
