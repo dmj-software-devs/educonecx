@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class TranslationHelper
 {
@@ -68,6 +69,13 @@ class TranslationHelper
         // Load translation file
         $translations = self::loadFile($file, $locale);
         
+        // IMPORTANT: Check if translations is an array
+        if (!is_array($translations)) {
+            // Log the error for debugging
+            Log::warning("Translation file for {$file} in locale {$locale} did not return an array");
+            return $key;
+        }
+        
         // Get translation
         $translation = $translations[$transKey] ?? $key;
         
@@ -97,26 +105,64 @@ class TranslationHelper
         $cacheKey = "translations.{$locale}.{$file}";
         $translations = Cache::get($cacheKey);
         
-        if ($translations === null) {
-            // Load from file
-            $path = resource_path("lang/{$locale}/{$file}.php");
-            
-            if (file_exists($path)) {
-                $translations = require $path;
-            } else {
-                // Fallback to English
-                $fallbackPath = resource_path("lang/en/{$file}.php");
-                $translations = file_exists($fallbackPath) ? require $fallbackPath : [];
-            }
-            
-            // Cache for 24 hours
-            Cache::put($cacheKey, $translations, now()->addDay());
+        // If cache exists and is an array, use it
+        if ($translations !== null && is_array($translations)) {
+            self::$translations[$locale][$file] = $translations;
+            return $translations;
         }
+        
+        // Load from file for requested locale
+        $path = resource_path("lang/{$locale}/{$file}.php");
+        $translations = self::loadFileFromPath($path);
+        
+        // If file doesn't exist or is not valid, fall back to English
+        if (!is_array($translations) || empty($translations)) {
+            $fallbackPath = resource_path("lang/en/{$file}.php");
+            $translations = self::loadFileFromPath($fallbackPath);
+        }
+        
+        // If still not valid, return empty array
+        if (!is_array($translations)) {
+            $translations = [];
+        }
+        
+        // Cache for 24 hours
+        Cache::put($cacheKey, $translations, now()->addDay());
         
         // Store in memory
         self::$translations[$locale][$file] = $translations;
         
         return $translations;
+    }
+
+    /**
+     * Load a translation file from a specific path
+     *
+     * @param string $path
+     * @return array
+     */
+    protected static function loadFileFromPath(string $path): array
+    {
+        if (!file_exists($path)) {
+            return [];
+        }
+        
+        try {
+            $loaded = require $path;
+            
+            // Check if what we got is an array
+            if (is_array($loaded)) {
+                return $loaded;
+            }
+            
+            // Log the error for debugging
+            Log::warning("Translation file at {$path} did not return an array. Got: " . gettype($loaded));
+            
+            return [];
+        } catch (\Throwable $e) {
+            Log::error("Error loading translation file at {$path}: " . $e->getMessage());
+            return [];
+        }
     }
 
     /**

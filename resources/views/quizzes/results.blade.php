@@ -1,76 +1,221 @@
 @extends('layouts.main')
 
-@section('title', 'Quiz Results - ' . $quiz->title . ' - EDUCONECX')
+@section('title', App\Helpers\TranslationHelper::trans('quiz-results.page_title', ['title' => $quiz->title]))
 
-@section('meta_description', 'View your quiz results and performance.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('quiz-results.meta_description'))
 
 @push('styles')
 <style>
-    /* Quiz Results Page Styles - Scoped with rs- prefix to prevent conflicts */
-    .rs-results-section {
-        background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);
-        min-height: 100vh;
-        padding: 40px 0;
-        font-family: 'Inter', sans-serif;
+    /* ===== LIQUID QUIZ RESULTS PAGE - YOUR BEAUTIFUL COLORS ===== */
+    :root {
+        --bright-amber: #FBC60C;
+        --khaki-beige: #9F9A87;
+        --pure-white: #FEFDFE;
+        --prussian-blue: #0A1D44;
+        --regal-navy: #18386E;
+        --sky-blue: #5AD1E4;
+        --pale-slate: #CBD1DA;
+        --dark-slate: #2E5C61;
+        --ivory: #F9F7E9;
+        --light-gold: #EBD789;
+
+        /* Extended Palette */
+        --primary: var(--regal-navy);
+        --primary-dark: var(--prussian-blue);
+        --primary-light: var(--dark-slate);
+        --secondary: var(--sky-blue);
+        --accent: var(--bright-amber);
+        --accent-soft: var(--light-gold);
+        --success: var(--sky-blue);
+        --warning: var(--bright-amber);
+        --danger: #ef4444;
+        --dark: var(--prussian-blue);
+        --dark-light: var(--regal-navy);
+        --gray: var(--khaki-beige);
+        --gray-light: var(--pale-slate);
+        --light: var(--ivory);
+        --white: var(--pure-white);
+
+        /* Text Colors */
+        --text-primary: #0A1D44;
+        --text-secondary: #2E5C61;
+        --text-muted: #5f5f5f;
+        --text-light: #FEFDFE;
+
+        /* Gradients with your colors */
+        --gradient-liquid-1: linear-gradient(135deg, #0A1D44 0%, #18386E 50%, #2E5C61 100%);
+        --gradient-liquid-2: linear-gradient(45deg, #FBC60C 0%, #EBD789 50%, #F9F7E9 100%);
+        --gradient-liquid-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
+        --gradient-liquid-4: linear-gradient(225deg, #0A1D44 0%, #2E5C61 50%, #5AD1E4 100%);
+
+        /* Shadows */
+        --shadow-sm: 0 2px 8px rgba(10, 29, 68, 0.08);
+        --shadow-md: 0 4px 12px rgba(10, 29, 68, 0.12);
+        --shadow-lg: 0 8px 24px rgba(10, 29, 68, 0.15);
+        --shadow-hover: 0 12px 28px rgba(251, 198, 12, 0.2);
+
+        /* Border Radius */
+        --radius-sm: 12px;
+        --radius-md: 20px;
+        --radius-lg: 30px;
+        --radius-full: 9999px;
+
+        /* Transitions */
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Alerts */
-    .rs-alert {
+    /* ===== MAIN CONTAINER WITH LIQUID BACKGROUND ===== */
+    .liquid-results-container {
+        background: linear-gradient(135deg, var(--ivory) 0%, var(--pure-white) 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .liquid-blob {
+        position: absolute;
+        filter: blur(60px);
+        opacity: 0.15;
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .liquid-blob-1 {
+        top: -5%;
+        left: -5%;
+        width: 400px;
+        height: 400px;
+        background: var(--bright-amber);
+        border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
+    }
+
+    .liquid-blob-2 {
+        bottom: -5%;
+        right: -5%;
+        width: 500px;
+        height: 500px;
+        background: var(--sky-blue);
+        border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
+    }
+
+    .liquid-blob-3 {
+        top: 40%;
+        right: 10%;
+        width: 300px;
+        height: 300px;
+        background: var(--light-gold);
+        border-radius: 53% 47% 32% 68% / 44% 58% 42% 56%;
+    }
+
+    @media (max-width: 768px) {
+        .liquid-blob {
+            filter: blur(40px);
+        }
+        .liquid-blob-1 { width: 250px; height: 250px; }
+        .liquid-blob-2 { width: 300px; height: 300px; }
+        .liquid-blob-3 { width: 200px; height: 200px; }
+    }
+
+    /* ===== CONTENT WRAPPER ===== */
+    .results-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ===== ALERTS ===== */
+    .liquid-alert {
+        border-radius: var(--radius-md);
         padding: 16px 20px;
-        border-radius: 16px;
         margin-bottom: 24px;
         display: flex;
         align-items: center;
         gap: 12px;
         font-size: 0.95rem;
-        animation: rs-slideDown 0.3s ease;
+        animation: slideDown 0.3s ease;
         border: 1px solid transparent;
+        position: relative;
+        z-index: 2;
     }
 
-    .rs-alert-success {
-        background: rgba(6, 214, 160, 0.08);
-        color: #0b8e6d;
-        border-color: rgba(6, 214, 160, 0.2);
+    .liquid-alert-success {
+        background: rgba(90, 209, 228, 0.1);
+        color: var(--dark-slate);
+        border-left: 4px solid var(--sky-blue);
     }
 
-    .rs-alert-info {
-        background: rgba(67, 97, 238, 0.08);
-        color: #4361ee;
-        border-color: rgba(67, 97, 238, 0.2);
+    .liquid-alert-info {
+        background: rgba(24, 56, 110, 0.08);
+        color: var(--regal-navy);
+        border-left: 4px solid var(--regal-navy);
     }
 
-    .rs-alert-warning {
-        background: rgba(247, 37, 133, 0.08);
-        color: #b5179e;
-        border-color: rgba(247, 37, 133, 0.2);
+    .liquid-alert-warning {
+        background: rgba(251, 198, 12, 0.1);
+        color: #b85e00;
+        border-left: 4px solid var(--bright-amber);
     }
 
-    .rs-alert i {
+    .liquid-alert i {
         font-size: 1.2rem;
     }
 
-    /* Main Results Card */
-    .rs-card {
-        background: #ffffff;
-        border-radius: 32px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ===== MAIN CARD ===== */
+    .liquid-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
         padding: 40px;
         margin-bottom: 24px;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        position: relative;
+        overflow: hidden;
+        z-index: 2;
     }
 
-    .rs-card:hover {
-        box-shadow: 0 30px 60px rgba(67, 97, 238, 0.12);
+    .liquid-card:hover {
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
-    /* Header */
-    .rs-header {
+    .liquid-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-liquid-2);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: left;
+    }
+
+    .liquid-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    /* ===== HEADER ===== */
+    .liquid-header {
         text-align: center;
         margin-bottom: 40px;
     }
 
-    .rs-icon {
+    .liquid-icon {
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -79,50 +224,42 @@
         justify-content: center;
         margin: 0 auto 24px;
         font-size: 3rem;
-        animation: rs-pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        animation: pop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: var(--shadow-lg);
     }
 
-    .rs-icon-passed {
-        background: rgba(6, 214, 160, 0.15);
-        color: #06d6a0;
+    .liquid-icon-passed {
+        background: var(--gradient-liquid-3);
+        color: var(--pure-white);
     }
 
-    .rs-icon-failed {
-        background: rgba(239, 71, 111, 0.15);
-        color: #ef476f;
+    .liquid-icon-failed {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
     }
 
-    @keyframes rs-pop {
-        0% {
-            transform: scale(0);
-        }
-
-        70% {
-            transform: scale(1.1);
-        }
-
-        100% {
-            transform: scale(1);
-        }
+    @keyframes pop {
+        0% { transform: scale(0); }
+        70% { transform: scale(1.1); }
+        100% { transform: scale(1); }
     }
 
-    .rs-title {
+    .liquid-title {
         font-size: 2.2rem;
-        font-weight: 700;
-        color: #1e1e2f;
+        font-weight: 800;
+        color: var(--text-primary);
         margin-bottom: 8px;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .rs-subtitle {
-        color: #6c757d;
+    .liquid-subtitle {
+        color: var(--text-muted);
         font-size: 1.1rem;
         font-weight: 400;
     }
 
-    /* Score Section - FIXED */
-    .rs-score-container {
+    /* ===== SCORE SECTION ===== */
+    .liquid-score-container {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -131,25 +268,24 @@
         flex-wrap: wrap;
     }
 
-    .rs-score-circle {
+    .liquid-score-circle {
         width: 200px;
         height: 200px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--gradient-liquid-2);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: white;
-        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        color: var(--prussian-blue);
+        box-shadow: var(--shadow-hover);
         position: relative;
-        animation: rs-float 3s ease-in-out infinite;
+        animation: float 3s ease-in-out infinite;
         padding: 0 15px;
-        /* Added padding to prevent text overflow */
         text-align: center;
     }
 
-    .rs-score-circle::before {
+    .liquid-score-circle::before {
         content: '';
         position: absolute;
         top: 8px;
@@ -158,40 +294,23 @@
         bottom: 8px;
         border-radius: 50%;
         border: 2px solid rgba(255, 255, 255, 0.3);
-        animation: rs-pulse 2s ease-in-out infinite;
+        animation: pulse 2s ease-in-out infinite;
         pointer-events: none;
     }
 
-    @keyframes rs-float {
-
-        0%,
-        100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-10px);
-        }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
     }
 
-    @keyframes rs-pulse {
-
-        0%,
-        100% {
-            transform: scale(1);
-            opacity: 0.5;
-        }
-
-        50% {
-            transform: scale(1.05);
-            opacity: 0.8;
-        }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.05); opacity: 0.8; }
     }
 
-    .rs-score-percentage {
+    .liquid-score-percentage {
         font-size: 3.2rem;
-        /* Slightly reduced */
-        font-weight: 700;
+        font-weight: 800;
         line-height: 1.1;
         margin-bottom: 5px;
         font-family: 'Plus Jakarta Sans', sans-serif;
@@ -199,33 +318,35 @@
         word-break: break-word;
         display: block;
         width: 100%;
+        color: var(--prussian-blue);
     }
 
-    .rs-score-label {
+    .liquid-score-label {
         font-size: 0.95rem;
         opacity: 0.9;
         letter-spacing: 1px;
         text-transform: uppercase;
         display: block;
         width: 100%;
+        color: var(--prussian-blue);
     }
 
-    .rs-score-details {
+    .liquid-score-details {
         text-align: left;
         flex: 1;
         min-width: 200px;
     }
 
-    .rs-score-points {
+    .liquid-score-points {
         font-size: 2rem;
-        font-weight: 700;
-        color: #1e1e2f;
+        font-weight: 800;
+        color: var(--text-primary);
         margin-bottom: 8px;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .rs-score-passing {
-        color: #6c757d;
+    .liquid-score-passing {
+        color: var(--text-muted);
         font-size: 1rem;
         margin-bottom: 12px;
         display: flex;
@@ -233,76 +354,76 @@
         gap: 8px;
     }
 
-    .rs-score-passing i {
-        color: #4361ee;
+    .liquid-score-passing i {
+        color: var(--bright-amber);
         font-size: 1rem;
     }
 
-    .rs-score-status {
+    .liquid-score-status {
         display: inline-block;
         padding: 10px 30px;
-        border-radius: 9999px;
-        font-weight: 600;
+        border-radius: var(--radius-full);
+        font-weight: 700;
         font-size: 1.1rem;
         letter-spacing: 1px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-md);
     }
 
-    .rs-score-status-passed {
-        background: rgba(6, 214, 160, 0.15);
-        color: #06d6a0;
-        border: 1px solid rgba(6, 214, 160, 0.3);
+    .liquid-score-status-passed {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
     }
 
-    .rs-score-status-failed {
-        background: rgba(239, 71, 111, 0.15);
-        color: #ef476f;
-        border: 1px solid rgba(239, 71, 111, 0.3);
+    .liquid-score-status-failed {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
     }
 
-    /* Stats Grid */
-    .rs-stats-grid {
+    /* ===== STATS GRID ===== */
+    .liquid-stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 20px;
         margin-bottom: 50px;
     }
 
-    .rs-stat-item {
-        background: #f8f9fa;
-        border-radius: 20px;
+    .liquid-stat-item {
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
+        border-radius: var(--radius-md);
         padding: 25px 15px;
         text-align: center;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        transition: var(--transition);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .rs-stat-item:hover {
+    .liquid-stat-item:hover {
         transform: translateY(-5px);
-        background: #ffffff;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        border-color: transparent;
+        background: var(--pure-white);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
-    .rs-stat-value {
+    .liquid-stat-value {
         font-size: 2rem;
-        font-weight: 700;
-        color: #4361ee;
+        font-weight: 800;
+        color: var(--bright-amber);
         margin-bottom: 8px;
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .rs-stat-label {
-        color: #6c757d;
+    .liquid-stat-label {
+        color: var(--text-muted);
         font-size: 0.9rem;
         font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    /* Questions Section */
-    .rs-questions-title {
+    /* ===== QUESTIONS REVIEW ===== */
+    .liquid-questions-title {
         font-size: 1.5rem;
-        font-weight: 700;
-        color: #1e1e2f;
+        font-weight: 800;
+        color: var(--text-primary);
         margin-bottom: 25px;
         display: flex;
         align-items: center;
@@ -310,40 +431,41 @@
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .rs-questions-title i {
-        color: #4361ee;
+    .liquid-questions-title i {
+        color: var(--bright-amber);
         font-size: 1.3rem;
     }
 
-    .rs-question-item {
-        background: #f8f9fa;
-        border-radius: 20px;
+    .liquid-question-item {
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
+        border-radius: var(--radius-md);
         padding: 25px;
         margin-bottom: 20px;
         border-left: 4px solid transparent;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        transition: var(--transition);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .rs-question-item:hover {
+    .liquid-question-item:hover {
         transform: translateX(5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        background: #ffffff;
+        box-shadow: var(--shadow-hover);
+        background: var(--pure-white);
+        border-color: var(--bright-amber);
     }
 
-    .rs-question-correct {
-        border-left-color: #06d6a0;
+    .liquid-question-correct {
+        border-left-color: var(--sky-blue);
     }
 
-    .rs-question-incorrect {
-        border-left-color: #ef476f;
+    .liquid-question-incorrect {
+        border-left-color: var(--danger);
     }
 
-    .rs-question-partial {
-        border-left-color: #ffd166;
+    .liquid-question-partial {
+        border-left-color: var(--bright-amber);
     }
 
-    .rs-question-header {
+    .liquid-question-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -352,112 +474,235 @@
         gap: 12px;
     }
 
-    .rs-question-meta {
+    .liquid-question-meta {
         display: flex;
         align-items: center;
         gap: 12px;
         flex-wrap: wrap;
     }
 
-    .rs-question-number {
-        background: #ffffff;
+    .liquid-question-number {
+        background: var(--pure-white);
         padding: 4px 12px;
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         font-size: 0.8rem;
         font-weight: 600;
-        color: #4361ee;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        color: var(--bright-amber);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(251, 198, 12, 0.2);
     }
 
-    .rs-question-type {
-        background: #ffffff;
+    .liquid-question-type {
+        background: var(--pure-white);
         padding: 4px 12px;
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         font-size: 0.8rem;
-        color: #6c757d;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        color: var(--text-muted);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .rs-question-points {
+    .liquid-question-points {
         padding: 4px 15px;
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         font-size: 0.8rem;
         font-weight: 600;
     }
 
-    .rs-points-correct {
-        background: rgba(6, 214, 160, 0.15);
-        color: #06d6a0;
+    .liquid-points-correct {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
     }
 
-    .rs-points-incorrect {
-        background: rgba(239, 71, 111, 0.15);
-        color: #ef476f;
+    .liquid-points-incorrect {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
     }
 
-    .rs-points-partial {
-        background: rgba(255, 209, 102, 0.15);
-        color: #b85e00;
+    .liquid-points-partial {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
     }
 
-    .rs-question-text {
+    .liquid-question-text {
         font-size: 1.1rem;
-        font-weight: 500;
-        color: #1e1e2f;
+        font-weight: 600;
+        color: var(--text-primary);
         margin-bottom: 20px;
         line-height: 1.5;
     }
 
-    .rs-answer-box {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 15px;
-        margin-bottom: 10px;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+    /* ===== LEGEND ===== */
+    .liquid-legend {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
     }
 
-    .rs-answer-label {
+    .liquid-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .liquid-legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+    }
+
+    .liquid-legend-color.correct {
+        background: rgba(90, 209, 228, 0.1);
+        border: 2px solid var(--sky-blue);
+    }
+
+    .liquid-legend-color.incorrect {
+        background: rgba(239, 68, 68, 0.1);
+        border: 2px solid var(--danger);
+    }
+
+    .liquid-legend-color.missed {
+        background: rgba(251, 198, 12, 0.1);
+        border: 2px solid var(--bright-amber);
+    }
+
+    .liquid-legend-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* ===== OPTION ITEMS ===== */
+    .liquid-option-item {
+        transition: var(--transition);
+        margin-bottom: 8px;
+        padding: 12px;
+        border-radius: var(--radius-sm);
+        background: var(--pure-white);
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .liquid-option-item:hover {
+        transform: translateX(5px);
+        border-color: var(--bright-amber);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .liquid-option-correct {
+        border-left: 4px solid var(--sky-blue);
+    }
+
+    .liquid-option-incorrect {
+        border-left: 4px solid var(--danger);
+    }
+
+    .liquid-option-missed {
+        border-left: 4px solid var(--bright-amber);
+    }
+
+    .liquid-option-letter {
+        width: 30px;
+        height: 30px;
+        background: var(--ivory);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: var(--bright-amber);
+        flex-shrink: 0;
+    }
+
+    .liquid-option-text {
+        flex: 1;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+
+    .liquid-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-left: 8px;
+        flex-shrink: 0;
+    }
+
+    .liquid-badge-correct {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
+    }
+
+    .liquid-badge-incorrect {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
+    }
+
+    .liquid-badge-missed {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
+    }
+
+    .liquid-badge-user {
+        background: var(--regal-navy);
+        color: var(--pure-white);
+    }
+
+    /* ===== ANSWER BOX ===== */
+    .liquid-answer-box {
+        background: linear-gradient(135deg, var(--pure-white), var(--ivory));
+        border-radius: var(--radius-sm);
+        padding: 15px;
+        margin-top: 15px;
+        border: 1px solid rgba(251, 198, 12, 0.1);
+    }
+
+    .liquid-answer-label {
         display: flex;
         align-items: center;
         gap: 6px;
         font-size: 0.9rem;
-        color: #6c757d;
+        color: var(--text-muted);
         margin-bottom: 8px;
     }
 
-    .rs-answer-label i {
-        color: #4361ee;
+    .liquid-answer-label i {
+        color: var(--bright-amber);
         font-size: 0.9rem;
     }
 
-    .rs-answer-value {
+    .liquid-answer-value {
         padding: 12px 15px;
-        background: #f8f9fa;
-        border-radius: 12px;
-        color: #1e1e2f;
+        background: var(--pure-white);
+        border-radius: var(--radius-sm);
+        color: var(--text-primary);
         font-size: 0.95rem;
-        border: 1px solid rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .rs-correct-answer {
+    .liquid-correct-answer {
         padding: 12px 15px;
-        background: rgba(6, 214, 160, 0.05);
-        border-radius: 12px;
-        color: #06d6a0;
+        background: rgba(90, 209, 228, 0.05);
+        border-radius: var(--radius-sm);
+        color: var(--dark-slate);
         font-weight: 500;
-        border: 1px solid rgba(6, 214, 160, 0.2);
+        border: 1px solid rgba(90, 209, 228, 0.2);
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-    .rs-correct-answer i {
-        color: #06d6a0;
+    .liquid-correct-answer i {
+        color: var(--sky-blue);
         font-size: 1rem;
     }
 
-    /* Action Buttons */
-    .rs-actions {
+    /* ===== BUTTONS ===== */
+    .liquid-actions {
         display: flex;
         gap: 15px;
         justify-content: center;
@@ -465,17 +710,17 @@
         flex-wrap: wrap;
     }
 
-    .rs-btn {
+    .liquid-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
         padding: 14px 32px;
-        border-radius: 9999px;
+        border-radius: var(--radius-full);
         font-size: 0.95rem;
         font-weight: 600;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         border: none;
         cursor: pointer;
         min-width: 160px;
@@ -483,7 +728,7 @@
         overflow: hidden;
     }
 
-    .rs-btn::before {
+    .liquid-btn::before {
         content: '';
         position: absolute;
         top: 50%;
@@ -494,49 +739,60 @@
         background: rgba(255, 255, 255, 0.2);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
+        z-index: 0;
     }
 
-    .rs-btn:hover::before {
+    .liquid-btn:hover::before {
         width: 300px;
         height: 300px;
     }
 
-    .rs-btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    .liquid-btn i,
+    .liquid-btn span {
+        position: relative;
+        z-index: 1;
     }
 
-    .rs-btn-primary:hover {
+    .liquid-btn-primary {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
+        box-shadow: var(--shadow-md);
+    }
+
+    .liquid-btn-primary:hover {
+        background: var(--gradient-liquid-4);
         transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        box-shadow: var(--shadow-hover);
     }
 
-    .rs-btn-secondary {
-        background: #f8f9fa;
-        color: #6c757d;
-        border: 1px solid #e9ecef;
+    .liquid-btn-secondary {
+        background: var(--pure-white);
+        color: var(--text-primary);
+        border: 2px solid var(--pale-slate);
     }
 
-    .rs-btn-secondary:hover {
-        background: #ffffff;
-        color: #4361ee;
+    .liquid-btn-secondary:hover {
+        background: var(--ivory);
+        color: var(--bright-amber);
+        border-color: var(--bright-amber);
         transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-md);
     }
 
-    /* Share Card */
-    .rs-share-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 32px;
+    /* ===== SHARE CARD ===== */
+    .liquid-share-card {
+        background: var(--gradient-liquid-2);
+        border-radius: var(--radius-lg);
         padding: 40px;
         text-align: center;
-        color: white;
+        color: var(--prussian-blue);
         position: relative;
         overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .rs-share-card::before {
+    .liquid-share-card::before {
         content: '';
         position: absolute;
         top: -50%;
@@ -545,10 +801,10 @@
         height: 300px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
-        animation: rs-float 6s ease-in-out infinite;
+        animation: float 6s ease-in-out infinite;
     }
 
-    .rs-share-card::after {
+    .liquid-share-card::after {
         content: '';
         position: absolute;
         bottom: -50%;
@@ -557,388 +813,311 @@
         height: 250px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: 50%;
-        animation: rs-float 8s ease-in-out infinite reverse;
+        animation: float 8s ease-in-out infinite reverse;
     }
 
-    .rs-share-content {
+    .liquid-share-content {
         position: relative;
         z-index: 2;
     }
 
-    .rs-share-title {
+    .liquid-share-title {
         font-size: 1.5rem;
-        font-weight: 700;
+        font-weight: 800;
         margin-bottom: 10px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--prussian-blue);
     }
 
-    .rs-share-text {
+    .liquid-share-text {
         opacity: 0.9;
         margin-bottom: 25px;
         font-size: 1rem;
+        color: var(--prussian-blue);
     }
 
-    .rs-share-buttons {
+    .liquid-share-buttons {
         display: flex;
         gap: 15px;
         justify-content: center;
         flex-wrap: wrap;
     }
 
-    .rs-share-btn {
+    .liquid-share-btn {
         width: 50px;
         height: 50px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
+        color: var(--prussian-blue);
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         font-size: 1.2rem;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.2);
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
-    .rs-share-btn:hover {
+    .liquid-share-btn:hover {
         transform: translateY(-5px) scale(1.1);
-        background: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.3);
+        color: var(--prussian-blue);
     }
 
-    /* Loading States */
-    .rs-loading {
-        text-align: center;
-        padding: 50px;
-    }
-
-    .rs-spinner {
-        width: 50px;
-        height: 50px;
-        border: 3px solid #f0f3ff;
-        border-top-color: #4361ee;
+    /* ===== LOADING SPINNER ===== */
+    .btn-spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
         border-radius: 50%;
-        animation: rs-spin 1s linear infinite;
-        margin: 0 auto 15px;
+        border-top-color: var(--pure-white);
+        animation: spin 1s linear infinite;
     }
 
-    @keyframes rs-spin {
-        to {
-            transform: rotate(360deg);
-        }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
-    /* Responsive Design - Updated for better mobile handling */
+    /* ===== RESPONSIVE ===== */
     @media (max-width: 992px) {
-        .rs-card {
+        .liquid-card {
             padding: 30px;
         }
-
-        .rs-stats-grid {
+        .liquid-stats-grid {
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
-
-        .rs-score-percentage {
+        .liquid-score-percentage {
             font-size: 3rem;
         }
     }
 
     @media (max-width: 768px) {
-        .rs-results-section {
+        .liquid-results-container {
             padding: 30px 0;
         }
-
-        .rs-card {
+        .liquid-card {
             padding: 25px;
-            border-radius: 24px;
         }
-
-        .rs-title {
+        .liquid-title {
             font-size: 1.8rem;
         }
-
-        .rs-subtitle {
+        .liquid-subtitle {
             font-size: 1rem;
         }
-
-        .rs-score-container {
+        .liquid-score-container {
             flex-direction: column;
             gap: 30px;
             text-align: center;
         }
-
-        .rs-score-details {
+        .liquid-score-details {
             text-align: center;
         }
-
-        .rs-score-passing {
+        .liquid-score-passing {
             justify-content: center;
         }
-
-        .rs-score-circle {
+        .liquid-score-circle {
             width: 180px;
             height: 180px;
         }
-
-        .rs-score-percentage {
+        .liquid-score-percentage {
             font-size: 2.8rem;
         }
-
-        .rs-score-label {
-            font-size: 0.9rem;
-        }
-
-        .rs-stats-grid {
+        .liquid-stats-grid {
             grid-template-columns: 1fr;
             gap: 12px;
         }
-
-        .rs-stat-item {
-            padding: 20px;
-        }
-
-        .rs-actions {
+        .liquid-actions {
             flex-direction: column;
             gap: 12px;
         }
-
-        .rs-btn {
+        .liquid-btn {
             width: 100%;
             min-width: auto;
-        }
-
-        .rs-question-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .rs-question-meta {
-            width: 100%;
-        }
-
-        .rs-share-card {
-            padding: 30px 20px;
-        }
-
-        .rs-share-buttons {
-            gap: 10px;
-        }
-
-        .rs-share-btn {
-            width: 45px;
-            height: 45px;
-            font-size: 1rem;
         }
     }
 
     @media (max-width: 576px) {
-        .rs-results-section {
+        .liquid-results-container {
             padding: 20px 0;
         }
-
-        .rs-card {
+        .liquid-card {
             padding: 20px;
-            border-radius: 20px;
         }
-
-        .rs-icon {
+        .liquid-icon {
             width: 70px;
             height: 70px;
             font-size: 2.2rem;
         }
-
-        .rs-title {
+        .liquid-title {
             font-size: 1.4rem;
         }
-
-        .rs-subtitle {
+        .liquid-subtitle {
             font-size: 0.9rem;
         }
-
-        .rs-score-container {
-            margin-bottom: 30px;
-        }
-
-        .rs-score-circle {
+        .liquid-score-circle {
             width: 150px;
             height: 150px;
         }
-
-        .rs-score-percentage {
+        .liquid-score-percentage {
             font-size: 2.4rem;
         }
-
-        .rs-score-label {
-            font-size: 0.8rem;
-        }
-
-        .rs-score-points {
+        .liquid-score-points {
             font-size: 1.5rem;
         }
-
-        .rs-score-status {
+        .liquid-score-status {
             padding: 8px 20px;
             font-size: 0.95rem;
         }
-
-        .rs-stat-value {
+        .liquid-stat-value {
             font-size: 1.5rem;
         }
-
-        .rs-stat-label {
-            font-size: 0.85rem;
-        }
-
-        .rs-questions-title {
+        .liquid-questions-title {
             font-size: 1.2rem;
         }
-
-        .rs-question-item {
+        .liquid-question-item {
             padding: 18px;
         }
-
-        .rs-question-text {
+        .liquid-question-text {
             font-size: 0.95rem;
         }
-
-        .rs-question-meta {
-            gap: 8px;
+        .liquid-option-item {
+            padding: 10px;
         }
-
-        .rs-question-number,
-        .rs-question-type {
-            font-size: 0.75rem;
-            padding: 3px 10px;
+        .liquid-option-letter {
+            width: 25px;
+            height: 25px;
+            font-size: 0.8rem;
         }
-
-        .rs-question-points {
-            font-size: 0.75rem;
-            padding: 3px 12px;
-        }
-
-        .rs-answer-value,
-        .rs-correct-answer {
+        .liquid-option-text {
             font-size: 0.85rem;
-            padding: 10px 12px;
         }
-
-        .rs-share-title {
+        .liquid-legend {
+            gap: 10px;
+        }
+        .liquid-legend-item {
+            font-size: 0.75rem;
+        }
+        .liquid-share-card {
+            padding: 30px 20px;
+        }
+        .liquid-share-title {
             font-size: 1.2rem;
         }
-
-        .rs-share-text {
+        .liquid-share-text {
             font-size: 0.85rem;
-            margin-bottom: 20px;
         }
-
-        .rs-share-btn {
+        .liquid-share-btn {
             width: 40px;
             height: 40px;
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
     }
 
-    /* Print Styles */
+    /* ===== PRINT STYLES ===== */
     @media print {
-        .rs-results-section {
+        .liquid-results-container {
             background: white;
             padding: 20px;
         }
-
-        .rs-card {
+        .liquid-card {
             box-shadow: none;
             border: 1px solid #ddd;
         }
-
-        .rs-actions,
-        .rs-share-card {
-            display: none;
+        .liquid-actions,
+        .liquid-share-card,
+        .liquid-blob {
+            display: none !important;
         }
     }
 </style>
 @endpush
 
 @section('content')
-<div class="rs-results-section">
-    <div class="container">
+<div class="liquid-results-container">
+    <div class="liquid-blob liquid-blob-1"></div>
+    <div class="liquid-blob liquid-blob-2"></div>
+    <div class="liquid-blob liquid-blob-3"></div>
+
+    <div class="container results-content">
         <!-- Alert Messages -->
         @if(session('success'))
-        <div class="rs-alert rs-alert-success">
+        <div class="liquid-alert liquid-alert-success">
             <i class="fas fa-check-circle"></i>
-            <span>{{ session('success') }}</span>
+            <span>{{ session('success') ?? App\Helpers\TranslationHelper::trans('quiz-results.success_message') }}</span>
         </div>
         @endif
 
         @if(session('info'))
-        <div class="rs-alert rs-alert-info">
+        <div class="liquid-alert liquid-alert-info">
             <i class="fas fa-info-circle"></i>
-            <span>{{ session('info') }}</span>
+            <span>{{ session('info') ?? App\Helpers\TranslationHelper::trans('quiz-results.info_message') }}</span>
         </div>
         @endif
 
         @if(session('error'))
-        <div class="rs-alert rs-alert-warning">
+        <div class="liquid-alert liquid-alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>{{ session('error') }}</span>
+            <span>{{ session('error') ?? App\Helpers\TranslationHelper::trans('quiz-results.error_message') }}</span>
         </div>
         @endif
 
         <!-- Main Results Card -->
-        <div class="rs-card">
+        <div class="liquid-card">
             <!-- Header with Status -->
-            <div class="rs-header">
-                <div class="rs-icon {{ $passed ? 'rs-icon-passed' : 'rs-icon-failed' }}">
+            <div class="liquid-header">
+                <div class="liquid-icon {{ $passed ? 'liquid-icon-passed' : 'liquid-icon-failed' }}">
                     <i class="fas {{ $passed ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
                 </div>
-                <h1 class="rs-title">Quiz Completed!</h1>
-                <p class="rs-subtitle">{{ $quiz->title }}</p>
+                <h1 class="liquid-title">{{ App\Helpers\TranslationHelper::trans('quiz-results.quiz_completed') }}</h1>
+                <p class="liquid-subtitle">{{ $quiz->title }}</p>
             </div>
 
             <!-- Score Section -->
-            <div class="rs-score-container">
-                <div class="rs-score-circle">
-                    <span class="rs-score-percentage">{{ $percentage }}%</span>
-                    <span class="rs-score-label">Score</span>
+            <div class="liquid-score-container">
+                <div class="liquid-score-circle">
+                    <span class="liquid-score-percentage">{{ $percentage }}%</span>
+                    <span class="liquid-score-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.score_label') }}</span>
                 </div>
-                <div class="rs-score-details">
-                    <div class="rs-score-points">{{ $earnedPoints }}/{{ $totalPoints }}</div>
-                    <div class="rs-score-passing">
+                <div class="liquid-score-details">
+                    <div class="liquid-score-points">{{ $earnedPoints }}/{{ $totalPoints }}</div>
+                    <div class="liquid-score-passing">
                         <i class="fas fa-flag-checkered"></i>
-                        Passing Score: {{ $quiz->pass_percentage }}%
+                        {{ App\Helpers\TranslationHelper::trans('quiz-results.passing_score', ['percentage' => $quiz->pass_percentage]) }}
                     </div>
-                    <div class="rs-score-status {{ $passed ? 'rs-score-status-passed' : 'rs-score-status-failed' }}">
-                        {{ $passed ? 'PASSED' : 'FAILED' }}
+                    <div class="liquid-score-status {{ $passed ? 'liquid-score-status-passed' : 'liquid-score-status-failed' }}">
+                        {{ $passed ? App\Helpers\TranslationHelper::trans('quiz-results.passed') : App\Helpers\TranslationHelper::trans('quiz-results.failed') }}
                     </div>
                 </div>
             </div>
 
             <!-- Stats Grid -->
-            <div class="rs-stats-grid">
-                <div class="rs-stat-item">
-                    <div class="rs-stat-value">{{ $attempt->answers->count() }}</div>
-                    <div class="rs-stat-label">Questions Answered</div>
+            <div class="liquid-stats-grid">
+                <div class="liquid-stat-item">
+                    <div class="liquid-stat-value">{{ $attempt->answers->count() }}</div>
+                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.questions_answered') }}</div>
                 </div>
-                <div class="rs-stat-item">
-                    <div class="rs-stat-value">{{ $quiz->questions->count() }}</div>
-                    <div class="rs-stat-label">Total Questions</div>
+                <div class="liquid-stat-item">
+                    <div class="liquid-stat-value">{{ $quiz->questions->count() }}</div>
+                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.total_questions') }}</div>
                 </div>
-                <div class="rs-stat-item">
-                    <div class="rs-stat-value">#{{ $attempt->attempt_number }}</div>
-                    <div class="rs-stat-label">Attempt Number</div>
+                <div class="liquid-stat-item">
+                    <div class="liquid-stat-value">#{{ $attempt->attempt_number }}</div>
+                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.attempt_number') }}</div>
                 </div>
-                <div class="rs-stat-item">
-                    <div class="rs-stat-value">{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : 'N/A' }}</div>
-                    <div class="rs-stat-label">Completed On</div>
+                <div class="liquid-stat-item">
+                    <div class="liquid-stat-value">{{ $attempt->completed_at ? $attempt->completed_at->format(App\Helpers\TranslationHelper::trans('quiz-results.date_format')) : App\Helpers\TranslationHelper::trans('quiz-results.na') }}</div>
+                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.completed_on') }}</div>
                 </div>
             </div>
 
             <!-- Questions Review -->
             @if($quiz->show_answers)
-            <div class="rs-questions-review">
-                <h2 class="rs-questions-title">
+            <div class="liquid-questions-review">
+                <h2 class="liquid-questions-title">
                     <i class="fas fa-clipboard-list"></i>
-                    Question Review
+                    {{ App\Helpers\TranslationHelper::trans('quiz-results.questions_review') }}
                 </h2>
 
                 @foreach($quiz->questions as $index => $question)
@@ -946,64 +1125,62 @@
                 $answer = $answers[$question->id] ?? null;
                 $isCorrect = $answer ? $answer->is_correct : false;
                 $pointsEarned = $answer ? $answer->points_earned : 0;
-                $statusClass = $isCorrect ? 'rs-question-correct' : ($pointsEarned > 0 ? 'rs-question-partial' : 'rs-question-incorrect');
-                $pointsClass = $isCorrect ? 'rs-points-correct' : ($pointsEarned > 0 ? 'rs-points-partial' : 'rs-points-incorrect');
+                $statusClass = $isCorrect ? 'liquid-question-correct' : ($pointsEarned > 0 ? 'liquid-question-partial' : 'liquid-question-incorrect');
+                $pointsClass = $isCorrect ? 'liquid-points-correct' : ($pointsEarned > 0 ? 'liquid-points-partial' : 'liquid-points-incorrect');
 
                 // Decode answer data
                 $answerData = $answer ? $answer->decoded_data : null;
                 @endphp
 
-                <div class="rs-question-item {{ $statusClass }}">
-                    <div class="rs-question-header">
-                        <div class="rs-question-meta">
-                            <span class="rs-question-number">Q{{ $index + 1 }}</span>
-                            <span class="rs-question-type">{{ str_replace('_', ' ', ucfirst($question->question_type)) }}</span>
+                <div class="liquid-question-item {{ $statusClass }}">
+                    <div class="liquid-question-header">
+                        <div class="liquid-question-meta">
+                            <span class="liquid-question-number">{{ App\Helpers\TranslationHelper::trans('quiz-results.question_number', ['number' => $index + 1]) }}</span>
+                            <span class="liquid-question-type">{{ str_replace('_', ' ', ucfirst($question->question_type)) }}</span>
                         </div>
-                        <span class="rs-question-points {{ $pointsClass }}">
-                            {{ $pointsEarned }}/{{ $question->points }} points
+                        <span class="liquid-question-points {{ $pointsClass }}">
+                            {{ App\Helpers\TranslationHelper::trans('quiz-results.points_earned', ['earned' => $pointsEarned, 'total' => $question->points]) }}
                         </span>
                     </div>
 
-                    <div class="rs-question-text">{{ $question->question_text }}</div>
+                    <div class="liquid-question-text">{{ $question->question_text }}</div>
 
                     @if($question->image)
                     <div style="margin-bottom: 15px;">
-                        <img src="{{ Storage::url($question->image) }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <img src="{{ Storage::url($question->image) }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: var(--radius-sm); box-shadow: var(--shadow-md);">
                     </div>
                     @endif
 
                     <!-- Show ALL options with user's answers and correct answers -->
-                    <div style="margin: 20px 0;">
-                        <div style="display: flex; gap: 20px; margin-bottom: 15px;">
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <div style="width: 16px; height: 16px; background: rgba(6, 214, 160, 0.1); border: 2px solid #06d6a0; border-radius: 4px;"></div>
-                                <span style="font-size: 0.85rem; color: #6c757d;">Correct answer</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <div style="width: 16px; height: 16px; background: rgba(239, 71, 111, 0.1); border: 2px solid #ef476f; border-radius: 4px;"></div>
-                                <span style="font-size: 0.85rem; color: #6c757d;">Your incorrect selection</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <div style="width: 16px; height: 16px; background: rgba(255, 209, 102, 0.1); border: 2px solid #ffd166; border-radius: 4px;"></div>
-                                <span style="font-size: 0.85rem; color: #6c757d;">Correct answer you missed</span>
-                            </div>
+                    <div class="liquid-legend">
+                        <div class="liquid-legend-item">
+                            <span class="liquid-legend-color correct"></span>
+                            <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_correct') }}</span>
                         </div>
-
-                        @include('quizzes.partials.answer-display', [
-                        'question' => $question,
-                        'answerData' => $answerData,
-                        'type' => 'user'
-                        ])
+                        <div class="liquid-legend-item">
+                            <span class="liquid-legend-color incorrect"></span>
+                            <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_incorrect') }}</span>
+                        </div>
+                        <div class="liquid-legend-item">
+                            <span class="liquid-legend-color missed"></span>
+                            <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_missed') }}</span>
+                        </div>
                     </div>
+
+                    @include('quizzes.partials.answer-display', [
+                    'question' => $question,
+                    'answerData' => $answerData,
+                    'type' => 'user'
+                    ])
 
                     <!-- Question Explanation -->
                     @if($question->explanation)
-                    <div class="rs-answer-box" style="margin-top: 20px; background: rgba(67, 97, 238, 0.03);">
-                        <div class="rs-answer-label">
-                            <i class="fas fa-lightbulb" style="color: #ffd166;"></i>
-                            Explanation:
+                    <div class="liquid-answer-box">
+                        <div class="liquid-answer-label">
+                            <i class="fas fa-lightbulb" style="color: var(--bright-amber);"></i>
+                            {{ App\Helpers\TranslationHelper::trans('quiz-results.explanation') }}
                         </div>
-                        <div style="color: #1e1e2f; font-size: 0.95rem; line-height: 1.6; padding: 10px; background: white; border-radius: 8px;">
+                        <div style="color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; padding: 10px; background: var(--pure-white); border-radius: var(--radius-sm);">
                             {{ $question->explanation }}
                         </div>
                     </div>
@@ -1014,63 +1191,63 @@
             @endif
 
             <!-- Action Buttons -->
-            <div class="rs-actions">
+            <div class="liquid-actions">
                 @if($quiz->can_attempt)
                 <form method="POST" action="{{ route('quizzes.start', $quiz->id) }}" style="display: inline;">
                     @csrf
-                    <button type="submit" class="rs-btn rs-btn-primary">
+                    <button type="submit" class="liquid-btn liquid-btn-primary">
                         <i class="fas fa-redo-alt"></i>
-                        Try Again
+                        <span>{{ App\Helpers\TranslationHelper::trans('quiz-results.try_again') }}</span>
                     </button>
                 </form>
                 @endif
 
-                <a href="{{ route('quiz') }}" class="rs-btn rs-btn-secondary">
+                <a href="{{ route('quiz') }}" class="liquid-btn liquid-btn-secondary">
                     <i class="fas fa-th-large"></i>
-                    More Quizzes
+                    <span>{{ App\Helpers\TranslationHelper::trans('quiz-results.more_quizzes') }}</span>
                 </a>
 
                 @if(Auth::user())
-                <a href="{{ route('dashboard') }}" class="rs-btn rs-btn-secondary">
+                <a href="{{ route('dashboard') }}" class="liquid-btn liquid-btn-secondary">
                     <i class="fas fa-chart-pie"></i>
-                    Dashboard
+                    <span>{{ App\Helpers\TranslationHelper::trans('quiz-results.dashboard') }}</span>
                 </a>
                 @endif
 
-                <button onclick="window.print()" class="rs-btn rs-btn-secondary">
+                <button onclick="window.print()" class="liquid-btn liquid-btn-secondary">
                     <i class="fas fa-print"></i>
-                    Print
+                    <span>{{ App\Helpers\TranslationHelper::trans('quiz-results.print') }}</span>
                 </button>
             </div>
         </div>
 
         <!-- Share Results Card -->
-        <div class="rs-share-card">
-            <div class="rs-share-content">
-                <h3 class="rs-share-title">Share Your Achievement</h3>
-                <p class="rs-share-text">Show the world your {{ $percentage }}% score on {{ $quiz->title }}</p>
-                <div class="rs-share-buttons">
-                    <a href="https://twitter.com/intent/tweet?text=I scored {{ $percentage }}% on the {{ $quiz->title }} quiz at EDUCONECX! 🎓&url={{ url()->current() }}"
+        <div class="liquid-share-card">
+            <div class="liquid-share-content">
+                <h3 class="liquid-share-title">{{ App\Helpers\TranslationHelper::trans('quiz-results.share_title') }}</h3>
+                <p class="liquid-share-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) }}</p>
+                <div class="liquid-share-buttons">
+                    <a href="https://twitter.com/intent/tweet?text={{ urlencode(App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title])) }}&url={{ url()->current() }}"
                         target="_blank"
-                        class="rs-share-btn"
-                        title="Share on Twitter">
+                        class="liquid-share-btn"
+                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_twitter') }}">
                         <i class="fab fa-twitter"></i>
                     </a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
                         target="_blank"
-                        class="rs-share-btn"
-                        title="Share on Facebook">
+                        class="liquid-share-btn"
+                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_facebook') }}">
                         <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ url()->current() }}&title={{ $quiz->title }} Results&summary=I scored {{ $percentage }}% on this quiz at EDUCONECX!"
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ url()->current() }}&title={{ $quiz->title }} {{ App\Helpers\TranslationHelper::trans('quiz-results.results') }}&summary={{ App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) }}"
                         target="_blank"
-                        class="rs-share-btn"
-                        title="Share on LinkedIn">
+                        class="liquid-share-btn"
+                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_linkedin') }}">
                         <i class="fab fa-linkedin-in"></i>
                     </a>
-                    <a href="mailto:?subject=My Quiz Results at EDUCONECX&body=I scored {{ $percentage }}% on the {{ $quiz->title }} quiz! Check it out: {{ url()->current() }}"
-                        class="rs-share-btn"
-                        title="Share via Email">
+                    <a href="mailto:?subject={{ urlencode($quiz->title . ' ' . App\Helpers\TranslationHelper::trans('quiz-results.results')) }}&body={{ urlencode(App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) . '\n\n' . url()->current()) }}"
+                        class="liquid-share-btn"
+                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_email') }}">
                         <i class="fas fa-envelope"></i>
                     </a>
                 </div>
@@ -1084,7 +1261,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Animate stats cards on scroll
-        const statItems = document.querySelectorAll('.rs-stat-item');
+        const statItems = document.querySelectorAll('.liquid-stat-item');
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -1108,7 +1285,10 @@
 
         // Confetti effect for passed quizzes
         @if($passed)
-        const colors = ['#06d6a0', '#4361ee', '#f72585', '#ffd166', '#667eea'];
+        const celebrationMessage = '{{ App\Helpers\TranslationHelper::trans('quiz-results.celebration') }}';
+        console.log(celebrationMessage);
+        
+        const colors = [var(--sky-blue), var(--bright-amber), var(--regal-navy), var(--light-gold), var(--prussian-blue)];
 
         function createConfetti() {
             for (let i = 0; i < 50; i++) {
@@ -1119,7 +1299,7 @@
                     confetti.style.top = '-10px';
                     confetti.style.width = '8px';
                     confetti.style.height = '8px';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
                     confetti.style.borderRadius = '50%';
                     confetti.style.zIndex = '9999';
                     confetti.style.pointerEvents = 'none';
@@ -1147,10 +1327,10 @@
         @endif
 
         // Question hover effect
-        const questionItems = document.querySelectorAll('.rs-question-item');
+        const questionItems = document.querySelectorAll('.liquid-question-item');
         questionItems.forEach(item => {
             item.addEventListener('mouseenter', function() {
-                this.style.backgroundColor = '#ffffff';
+                this.style.backgroundColor = 'var(--pure-white)';
             });
             item.addEventListener('mouseleave', function() {
                 this.style.backgroundColor = '';
@@ -1162,62 +1342,15 @@
             window.print();
         };
 
-        console.log('Quiz results page initialized');
+        // Option item hover effects
+        document.querySelectorAll('.liquid-option-item').forEach(option => {
+            option.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = 'var(--ivory)';
+            });
+            option.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = 'var(--pure-white)';
+            });
+        });
     });
 </script>
-@endpush
-
-@push('styles')
-<style>
-    /* Add these styles to your existing styles */
-    .rs-option-item {
-        transition: all 0.2s ease;
-        margin-bottom: 8px;
-    }
-    
-    .rs-option-item:hover {
-        transform: translateX(5px);
-    }
-    
-    .rs-option-correct {
-        border-left: 4px solid #06d6a0;
-    }
-    
-    .rs-option-incorrect {
-        border-left: 4px solid #ef476f;
-    }
-    
-    .rs-option-missed {
-        border-left: 4px solid #ffd166;
-    }
-    
-    .rs-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 20px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        margin-left: 8px;
-    }
-    
-    .rs-badge-correct {
-        background: rgba(6, 214, 160, 0.15);
-        color: #06d6a0;
-    }
-    
-    .rs-badge-incorrect {
-        background: rgba(239, 71, 111, 0.15);
-        color: #ef476f;
-    }
-    
-    .rs-badge-missed {
-        background: rgba(255, 209, 102, 0.15);
-        color: #b85e00;
-    }
-    
-    .rs-badge-user {
-        background: rgba(67, 97, 238, 0.15);
-        color: #4361ee;
-    }
-</style>
 @endpush

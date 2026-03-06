@@ -1,507 +1,607 @@
 @extends('layouts.main')
 
-@section('title', 'Taking Quiz: ' . $quiz->title . ' - EDUCONECX')
+@section('title', App\Helpers\TranslationHelper::trans('quiz-take.page_title', ['title' => $quiz->title]))
 
-@section('meta_description', 'Take the quiz and test your knowledge.')
+@section('meta_description', App\Helpers\TranslationHelper::trans('quiz-take.meta_description'))
 
 @section('content')
 <style>
-    /* Quiz Taking Page Specific Styles - Premium Enhanced Version */
+    /* ===== LIQUID QUIZ TAKING PAGE - YOUR BEAUTIFUL COLORS ===== */
     :root {
-        --quiz-take-primary: #4361ee;
-        --quiz-take-primary-dark: #3a0ca3;
-        --quiz-take-primary-light: #4895ef;
-        --quiz-take-secondary: #4cc9f0;
-        --quiz-take-accent: #f72585;
-        --quiz-take-success: #06d6a0;
-        --quiz-take-success-dark: #05b586;
-        --quiz-take-warning: #ffd166;
-        --quiz-take-danger: #ef476f;
-        --quiz-take-dark: #1e1e2f;
-        --quiz-take-dark-light: #2d2d44;
-        --quiz-take-gray: #6c757d;
-        --quiz-take-gray-light: #e9ecef;
-        --quiz-take-light: #f8f9fa;
-        --quiz-take-white: #ffffff;
-        --quiz-take-gradient: linear-gradient(145deg, #4361ee, #3a0ca3);
-        --quiz-take-gradient-hover: linear-gradient(145deg, #3a0ca3, #4361ee);
-        --quiz-take-gradient-accent: linear-gradient(145deg, #f72585, #b5179e);
-        --quiz-take-gradient-success: linear-gradient(145deg, #06d6a0, #05b586);
-        --quiz-take-shadow-sm: 0 5px 15px rgba(0, 0, 0, 0.05);
-        --quiz-take-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        --quiz-take-shadow-lg: 0 20px 40px rgba(67, 97, 238, 0.12);
-        --quiz-take-shadow-hover: 0 25px 50px rgba(67, 97, 238, 0.2);
-        --quiz-take-radius: 16px;
-        --quiz-take-radius-lg: 24px;
-        --quiz-take-radius-sm: 12px;
-        --quiz-take-radius-xs: 8px;
-        --quiz-take-radius-full: 9999px;
-        --quiz-take-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --bright-amber: #FBC60C;
+        --khaki-beige: #9F9A87;
+        --pure-white: #FEFDFE;
+        --prussian-blue: #0A1D44;
+        --regal-navy: #18386E;
+        --sky-blue: #5AD1E4;
+        --pale-slate: #CBD1DA;
+        --dark-slate: #2E5C61;
+        --ivory: #F9F7E9;
+        --light-gold: #EBD789;
+
+        /* Extended Palette */
+        --primary: var(--regal-navy);
+        --primary-dark: var(--prussian-blue);
+        --primary-light: var(--dark-slate);
+        --secondary: var(--sky-blue);
+        --accent: var(--bright-amber);
+        --accent-soft: var(--light-gold);
+        --success: var(--sky-blue);
+        --warning: var(--bright-amber);
+        --danger: #EBD789;
+        --dark: var(--prussian-blue);
+        --dark-light: var(--regal-navy);
+        --gray: var(--khaki-beige);
+        --gray-light: var(--pale-slate);
+        --light: var(--ivory);
+        --white: var(--pure-white);
+
+        /* Text Colors */
+        --text-primary: #0A1D44;
+        --text-secondary: #2E5C61;
+        --text-muted: #5f5f5f;
+        --text-light: #FEFDFE;
+
+        /* Gradients with your colors */
+        --gradient-liquid-1: linear-gradient(135deg, #0A1D44 0%, #18386E 50%, #2E5C61 100%);
+        --gradient-liquid-2: linear-gradient(45deg, #FBC60C 0%, #EBD789 50%, #F9F7E9 100%);
+        --gradient-liquid-3: linear-gradient(135deg, #5AD1E4 0%, #CBD1DA 50%, #FEFDFE 100%);
+        --gradient-liquid-4: linear-gradient(225deg, #0A1D44 0%, #2E5C61 50%, #5AD1E4 100%);
+
+        /* Shadows */
+        --shadow-sm: 0 2px 8px rgba(10, 29, 68, 0.08);
+        --shadow-md: 0 4px 12px rgba(10, 29, 68, 0.12);
+        --shadow-lg: 0 8px 24px rgba(10, 29, 68, 0.15);
+        --shadow-hover: 0 12px 28px rgba(251, 198, 12, 0.2);
+
+        /* Border Radius */
+        --radius-sm: 12px;
+        --radius-md: 20px;
+        --radius-lg: 30px;
+        --radius-full: 9999px;
+
+        /* Transitions */
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Main Container with Animated Background */
-    .quiz-take-container {
-        background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+    /* ===== MAIN CONTAINER WITH LIQUID BACKGROUND ===== */
+    .liquid-quiz-container {
+        background: linear-gradient(135deg, var(--ivory) 0%, var(--pure-white) 100%);
         min-height: 100vh;
         padding: 40px 0;
         position: relative;
         overflow: hidden;
     }
 
-    .quiz-take-container::before {
-        content: '';
+    .liquid-blob {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: radial-gradient(circle at 20% 50%, rgba(67, 97, 238, 0.03) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(247, 37, 133, 0.03) 0%, transparent 50%);
+        filter: blur(60px);
+        opacity: 0.15;
+        transform: translateZ(0);
+        backface-visibility: hidden;
         pointer-events: none;
+        z-index: 0;
     }
 
-    /* Quiz Header with Glassmorphism */
-    .quiz-take-header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+    .liquid-blob-1 {
+        top: -5%;
+        left: -5%;
+        width: 400px;
+        height: 400px;
+        background: var(--bright-amber);
+        border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
+    }
+
+    .liquid-blob-2 {
+        bottom: -5%;
+        right: -5%;
+        width: 500px;
+        height: 500px;
+        background: var(--sky-blue);
+        border-radius: 33% 67% 48% 52% / 44% 31% 69% 56%;
+    }
+
+    .liquid-blob-3 {
+        top: 40%;
+        right: 10%;
+        width: 300px;
+        height: 300px;
+        background: var(--light-gold);
+        border-radius: 53% 47% 32% 68% / 44% 58% 42% 56%;
+    }
+
+    @media (max-width: 768px) {
+        .liquid-blob {
+            filter: blur(40px);
+        }
+        .liquid-blob-1 { width: 250px; height: 250px; }
+        .liquid-blob-2 { width: 300px; height: 300px; }
+        .liquid-blob-3 { width: 200px; height: 200px; }
+    }
+
+    /* ===== CONTENT WRAPPER ===== */
+    .quiz-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ===== TRANSLATION LOADING ===== */
+    .translation-loading {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
+        padding: 12px 24px;
+        border-radius: var(--radius-full);
+        box-shadow: var(--shadow-lg);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        backdrop-filter: blur(8px);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: var(--quiz-take-radius-lg);
+        animation: slideIn 0.3s ease;
+    }
+
+    .translation-loading i {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ===== ALERTS ===== */
+    .liquid-alert {
+        border-radius: var(--radius-md);
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid transparent;
+        position: relative;
+        z-index: 2;
+    }
+
+    .liquid-alert-error {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(251, 198, 12, 0.1));
+        color: var(--prussian-blue);
+        border-left: 4px solid var(--bright-amber);
+    }
+
+    .liquid-alert-success {
+        background: linear-gradient(135deg, rgba(90, 209, 228, 0.1), rgba(203, 209, 218, 0.1));
+        color: var(--prussian-blue);
+        border-left: 4px solid var(--sky-blue);
+    }
+
+    /* ===== QUIZ HEADER ===== */
+    .liquid-quiz-header {
+        background: var(--gradient-liquid-1);
+        border-radius: var(--radius-lg);
         padding: 30px 35px;
-        box-shadow: var(--quiz-take-shadow);
         margin-bottom: 30px;
         position: relative;
         overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        color: var(--pure-white);
     }
 
-    .quiz-take-header::before {
+    .liquid-quiz-header::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: var(--quiz-take-gradient);
+        top: -50%;
+        right: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(251, 198, 12, 0.1);
+        border-radius: 50%;
+        pointer-events: none;
     }
 
-    .quiz-take-header h1 {
+    .liquid-quiz-header::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 250px;
+        height: 250px;
+        background: rgba(90, 209, 228, 0.1);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .liquid-quiz-header h1 {
         font-size: 2rem !important;
-        font-weight: 700 !important;
-        background: var(--quiz-take-gradient);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-weight: 800 !important;
+        color: var(--pure-white) !important;
         margin-bottom: 8px !important;
-        letter-spacing: -0.02em;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    /* Premium Timer */
-    .quiz-take-timer {
-        background: var(--quiz-take-gradient);
-        color: var(--quiz-take-white);
+    /* ===== TIMER ===== */
+    .liquid-timer {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
         padding: 14px 28px;
-        border-radius: var(--quiz-take-radius-full);
+        border-radius: var(--radius-full);
         display: inline-flex;
         align-items: center;
         gap: 12px;
         font-size: 1.6rem;
         font-weight: 700;
-        box-shadow: var(--quiz-take-shadow-lg);
-        position: relative;
-        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
     }
 
-    .quiz-take-timer::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        animation: quiz-take-shimmer 3s infinite;
+    .liquid-timer.warning {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
     }
 
-    .quiz-take-timer.warning {
-        background: linear-gradient(145deg, #ef476f, #d64161);
-        animation: quiz-take-pulse 1.5s infinite;
-    }
-
-    .quiz-take-timer i {
+    .liquid-timer i {
         font-size: 1.4rem;
-        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
 
-    /* Progress Bar with Premium Effects */
-    .quiz-take-progress-bar {
+    /* ===== PROGRESS BAR ===== */
+    .liquid-progress {
+        margin-top: 20px;
+    }
+
+    .liquid-progress-bar {
         height: 12px;
-        background: var(--quiz-take-gray-light);
-        border-radius: var(--quiz-take-radius-full);
+        background: var(--pale-slate);
+        border-radius: var(--radius-full);
         overflow: hidden;
-        position: relative;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 10px;
     }
 
-    .quiz-take-progress-fill {
+    .liquid-progress-fill {
         height: 100%;
-        background: var(--quiz-take-gradient);
-        border-radius: var(--quiz-take-radius-full);
-        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--gradient-liquid-2);
+        border-radius: var(--radius-full);
+        transition: width 0.5s ease;
         position: relative;
         overflow: hidden;
     }
 
-    .quiz-take-progress-fill::after {
+    .liquid-progress-fill::after {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(90deg,
-                transparent,
-                rgba(255, 255, 255, 0.4),
-                transparent);
-        animation: quiz-take-shimmer 2s infinite;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: shimmer 2s infinite;
     }
 
-    /* Language Selector with Modern Design */
-    .quiz-take-language-selector {
-        background: var(--quiz-take-white);
-        border-radius: var(--quiz-take-radius-full);
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+    .liquid-progress-stats {
+        display: flex;
+        justify-content: space-between;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* ===== LANGUAGE SELECTOR ===== */
+    .liquid-language-selector {
+        background: var(--pure-white);
+        border-radius: var(--radius-full);
         padding: 6px;
         display: inline-flex;
         gap: 6px;
-        box-shadow: var(--quiz-take-shadow);
-        border: 1px solid rgba(67, 97, 238, 0.1);
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(251, 198, 12, 0.2);
+        margin-bottom: 15px;
     }
 
-    .quiz-take-language-btn {
+    .liquid-language-btn {
         padding: 10px 24px;
         border: none;
-        border-radius: var(--quiz-take-radius-full);
+        border-radius: var(--radius-full);
         font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
-        transition: var(--quiz-take-transition);
+        transition: var(--transition);
         background: transparent;
-        color: var(--quiz-take-gray);
-        letter-spacing: 0.3px;
+        color: var(--text-muted);
     }
 
-    .quiz-take-language-btn:hover {
-        background: var(--quiz-take-light);
-        color: var(--quiz-take-primary);
-        transform: translateY(-1px);
+    .liquid-language-btn:hover {
+        background: var(--ivory);
+        color: var(--bright-amber);
     }
 
-    .quiz-take-language-btn.active {
-        background: var(--quiz-take-gradient);
-        color: var(--quiz-take-white);
-        box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+    .liquid-language-btn.active {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
+        box-shadow: var(--shadow-md);
     }
 
-    /* Question Card with Premium Design */
-    .quiz-take-question-card {
-        background: var(--quiz-take-white);
-        border-radius: var(--quiz-take-radius-lg);
+    /* ===== QUESTION CARD ===== */
+    .liquid-question-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
         padding: 40px;
-        box-shadow: var(--quiz-take-shadow);
+        box-shadow: var(--shadow-lg);
         margin-bottom: 30px;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        transition: var(--quiz-take-transition);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .quiz-take-question-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--quiz-take-shadow-lg);
-    }
-
-    .quiz-take-question-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 100% 0%, rgba(67, 97, 238, 0.02), transparent 50%);
-        pointer-events: none;
-    }
-
-    .quiz-take-question-header {
+    .liquid-question-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 30px;
         padding-bottom: 20px;
-        border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+        border-bottom: 2px solid var(--pale-slate);
     }
 
-    .quiz-take-question-badge {
-        background: var(--quiz-take-gradient);
-        color: var(--quiz-take-white);
+    .liquid-question-badge {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
         padding: 8px 20px;
-        border-radius: var(--quiz-take-radius-full);
+        border-radius: var(--radius-full);
         font-size: 0.85rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-        box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
     }
 
-    .quiz-take-question-points {
-        background: linear-gradient(145deg, rgba(247, 37, 133, 0.1), rgba(76, 201, 240, 0.1));
-        color: var(--quiz-take-accent);
+    .liquid-question-points {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
         padding: 8px 18px;
-        border-radius: var(--quiz-take-radius-full);
+        border-radius: var(--radius-full);
         font-size: 0.95rem;
         font-weight: 700;
-        border: 1px solid rgba(247, 37, 133, 0.2);
-        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    .quiz-take-question-text {
+    .liquid-question-text {
         font-size: 1.6rem !important;
         font-weight: 600 !important;
-        color: var(--quiz-take-dark) !important;
+        color: var(--text-primary) !important;
         margin-bottom: 30px !important;
         line-height: 1.5 !important;
         padding: 20px;
-        background: rgba(248, 249, 250, 0.5);
-        border-radius: var(--quiz-take-radius);
-        border-left: 4px solid var(--quiz-take-primary);
+        background: var(--ivory);
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--bright-amber);
     }
 
-    /* Options with Modern Design */
-    .quiz-take-option-item {
+    /* ===== OPTIONS ===== */
+    .liquid-option-item {
         margin-bottom: 16px;
         padding: 20px 25px;
-        border: 2px solid var(--quiz-take-gray-light);
-        border-radius: var(--quiz-take-radius);
-        transition: var(--quiz-take-transition);
+        border: 2px solid var(--pale-slate);
+        border-radius: var(--radius-md);
+        transition: var(--transition);
         cursor: pointer;
-        background: var(--quiz-take-white);
+        background: var(--pure-white);
         position: relative;
         overflow: hidden;
     }
 
-    .quiz-take-option-item::before {
+    .liquid-option-item::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         width: 4px;
         height: 100%;
-        background: var(--quiz-take-gradient);
+        background: var(--gradient-liquid-2);
         opacity: 0;
-        transition: var(--quiz-take-transition);
+        transition: var(--transition);
     }
 
-    .quiz-take-option-item:hover {
-        border-color: var(--quiz-take-primary);
-        background: linear-gradient(145deg, white, rgba(67, 97, 238, 0.02));
+    .liquid-option-item:hover {
+        border-color: var(--bright-amber);
+        background: linear-gradient(135deg, var(--pure-white), var(--ivory));
         transform: translateX(8px);
-        box-shadow: var(--quiz-take-shadow-sm);
+        box-shadow: var(--shadow-md);
     }
 
-    .quiz-take-option-item:hover::before {
+    .liquid-option-item:hover::before {
         opacity: 1;
     }
 
-    .quiz-take-option-item.selected {
-        border-color: var(--quiz-take-primary);
-        background: linear-gradient(145deg, rgba(67, 97, 238, 0.05), rgba(76, 201, 240, 0.05));
-        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.15);
+    .liquid-option-item.selected {
+        border-color: var(--bright-amber);
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
+        box-shadow: var(--shadow-md);
     }
 
-    .quiz-take-option-item.selected::before {
+    .liquid-option-item.selected::before {
         opacity: 1;
     }
 
-    .quiz-take-option-item .form-check-input {
+    .liquid-option-item .form-check-input {
         width: 24px;
         height: 24px;
         margin-right: 18px;
         cursor: pointer;
-        border: 2px solid var(--quiz-take-gray);
-        transition: var(--quiz-take-transition);
+        border: 2px solid var(--gray);
     }
 
-    .quiz-take-option-item .form-check-input:checked {
-        background-color: var(--quiz-take-primary);
-        border-color: var(--quiz-take-primary);
-        transform: scale(1.1);
-        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    .liquid-option-item .form-check-input:checked {
+        background-color: var(--bright-amber);
+        border-color: var(--bright-amber);
+        box-shadow: 0 0 0 3px rgba(251, 198, 12, 0.2);
     }
 
-    .quiz-take-option-item .form-check-label {
+    .liquid-option-item .form-check-label {
         font-size: 1.1rem;
-        color: var(--quiz-take-dark);
+        color: var(--text-primary);
         font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 15px;
     }
 
-    /* Option Image with Premium Style */
-    .quiz-take-option-image {
+    .liquid-option-image {
         width: 60px;
         height: 60px;
-        border-radius: var(--quiz-take-radius-sm);
+        border-radius: var(--radius-sm);
         overflow: hidden;
         flex-shrink: 0;
         border: 2px solid transparent;
-        transition: var(--quiz-take-transition);
-        box-shadow: var(--quiz-take-shadow-sm);
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
     }
 
-    .quiz-take-option-item:hover .quiz-take-option-image {
-        border-color: var(--quiz-take-primary);
+    .liquid-option-item:hover .liquid-option-image {
+        border-color: var(--bright-amber);
         transform: scale(1.05);
     }
 
-    /* Fill in the Blank with Modern Design */
-    .quiz-take-fill-blank .form-control {
-        border: 2px solid var(--quiz-take-gray-light);
-        border-radius: var(--quiz-take-radius);
+    /* ===== FILL IN THE BLANK ===== */
+    .liquid-fill-blank .form-control {
+        border: 2px solid var(--pale-slate);
+        border-radius: var(--radius-md);
         padding: 18px 25px;
         font-size: 1.1rem;
-        transition: var(--quiz-take-transition);
-        background: linear-gradient(145deg, white, var(--quiz-take-light));
+        transition: var(--transition);
+        background: linear-gradient(135deg, var(--pure-white), var(--ivory));
     }
 
-    .quiz-take-fill-blank .form-control:focus {
-        border-color: var(--quiz-take-primary);
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
-        background: white;
-        transform: translateY(-2px);
-    }
-
-    /* Matching Section with Premium Design */
-    .quiz-take-matching-row {
-        background: linear-gradient(145deg, var(--quiz-take-light), white);
-        border-radius: var(--quiz-take-radius);
-        padding: 25px;
-        margin-bottom: 15px;
-        transition: var(--quiz-take-transition);
-        border: 1px solid transparent;
-    }
-
-    .quiz-take-matching-row:hover {
-        transform: translateX(8px) translateY(-2px);
-        box-shadow: var(--quiz-take-shadow);
-        border-color: var(--quiz-take-primary-light);
-        background: white;
-    }
-
-    .quiz-take-matching-left {
-        font-weight: 600;
-        color: var(--quiz-take-dark);
-        padding: 12px;
-        background: linear-gradient(145deg, white, var(--quiz-take-light));
-        border-radius: var(--quiz-take-radius-sm);
-        text-align: center;
-        border: 2px dashed var(--quiz-take-primary-light);
-        box-shadow: var(--quiz-take-shadow-sm);
-    }
-
-    .quiz-take-matching-select {
-        width: 100%;
-        padding: 12px 18px;
-        border: 2px solid var(--quiz-take-gray-light);
-        border-radius: var(--quiz-take-radius-sm);
-        background: white;
-        cursor: pointer;
-        transition: var(--quiz-take-transition);
-        font-weight: 500;
-    }
-
-    .quiz-take-matching-select:focus {
-        border-color: var(--quiz-take-primary);
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
+    .liquid-fill-blank .form-control:focus {
+        border-color: var(--bright-amber);
+        box-shadow: 0 0 0 4px rgba(251, 198, 12, 0.1);
         outline: none;
     }
 
-    /* Image Grid with Premium Design */
-    .quiz-take-image-grid {
+    .liquid-hint {
+        display: block;
+        margin-top: 10px;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .liquid-hint i {
+        color: var(--bright-amber);
+        margin-right: 5px;
+    }
+
+    /* ===== MATCHING ===== */
+    .liquid-matching-row {
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
+        border-radius: var(--radius-md);
+        padding: 25px;
+        margin-bottom: 15px;
+        transition: var(--transition);
+        border: 1px solid transparent;
+    }
+
+    .liquid-matching-row:hover {
+        transform: translateX(8px) translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--bright-amber);
+    }
+
+    .liquid-matching-left {
+        font-weight: 600;
+        color: var(--text-primary);
+        padding: 12px;
+        background: var(--pure-white);
+        border-radius: var(--radius-sm);
+        text-align: center;
+        border: 2px dashed var(--pale-slate);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .liquid-matching-arrow {
+        text-align: center;
+        color: var(--bright-amber);
+        font-size: 1.2rem;
+    }
+
+    .liquid-matching-select {
+        width: 100%;
+        padding: 12px 18px;
+        border: 2px solid var(--pale-slate);
+        border-radius: var(--radius-sm);
+        background: var(--pure-white);
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 500;
+    }
+
+    .liquid-matching-select:focus {
+        border-color: var(--bright-amber);
+        box-shadow: 0 0 0 4px rgba(251, 198, 12, 0.1);
+        outline: none;
+    }
+
+    /* ===== IMAGE SELECTION ===== */
+    .liquid-image-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 25px;
         margin-top: 25px;
     }
 
-    .quiz-take-image-option {
-        border: 2px solid var(--quiz-take-gray-light);
-        border-radius: var(--quiz-take-radius);
+    .liquid-image-option {
+        border: 2px solid var(--pale-slate);
+        border-radius: var(--radius-md);
         overflow: hidden;
         cursor: pointer;
-        transition: var(--quiz-take-transition);
-        background: white;
+        transition: var(--transition);
+        background: var(--pure-white);
         position: relative;
     }
 
-    .quiz-take-image-option::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--quiz-take-gradient);
-        opacity: 0;
-        transition: var(--quiz-take-transition);
-        pointer-events: none;
-        mix-blend-mode: overlay;
-    }
-
-    .quiz-take-image-option:hover {
+    .liquid-image-option:hover {
         transform: translateY(-8px) scale(1.02);
-        box-shadow: var(--quiz-take-shadow-lg);
-        border-color: var(--quiz-take-primary);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--bright-amber);
     }
 
-    .quiz-take-image-option:hover::before {
-        opacity: 0.1;
+    .liquid-image-option.selected {
+        border-color: var(--bright-amber);
+        box-shadow: 0 0 0 4px rgba(251, 198, 12, 0.2);
     }
 
-    .quiz-take-image-option.selected {
-        border-color: var(--quiz-take-primary);
-        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
-    }
-
-    .quiz-take-image-option img {
+    .liquid-image-option img {
         width: 100%;
         height: 160px;
         object-fit: cover;
-        transition: var(--quiz-take-transition);
+        transition: var(--transition);
     }
 
-    .quiz-take-image-option:hover img {
+    .liquid-image-option:hover img {
         transform: scale(1.1);
     }
 
-    .quiz-take-image-option p {
+    .liquid-image-option p {
         text-align: center;
         padding: 15px;
         margin: 0;
-        background: linear-gradient(145deg, var(--quiz-take-light), white);
+        background: var(--ivory);
         font-weight: 600;
-        color: var(--quiz-take-dark);
-        border-top: 1px solid rgba(67, 97, 238, 0.1);
+        color: var(--text-primary);
+        border-top: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    /* Buttons with Premium Design */
-    .quiz-take-btn {
+    /* ===== BUTTONS ===== */
+    .liquid-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 12px;
         padding: 16px 35px;
-        border-radius: var(--quiz-take-radius-full);
+        border-radius: var(--radius-full);
         font-size: 1.1rem;
         font-weight: 600;
         text-decoration: none;
-        transition: var(--quiz-take-transition);
+        transition: var(--transition);
         border: none;
         cursor: pointer;
         position: relative;
@@ -509,7 +609,7 @@
         letter-spacing: 0.5px;
     }
 
-    .quiz-take-btn::before {
+    .liquid-btn::before {
         content: '';
         position: absolute;
         top: 50%;
@@ -517,541 +617,362 @@
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.3);
         transform: translate(-50%, -50%);
         transition: width 0.6s, height 0.6s;
+        z-index: 0;
     }
 
-    .quiz-take-btn:hover::before {
+    .liquid-btn:hover::before {
         width: 300px;
         height: 300px;
     }
 
-    .quiz-take-btn.primary {
-        background: var(--quiz-take-gradient);
-        color: var(--quiz-take-white);
-        box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+    .liquid-btn i,
+    .liquid-btn span {
+        position: relative;
+        z-index: 1;
     }
 
-    .quiz-take-btn.primary:hover {
-        background: var(--quiz-take-gradient-hover);
+    .liquid-btn-primary {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
+        box-shadow: var(--shadow-md);
+    }
+
+    .liquid-btn-primary:hover {
+        background: var(--gradient-liquid-4);
         transform: translateX(5px) translateY(-2px);
-        box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
+        box-shadow: var(--shadow-hover);
     }
 
-    .quiz-take-btn.secondary {
-        background: white;
-        color: var(--quiz-take-gray);
-        border: 2px solid var(--quiz-take-gray-light);
+    .liquid-btn-secondary {
+        background: var(--pure-white);
+        color: var(--text-primary);
+        border: 2px solid var(--pale-slate);
     }
 
-    .quiz-take-btn.secondary:hover {
-        background: var(--quiz-take-light);
-        color: var(--quiz-take-dark);
+    .liquid-btn-secondary:hover {
+        background: var(--ivory);
+        border-color: var(--bright-amber);
         transform: translateX(-5px) translateY(-2px);
-        border-color: var(--quiz-take-primary);
-        box-shadow: var(--quiz-take-shadow);
+        box-shadow: var(--shadow-md);
     }
 
-    .quiz-take-btn.success {
-        background: var(--quiz-take-gradient-success);
-        color: var(--quiz-take-white);
-        box-shadow: 0 8px 20px rgba(6, 214, 160, 0.3);
+    .liquid-btn-success {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
+        box-shadow: var(--shadow-md);
     }
 
-    .quiz-take-btn.success:hover {
-        background: linear-gradient(145deg, #05b586, #06d6a0);
+    .liquid-btn-success:hover {
+        background: var(--gradient-liquid-2);
         transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba(6, 214, 160, 0.4);
+        box-shadow: var(--shadow-hover);
     }
 
-    /* Navigator Card with Premium Design */
-    .quiz-take-navigator-card,
-    .quiz-take-info-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: var(--quiz-take-radius-lg);
+    .liquid-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    /* ===== NAVIGATOR CARD ===== */
+    .liquid-navigator-card,
+    .liquid-info-card {
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
         padding: 30px;
-        box-shadow: var(--quiz-take-shadow);
+        box-shadow: var(--shadow-lg);
         margin-bottom: 25px;
         position: relative;
         overflow: hidden;
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .quiz-take-navigator-card::after,
-    .quiz-take-info-card::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 150px;
-        height: 150px;
-        background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, transparent 70%);
-        border-radius: 50%;
-        pointer-events: none;
-    }
-
-    .quiz-take-navigator-title {
+    .liquid-navigator-title {
         font-size: 1.3rem !important;
         font-weight: 700 !important;
-        color: var(--quiz-take-dark) !important;
+        color: var(--text-primary) !important;
         margin-bottom: 25px !important;
         display: flex;
         align-items: center;
         gap: 12px;
-        border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+        border-bottom: 2px solid var(--pale-slate);
         padding-bottom: 15px;
     }
 
-    .quiz-take-navigator-title i {
-        color: var(--quiz-take-primary);
-        font-size: 1.5rem;
+    .liquid-navigator-title i {
+        color: var(--bright-amber);
     }
 
-    /* Question Dots with Premium Design */
-    .quiz-take-question-grid {
+    .liquid-question-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 12px;
     }
 
-    .quiz-take-question-dot {
+    .liquid-question-dot {
         width: 50px;
         height: 50px;
         border-radius: 50%;
-        background: linear-gradient(145deg, var(--quiz-take-light), white);
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1rem;
         font-weight: 700;
-        color: var(--quiz-take-gray);
+        color: var(--text-muted);
         cursor: pointer;
-        transition: var(--quiz-take-transition);
+        transition: var(--transition);
         border: 2px solid transparent;
-        box-shadow: var(--quiz-take-shadow-sm);
-        position: relative;
+        box-shadow: var(--shadow-sm);
     }
 
-    .quiz-take-question-dot:hover {
+    .liquid-question-dot:hover {
         transform: scale(1.15) translateY(-3px);
-        border-color: var(--quiz-take-primary);
-        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.2);
-        color: var(--quiz-take-primary);
+        border-color: var(--bright-amber);
+        box-shadow: var(--shadow-hover);
+        color: var(--bright-amber);
     }
 
-    .quiz-take-question-dot.answered {
-        background: var(--quiz-take-gradient-success);
-        color: var(--quiz-take-white);
-        box-shadow: 0 8px 15px rgba(6, 214, 160, 0.3);
+    .liquid-question-dot.answered {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
+        border-color: var(--sky-blue);
     }
 
-    .quiz-take-question-dot.current {
-        background: var(--quiz-take-gradient);
-        color: var(--quiz-take-white);
+    .liquid-question-dot.current {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
         transform: scale(1.15);
-        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
-        border: 2px solid white;
+        box-shadow: 0 0 0 3px rgba(251, 198, 12, 0.3);
+        border: 2px solid var(--pure-white);
     }
 
-    .quiz-take-question-dot.current::after {
-        content: '';
-        position: absolute;
-        top: -5px;
-        left: -5px;
-        right: -5px;
-        bottom: -5px;
-        border: 2px solid var(--quiz-take-primary);
-        border-radius: 50%;
-        animation: quiz-take-pulse 2s infinite;
+    /* ===== INFO LIST ===== */
+    .liquid-info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
 
-    /* Info List with Premium Design */
-    .quiz-take-info-list li {
+    .liquid-info-list li {
         display: flex;
         align-items: center;
         gap: 15px;
         padding: 15px 0;
-        border-bottom: 1px solid rgba(67, 97, 238, 0.1);
-        transition: var(--quiz-take-transition);
+        border-bottom: 1px solid var(--pale-slate);
     }
 
-    .quiz-take-info-list li:hover {
-        transform: translateX(5px);
-        background: rgba(67, 97, 238, 0.02);
-        padding-left: 10px;
-        border-radius: var(--quiz-take-radius-xs);
+    .liquid-info-list li:last-child {
+        border-bottom: none;
     }
 
-    .quiz-take-info-list li i {
+    .liquid-info-list li i {
         width: 30px;
-        color: var(--quiz-take-primary);
+        color: var(--bright-amber);
         font-size: 1.2rem;
         text-align: center;
     }
 
-    .quiz-take-info-list li strong {
-        color: var(--quiz-take-dark);
+    .liquid-info-list li strong {
+        color: var(--text-primary);
         font-weight: 700;
-        font-size: 1.1rem;
+        margin-left: auto;
     }
 
-    /* Complete Card with Premium Design */
-    .quiz-take-complete-card {
-        background: linear-gradient(145deg, white, var(--quiz-take-light));
-        border-radius: var(--quiz-take-radius-lg);
+    /* ===== COMPLETE CARD ===== */
+    .liquid-complete-card {
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
+        border-radius: var(--radius-lg);
         padding: 70px 50px;
-        box-shadow: var(--quiz-take-shadow-lg);
+        box-shadow: var(--shadow-lg);
         text-align: center;
         position: relative;
         overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .quiz-take-complete-card::before {
+    .liquid-complete-card::before {
         content: '';
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(67, 97, 238, 0.05) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(251, 198, 12, 0.05) 0%, transparent 70%);
         animation: rotate 20s linear infinite;
     }
 
-    @keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
+    @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .quiz-take-complete-icon {
+    .liquid-complete-icon {
         font-size: 6rem;
-        background: var(--quiz-take-gradient-success);
+        background: var(--gradient-liquid-3);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 25px;
-        animation: quiz-take-bounce 1s ease;
         position: relative;
         display: inline-block;
     }
 
-    .quiz-take-complete-icon::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle, rgba(6, 214, 160, 0.2) 0%, transparent 70%);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        z-index: -1;
-        animation: pulse 2s infinite;
+    .liquid-complete-card h2 {
+        font-size: 2.5rem !important;
+        font-weight: 800 !important;
+        color: var(--text-primary) !important;
+        margin-bottom: 15px !important;
     }
 
-    /* Alert Styles */
-    .quiz-take-error-alert,
-    .quiz-take-success-alert {
-        padding: 18px 25px;
-        border-radius: var(--quiz-take-radius);
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        border: none;
-        backdrop-filter: blur(10px);
-        animation: slideIn 0.5s ease;
+    .liquid-complete-card p {
+        font-size: 1.2rem !important;
+        color: var(--text-muted) !important;
+        margin-bottom: 30px !important;
     }
 
-    @keyframes slideIn {
-        from {
-            transform: translateX(-100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    .quiz-take-error-alert {
-        background: linear-gradient(145deg, rgba(239, 71, 111, 0.1), rgba(239, 71, 111, 0.05));
-        color: var(--quiz-take-danger);
-        border-left: 4px solid var(--quiz-take-danger);
-    }
-
-    .quiz-take-success-alert {
-        background: linear-gradient(145deg, rgba(6, 214, 160, 0.1), rgba(6, 214, 160, 0.05));
-        color: var(--quiz-take-success-dark);
-        border-left: 4px solid var(--quiz-take-success);
-    }
-
-    /* Translation Loading with Premium Animation */
-    .quiz-take-translation-loading {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--quiz-take-gradient);
-        color: white;
-        padding: 15px 25px;
-        border-radius: var(--quiz-take-radius-full);
-        box-shadow: var(--quiz-take-shadow-lg);
-        z-index: 1000;
-        display: none;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        animation: slideInRight 0.3s ease;
-    }
-
-    @keyframes slideInRight {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    .quiz-take-translation-loading i {
-        animation: spin 1s linear infinite;
-        font-size: 1.2rem;
-    }
-
-    /* Responsive Improvements */
+    /* ===== RESPONSIVE ===== */
     @media (max-width: 992px) {
-        .quiz-take-question-footer {
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .quiz-take-btn {
-            width: 100%;
-        }
-
-        .quiz-take-image-grid {
+        .liquid-image-grid {
             grid-template-columns: repeat(2, 1fr);
         }
-
-        .quiz-take-question-text {
-            font-size: 1.4rem !important;
+        .liquid-question-footer {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .liquid-btn {
+            width: 100%;
         }
     }
 
     @media (max-width: 768px) {
-        .quiz-take-header {
-            padding: 20px;
+        .liquid-quiz-header h1 {
+            font-size: 1.5rem !important;
         }
-
-        .quiz-take-header h1 {
-            font-size: 1.6rem !important;
-        }
-
-        .quiz-take-timer {
-            font-size: 1.3rem;
+        .liquid-timer {
+            font-size: 1.2rem;
             padding: 10px 20px;
         }
-
-        .quiz-take-question-card {
+        .liquid-question-card {
             padding: 25px;
         }
-
-        .quiz-take-question-text {
+        .liquid-question-text {
             font-size: 1.2rem !important;
             padding: 15px;
         }
-
-        .quiz-take-question-grid {
+        .liquid-question-grid {
             grid-template-columns: repeat(4, 1fr);
         }
-
-        .quiz-take-option-item {
-            padding: 15px 18px;
-        }
-
-        .quiz-take-option-item .form-check-label {
-            font-size: 1rem;
-        }
-
-        .quiz-take-complete-card {
-            padding: 40px 20px;
-        }
-
-        .quiz-take-complete-card h2 {
-            font-size: 1.8rem !important;
+        .liquid-question-dot {
+            width: 40px;
+            height: 40px;
+            font-size: 0.9rem;
         }
     }
 
     @media (max-width: 576px) {
-        .quiz-take-image-grid {
+        .liquid-image-grid {
             grid-template-columns: 1fr;
         }
-
-        .quiz-take-question-grid {
+        .liquid-question-grid {
             grid-template-columns: repeat(3, 1fr);
         }
-
-        .quiz-take-language-selector {
+        .liquid-language-selector {
             width: 100%;
             justify-content: center;
         }
-
-        .quiz-take-language-btn {
+        .liquid-language-btn {
             padding: 8px 16px;
             font-size: 0.85rem;
         }
+        .liquid-complete-card {
+            padding: 40px 20px;
+        }
+        .liquid-complete-card h2 {
+            font-size: 1.8rem !important;
+        }
     }
 
-    /* Smooth Scrolling */
-    html {
-        scroll-behavior: smooth;
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: var(--quiz-take-light);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(145deg, var(--quiz-take-primary), var(--quiz-take-primary-dark));
-        border-radius: var(--quiz-take-radius-full);
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(145deg, var(--quiz-take-primary-dark), var(--quiz-take-primary));
-    }
-
-    /* Focus Styles */
-    *:focus-visible {
-        outline: 2px solid var(--quiz-take-primary);
-        outline-offset: 2px;
-        border-radius: var(--quiz-take-radius-xs);
-    }
-
-    /* Loading States */
-    .quiz-take-btn:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        pointer-events: none;
-    }
-
-    .quiz-take-btn i.fa-spinner {
+    /* ===== UTILITY ===== */
+    .btn-spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--pure-white);
         animation: spin 1s linear infinite;
-    }
-
-    /* Additional Animations */
-    @keyframes float {
-
-        0%,
-        100% {
-            transform: translateY(0px);
-        }
-
-        50% {
-            transform: translateY(-10px);
-        }
-    }
-
-    .quiz-take-timer {
-        animation: float 3s ease-in-out infinite;
-    }
-
-    .quiz-take-question-dot.current {
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-
-        0%,
-        100% {
-            box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.4);
-        }
-
-        50% {
-            box-shadow: 0 0 0 10px rgba(67, 97, 238, 0);
-        }
     }
 </style>
 
-<div class="quiz-take-container">
-    <div class="container">
+<div class="liquid-quiz-container">
+    <div class="liquid-blob liquid-blob-1"></div>
+    <div class="liquid-blob liquid-blob-2"></div>
+    <div class="liquid-blob liquid-blob-3"></div>
+
+    <div class="container quiz-content">
         <!-- Translation Loading Indicator -->
-        <div class="quiz-take-translation-loading" id="translationLoading">
+        <div class="translation-loading" id="translationLoading">
             <i class="fas fa-spinner"></i>
-            <span>Translating...</span>
+            <span>{{ App\Helpers\TranslationHelper::trans('quiz-take.translating') }}</span>
         </div>
 
         <!-- Display any session messages -->
         @if(session('error'))
-        <div class="quiz-take-error-alert">
+        <div class="liquid-alert liquid-alert-error">
             <i class="fas fa-exclamation-circle"></i>
             <span>{{ session('error') }}</span>
         </div>
         @endif
 
         @if(session('success'))
-        <div class="quiz-take-success-alert">
+        <div class="liquid-alert liquid-alert-success">
             <i class="fas fa-check-circle"></i>
             <span>{{ session('success') }}</span>
         </div>
         @endif
 
+        <!-- Language Selector -->
+        <div class="liquid-language-selector">
+            <button class="liquid-language-btn active" onclick="changeLanguage('en')" id="langEn">{{ App\Helpers\TranslationHelper::trans('quiz-take.lang_en') }}</button>
+            <button class="liquid-language-btn" onclick="changeLanguage('es')" id="langEs">{{ App\Helpers\TranslationHelper::trans('quiz-take.lang_es') }}</button>
+            <button class="liquid-language-btn" onclick="changeLanguage('fr')" id="langFr">{{ App\Helpers\TranslationHelper::trans('quiz-take.lang_fr') }}</button>
+        </div>
+
         <!-- Quiz Header -->
-        <div class="quiz-take-header">
+        <div class="liquid-quiz-header">
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h1 id="quizTitle" data-original="{{ $quiz->title }}">{{ $quiz->title }}</h1>
-                    <p class="text-muted">
+                    <p class="text-white-50">
                         <i class="fas fa-question-circle me-2"></i>
-                        <span id="questionCountText" data-original="Question {{ $attempt->answers->count() + 1 }} of {{ $questions->count() }}">
-                            Question {{ $attempt->answers->count() + 1 }} of {{ $questions->count() }}
+                        <span id="questionCountText" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.question_of', ['current' => $attempt->answers->count() + 1, 'total' => $questions->count()]) }}">
+                            {{ App\Helpers\TranslationHelper::trans('quiz-take.question_of', ['current' => $attempt->answers->count() + 1, 'total' => $questions->count()]) }}
                         </span>
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <!-- Language Selector -->
-                    <div class="quiz-take-language-selector">
-                        <button class="quiz-take-language-btn active" onclick="changeLanguage('en')" id="langEn">English</button>
-                        <button class="quiz-take-language-btn" onclick="changeLanguage('es')" id="langEs">Español</button>
-                        <button class="quiz-take-language-btn" onclick="changeLanguage('fr')" id="langFr">Français</button>
-                    </div>
-
                     @if($remainingTime)
-                    <div class="quiz-take-timer {{ $remainingTime < 300 ? 'warning' : '' }}" id="timer" data-remaining="{{ $remainingTime }}">
+                    <div class="liquid-timer {{ $remainingTime < 300 ? 'warning' : '' }}" id="timer" data-remaining="{{ $remainingTime }}">
                         <i class="far fa-clock"></i>
                         <span id="timerDisplay">{{ gmdate('H:i:s', $remainingTime) }}</span>
                     </div>
                     @endif
+                </div>
+            </div>
 
-                    <div class="quiz-take-progress">
-                        <div class="quiz-take-progress-bar">
-                            @php
-                            $progress = ($attempt->answers->count() / $questions->count()) * 100;
-                            @endphp
-                            <div class="quiz-take-progress-fill" style="width: {{ $progress }}%;"></div>
-                        </div>
-                        <div class="quiz-take-progress-stats">
-                            <span id="answeredCount" data-original="{{ $attempt->answers->count() }} answered">{{ $attempt->answers->count() }} answered</span>
-                            <span id="remainingCount" data-original="{{ $questions->count() - $attempt->answers->count() }} remaining">{{ $questions->count() - $attempt->answers->count() }} remaining</span>
-                        </div>
-                    </div>
+            <div class="liquid-progress">
+                @php
+                $progress = ($attempt->answers->count() / $questions->count()) * 100;
+                @endphp
+                <div class="liquid-progress-bar">
+                    <div class="liquid-progress-fill" style="width: {{ $progress }}%;"></div>
+                </div>
+                <div class="liquid-progress-stats">
+                    <span id="answeredCount" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.answered_count', ['count' => $attempt->answers->count()]) }}">
+                        {{ App\Helpers\TranslationHelper::trans('quiz-take.answered_count', ['count' => $attempt->answers->count()]) }}
+                    </span>
+                    <span id="remainingCount" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.remaining_count', ['count' => $questions->count() - $attempt->answers->count()]) }}">
+                        {{ App\Helpers\TranslationHelper::trans('quiz-take.remaining_count', ['count' => $questions->count() - $attempt->answers->count()]) }}
+                    </span>
                 </div>
             </div>
         </div>
@@ -1064,22 +985,24 @@
                 @endphp
 
                 @if($currentQuestion)
-                <div class="quiz-take-question-card">
+                <div class="liquid-question-card">
                     <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST" id="quizForm">
                         @csrf
 
-                        <div class="quiz-take-question-header">
-                            <span class="quiz-take-question-badge" id="questionType" data-original="{{ str_replace('_', ' ', ucfirst($currentQuestion->question_type)) }}">
-                                {{ str_replace('_', ' ', ucfirst($currentQuestion->question_type)) }}
+                        <div class="liquid-question-header">
+                            <span class="liquid-question-badge" id="questionType" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.type_' . $currentQuestion->question_type) }}">
+                                {{ App\Helpers\TranslationHelper::trans('quiz-take.type_' . $currentQuestion->question_type) }}
                             </span>
-                            <span class="quiz-take-question-points">
+                            <span class="liquid-question-points">
                                 <i class="fas fa-star me-1"></i>
-                                <span id="questionPoints" data-original="{{ $currentQuestion->points }} points">{{ $currentQuestion->points }} points</span>
+                                <span id="questionPoints" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.points', ['count' => $currentQuestion->points]) }}">
+                                    {{ App\Helpers\TranslationHelper::trans('quiz-take.points', ['count' => $currentQuestion->points]) }}
+                                </span>
                             </span>
                         </div>
 
-                        <div class="quiz-take-question-content">
-                            <h3 class="quiz-take-question-text"
+                        <div class="liquid-question-content">
+                            <h3 class="liquid-question-text"
                                 id="questionText"
                                 data-question-id="{{ $currentQuestion->id }}"
                                 data-original="{{ $currentQuestion->question_text }}">
@@ -1087,16 +1010,16 @@
                             </h3>
 
                             @if($currentQuestion->image)
-                            <div class="quiz-take-question-image">
-                                <img src="{{ $currentQuestion->image_url }}" alt="Question image">
+                            <div class="text-center mb-4">
+                                <img src="{{ $currentQuestion->image_url }}" alt="Question image" class="img-fluid rounded" style="max-height: 300px;">
                             </div>
                             @endif
 
                             <!-- Multiple Choice / Single Choice / True False Options -->
                             @if(in_array($currentQuestion->question_type, ['multiple_choice', 'single_choice', 'true_false']))
-                            <div class="quiz-take-options-list" id="optionsList">
+                            <div class="liquid-options-list" id="optionsList">
                                 @foreach($currentQuestion->options as $option)
-                                <div class="quiz-take-option-item" onclick="selectOption(this, '{{ $option->id }}')">
+                                <div class="liquid-option-item" onclick="selectOption(this, '{{ $option->id }}')">
                                     <div class="form-check">
                                         @if($currentQuestion->question_type == 'multiple_choice')
                                         <input class="form-check-input"
@@ -1114,11 +1037,11 @@
 
                                         <label class="form-check-label" for="option_{{ $option->id }}">
                                             @if($option->image)
-                                            <div class="quiz-take-option-image">
+                                            <div class="liquid-option-image">
                                                 <img src="{{ $option->image_url }}" alt="Option image">
                                             </div>
                                             @endif
-                                            <span class="quiz-take-option-text option-text"
+                                            <span class="option-text"
                                                 data-option-id="{{ $option->id }}"
                                                 data-original="{{ $option->option_text }}">
                                                 {{ $option->option_text }}
@@ -1132,20 +1055,20 @@
 
                             <!-- Fill in the Blank -->
                             @if($currentQuestion->question_type == 'fill_blank')
-                            <div class="quiz-take-fill-blank">
+                            <div class="liquid-fill-blank">
                                 <div class="form-group">
                                     <input type="text"
                                         class="form-control form-control-lg"
                                         name="answers[{{ $currentQuestion->id }}]"
                                         id="fill_blank_answer"
-                                        placeholder="Type your answer here..."
+                                        placeholder="{{ App\Helpers\TranslationHelper::trans('quiz-take.fill_blank_placeholder') }}"
                                         value="{{ old('answers.'.$currentQuestion->id) }}"
                                         required>
                                 </div>
                                 @if($currentQuestion->fillBlanks->count() > 1)
-                                <small id="fillBlankHint" data-original="Any of the correct answers will be accepted.">
+                                <small class="liquid-hint" id="fillBlankHint" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.fill_blank_hint') }}">
                                     <i class="fas fa-info-circle"></i>
-                                    Any of the correct answers will be accepted.
+                                    {{ App\Helpers\TranslationHelper::trans('quiz-take.fill_blank_hint') }}
                                 </small>
                                 @endif
                             </div>
@@ -1153,30 +1076,30 @@
 
                             <!-- Matching -->
                             @if($currentQuestion->question_type == 'matching')
-                            <div class="quiz-take-matching">
-                                <div class="quiz-take-matching-instruction" id="matchingInstruction" data-original="Match the items from the left column with the right column">
+                            <div class="liquid-matching">
+                                <div class="liquid-hint mb-4" id="matchingInstruction" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.matching_instruction') }}">
                                     <i class="fas fa-arrows-alt-h"></i>
-                                    Match the items from the left column with the right column
+                                    {{ App\Helpers\TranslationHelper::trans('quiz-take.matching_instruction') }}
                                 </div>
 
                                 @foreach($currentQuestion->matchingPairs as $pair)
-                                <div class="quiz-take-matching-row">
+                                <div class="liquid-matching-row">
                                     <div class="row align-items-center">
                                         <div class="col-md-5">
-                                            <div class="quiz-take-matching-left matching-left-item"
+                                            <div class="liquid-matching-left matching-left-item"
                                                 data-pair-id="{{ $pair->id }}"
                                                 data-original="{{ $pair->left_item }}">
                                                 {{ $pair->left_item }}
                                             </div>
                                         </div>
-                                        <div class="col-md-2 quiz-take-matching-arrow">
+                                        <div class="col-md-2 liquid-matching-arrow">
                                             <i class="fas fa-arrow-right"></i>
                                         </div>
                                         <div class="col-md-5">
-                                            <select class="quiz-take-matching-select matching-select"
+                                            <select class="liquid-matching-select matching-select"
                                                 name="answers[{{ $currentQuestion->id }}][pair_{{ $pair->id }}]"
                                                 required>
-                                                <option value="" data-original="Select match">Select match</option>
+                                                <option value="" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.matching_select_placeholder') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.matching_select_placeholder') }}</option>
                                                 @foreach($currentQuestion->matchingPairs->shuffle() as $rightItem)
                                                 <option value="{{ $rightItem->right_item }}"
                                                     data-original="{{ $rightItem->right_item }}"
@@ -1192,12 +1115,12 @@
                             </div>
                             @endif
 
-                            <!-- Image Selection - UPDATED VERSION -->
+                            <!-- Image Selection -->
                             @if($currentQuestion->question_type == 'image_selection')
-                            <div class="quiz-take-image-selection">
-                                <div class="quiz-take-image-grid">
+                            <div class="liquid-image-selection">
+                                <div class="liquid-image-grid">
                                     @foreach($currentQuestion->options as $option)
-                                    <div class="quiz-take-image-option {{ in_array($option->id, old('answers.'.$currentQuestion->id, [])) ? 'selected' : '' }}" 
+                                    <div class="liquid-image-option {{ in_array($option->id, old('answers.'.$currentQuestion->id, [])) ? 'selected' : '' }}" 
                                          onclick="toggleImageSelection(this, '{{ $option->id }}', '{{ $currentQuestion->question_type }}')">
                                         
                                         @if($currentQuestion->question_type == 'multiple_choice')
@@ -1233,21 +1156,21 @@
                             @endif
                         </div>
 
-                        <div class="quiz-take-question-footer">
-                            <button type="submit" name="action" value="next" class="quiz-take-btn primary" id="nextBtn">
+                        <div class="d-flex gap-3 mt-4">
+                            <button type="submit" name="action" value="next" class="liquid-btn liquid-btn-primary flex-grow-1" id="nextBtn">
                                 @if($attempt->answers->count() + 1 == $questions->count())
-                                <span id="submitText" data-original="Submit Quiz">Submit Quiz</span>
+                                <span id="submitText" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.submit_quiz') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.submit_quiz') }}</span>
                                 <i class="fas fa-check-circle"></i>
                                 @else
-                                <span id="nextText" data-original="Next Question">Next Question</span>
+                                <span id="nextText" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.next_question') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.next_question') }}</span>
                                 <i class="fas fa-arrow-right"></i>
                                 @endif
                             </button>
 
                             @if($attempt->answers->count() > 0)
-                            <button type="submit" name="action" value="previous" class="quiz-take-btn secondary" id="previousBtn">
+                            <button type="submit" name="action" value="previous" class="liquid-btn liquid-btn-secondary" id="previousBtn">
                                 <i class="fas fa-arrow-left"></i>
-                                <span id="previousText" data-original="Previous">Previous</span>
+                                <span id="previousText" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.previous_question') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.previous_question') }}</span>
                             </button>
                             @endif
                         </div>
@@ -1255,16 +1178,16 @@
                 </div>
                 @else
                 <!-- Quiz Complete -->
-                <div class="quiz-take-complete-card">
-                    <i class="fas fa-check-circle quiz-take-complete-icon"></i>
-                    <h2 id="completeTitle" data-original="Quiz Completed!">Quiz Completed!</h2>
-                    <p id="completeMessage" data-original="You have answered all questions. Click below to submit your quiz.">You have answered all questions. Click below to submit your quiz.</p>
+                <div class="liquid-complete-card">
+                    <i class="fas fa-check-circle liquid-complete-icon"></i>
+                    <h2 id="completeTitle" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_title') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_title') }}</h2>
+                    <p id="completeMessage" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_message') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_message') }}</p>
                     <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST">
                         @csrf
                         <input type="hidden" name="action" value="complete">
-                        <button type="submit" class="quiz-take-btn success" style="padding: 15px 40px; font-size: 1.2rem;" id="submitQuizBtn">
+                        <button type="submit" class="liquid-btn liquid-btn-success" style="padding: 15px 40px; font-size: 1.2rem;" id="submitQuizBtn">
                             <i class="fas fa-check-circle me-2"></i>
-                            <span data-original="Submit Quiz">Submit Quiz</span>
+                            <span data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.submit_quiz') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.submit_quiz') }}</span>
                         </button>
                     </form>
                 </div>
@@ -1273,18 +1196,18 @@
 
             <div class="col-lg-4">
                 <!-- Question Navigator -->
-                <div class="quiz-take-navigator-card">
-                    <h5 class="quiz-take-navigator-title">
+                <div class="liquid-navigator-card">
+                    <h5 class="liquid-navigator-title">
                         <i class="fas fa-th"></i>
-                        <span id="navigatorTitle" data-original="Question Navigator">Question Navigator</span>
+                        <span id="navigatorTitle" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.navigator_title') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.navigator_title') }}</span>
                     </h5>
-                    <div class="quiz-take-question-grid">
+                    <div class="liquid-question-grid">
                         @foreach($questions as $index => $question)
                         @php
                         $isAnswered = $attempt->answers->contains('question_id', $question->id);
                         $isCurrent = $index == $attempt->answers->count();
                         @endphp
-                        <div class="quiz-take-question-dot {{ $isAnswered ? 'answered' : '' }} {{ $isCurrent ? 'current' : '' }}">
+                        <div class="liquid-question-dot {{ $isAnswered ? 'answered' : '' }} {{ $isCurrent ? 'current' : '' }}">
                             {{ $index + 1 }}
                         </div>
                         @endforeach
@@ -1292,37 +1215,37 @@
                 </div>
 
                 <!-- Quiz Info -->
-                <div class="quiz-take-info-card">
-                    <h5 class="quiz-take-navigator-title">
+                <div class="liquid-info-card">
+                    <h5 class="liquid-navigator-title">
                         <i class="fas fa-info-circle"></i>
-                        <span id="infoTitle" data-original="Quiz Information">Quiz Information</span>
+                        <span id="infoTitle" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.info_title') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.info_title') }}</span>
                     </h5>
-                    <ul class="quiz-take-info-list">
+                    <ul class="liquid-info-list">
                         <li>
                             <i class="fas fa-clock"></i>
-                            <span id="timeRemainingLabel" data-original="Time Remaining:">Time Remaining:</span>
-                            <strong id="timeRemainingValue">{{ $remainingTime ? gmdate('H:i:s', $remainingTime) : 'No limit' }}</strong>
+                            <span id="timeRemainingLabel" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.time_remaining') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.time_remaining') }}</span>
+                            <strong id="timeRemainingValue">{{ $remainingTime ? gmdate('H:i:s', $remainingTime) : App\Helpers\TranslationHelper::trans('quiz-take.no_limit') }}</strong>
                         </li>
                         <li>
                             <i class="fas fa-question-circle"></i>
-                            <span id="questionsAnsweredLabel" data-original="Questions Answered:">Questions Answered:</span>
+                            <span id="questionsAnsweredLabel" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.questions_answered') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.questions_answered') }}</span>
                             <strong id="questionsAnsweredValue">{{ $attempt->answers->count() }}/{{ $questions->count() }}</strong>
                         </li>
                         <li>
                             <i class="fas fa-star"></i>
-                            <span id="totalPointsLabel" data-original="Total Points:">Total Points:</span>
+                            <span id="totalPointsLabel" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.total_points') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.total_points') }}</span>
                             <strong id="totalPointsValue">{{ $questions->sum('points') }}</strong>
                         </li>
                         @if($quiz->pass_percentage)
                         <li>
                             <i class="fas fa-trophy"></i>
-                            <span id="passingScoreLabel" data-original="Passing Score:">Passing Score:</span>
+                            <span id="passingScoreLabel" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.passing_score') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.passing_score') }}</span>
                             <strong id="passingScoreValue">{{ $quiz->pass_percentage }}%</strong>
                         </li>
                         @endif
                         <li>
                             <i class="fas fa-redo"></i>
-                            <span id="attemptLabel" data-original="Attempt:">Attempt:</span>
+                            <span id="attemptLabel" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.attempt_label') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.attempt_label') }}</span>
                             <strong id="attemptValue">#{{ $attempt->attempt_number }}</strong>
                         </li>
                     </ul>
@@ -1340,11 +1263,11 @@
 </form>
 @endif
 
-<!-- Add CSRF token meta tag for AJAX if needed -->
+<!-- Add CSRF token meta tag for AJAX -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <script>
-    // Translation API endpoint (proxy through Laravel)
+    // Translation API endpoint
     const TRANSLATE_API_URL = "{{ route('translate') }}";
 
     // Current language (default: English)
@@ -1401,7 +1324,7 @@
                     // Remove selected class from other radio options
                     const name = checkbox.name;
                     document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
-                        input.closest('.quiz-take-option-item')?.classList.remove('selected');
+                        input.closest('.liquid-option-item')?.classList.remove('selected');
                     });
                 }
 
@@ -1410,36 +1333,28 @@
             }
         };
 
-        // Image selection toggle - UPDATED VERSION
+        // Image selection toggle
         window.toggleImageSelection = function(element, optionId, questionType) {
             const input = element.querySelector('input.image-selection-input');
             if (!input) return;
             
             if (questionType === 'multiple_choice') {
-                // For multiple choice images (checkboxes)
                 input.checked = !input.checked;
                 element.classList.toggle('selected', input.checked);
             } else {
-                // For single choice images (radio buttons)
                 const name = input.name;
-                
-                // Remove selected class from all options with the same name
                 document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
-                    inp.closest('.quiz-take-image-option')?.classList.remove('selected');
+                    inp.closest('.liquid-image-option')?.classList.remove('selected');
                     inp.checked = false;
                 });
-                
-                // Set this one as checked and selected
                 input.checked = true;
                 element.classList.add('selected');
             }
-            
-            // Optional: Trigger change event for any listeners
             input.dispatchEvent(new Event('change', { bubbles: true }));
         };
 
         // Initialize image selections on page load
-        document.querySelectorAll('.quiz-take-image-option').forEach(option => {
+        document.querySelectorAll('.liquid-image-option').forEach(option => {
             const input = option.querySelector('input.image-selection-input');
             if (input && input.checked) {
                 option.classList.add('selected');
@@ -1459,12 +1374,12 @@
 
                 if ((isSingleChoice || isMultipleChoice) && !hasSelectedAnswer()) {
                     e.preventDefault();
-                    alert('Please select an answer before proceeding.');
+                    alert('{{ App\Helpers\TranslationHelper::trans('quiz-take.confirm_no_answer') }}');
                     return false;
                 }
 
                 if (action === 'complete' || (action === 'next' && {{ $attempt->answers->count() + 1 }} == {{ $questions->count() }})) {
-                    if (!confirm('Are you sure you want to submit your quiz? You cannot change your answers after submission.')) {
+                    if (!confirm('{{ App\Helpers\TranslationHelper::trans('quiz-take.confirm_submit') }}')) {
                         e.preventDefault();
                         return false;
                     }
@@ -1473,7 +1388,7 @@
                 // Show loading state on button
                 const submitBtn = e.submitter;
                 if (submitBtn) {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...';
+                    submitBtn.innerHTML = '<span class="btn-spinner"></span> {{ App\Helpers\TranslationHelper::trans('quiz-take.saving') }}';
                     submitBtn.disabled = true;
                 }
             });
@@ -1484,50 +1399,12 @@
             const inputs = document.querySelectorAll('input[type="radio"]:checked, input[type="checkbox"]:checked');
             return inputs.length > 0;
         }
-
-        // Question dot navigation (visual only)
-        document.querySelectorAll('.quiz-take-question-dot').forEach((dot, index) => {
-            dot.addEventListener('click', function() {
-                // Visual feedback only - actual navigation would require AJAX
-                this.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 200);
-            });
-        });
-
-        // Auto-save functionality (optional)
-        let autoSaveTimer;
-        const autoSave = function() {
-            // Implement auto-save if needed
-            console.log('Auto-saving answers...');
-        };
-
-        // Save on option change
-        document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
-            input.addEventListener('change', function() {
-                clearTimeout(autoSaveTimer);
-                autoSaveTimer = setTimeout(autoSave, 5000);
-            });
-        });
-
-        // Prevent double form submission
-        let formSubmitted = false;
-        quizForm?.addEventListener('submit', function(e) {
-            if (formSubmitted) {
-                e.preventDefault();
-                return false;
-            }
-            formSubmitted = true;
-        });
     });
 
     // Initialize all translatable elements
     function initializeTranslatableElements() {
-        // Clear the array
         translatableElements = [];
 
-        // Helper function to add element
         function addElement(id) {
             const el = document.getElementById(id);
             if (el && el.dataset.original) {
@@ -1561,10 +1438,9 @@
         addElement('previousText');
         addElement('submitText');
 
-        // Add option texts - these are the dynamic question options
+        // Add option texts
         document.querySelectorAll('.option-text').forEach(el => {
             if (el.dataset.original) {
-                console.log('Found option text:', el.dataset.original);
                 translatableElements.push({
                     element: el,
                     original: el.dataset.original
@@ -1602,7 +1478,6 @@
             }
         });
 
-        // Add submit button span
         const submitBtnSpan = document.querySelector('#submitQuizBtn span');
         if (submitBtnSpan && submitBtnSpan.dataset.original) {
             translatableElements.push({
@@ -1618,9 +1493,6 @@
     async function changeLanguage(lang) {
         if (lang === currentLanguage) return;
 
-        console.log('Changing language from', currentLanguage, 'to', lang);
-
-        // Get loading indicator
         const loadingEl = document.getElementById('translationLoading');
         if (loadingEl) {
             loadingEl.style.display = 'flex';
@@ -1628,26 +1500,19 @@
 
         try {
             // Update active button state
-            document.querySelectorAll('.quiz-take-language-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.liquid-language-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.getElementById(`lang${lang.toUpperCase()}`);
             if (activeBtn) {
                 activeBtn.classList.add('active');
             }
 
-            // Re-initialize translatable elements to catch any new dynamic content
             initializeTranslatableElements();
-
-            console.log('Elements to translate:', translatableElements.length);
 
             // Translate all elements
             for (const item of translatableElements) {
                 if (item.element) {
                     try {
-                        console.log('Translating:', item.original);
                         const translated = await translateText(item.original, currentLanguage, lang);
-                        console.log('Translated to:', translated);
-
-                        // Update the text content - works for all text elements
                         if (item.element) {
                             item.element.textContent = translated;
                         }
@@ -1657,15 +1522,12 @@
                 }
             }
 
-            // Update current language
             currentLanguage = lang;
-            console.log('Language changed to', lang);
 
         } catch (error) {
             console.error('Translation error:', error);
-            alert('Translation failed. Please try again.');
+            alert('{{ App\Helpers\TranslationHelper::trans('quiz-take.translation_failed') }}');
         } finally {
-            // Hide loading indicator
             if (loadingEl) {
                 loadingEl.style.display = 'none';
             }
@@ -1674,26 +1536,14 @@
 
     // Translate text using the Laravel proxy
     async function translateText(text, sourceLang, targetLang) {
-        // Check cache first
         const cacheKey = `${text}_${sourceLang}_${targetLang}`;
         if (translationCache.has(cacheKey)) {
-            console.log('Using cached translation for:', text);
             return translationCache.get(cacheKey);
         }
 
-        // Don't translate if source and target are the same
-        if (sourceLang === targetLang) return text;
-
-        // Don't translate empty or very short texts
-        if (!text || text.trim().length < 2) return text;
+        if (sourceLang === targetLang || !text || text.trim().length < 2) return text;
 
         try {
-            console.log('Fetching translation from API:', {
-                text,
-                sourceLang,
-                targetLang
-            });
-
             const response = await fetch(TRANSLATE_API_URL, {
                 method: 'POST',
                 headers: {
@@ -1712,49 +1562,13 @@
             }
 
             const data = await response.json();
-            console.log('API response:', data);
-
             const translatedText = data.translatedText || text;
-
-            // Cache the result
             translationCache.set(cacheKey, translatedText);
-
             return translatedText;
         } catch (error) {
             console.error('Translation error:', error);
-            return text; // Return original text on error
+            return text;
         }
     }
-
-    // Function to update translations when navigating to next/previous question
-    function updateQuestionTranslations() {
-        console.log('Updating question translations');
-
-        // Small delay to ensure DOM is updated
-        setTimeout(() => {
-            // Re-initialize translatable elements
-            initializeTranslatableElements();
-
-            // Translate to current language if not English
-            if (currentLanguage !== 'en') {
-                changeLanguage(currentLanguage);
-            }
-        }, 100);
-    }
-
-    // Call this after loading new question via AJAX
-    window.updateQuestionTranslations = updateQuestionTranslations;
-
-    // Intercept form submissions to update translations after navigation
-    document.addEventListener('submit', function(e) {
-        if (e.target.id === 'quizForm') {
-            const action = e.submitter?.value;
-            if (action === 'next' || action === 'previous') {
-                // Let the form submit normally, but we'll update translations after the page reloads
-                // The page will reload with the new question, and DOMContentLoaded will handle translations
-            }
-        }
-    });
 </script>
-
 @endsection
