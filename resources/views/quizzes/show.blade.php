@@ -1,692 +1,620 @@
 @extends('layouts.main')
 
-@section('title', $quiz->title . ' - Quiz | EDUCONECX')
+@section('title', App\Helpers\TranslationHelper::trans('quiz-show.page_title', ['title' => $quiz->title]))
 
-@section('meta_description', $quiz->description ?? 'Take this quiz to test your knowledge and track your progress.')
+@section('meta_description', $quiz->description ?? App\Helpers\TranslationHelper::trans('quiz-show.meta_description'))
 
-@section('content')
+@push('styles')
 <style>
-    /* Quiz Detail Page Specific Styles - Scoped to prevent conflicts */
+    /* ===== CLEAN, PROFESSIONAL QUIZ PAGE STYLES ===== */
+    /* Using your beautiful logo colors but simplified */
     :root {
-        --quiz-detail-primary: #4361ee;
-        --quiz-detail-primary-dark: #3a56d4;
-        --quiz-detail-primary-light: #4895ef;
-        --quiz-detail-secondary: #4cc9f0;
-        --quiz-detail-accent: #f72585;
-        --quiz-detail-success: #06d6a0;
-        --quiz-detail-warning: #ffd166;
-        --quiz-detail-danger: #ef476f;
-        --quiz-detail-dark: #1e1e2f;
-        --quiz-detail-gray: #6c757d;
-        --quiz-detail-gray-light: #e9ecef;
-        --quiz-detail-light: #f8f9fa;
-        --quiz-detail-white: #ffffff;
-        --quiz-detail-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --quiz-detail-gradient-hover: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        --quiz-detail-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        --quiz-detail-shadow-hover: 0 15px 40px rgba(67, 97, 238, 0.15);
-        --quiz-detail-radius: 12px;
-        --quiz-detail-radius-lg: 20px;
-        --quiz-detail-radius-sm: 8px;
-        --quiz-detail-radius-full: 9999px;
-        --quiz-detail-transition: all 0.3s ease;
+        --primary: #18386E;
+        --primary-light: #2E5C61;
+        --accent: #FBC60C;
+        --accent-soft: #EBD789;
+        --success: #5AD1E4;
+        --danger: #ef4444;
+        --gray-100: #F9F7E9;
+        --gray-200: #CBD1DA;
+        --gray-300: #9F9A87;
+        --gray-400: #5f5f5f;
+        --white: #FEFDFE;
+        --shadow-sm: 0 2px 4px rgba(10, 29, 68, 0.08);
+        --shadow-md: 0 4px 12px rgba(10, 29, 68, 0.12);
+        --radius: 12px;
     }
 
-    /* Main Container */
-    .quiz-detail-container {
-        background: var(--quiz-detail-light);
-        min-height: 100vh;
-        padding: 50px 0;
+    /* ===== MAIN CONTAINER ===== */
+    .quiz-container {
+        background-color: var(--gray-100);
+        min-height: 60vh;
+        padding: 40px 0;
     }
 
-    /* Back Link */
-    .quiz-detail-back-link {
+    /* ===== BACK LINK ===== */
+    .back-link {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 25px;
-        color: var(--quiz-detail-primary);
+        margin-bottom: 24px;
+        color: var(--primary);
         text-decoration: none;
-        font-size: 0.95rem;
         font-weight: 500;
-        transition: var(--quiz-detail-transition);
-        padding: 8px 16px;
-        background: var(--quiz-detail-white);
-        border-radius: var(--quiz-detail-radius-full);
-        box-shadow: var(--quiz-detail-shadow);
+        transition: color 0.2s;
+        padding: 8px 0;
     }
 
-    .quiz-detail-back-link:hover {
-        transform: translateX(-5px);
-        color: var(--quiz-detail-primary-dark);
-        box-shadow: var(--quiz-detail-shadow-hover);
+    .back-link:hover {
+        color: var(--accent);
     }
 
-    .quiz-detail-back-link i {
-        font-size: 0.9rem;
+    .back-link i {
+        font-size: 14px;
     }
 
-    /* Quiz Header */
-    .quiz-detail-header {
-        margin-bottom: 30px;
+    /* ===== QUIZ HEADER ===== */
+    .quiz-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        border-radius: var(--radius);
+        padding: 32px;
+        margin-bottom: 32px;
+        color: var(--white);
+        box-shadow: var(--shadow-md);
     }
 
-    .quiz-detail-title {
-        font-size: 2.5rem !important;
-        font-weight: 700 !important;
-        color: var(--quiz-detail-dark) !important;
-        margin-bottom: 15px !important;
-        line-height: 1.2 !important;
+    .quiz-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--white);
     }
 
-    .quiz-detail-description {
-        color: var(--quiz-detail-gray) !important;
-        font-size: 1.1rem !important;
-        line-height: 1.6 !important;
+    .quiz-header p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 0;
         max-width: 800px;
-        margin-bottom: 0 !important;
     }
 
-    /* Statistics Cards */
-    .quiz-detail-stats-grid {
+    @media (max-width: 768px) {
+        .quiz-header h1 {
+            font-size: 1.5rem;
+        }
+    }
+
+    /* ===== STATISTICS GRID ===== */
+    .stats-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-        margin-bottom: 30px;
+        gap: 16px;
+        margin-bottom: 32px;
     }
 
-    .quiz-detail-stat-card {
-        background: var(--quiz-detail-white);
-        border-radius: var(--quiz-detail-radius-lg);
-        padding: 25px 20px;
-        box-shadow: var(--quiz-detail-shadow);
+    .stat-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 20px 16px;
         display: flex;
         align-items: center;
-        transition: var(--quiz-detail-transition);
-        position: relative;
-        overflow: hidden;
-        height: 100%;
+        gap: 16px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
-    .quiz-detail-stat-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        background: var(--quiz-detail-gradient);
-        transform: translateX(-100%);
-        transition: var(--quiz-detail-transition);
-    }
-
-    .quiz-detail-stat-card:hover::before {
-        transform: translateX(0);
-    }
-
-    .quiz-detail-stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--quiz-detail-shadow-hover);
-    }
-
-    .quiz-detail-stat-icon {
-        width: 55px;
-        height: 55px;
-        background: var(--quiz-detail-gradient);
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--primary);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 15px;
         flex-shrink: 0;
     }
 
-    .quiz-detail-stat-icon i {
-        font-size: 22px;
-        color: var(--quiz-detail-white);
+    .stat-icon i {
+        font-size: 20px;
+        color: var(--white);
     }
 
-    .quiz-detail-stat-details {
+    .stat-content {
         flex: 1;
     }
 
-    .quiz-detail-stat-details h3 {
-        font-size: 1.8rem !important;
-        font-weight: 700 !important;
-        color: var(--quiz-detail-dark) !important;
-        margin: 0 0 5px 0 !important;
-        line-height: 1.2 !important;
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        line-height: 1.2;
+        margin-bottom: 2px;
     }
 
-    .quiz-detail-stat-details p {
-        margin: 0 !important;
-        color: var(--quiz-detail-gray) !important;
-        font-size: 0.9rem !important;
-        font-weight: 500;
-    }
-
-    /* Info Card */
-    .quiz-detail-info-card,
-    .quiz-detail-attempts-card,
-    .quiz-detail-start-card,
-    .quiz-detail-rules-card {
-        background: var(--quiz-detail-white);
-        border-radius: var(--quiz-detail-radius-lg);
-        padding: 30px;
-        box-shadow: var(--quiz-detail-shadow);
-        height: 100%;
-    }
-
-    .quiz-detail-card-title {
-        font-size: 1.25rem !important;
-        font-weight: 600 !important;
-        color: var(--quiz-detail-dark) !important;
-        margin-bottom: 20px !important;
-        padding-bottom: 12px;
-        border-bottom: 2px solid var(--quiz-detail-gray-light);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .quiz-detail-card-title i {
-        color: var(--quiz-detail-primary);
-    }
-
-    /* Details Grid */
-    .quiz-detail-details-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-
-    .quiz-detail-detail-item {
-        display: flex;
-        flex-direction: column;
-        background: var(--quiz-detail-light);
-        padding: 15px;
-        border-radius: var(--quiz-detail-radius);
-        transition: var(--quiz-detail-transition);
-    }
-
-    .quiz-detail-detail-item:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--quiz-detail-shadow);
-    }
-
-    .quiz-detail-detail-item .label {
+    .stat-label {
         font-size: 0.8rem;
-        color: var(--quiz-detail-gray);
-        margin-bottom: 5px;
+        color: var(--gray-300);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
-    .quiz-detail-detail-item .value {
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stat-card {
+            padding: 16px;
+        }
+        
+        .stat-value {
+            font-size: 1.25rem;
+        }
+    }
+
+    /* ===== CARD STYLES ===== */
+    .info-card {
+        background: var(--white);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        height: 100%;
+    }
+
+    .card-title {
         font-size: 1.1rem;
         font-weight: 600;
-        color: var(--quiz-detail-dark);
+        color: var(--primary);
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid var(--accent-soft);
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .quiz-detail-type-badge {
+    .card-title i {
+        color: var(--accent);
+    }
+
+    /* ===== DETAILS GRID ===== */
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .detail-item {
+        background: var(--gray-100);
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(251, 198, 12, 0.1);
+    }
+
+    .detail-item .label {
+        font-size: 0.7rem;
+        color: var(--gray-300);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .detail-item .value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .type-badge {
         display: inline-block;
-        padding: 5px 15px;
-        border-radius: var(--quiz-detail-radius-full);
-        font-size: 0.85rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
+        background: var(--primary);
+        color: var(--white);
     }
 
-    .quiz-detail-type-badge.standalone {
-        background: #ff6b6b;
-        color: white;
-    }
-
-    .quiz-detail-type-badge.course {
-        background: #4ecdc4;
-        color: white;
-    }
-
-    .quiz-detail-type-badge.lesson {
-        background: #45b7d1;
-        color: white;
-    }
-
-    /* Attempts Table */
-    .quiz-detail-table-responsive {
+    /* ===== ATTEMPTS TABLE ===== */
+    .table-responsive {
         overflow-x: auto;
     }
 
-    .quiz-detail-attempts-table {
+    .attempts-table {
         width: 100%;
         border-collapse: collapse;
-    }
-
-    .quiz-detail-attempts-table th {
-        text-align: left;
-        padding: 15px;
-        background: var(--quiz-detail-light);
         font-size: 0.9rem;
+    }
+
+    .attempts-table th {
+        text-align: left;
+        padding: 12px;
+        background: var(--gray-100);
+        color: var(--primary);
         font-weight: 600;
-        color: var(--quiz-detail-dark);
-        border-bottom: 2px solid var(--quiz-detail-gray-light);
+        border-bottom: 2px solid var(--accent-soft);
     }
 
-    .quiz-detail-attempts-table td {
-        padding: 15px;
-        border-bottom: 1px solid var(--quiz-detail-gray-light);
-        font-size: 0.95rem;
-        color: var(--quiz-detail-gray);
+    .attempts-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--gray-200);
+        color: var(--gray-400);
     }
 
-    .quiz-detail-attempts-table tr:hover td {
-        background: var(--quiz-detail-light);
+    .attempts-table tr:last-child td {
+        border-bottom: none;
     }
 
-    .quiz-detail-percentage {
-        font-weight: 600;
-    }
-
-    .quiz-detail-percentage.success {
-        color: var(--quiz-detail-success);
-    }
-
-    .quiz-detail-percentage.danger {
-        color: var(--quiz-detail-danger);
-    }
-
-    .quiz-detail-status-badge {
+    .status-badge {
         display: inline-block;
-        padding: 5px 12px;
-        border-radius: var(--quiz-detail-radius-full);
-        font-size: 0.8rem;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
         font-weight: 600;
     }
 
-    .quiz-detail-status-badge.success {
-        background: rgba(6, 214, 160, 0.1);
-        color: var(--quiz-detail-success);
+    .status-badge.success {
+        background: rgba(90, 209, 228, 0.1);
+        color: var(--primary-light);
     }
 
-    .quiz-detail-status-badge.danger {
-        background: rgba(239, 71, 111, 0.1);
-        color: var(--quiz-detail-danger);
+    .status-badge.danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
     }
 
-    .quiz-detail-status-badge.warning {
-        background: rgba(255, 209, 102, 0.1);
-        color: #b85e00;
-    }
-
-    .quiz-detail-best-score {
+    .best-score {
         margin-top: 20px;
-        padding: 15px 20px;
-        background: var(--quiz-detail-light);
-        border-radius: var(--quiz-detail-radius);
+        padding: 16px;
+        background: linear-gradient(135deg, var(--accent-soft) 0%, var(--accent) 100%);
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .best-score strong {
+        background: var(--white);
+        padding: 4px 12px;
+        border-radius: 20px;
         font-size: 1rem;
     }
 
-    .quiz-detail-best-score strong {
-        color: var(--quiz-detail-primary);
-        font-size: 1.2rem;
-        margin-left: 10px;
-    }
-
-    /* Start Card */
-    .quiz-detail-start-card {
+    /* ===== START CARD ===== */
+    .start-card {
         text-align: center;
     }
 
-    .quiz-detail-alert {
-        padding: 15px 20px;
-        border-radius: var(--quiz-detail-radius);
+    .alert-info {
+        background: rgba(90, 209, 228, 0.1);
+        border: 1px solid var(--success);
+        border-radius: 8px;
+        padding: 12px 16px;
         margin-bottom: 20px;
         display: flex;
         align-items: center;
-        gap: 10px;
-        font-size: 0.95rem;
+        gap: 8px;
+        color: var(--primary-light);
+        font-size: 0.9rem;
+        text-align: left;
     }
 
-    .quiz-detail-alert.info {
-        background: rgba(67, 97, 238, 0.1);
-        color: var(--quiz-detail-primary);
-        border: 1px solid rgba(67, 97, 238, 0.2);
+    .alert-warning {
+        background: rgba(251, 198, 12, 0.1);
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #b85e00;
+        font-size: 0.9rem;
+        text-align: left;
     }
 
-    .quiz-detail-alert.warning {
-        background: rgba(239, 71, 111, 0.1);
-        color: var(--quiz-detail-danger);
-        border: 1px solid rgba(239, 71, 111, 0.2);
-    }
-
-    .quiz-detail-alert i {
-        font-size: 1.1rem;
-    }
-
-    .quiz-detail-btn {
+    .btn-start {
+        width: 100%;
+        padding: 14px 20px;
+        background: var(--primary);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        padding: 15px 30px;
-        border-radius: var(--quiz-detail-radius-full);
-        font-size: 1.1rem;
-        font-weight: 600;
+        gap: 8px;
         text-decoration: none;
-        transition: var(--quiz-detail-transition);
-        border: none;
-        cursor: pointer;
+    }
+
+    .btn-start:hover {
+        background: var(--primary-light);
+    }
+
+    .btn-secondary {
         width: 100%;
+        padding: 14px 20px;
+        background: var(--accent);
+        color: var(--primary);
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
     }
 
-    .quiz-detail-btn.primary {
-        background: var(--quiz-detail-gradient);
-        color: var(--quiz-detail-white);
+    .btn-secondary:hover {
+        opacity: 0.9;
     }
 
-    .quiz-detail-btn.primary:hover {
-        background: var(--quiz-detail-gradient-hover);
-        transform: translateY(-2px);
-        box-shadow: var(--quiz-detail-shadow-hover);
-        color: var(--quiz-detail-white);
+    .btn-spinner {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--white);
+        animation: spin 0.8s linear infinite;
     }
 
-    .quiz-detail-btn.secondary {
-        background: var(--quiz-detail-gray);
-        color: var(--quiz-detail-white);
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
-    .quiz-detail-btn.secondary:hover {
-        background: var(--quiz-detail-dark);
-        transform: translateY(-2px);
-        box-shadow: var(--quiz-detail-shadow-hover);
-    }
-
-    .quiz-detail-warnings {
-        margin-top: 20px;
+    .warnings {
+        margin-top: 16px;
         text-align: left;
-        background: var(--quiz-detail-light);
-        padding: 20px;
-        border-radius: var(--quiz-detail-radius);
     }
 
-    .quiz-detail-warnings small {
+    .warning-item {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 12px;
-        color: var(--quiz-detail-gray);
-        font-size: 0.9rem;
+        gap: 8px;
+        margin-bottom: 8px;
+        color: var(--gray-400);
+        font-size: 0.85rem;
     }
 
-    .quiz-detail-warnings small:last-child {
-        margin-bottom: 0;
+    .warning-item i {
+        color: var(--accent);
+        width: 16px;
     }
 
-    .quiz-detail-warnings small i {
-        color: var(--quiz-detail-primary);
-        width: 18px;
-    }
-
-    /* Rules Card */
-    .quiz-detail-rules-list {
+    /* ===== RULES LIST ===== */
+    .rules-list {
         list-style: none;
         padding: 0;
         margin: 0;
     }
 
-    .quiz-detail-rules-list li {
+    .rules-list li {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 15px;
-        color: var(--quiz-detail-gray);
-        font-size: 0.95rem;
-        padding: 8px 0;
-        border-bottom: 1px dashed var(--quiz-detail-gray-light);
-    }
-
-    .quiz-detail-rules-list li:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-    }
-
-    .quiz-detail-rules-list li i {
-        color: var(--quiz-detail-success);
-        font-size: 1rem;
-        width: 20px;
-    }
-
-    /* Login Prompt */
-    .quiz-detail-login-prompt {
-        text-align: center;
-    }
-
-    .quiz-detail-login-prompt p {
-        margin-top: 15px;
+        padding: 10px 0;
+        border-bottom: 1px dashed var(--gray-200);
+        color: var(--gray-400);
         font-size: 0.9rem;
-        color: var(--quiz-detail-gray);
     }
 
-    .quiz-detail-login-prompt a {
-        color: var(--quiz-detail-primary);
+    .rules-list li:last-child {
+        border-bottom: none;
+    }
+
+    .rules-list li i {
+        color: var(--success);
+        width: 18px;
+    }
+
+    /* ===== LOGIN PROMPT ===== */
+    .login-prompt {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: var(--gray-300);
+    }
+
+    .login-prompt a {
+        color: var(--accent);
         font-weight: 600;
         text-decoration: none;
     }
 
-    .quiz-detail-login-prompt a:hover {
+    .login-prompt a:hover {
         text-decoration: underline;
     }
 
-    /* Responsive */
-    @media (max-width: 992px) {
-        .quiz-detail-stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        .quiz-detail-details-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
+    /* ===== RESPONSIVE SPACING ===== */
     @media (max-width: 768px) {
-        .quiz-detail-container {
-            padding: 30px 0;
+        .quiz-container {
+            padding: 20px 0;
         }
-
-        .quiz-detail-title {
-            font-size: 2rem !important;
+        
+        .quiz-header {
+            padding: 24px;
         }
-
-        .quiz-detail-stats-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .quiz-detail-stat-card {
-            margin-bottom: 0;
-        }
-
-        .quiz-detail-info-card,
-        .quiz-detail-attempts-card,
-        .quiz-detail-start-card,
-        .quiz-detail-rules-card {
+        
+        .info-card {
             padding: 20px;
         }
-
-        .quiz-detail-attempts-table th,
-        .quiz-detail-attempts-table td {
-            padding: 10px;
-            font-size: 0.85rem;
-        }
-
-        .quiz-detail-best-score {
-            flex-direction: column;
-            text-align: center;
-            gap: 10px;
-        }
-
-        .quiz-detail-best-score strong {
-            margin-left: 0;
+        
+        .details-grid {
+            grid-template-columns: 1fr;
         }
     }
 
-    /* Animations */
-    @keyframes quiz-detail-fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
+    @media (max-width: 576px) {
+        .quiz-header h1 {
+            font-size: 1.25rem;
         }
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        
+        .stat-card {
+            padding: 12px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .stat-icon i {
+            font-size: 16px;
         }
     }
-
-    .quiz-detail-stat-card,
-    .quiz-detail-info-card,
-    .quiz-detail-attempts-card,
-    .quiz-detail-start-card,
-    .quiz-detail-rules-card {
-        animation: quiz-detail-fadeIn 0.5s ease-out;
-        animation-fill-mode: both;
-    }
-
-    .quiz-detail-stat-card:nth-child(1) { animation-delay: 0.1s; }
-    .quiz-detail-stat-card:nth-child(2) { animation-delay: 0.2s; }
-    .quiz-detail-stat-card:nth-child(3) { animation-delay: 0.3s; }
-    .quiz-detail-stat-card:nth-child(4) { animation-delay: 0.4s; }
-    .quiz-detail-info-card { animation-delay: 0.2s; }
-    .quiz-detail-attempts-card { animation-delay: 0.3s; }
-    .quiz-detail-start-card { animation-delay: 0.4s; }
-    .quiz-detail-rules-card { animation-delay: 0.5s; }
 </style>
+@endpush
 
-<div class="quiz-detail-container">
+@section('content')
+<div class="quiz-container">
     <div class="container">
         <!-- Back Link -->
-        <a href="{{ route('quiz') }}" class="quiz-detail-back-link">
+        <a href="{{ route('quiz') }}" class="back-link">
             <i class="fas fa-arrow-left"></i>
-            Back to Quizzes
+            {{ App\Helpers\TranslationHelper::trans('quiz-show.back_to_quizzes') }}
         </a>
 
         <!-- Quiz Header -->
-        <div class="quiz-detail-header">
-            <h1 class="quiz-detail-title">{{ $quiz->title }}</h1>
+        <div class="quiz-header">
+            <h1>{{ $quiz->title }}</h1>
             @if($quiz->description)
-                <p class="quiz-detail-description">{{ $quiz->description }}</p>
+                <p>{{ $quiz->description }}</p>
             @endif
         </div>
 
         <!-- Statistics Cards -->
-        <div class="quiz-detail-stats-grid">
-            <div class="quiz-detail-stat-card">
-                <div class="quiz-detail-stat-icon">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-question-circle"></i>
                 </div>
-                <div class="quiz-detail-stat-details">
-                    <h3>{{ $quiz->questions_count ?? $quiz->questions->count() }}</h3>
-                    <p>Total Questions</p>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $quiz->questions_count ?? $quiz->questions->count() }}</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-show.total_questions') }}</div>
                 </div>
             </div>
 
-            <div class="quiz-detail-stat-card">
-                <div class="quiz-detail-stat-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-clock"></i>
                 </div>
-                <div class="quiz-detail-stat-details">
-                    <h3>{{ $quiz->time_limit ? $quiz->time_limit . ' min' : 'No limit' }}</h3>
-                    <p>Time Limit</p>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $quiz->time_limit ? $quiz->time_limit . ' ' . App\Helpers\TranslationHelper::trans('quiz-show.min') : '∞' }}</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-show.time_limit') }}</div>
                 </div>
             </div>
 
-            <div class="quiz-detail-stat-card">
-                <div class="quiz-detail-stat-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-trophy"></i>
                 </div>
-                <div class="quiz-detail-stat-details">
-                    <h3>{{ $quiz->pass_percentage }}%</h3>
-                    <p>Pass Percentage</p>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $quiz->pass_percentage }}%</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-show.pass_percentage') }}</div>
                 </div>
             </div>
 
-            <div class="quiz-detail-stat-card">
-                <div class="quiz-detail-stat-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i class="fas fa-redo"></i>
                 </div>
-                <div class="quiz-detail-stat-details">
-                    <h3>{{ $quiz->attempts_allowed == 0 ? '∞' : $quiz->attempts_allowed }}</h3>
-                    <p>Attempts Allowed</p>
+                <div class="stat-content">
+                    <div class="stat-value">{{ $quiz->attempts_allowed == 0 ? '∞' : $quiz->attempts_allowed }}</div>
+                    <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-show.attempts_allowed') }}</div>
                 </div>
             </div>
         </div>
 
-        <div class="row">
+        <div class="row g-4">
             <!-- Left Column - Details and Attempts -->
-            <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="col-lg-8">
                 <!-- Quiz Details Card -->
-                <div class="quiz-detail-info-card mb-4">
-                    <h4 class="quiz-detail-card-title">
+                <div class="info-card mb-4">
+                    <h4 class="card-title">
                         <i class="fas fa-info-circle"></i>
-                        Quiz Details
+                        {{ App\Helpers\TranslationHelper::trans('quiz-show.quiz_details') }}
                     </h4>
                     
-                    <div class="quiz-detail-details-grid">
-                        <div class="quiz-detail-detail-item">
-                            <span class="label">Type</span>
-                            <span class="value">
-                                <span class="quiz-detail-type-badge {{ $quiz->type }}">
-                                    {{ ucfirst($quiz->type) }}
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.type') }}</div>
+                            <div class="value">
+                                <span class="type-badge">
+                                    @if($quiz->type == 'standalone')
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.standalone') }}
+                                    @elseif($quiz->type == 'course')
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.course') }}
+                                    @elseif($quiz->type == 'lesson')
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.lesson') }}
+                                    @else
+                                        {{ ucfirst($quiz->type) }}
+                                    @endif
                                 </span>
-                            </span>
+                            </div>
                         </div>
 
-                        <div class="quiz-detail-detail-item">
-                            <span class="label">Shuffle Questions</span>
-                            <span class="value">{{ $quiz->shuffle_questions ? 'Yes' : 'No' }}</span>
+                        <div class="detail-item">
+                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.shuffle_questions') }}</div>
+                            <div class="value">{{ $quiz->shuffle_questions ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
                         </div>
 
-                        <div class="quiz-detail-detail-item">
-                            <span class="label">Randomize Options</span>
-                            <span class="value">{{ $quiz->randomize_options ? 'Yes' : 'No' }}</span>
+                        <div class="detail-item">
+                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.randomize_options') }}</div>
+                            <div class="value">{{ $quiz->randomize_options ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
                         </div>
 
-                        <div class="quiz-detail-detail-item">
-                            <span class="label">Show Results</span>
-                            <span class="value">{{ $quiz->show_results ? 'Yes' : 'No' }}</span>
+                        <div class="detail-item">
+                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.show_results') }}</div>
+                            <div class="value">{{ $quiz->show_results ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
                         </div>
 
-                        <div class="quiz-detail-detail-item">
-                            <span class="label">Show Answers</span>
-                            <span class="value">{{ $quiz->show_answers ? 'Yes' : 'No' }}</span>
+                        <div class="detail-item">
+                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.show_answers') }}</div>
+                            <div class="value">{{ $quiz->show_answers ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
                         </div>
 
-                        <div class="quiz-detail-detail-item">
-                            <span class="label">Category</span>
-                            <span class="value">{{ $quiz->category ?? 'General' }}</span>
+                        <div class="detail-item">
+                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.category') }}</div>
+                            <div class="value">{{ $quiz->category ?? App\Helpers\TranslationHelper::trans('quiz-show.general') }}</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- User's Previous Attempts -->
                 @if(isset($attempts) && $attempts->count() > 0)
-                <div class="quiz-detail-attempts-card">
-                    <h4 class="quiz-detail-card-title">
+                <div class="info-card">
+                    <h4 class="card-title">
                         <i class="fas fa-history"></i>
-                        Your Previous Attempts
+                        {{ App\Helpers\TranslationHelper::trans('quiz-show.your_attempts') }}
                     </h4>
 
-                    <div class="quiz-detail-table-responsive">
-                        <table class="quiz-detail-attempts-table">
+                    <div class="table-responsive">
+                        <table class="attempts-table">
                             <thead>
                                 <tr>
-                                    <th>Attempt</th>
-                                    <th>Score</th>
-                                    <th>Percentage</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
+                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.attempt') }}</th>
+                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.score') }}</th>
+                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.percentage') }}</th>
+                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.status') }}</th>
+                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.date') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -694,17 +622,13 @@
                                 <tr>
                                     <td>#{{ $attempt->attempt_number }}</td>
                                     <td>{{ $attempt->score }}/{{ $quiz->questions->sum('points') }}</td>
+                                    <td>{{ $attempt->percentage }}%</td>
                                     <td>
-                                        <span class="quiz-detail-percentage {{ $attempt->passed ? 'success' : 'danger' }}">
-                                            {{ $attempt->percentage }}%
+                                        <span class="status-badge {{ $attempt->passed ? 'success' : 'danger' }}">
+                                            {{ $attempt->passed ? App\Helpers\TranslationHelper::trans('quiz-show.passed') : App\Helpers\TranslationHelper::trans('quiz-show.failed') }}
                                         </span>
                                     </td>
-                                    <td>
-                                        <span class="quiz-detail-status-badge {{ $attempt->passed ? 'success' : 'danger' }}">
-                                            {{ $attempt->passed ? 'Passed' : 'Failed' }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : 'In Progress' }}</td>
+                                    <td>{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : App\Helpers\TranslationHelper::trans('quiz-show.in_progress') }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -712,9 +636,9 @@
                     </div>
                     
                     @if(isset($bestScore) && $bestScore > 0)
-                    <div class="quiz-detail-best-score">
-                        <span>🏆 Best Score</span>
-                        <strong>{{ $bestScore }} points</strong>
+                    <div class="best-score">
+                        <span><i class="fas fa-trophy" style="margin-right: 8px;"></i> {{ App\Helpers\TranslationHelper::trans('quiz-show.best_score') }}</span>
+                        <strong>{{ $bestScore }} {{ App\Helpers\TranslationHelper::trans('quiz-show.points') }}</strong>
                     </div>
                     @endif
                 </div>
@@ -724,117 +648,120 @@
             <!-- Right Column - Start Quiz and Rules -->
             <div class="col-lg-4">
                 <!-- Start Quiz Card -->
-                <div class="quiz-detail-start-card mb-4">
-                    <h4 class="quiz-detail-card-title">
+                <div class="info-card start-card mb-4">
+                    <h4 class="card-title">
                         <i class="fas fa-play-circle"></i>
-                        Ready to Start?
+                        {{ App\Helpers\TranslationHelper::trans('quiz-show.ready_to_start') }}
                     </h4>
                     
                     @auth
                         @if(isset($canAttempt) && $canAttempt)
-                            <div class="quiz-detail-alert info">
+                            <div class="alert-info">
                                 <i class="fas fa-info-circle"></i>
                                 <span>
-                                    You have {{ $quiz->attempts_allowed == 0 ? 'unlimited' : $quiz->attempts_allowed - ($attempts->count() ?? 0) }} 
-                                    attempt{{ ($quiz->attempts_allowed - ($attempts->count() ?? 0)) != 1 ? 's' : '' }} remaining.
+                                    @if($quiz->attempts_allowed == 0)
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.unlimited_attempts') }}
+                                    @else
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.attempts_remaining', ['count' => $quiz->attempts_allowed - ($attempts->count() ?? 0)]) }}
+                                    @endif
                                 </span>
                             </div>
                             
                             <form action="{{ route('quizzes.start', $quiz) }}" method="POST" id="startQuizForm">
                                 @csrf
-                                <button type="submit" class="quiz-detail-btn primary" id="startQuizBtn">
+                                <button type="submit" class="btn-start" id="startQuizBtn">
                                     <i class="fas fa-play"></i>
-                                    Start Quiz Now
+                                    <span>{{ App\Helpers\TranslationHelper::trans('quiz-show.start_quiz_now') }}</span>
                                 </button>
                             </form>
                             
-                            <div class="quiz-detail-warnings">
+                            <div class="warnings">
                                 @if($quiz->time_limit)
-                                    <small>
+                                    <div class="warning-item">
                                         <i class="fas fa-hourglass-half"></i>
-                                        You have {{ $quiz->time_limit }} minutes to complete this quiz.
-                                    </small>
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.time_warning', ['time' => $quiz->time_limit]) }}
+                                    </div>
                                 @endif
                                 
                                 @if($quiz->shuffle_questions)
-                                    <small>
+                                    <div class="warning-item">
                                         <i class="fas fa-random"></i>
-                                        Questions will be shuffled.
-                                    </small>
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.shuffle_warning') }}
+                                    </div>
                                 @endif
                                 
                                 @if($quiz->randomize_options)
-                                    <small>
+                                    <div class="warning-item">
                                         <i class="fas fa-shuffle"></i>
-                                        Answer options will be randomized.
-                                    </small>
+                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.randomize_warning') }}
+                                    </div>
                                 @endif
                             </div>
                         @else
-                            <div class="quiz-detail-alert warning">
+                            <div class="alert-warning">
                                 <i class="fas fa-exclamation-triangle"></i>
-                                <span>You have reached the maximum number of attempts for this quiz.</span>
+                                <span>{{ App\Helpers\TranslationHelper::trans('quiz-show.max_attempts_reached') }}</span>
                             </div>
                             
                             @if($quiz->show_results && $quiz->show_answers)
-                                <a href="{{ route('quizzes.results', $quiz) }}" class="quiz-detail-btn secondary">
+                                <a href="{{ route('quizzes.results', $quiz) }}" class="btn-secondary">
                                     <i class="fas fa-chart-bar"></i>
-                                    View Results
+                                    <span>{{ App\Helpers\TranslationHelper::trans('quiz-show.view_results') }}</span>
                                 </a>
                             @endif
                         @endif
                     @else
-                        <div class="quiz-detail-alert info">
+                        <div class="alert-info">
                             <i class="fas fa-lock"></i>
-                            <span>Please login to take this quiz.</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('quiz-show.login_required') }}</span>
                         </div>
                         
-                        <a href="{{ route('login') }}" class="quiz-detail-btn primary">
+                        <a href="{{ route('login') }}" class="btn-start">
                             <i class="fas fa-sign-in-alt"></i>
-                            Login to Start
+                            <span>{{ App\Helpers\TranslationHelper::trans('quiz-show.login_to_start') }}</span>
                         </a>
                         
-                        <div class="quiz-detail-login-prompt">
-                            <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
+                        <div class="login-prompt">
+                            <p>{{ App\Helpers\TranslationHelper::trans('quiz-show.no_account') }} <a href="{{ route('register') }}">{{ App\Helpers\TranslationHelper::trans('quiz-show.register_here') }}</a></p>
                         </div>
                     @endauth
                 </div>
 
                 <!-- Quiz Rules Card -->
-                <div class="quiz-detail-rules-card">
-                    <h4 class="quiz-detail-card-title">
+                <div class="info-card">
+                    <h4 class="card-title">
                         <i class="fas fa-gavel"></i>
-                        Quiz Rules
+                        {{ App\Helpers\TranslationHelper::trans('quiz-show.quiz_rules') }}
                     </h4>
                     
-                    <ul class="quiz-detail-rules-list">
+                    <ul class="rules-list">
                         <li>
                             <i class="fas fa-check-circle"></i>
-                            Read each question carefully
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_read_carefully') }}
                         </li>
                         <li>
                             <i class="fas fa-check-circle"></i>
-                            You cannot pause once started
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_no_pause') }}
                         </li>
                         @if($quiz->time_limit)
                         <li>
                             <i class="fas fa-check-circle"></i>
-                            Timer starts immediately
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_timer_starts') }}
                         </li>
                         @endif
                         <li>
                             <i class="fas fa-check-circle"></i>
-                            All questions are required
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_all_required') }}
                         </li>
                         @if($quiz->pass_percentage)
                         <li>
                             <i class="fas fa-check-circle"></i>
-                            Need {{ $quiz->pass_percentage }}% to pass
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_pass_percentage', ['percentage' => $quiz->pass_percentage]) }}
                         </li>
                         @endif
                         <li>
                             <i class="fas fa-check-circle"></i>
-                            Results shown after completion
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_results_after') }}
                         </li>
                     </ul>
                 </div>
@@ -842,7 +769,9 @@
         </div>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Confirmation before starting quiz
@@ -853,73 +782,32 @@ document.addEventListener('DOMContentLoaded', function() {
         startForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Create custom confirmation dialog
-            const timeWarning = {{ $quiz->time_limit ?? 'null' }} ? 
-                `\n\n⏱️ You have ${ {{ $quiz->time_limit }} } minutes to complete this quiz.` : '';
+            const quizTitle = @json($quiz->title);
+            const questionsCount = {{ $quiz->questions_count ?? $quiz->questions->count() }};
+            const timeLimit = {{ $quiz->time_limit ?? 'null' }};
+            
+            let timeWarning = '';
+            if (timeLimit) {
+                timeWarning = `\n\n⏱️ {{ App\Helpers\TranslationHelper::trans('quiz-show.confirm_time_warning', ['time' => $quiz->time_limit]) }}`;
+            }
             
             const confirmation = confirm(
-                `Ready to start "${ {{ json_encode($quiz->title) }} }"?` +
-                `\n\n📝 Questions: {{ $quiz->questions_count ?? $quiz->questions->count() }}` +
+                `{{ App\Helpers\TranslationHelper::trans('quiz-show.confirm_start') }} "${quizTitle}"?` +
+                `\n\n📝 {{ App\Helpers\TranslationHelper::trans('quiz-show.confirm_questions') }}: ${questionsCount}` +
                 timeWarning +
-                `\n\n⚠️ Once started, you cannot pause or restart.` +
-                `\n\nDo you want to begin now?`
+                `\n\n⚠️ {{ App\Helpers\TranslationHelper::trans('quiz-show.confirm_no_pause') }}` +
+                `\n\n{{ App\Helpers\TranslationHelper::trans('quiz-show.confirm_begin') }}`
             );
             
             if (confirmation) {
-                // Show loading state
-                startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
-                startBtn.disabled = true;
-                
-                // Submit the form
+                if (startBtn) {
+                    startBtn.innerHTML = '<span class="btn-spinner"></span> {{ App\Helpers\TranslationHelper::trans('quiz-show.starting') }}';
+                    startBtn.disabled = true;
+                }
                 this.submit();
             }
         });
     }
-
-    // Animate cards on scroll
-    const cards = document.querySelectorAll(
-        '.quiz-detail-stat-card, .quiz-detail-info-card, .quiz-detail-attempts-card, ' +
-        '.quiz-detail-start-card, .quiz-detail-rules-card'
-    );
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, { threshold: 0.1 });
-
-    cards.forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.5s ease';
-        observer.observe(card);
-    });
-
-    // Hover effects for stat cards
-    const statCards = document.querySelectorAll('.quiz-detail-stat-card');
-    statCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-        });
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-
-    // Auto-refresh attempts data (optional)
-    @if(isset($attempts) && $attempts->count() > 0)
-    // Check for any in-progress attempts every 30 seconds
-    const hasInProgress = {{ $attempts->contains(function($attempt) { return !$attempt->completed_at; }) ? 'true' : 'false' }};
-    
-    if (hasInProgress) {
-        setInterval(function() {
-            location.reload();
-        }, 30000); // Refresh every 30 seconds
-    }
-    @endif
 });
 </script>
-@endsection
+@endpush
