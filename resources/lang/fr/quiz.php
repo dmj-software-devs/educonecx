@@ -8,6 +8,7 @@ return [
     // Hero Section
     'hero_title' => 'Testez Vos Connaissances',
     'hero_description' => 'Mettez-vous au défi avec nos quiz interactifs et suivez votre progression',
+    'hero_badge' => 'Testez Vos Connaissances',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total des Quiz',

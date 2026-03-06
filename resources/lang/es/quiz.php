@@ -8,6 +8,7 @@ return [
     // Hero Section
     'hero_title' => 'Pon a Prueba tus Conocimientos',
     'hero_description' => 'Desafíate con nuestros cuestionarios interactivos y sigue tu progreso',
+    'hero_badge' => 'Pon a Prueba Tus Conocimientos',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total de Cuestionarios',

@@ -1238,7 +1238,7 @@
                             
                             <div class="course-footer">
                                 @if($status === 'completed')
-                                    <a href="{{ route('certificates.show', $enrollment->course->id ?? '#') }}" 
+                                    <a href="{{ route('certificates') }}"
                                        class="certificate-btn">
                                         <i class="fas fa-award"></i>
                                         {{ App\Helpers\TranslationHelper::trans('my-courses.btn_certificate') }}

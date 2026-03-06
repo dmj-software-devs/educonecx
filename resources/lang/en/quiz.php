@@ -8,6 +8,7 @@ return [
     // Hero Section
     'hero_title' => 'Test Your Knowledge',
     'hero_description' => 'Challenge yourself with our interactive quizzes and track your progress',
+    'hero_badge' => 'Test Your Knowledge',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total Quizzes',
