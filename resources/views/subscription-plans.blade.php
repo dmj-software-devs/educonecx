@@ -6,57 +6,35 @@
 
 @push('styles')
 <style>
-    /* Hero Section */
+    /* Hero Section - Matching main layout */
     .pricing-hero {
+        background: var(--gradient-hero);
         position: relative;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 100px 0;
+        color: var(--pure-white);
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
         overflow: hidden;
-        color: #ffffff;
+        padding: 60px 0;
     }
 
-    .pricing-hero-particles {
+    .pricing-hero::before {
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        right: 0;
+        bottom: 0;
+        background: var(--gradient-hero-overlay);
         z-index: 1;
     }
 
-    .pricing-hero-particle {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-    }
-
-    .pricing-hero-particle:nth-child(1) {
-        width: 300px;
-        height: 300px;
-        top: -150px;
-        right: -150px;
-        animation: float 8s ease-in-out infinite;
-    }
-
-    .pricing-hero-particle:nth-child(2) {
-        width: 200px;
-        height: 200px;
-        bottom: -100px;
-        left: -100px;
-        animation: float 10s ease-in-out infinite reverse;
-    }
-
-    .pricing-hero-particle:nth-child(3) {
-        width: 150px;
-        height: 150px;
-        top: 30%;
-        left: 20%;
-        animation: float 12s ease-in-out infinite;
+    .pricing-hero .container {
+        position: relative;
+        z-index: 2;
     }
 
     .pricing-hero-content {
-        position: relative;
-        z-index: 2;
         text-align: center;
         max-width: 800px;
         margin: 0 auto;
@@ -64,15 +42,16 @@
 
     .pricing-hero-badge {
         display: inline-block;
-        padding: 8px 20px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50px;
+        padding: 8px 24px;
+        background: rgba(251, 198, 12, 0.2);
+        border-radius: 30px;
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 25px;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        animation: fadeInDown 1s ease-out;
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        color: var(--bright-amber);
+        animation: fadeInDown 0.8s ease-out;
     }
 
     .pricing-hero-title {
@@ -80,23 +59,26 @@
         font-weight: 800;
         margin-bottom: 20px;
         line-height: 1.1;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        animation: fadeInUp 1s ease-out 0.2s both;
+        color: var(--pure-white) !important;
+        text-shadow: 0 2px 10px rgba(10, 29, 68, 0.3);
+        animation: fadeInUp 0.8s ease-out 0.2s both;
     }
 
     .pricing-hero-text {
         font-size: clamp(1.1rem, 3vw, 1.3rem);
-        opacity: 0.9;
+        opacity: 0.95;
         line-height: 1.8;
         max-width: 700px;
         margin: 0 auto;
-        animation: fadeInUp 1s ease-out 0.4s both;
+        color: var(--pure-white) !important;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
     }
 
     /* Pricing Section */
     .pricing-section {
         padding: 80px 0;
-        background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);
+        background: #f8fafc;
+        position: relative;
     }
 
     .pricing-grid {
@@ -108,118 +90,98 @@
         padding: 0 20px;
     }
 
+    /* Clean rectangular cards with better contrast */
     .pricing-card {
         background: #ffffff;
-        border-radius: 24px;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
-        position: relative;
+        height: 100%;
         display: flex;
         flex-direction: column;
-        height: 100%;
-        border: 2px solid transparent;
+        border: 1px solid #eef2f6;
+        position: relative;
     }
 
     .pricing-card:hover {
-        transform: translateY(-15px);
-        box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(10, 29, 68, 0.12);
+        border-color: var(--bright-amber);
     }
 
     .pricing-card.popular {
-        border-color: #667eea;
-        transform: scale(1.05);
+        border: 2px solid var(--bright-amber);
+        box-shadow: 0 15px 35px rgba(251, 198, 12, 0.15);
+        transform: scale(1.02);
         z-index: 2;
     }
 
     .pricing-card.popular:hover {
-        transform: scale(1.05) translateY(-15px);
+        transform: scale(1.02) translateY(-5px);
+        box-shadow: 0 25px 45px rgba(251, 198, 12, 0.2);
     }
 
     .popular-badge {
         position: absolute;
         top: 20px;
         right: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #ffffff;
-        padding: 8px 20px;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        animation: pulse 2s infinite;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        background: var(--bright-amber);
+        color: var(--prussian-blue);
+        padding: 6px 18px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(251, 198, 12, 0.3);
         z-index: 3;
-    }
-
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
-        }
-        70% {
-            box-shadow: 0 0 0 15px rgba(102, 126, 234, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-        }
+        letter-spacing: 0.5px;
     }
 
     .pricing-card-header {
-        padding: 40px 30px;
+        padding: 35px 30px 25px;
         text-align: center;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .pricing-card-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200px;
-        height: 200px;
-        background: rgba(102, 126, 234, 0.05);
-        border-radius: 50%;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-bottom: 1px solid #eef2f6;
     }
 
     .plan-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 50%;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, var(--prussian-blue) 0%, var(--regal-navy) 100%);
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 25px;
-        color: #ffffff;
-        font-size: 2.5rem;
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        margin: 0 auto 20px;
+        color: var(--bright-amber);
+        font-size: 2rem;
+        box-shadow: 0 10px 20px rgba(10, 29, 68, 0.15);
     }
 
     .plan-name {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
-        margin-bottom: 15px;
-        color: #1e1e2f;
+        margin-bottom: 10px;
+        color: var(--prussian-blue);
     }
 
     .plan-price {
-        font-size: 3rem;
+        font-size: 2.8rem;
         font-weight: 800;
-        color: #667eea;
+        color: var(--regal-navy);
         margin-bottom: 10px;
         line-height: 1;
     }
 
     .plan-price small {
         font-size: 1rem;
-        font-weight: 400;
-        color: #6c757d;
+        font-weight: 500;
+        color: #64748b;
     }
 
     .plan-description {
-        color: #6c757d;
-        font-size: 1rem;
+        color: #64748b;
+        font-size: 0.95rem;
         line-height: 1.6;
         max-width: 250px;
         margin: 0 auto;
@@ -228,6 +190,7 @@
     .pricing-card-body {
         padding: 30px;
         flex: 1;
+        background: #ffffff;
     }
 
     .feature-list {
@@ -241,95 +204,80 @@
         align-items: center;
         gap: 12px;
         margin-bottom: 16px;
-        color: #6c757d;
+        color: #334155;
         font-size: 0.95rem;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
     }
 
     .feature-item:hover {
         transform: translateX(5px);
-        color: #1e1e2f;
+        color: var(--prussian-blue);
     }
 
     .feature-item i {
-        color: #06d6a0;
+        color: var(--bright-amber);
         font-size: 1rem;
         width: 20px;
         text-align: center;
+        flex-shrink: 0;
     }
 
     .pricing-card-footer {
-        padding: 0 30px 40px;
+        padding: 0 30px 35px;
         text-align: center;
+        background: #ffffff;
     }
 
     .btn-plan {
         display: inline-block;
         width: 100%;
-        padding: 16px 30px;
-        border-radius: 50px;
-        font-size: 1.1rem;
+        padding: 14px 25px;
+        border-radius: 12px;
+        font-size: 1rem;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.3s ease;
         background: transparent;
-        color: #667eea;
-        border: 2px solid #667eea;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-    }
-
-    .btn-plan::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-        z-index: -1;
-    }
-
-    .btn-plan:hover::before {
-        width: 300px;
-        height: 300px;
+        color: var(--prussian-blue);
+        border: 2px solid var(--bright-amber);
+        cursor: pointer;
+        letter-spacing: 0.3px;
     }
 
     .btn-plan:hover {
-        color: #ffffff;
-        border-color: #667eea;
+        background: var(--bright-amber);
+        color: var(--prussian-blue);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(251, 198, 12, 0.3);
+        border-color: var(--bright-amber);
     }
 
     .btn-plan.popular-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #ffffff;
-    }
-
-    .btn-plan.popular-btn::before {
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--bright-amber);
+        color: var(--prussian-blue);
+        border: 2px solid var(--bright-amber);
+        font-weight: 700;
     }
 
     .btn-plan.popular-btn:hover {
-        background: #5a67d8;
-        border-color: #5a67d8;
+        background: #e5b50a;
+        border-color: #e5b50a;
+        box-shadow: 0 10px 20px rgba(251, 198, 12, 0.4);
     }
 
     /* Active Subscription Banner */
     .active-subscription-banner {
-        background: linear-gradient(135deg, #06d6a0 0%, #05b587 100%);
-        color: #ffffff;
-        padding: 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         border-radius: 16px;
-        margin-bottom: 30px;
+        padding: 20px 30px;
+        margin-bottom: 40px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 20px;
+        box-shadow: 0 15px 30px rgba(16, 185, 129, 0.2);
+        color: white;
     }
 
     .banner-content {
@@ -339,10 +287,10 @@
     }
 
     .banner-icon {
-        width: 50px;
-        height: 50px;
+        width: 48px;
+        height: 48px;
         background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -353,33 +301,40 @@
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 5px;
+        color: white;
     }
 
     .banner-text p {
         margin: 0;
         opacity: 0.9;
         font-size: 0.95rem;
+        color: white;
     }
 
     .banner-btn {
-        background: #ffffff;
-        color: #06d6a0;
+        background: white;
+        color: #059669;
         padding: 12px 30px;
-        border-radius: 50px;
+        border-radius: 12px;
         text-decoration: none;
         font-weight: 600;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .banner-btn:hover {
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        color: #047857;
     }
 
     /* FAQ Section */
     .faq-section {
         padding: 80px 0;
-        background: #ffffff;
+        background: #f8fafc;
+        position: relative;
     }
 
     .section-header {
@@ -388,7 +343,7 @@
     }
 
     .section-subtitle {
-        color: #667eea;
+        color: var(--bright-amber);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 2px;
@@ -401,7 +356,7 @@
         font-size: clamp(2rem, 5vw, 2.5rem);
         font-weight: 800;
         margin-bottom: 15px;
-        color: #1e1e2f;
+        color: var(--prussian-blue);
     }
 
     .faq-grid {
@@ -411,37 +366,41 @@
     }
 
     .faq-item {
-        background: #f8f9fa;
+        background: #ffffff;
         border-radius: 16px;
         margin-bottom: 15px;
         overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+        border: 1px solid #eef2f6;
         transition: all 0.3s ease;
     }
 
     .faq-item:hover {
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 25px rgba(10, 29, 68, 0.08);
+        border-color: var(--bright-amber);
     }
 
     .faq-question {
-        padding: 22px 25px;
+        padding: 20px 25px;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-weight: 600;
-        color: #1e1e2f;
+        color: var(--prussian-blue);
         font-size: 1.1rem;
         transition: all 0.3s ease;
+        background: #ffffff;
     }
 
     .faq-question:hover {
-        background: rgba(102, 126, 234, 0.02);
+        background: #f8fafc;
     }
 
     .faq-question i {
-        color: #667eea;
+        color: var(--bright-amber);
         transition: all 0.3s ease;
+        font-size: 1rem;
     }
 
     .faq-item.active .faq-question i {
@@ -450,11 +409,12 @@
 
     .faq-answer {
         padding: 0 25px 25px;
-        color: #6c757d;
+        color: #64748b;
         line-height: 1.8;
         display: none;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid #eef2f6;
         margin-top: 5px;
+        background: #ffffff;
     }
 
     .faq-item.active .faq-answer {
@@ -464,9 +424,12 @@
 
     /* Guarantee Section */
     .guarantee-section {
-        background: linear-gradient(135deg, #f5f7ff 0%, #f0f3ff 100%);
-        padding: 60px 0;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        padding: 80px 0;
         text-align: center;
+        position: relative;
+        border-top: 1px solid #eef2f6;
+        border-bottom: 1px solid #eef2f6;
     }
 
     .guarantee-content {
@@ -476,28 +439,28 @@
     }
 
     .guarantee-icon {
-        width: 100px;
-        height: 100px;
-        background: rgba(102, 126, 234, 0.1);
-        border-radius: 50%;
+        width: 90px;
+        height: 90px;
+        background: rgba(251, 198, 12, 0.1);
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 0 auto 30px;
-        font-size: 3rem;
-        color: #667eea;
-        animation: float 6s ease-in-out infinite;
+        font-size: 2.5rem;
+        color: var(--bright-amber);
+        border: 1px solid rgba(251, 198, 12, 0.2);
     }
 
     .guarantee-title {
         font-size: 2rem;
         font-weight: 700;
         margin-bottom: 15px;
-        color: #1e1e2f;
+        color: var(--prussian-blue);
     }
 
     .guarantee-text {
-        color: #6c757d;
+        color: #64748b;
         line-height: 1.8;
         font-size: 1.1rem;
     }
@@ -506,20 +469,105 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: #06d6a0;
-        color: #ffffff;
-        padding: 8px 20px;
-        border-radius: 50px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 12px;
         margin-top: 30px;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Comparison Table */
+    .comparison-section {
+        padding: 80px 0;
+        background: #ffffff;
+    }
+
+    .comparison-table {
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(10, 29, 68, 0.08);
+        border: 1px solid #eef2f6;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .comparison-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .comparison-row:last-child {
+        border-bottom: none;
+    }
+
+    .comparison-row.header {
+        background: var(--prussian-blue);
+        color: white;
         font-weight: 600;
     }
 
-    /* Animations */
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+    .comparison-cell {
+        padding: 18px 20px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #334155;
     }
 
+    .comparison-cell:first-child {
+        text-align: left;
+        justify-content: flex-start;
+        font-weight: 500;
+        color: var(--prussian-blue);
+        padding-left: 25px;
+    }
+
+    .comparison-row.header .comparison-cell {
+        color: white;
+        font-weight: 600;
+        padding: 18px 20px;
+    }
+
+    .comparison-cell i.fa-check {
+        color: #10b981;
+        font-size: 1.2rem;
+    }
+
+    .comparison-cell i.fa-times {
+        color: #94a3b8;
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .comparison-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .comparison-cell {
+            padding: 10px;
+            justify-content: flex-start;
+        }
+
+        .comparison-cell:first-child {
+            font-weight: 700;
+            color: var(--bright-amber);
+            padding-left: 10px;
+        }
+
+        .comparison-row.header {
+            display: none;
+        }
+    }
+
+    /* Animations */
     @keyframes fadeInDown {
         from {
             opacity: 0;
@@ -559,24 +607,111 @@
             transform: scale(1);
         }
         .pricing-card.popular:hover {
-            transform: translateY(-15px);
+            transform: translateY(-5px);
         }
     }
 
     @media (max-width: 768px) {
         .pricing-hero {
-            padding: 60px 0;
+            min-height: 40vh;
+            padding: 40px 0;
         }
+        
         .pricing-grid {
             grid-template-columns: 1fr;
+            gap: 25px;
         }
+        
         .plan-price {
             font-size: 2.5rem;
         }
+        
         .faq-question {
             padding: 18px 20px;
             font-size: 1rem;
         }
+        
+        .active-subscription-banner {
+            padding: 20px;
+        }
+        
+        .banner-content {
+            flex: 1 1 100%;
+        }
+        
+        .banner-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .pricing-card-header {
+            padding: 30px 25px 20px;
+        }
+
+        .pricing-card-body {
+            padding: 25px;
+        }
+
+        .pricing-card-footer {
+            padding: 0 25px 30px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .pricing-hero {
+            padding: 30px 0;
+        }
+        
+        .pricing-card-header {
+            padding: 25px 20px 15px;
+        }
+        
+        .plan-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+            border-radius: 14px;
+        }
+        
+        .plan-name {
+            font-size: 1.6rem;
+        }
+        
+        .pricing-card-body {
+            padding: 20px;
+        }
+        
+        .pricing-card-footer {
+            padding: 0 20px 25px;
+        }
+        
+        .btn-plan {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+        }
+
+        .popular-badge {
+            top: 15px;
+            right: 15px;
+            padding: 5px 15px;
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Loading State */
+    .btn-plan.loading {
+        pointer-events: none;
+        opacity: 0.8;
+        position: relative;
+    }
+
+    .btn-plan.loading i {
+        animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
 </style>
 @endpush
@@ -584,14 +719,8 @@
 @section('content')
 <!-- Hero Section -->
 <section class="pricing-hero">
-    <div class="pricing-hero-particles">
-        <div class="pricing-hero-particle"></div>
-        <div class="pricing-hero-particle"></div>
-        <div class="pricing-hero-particle"></div>
-    </div>
-
     <div class="container">
-        <div class="pricing-hero-content" data-aos="fade-up">
+        <div class="pricing-hero-content">
             <span class="pricing-hero-badge">Simple & Transparent Pricing</span>
             <h1 class="pricing-hero-title">Choose Your Learning Path</h1>
             <p class="pricing-hero-text">
@@ -653,7 +782,7 @@
                         @foreach($plan->features_list as $feature)
                         <li class="feature-item">
                             <i class="fas fa-check-circle"></i>
-                            {{ $feature }}
+                            <span>{{ $feature }}</span>
                         </li>
                         @endforeach
                     </ul>
@@ -681,6 +810,61 @@
         </div>
     </div>
 </section>
+
+<!-- Plan Comparison Section -->
+<!-- <section class="comparison-section">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-subtitle">Compare Plans</span>
+            <h2 class="section-title">Find Your Perfect Match</h2>
+        </div>
+
+        <div class="comparison-table" data-aos="fade-up">
+            <div class="comparison-row header">
+                <div class="comparison-cell">Features</div>
+                <div class="comparison-cell">Basic</div>
+                <div class="comparison-cell">Pro</div>
+                <div class="comparison-cell">Enterprise</div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-cell">Access to All Paid Courses</div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-cell">Certificate of Completion</div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-cell">Progress Tracking</div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-cell">Priority Support</div>
+                <div class="comparison-cell"><i class="fas fa-times"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-cell">1-on-1 Mentoring</div>
+                <div class="comparison-cell"><i class="fas fa-times"></i></div>
+                <div class="comparison-cell"><i class="fas fa-times"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+            </div>
+            <div class="comparison-row">
+                <div class="comparison-cell">Downloadable Resources</div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+                <div class="comparison-cell"><i class="fas fa-check"></i></div>
+            </div>
+        </div>
+    </div>
+</section> -->
 
 <!-- Money-Back Guarantee Section -->
 <section class="guarantee-section">
@@ -784,6 +968,9 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Check if user prefers reduced motion
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
         // FAQ Accordion functionality
         const faqItems = document.querySelectorAll('.faq-item');
 
@@ -803,7 +990,7 @@
             });
         });
 
-        // Animation on scroll
+        // Animation on scroll with reduced motion support
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -812,28 +999,59 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    if (!prefersReducedMotion) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    } else {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'none';
+                    }
                 }
             });
         }, observerOptions);
 
-        // Apply initial styles and observe pricing cards
-        const pricingCards = document.querySelectorAll('.pricing-card');
-        pricingCards.forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(card);
-        });
+        // Apply initial styles and observe pricing cards (only if not reduced motion)
+        if (!prefersReducedMotion) {
+            const pricingCards = document.querySelectorAll('.pricing-card');
+            pricingCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
 
-        // Observe FAQ items
-        const faqElements = document.querySelectorAll('.faq-item');
-        faqElements.forEach(item => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(20px)';
-            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            observer.observe(item);
+            // Observe FAQ items
+            const faqElements = document.querySelectorAll('.faq-item');
+            faqElements.forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(item);
+            });
+
+            // Observe comparison table
+            const comparisonTable = document.querySelector('.comparison-table');
+            if (comparisonTable) {
+                comparisonTable.style.opacity = '0';
+                comparisonTable.style.transform = 'translateY(20px)';
+                comparisonTable.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(comparisonTable);
+            }
+        }
+
+        // Add loading state to plan buttons on click
+        const planButtons = document.querySelectorAll('.btn-plan');
+        planButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!this.classList.contains('processing') && !this.classList.contains('loading')) {
+                    this.classList.add('processing', 'loading');
+                    const originalContent = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner"></i> Processing...';
+                    
+                    // Store original content to restore if needed (though we're navigating away)
+                    this.dataset.originalContent = originalContent;
+                }
+            });
         });
     });
 </script>
