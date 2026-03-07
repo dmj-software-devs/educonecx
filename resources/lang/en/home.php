@@ -104,8 +104,6 @@ return [
     'faq_1_a' => 'EDUCONECX is an innovative online educational platform that combines AI-powered learning with specialized training programs. We offer both free and premium educational content designed to accelerate your professional development in language skills and digital business.',
     'faq_2_q' => 'In which languages are the courses available?',
     'faq_2_a' => 'Our courses are available in English, French, Haitian Creole, and Spanish to serve our diverse international community of learners.',
-    'faq_3_q' => 'How do I get started?',
-    'faq_3_a' => 'Getting started is simple: create your account, select your preferred course, and begin.',
     'faq_4_q' => 'Can I access courses on mobile?',
     'faq_4_a' => 'Yes! Our platform is fully responsive and optimized for all devices. You can access your courses on desktop, tablet, or smartphone anytime, anywhere.',
 ];

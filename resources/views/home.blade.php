@@ -2220,15 +2220,7 @@
                 </div>
             </div>
 
-            <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
-                <div class="faq-question">
-                    <span>{{ App\Helpers\TranslationHelper::trans('home.faq_3_q') }}</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="faq-answer">
-                    <p>{{ App\Helpers\TranslationHelper::trans('home.faq_3_a') }}</p>
-                </div>
-            </div>
+    
 
             <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
                 <div class="faq-question">

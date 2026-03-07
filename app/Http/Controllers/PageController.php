@@ -216,10 +216,7 @@ class PageController extends Controller
                     'question' => 'In which languages are the courses available?',
                     'answer' => 'Our courses are available in English, French, Haitian Creole, and Spanish to serve our diverse international community of learners.'
                 ],
-                [
-                    'question' => 'How do I get started?',
-                    'answer' => 'Getting started is simple: create your account, select your preferred course, and begin.'
-                ],
+                
                 [
                     'question' => 'Which devices are compatible with EDUCONECX?',
                     'answer' => 'You can access EDUCONECX seamlessly across all your devices — mobile phones, tablets, and computers — ensuring learning flexibility wherever you are.'
