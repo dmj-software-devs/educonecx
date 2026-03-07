@@ -105,7 +105,7 @@ return [
     'faq_2_q' => 'In which languages are the courses available?',
     'faq_2_a' => 'Our courses are available in English, French, Haitian Creole, and Spanish to serve our diverse international community of learners.',
     'faq_3_q' => 'How do I get started?',
-    'faq_3_a' => 'Getting started is simple: create your account, select your preferred course, and begin with our 3-day free trial to explore the platform risk-free.',
+    'faq_3_a' => 'Getting started is simple: create your account, select your preferred course, and begin.',
     'faq_4_q' => 'Can I access courses on mobile?',
     'faq_4_a' => 'Yes! Our platform is fully responsive and optimized for all devices. You can access your courses on desktop, tablet, or smartphone anytime, anywhere.',
 ];

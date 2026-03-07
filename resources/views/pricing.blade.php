@@ -1057,7 +1057,7 @@
             </div>
 
             <!-- FAQ Item 3 -->
-            <div class="faq-pricing-item">
+            <!-- <div class="faq-pricing-item">
                 <div class="faq-pricing-question">
                     <span>Is there a free trial?</span>
                     <i class="fas fa-chevron-down"></i>
@@ -1065,7 +1065,7 @@
                 <div class="faq-pricing-answer">
                     <p>Yes! We offer a 3-day free trial on all paid plans. You can explore our courses and features risk-free before committing. No credit card required for the trial.</p>
                 </div>
-            </div>
+            </div> -->
 
             <!-- FAQ Item 4 -->
             <div class="faq-pricing-item">

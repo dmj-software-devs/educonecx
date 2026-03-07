@@ -218,7 +218,7 @@ class PageController extends Controller
                 ],
                 [
                     'question' => 'How do I get started?',
-                    'answer' => 'Getting started is simple: create your account, select your preferred course, and begin with our 3-day free trial to explore the platform risk-free.'
+                    'answer' => 'Getting started is simple: create your account, select your preferred course, and begin.'
                 ],
                 [
                     'question' => 'Which devices are compatible with EDUCONECX?',

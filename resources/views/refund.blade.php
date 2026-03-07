@@ -320,9 +320,9 @@
                     
                     <p class="article-content">2.4 Dissatisfaction, non-use of content, change of mind, or personal circumstances do not qualify for refunds.</p>
                     
-                    <div class="note-box">
+                    <!-- <div class="note-box">
                         <p><strong>Note:</strong> We encourage you to take advantage of our free trial options before committing to a paid subscription.</p>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <!-- Article 3 -->
