@@ -377,7 +377,7 @@
         border-left: 4px solid var(--bright-amber);
     }
 
-    /* ===== OPTIONS ===== */
+    /* ===== OPTIONS - FIXED RADIO/CHECKBOX STYLING ===== */
     .liquid-option-item {
         margin-bottom: 16px;
         padding: 20px 25px;
@@ -423,18 +423,25 @@
         opacity: 1;
     }
 
+    /* Fixed radio/checkbox styling - more professional size */
     .liquid-option-item .form-check-input {
-        width: 24px;
-        height: 24px;
-        margin-right: 18px;
+        width: 18px !important;
+        height: 18px !important;
+        margin-right: 15px;
         cursor: pointer;
         border: 2px solid var(--gray);
+        accent-color: var(--bright-amber); /* This helps with native styling */
     }
 
-    .liquid-option-item .form-check-input:checked {
+    /* Better radio button styling */
+    .liquid-option-item .form-check-input[type="radio"] {
+        border-radius: 50%;
+    }
+
+    .liquid-option-item .form-check-input[type="radio"]:checked,
+    .liquid-option-item .form-check-input[type="checkbox"]:checked {
         background-color: var(--bright-amber);
         border-color: var(--bright-amber);
-        box-shadow: 0 0 0 3px rgba(251, 198, 12, 0.2);
     }
 
     .liquid-option-item .form-check-label {
@@ -444,6 +451,19 @@
         display: flex;
         align-items: center;
         gap: 15px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    /* Remove the click event from the form-check div to avoid conflicts */
+    .liquid-option-item .form-check {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        min-height: auto;
+        width: 100%;
+        cursor: pointer;
     }
 
     .liquid-option-image {
@@ -1316,24 +1336,103 @@
         }, 1000);
         @endif
 
-        // Select option function
+        // Select option function - SIMPLIFIED to work with native radio/checkbox behavior
         window.selectOption = function(element, optionId) {
-            const checkbox = element.querySelector('input[type="checkbox"], input[type="radio"]');
-            if (checkbox) {
-                if (checkbox.type === 'radio') {
-                    // Remove selected class from other radio options
-                    const name = checkbox.name;
-                    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
-                        input.closest('.liquid-option-item')?.classList.remove('selected');
+            // Let the browser handle the radio/checkbox click naturally
+            // We just need to update the selected class
+            const input = element.querySelector('input[type="checkbox"], input[type="radio"]');
+            
+            if (input) {
+                // For radio buttons, remove selected class from other options with the same name
+                if (input.type === 'radio') {
+                    const name = input.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+                        const optionDiv = inp.closest('.liquid-option-item');
+                        if (optionDiv) {
+                            optionDiv.classList.remove('selected');
+                        }
                     });
                 }
-
-                checkbox.checked = !checkbox.checked;
-                element.classList.toggle('selected', checkbox.checked);
+                
+                // Add selected class if input is checked
+                if (input.checked) {
+                    element.classList.add('selected');
+                } else {
+                    element.classList.remove('selected');
+                }
             }
         };
 
-        // Image selection toggle
+        // Add click handlers to option items that properly handle native checkbox behavior
+        document.querySelectorAll('.liquid-option-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't interfere with clicks directly on the input
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'LABEL') {
+                    return;
+                }
+                
+                const input = this.querySelector('input[type="checkbox"], input[type="radio"]');
+                if (input) {
+                    e.preventDefault();
+                    
+                    if (input.type === 'radio') {
+                        input.checked = true;
+                    } else {
+                        input.checked = !input.checked;
+                    }
+                    
+                    // Trigger change event
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    // Update selected class
+                    if (input.type === 'radio') {
+                        // Remove selected class from all radio options with same name
+                        const name = input.name;
+                        document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+                            const optionDiv = inp.closest('.liquid-option-item');
+                            if (optionDiv) {
+                                optionDiv.classList.remove('selected');
+                            }
+                        });
+                    }
+                    
+                    // Add selected class if input is checked
+                    if (input.checked) {
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.remove('selected');
+                    }
+                }
+            });
+        });
+
+        // Handle input changes directly
+        document.querySelectorAll('.liquid-option-item input[type="checkbox"], .liquid-option-item input[type="radio"]').forEach(input => {
+            input.addEventListener('change', function() {
+                const optionDiv = this.closest('.liquid-option-item');
+                if (!optionDiv) return;
+                
+                if (this.type === 'radio' && this.checked) {
+                    // Remove selected class from all radio options with same name
+                    const name = this.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+                        const div = inp.closest('.liquid-option-item');
+                        if (div) {
+                            div.classList.remove('selected');
+                        }
+                    });
+                    optionDiv.classList.add('selected');
+                } else if (this.type === 'checkbox') {
+                    if (this.checked) {
+                        optionDiv.classList.add('selected');
+                    } else {
+                        optionDiv.classList.remove('selected');
+                    }
+                }
+            });
+        });
+
+        // Image selection toggle - SIMPLIFIED
         window.toggleImageSelection = function(element, optionId, questionType) {
             const input = element.querySelector('input.image-selection-input');
             if (!input) return;
@@ -1358,6 +1457,14 @@
             const input = option.querySelector('input.image-selection-input');
             if (input && input.checked) {
                 option.classList.add('selected');
+            }
+        });
+
+        // Initialize selected class for options
+        document.querySelectorAll('.liquid-option-item input[type="radio"]:checked, .liquid-option-item input[type="checkbox"]:checked').forEach(input => {
+            const optionDiv = input.closest('.liquid-option-item');
+            if (optionDiv) {
+                optionDiv.classList.add('selected');
             }
         });
 
