@@ -251,9 +251,10 @@ Route::get('/terms-conditions', [PageController::class, 'terms'])->name('terms')
 
 // ==================== PUBLIC COURSE ROUTES ====================
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
+// IMPORTANT: Put the filter route BEFORE the show route to prevent routing conflicts
+Route::get('/courses/filter', [App\Http\Controllers\CourseController::class, 'filter'])->name('courses.filter');
 Route::get('/courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/course-category/{slug}', [CourseController::class, 'category'])->name('courses.category');
-Route::get('/courses/filter', [App\Http\Controllers\CourseController::class, 'filter'])->name('courses.filter');
 
 // ==================== PUBLIC BLOG ROUTES ====================
 Route::get('/blog', [BlogController::class, 'index'])->name('blog');

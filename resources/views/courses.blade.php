@@ -1842,104 +1842,111 @@
             window.history.pushState({}, '', newUrl);
         }
 
-        // Function to fetch filtered courses
-        function updateCourses() {
-            // Show loading spinner
-            loadingSpinner.classList.add('show');
-            if (coursesContainer) coursesContainer.style.opacity = '0.5';
+      function updateCourses() {
+    // Show loading spinner
+    loadingSpinner.classList.add('show');
+    if (coursesContainer) coursesContainer.style.opacity = '0.5';
 
-            // Collect filter values
-            const categories = [];
-            document.querySelectorAll('.category-checkbox:checked').forEach(input => {
-                categories.push(input.value);
-            });
+    // Collect filter values
+    const categories = [];
+    document.querySelectorAll('.category-checkbox:checked').forEach(input => {
+        categories.push(input.value);
+    });
 
-            const prices = [];
-            document.querySelectorAll('.price-checkbox:checked').forEach(input => {
-                prices.push(input.value);
-            });
+    const prices = [];
+    document.querySelectorAll('.price-checkbox:checked').forEach(input => {
+        prices.push(input.value);
+    });
 
-            const keyword = searchInput?.value || '';
-            const sort = sortSelect?.value || 'newest_first';
+    const keyword = searchInput?.value || '';
+    const sort = sortSelect?.value || 'newest_first';
 
-            // Build URL with filters
-            const params = new URLSearchParams();
+    // Build URL with filters
+    const params = new URLSearchParams();
 
-            if (keyword) params.append('keyword', keyword);
-            if (sort) params.append('sort', sort);
+    if (keyword) params.append('keyword', keyword);
+    if (sort) params.append('sort', sort);
 
-            categories.forEach(cat => params.append('categories[]', cat));
-            prices.forEach(price => params.append('price[]', price));
+    categories.forEach(cat => params.append('categories[]', cat));
+    prices.forEach(price => params.append('price[]', price));
 
-            // Update URL
-            updateURL(params);
+    // Update URL
+    updateURL(params);
 
-            // Make AJAX request
-            fetch(`{{ route('courses.filter') }}?${params.toString()}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Update courses container
-                        coursesContainer.innerHTML = data.html;
+    // Log the URL being fetched
+    console.log('Fetching:', `/courses/filter?${params.toString()}`);
 
-                        // Update stats
-                        if (data.count !== undefined) {
-                            const totalResults = document.getElementById('totalResults');
-                            const totalCoursesCount = document.getElementById('totalCoursesCount');
-                            
-                            if (totalResults) totalResults.textContent = data.count;
-                            if (totalCoursesCount) totalCoursesCount.textContent = data.count;
-                        }
-
-                        // Reinitialize bookmark buttons for new content
-                        initializeBookmarkButtons();
-                        // Reinitialize ripple effects
-                        initializeRippleEffects();
-                        // Reinitialize pagination links
-                        initializePaginationLinks();
-                        // Reinitialize course card observers
-                        initializeCardObservers();
-
-                        // Close mobile filter sidebar after filter
-                        if (window.innerWidth <= 992) {
-                            closeFilterSidebar();
-                        }
-
-                        // Hide loading spinner
-                        loadingSpinner.classList.remove('show');
-                        if (coursesContainer) coursesContainer.style.opacity = '1';
-
-                        // Show notification
-                        showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_filters_applied') }}', 'success');
-                    } else {
-                        throw new Error('Invalid response from server');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    loadingSpinner.classList.remove('show');
-                    if (coursesContainer) coursesContainer.style.opacity = '1';
-                    showNotification('{{ App\Helpers\TranslationHelper::trans('courses.notification_filter_error') }}', 'error');
-
-                    // Fallback to form submission
-                    if (searchForm) {
-                        searchForm.submit();
-                    }
-                });
+    // Make AJAX request
+    fetch(`/courses/filter?${params.toString()}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.error('Error response text:', text);
+                throw new Error(`Network response was not ok: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        if (data.success) {
+            // Update courses container
+            coursesContainer.innerHTML = data.html;
 
+            // Update stats
+            if (data.count !== undefined) {
+                const totalResults = document.getElementById('totalResults');
+                const totalCoursesCount = document.getElementById('totalCoursesCount');
+                
+                if (totalResults) totalResults.textContent = data.count;
+                if (totalCoursesCount) totalCoursesCount.textContent = data.count;
+            }
+
+            // Reinitialize bookmark buttons for new content
+            initializeBookmarkButtons();
+            // Reinitialize ripple effects
+            initializeRippleEffects();
+            // Reinitialize pagination links
+            initializePaginationLinks();
+            // Reinitialize course card observers
+            initializeCardObservers();
+
+            // Close mobile filter sidebar after filter
+            if (window.innerWidth <= 992) {
+                closeFilterSidebar();
+            }
+
+            // Hide loading spinner
+            loadingSpinner.classList.remove('show');
+            if (coursesContainer) coursesContainer.style.opacity = '1';
+
+            // Show notification
+            showNotification('Filters applied successfully', 'success');
+        } else {
+            console.error('Server returned error:', data.message);
+            throw new Error(data.message || 'Invalid response from server');
+        }
+    })
+    .catch(error => {
+        console.error('Error in updateCourses:', error);
+        loadingSpinner.classList.remove('show');
+        if (coursesContainer) coursesContainer.style.opacity = '1';
+        showNotification('Error applying filters: ' + error.message, 'error');
+
+        // Don't fallback to form submission - this causes page reload
+        // if (searchForm) {
+        //     searchForm.submit();
+        // }
+    });
+}
         // Debounced update function
         function debounce(func, wait) {
             return function executedFunction(...args) {
