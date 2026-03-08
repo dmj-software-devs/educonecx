@@ -221,7 +221,39 @@
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    /* ===== TIMER ===== */
+    /* ===== QUESTION TIMER ===== */
+    .liquid-question-timer {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
+        padding: 10px 20px;
+        border-radius: var(--radius-full);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 15px;
+    }
+    
+    .liquid-question-timer.warning {
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
+        animation: pulse 1s infinite;
+    }
+    
+    .liquid-question-timer i {
+        font-size: 1rem;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* ===== MAIN TIMER ===== */
     .liquid-timer {
         background: var(--gradient-liquid-2);
         color: var(--prussian-blue);
@@ -1006,6 +1038,12 @@
 
                 @if($currentQuestion)
                 <div class="liquid-question-card">
+                    <!-- Question Timer (10 seconds) -->
+                    <div class="liquid-question-timer" id="questionTimer">
+                        <i class="fas fa-hourglass-half"></i>
+                        <span id="questionTimerDisplay">00:10</span>
+                    </div>
+
                     <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST" id="quizForm">
                         @csrf
 
@@ -1299,9 +1337,18 @@
     // Store original texts for all translatable elements
     let translatableElements = [];
 
+    // Question timer variables
+    let questionTimeLeft = 10; // 10 seconds per question
+    let questionTimerInterval = null;
+    const questionTimerElement = document.getElementById('questionTimer');
+    const questionTimerDisplay = document.getElementById('questionTimerDisplay');
+
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize translatable elements
         initializeTranslatableElements();
+
+        // Start question timer
+        startQuestionTimer();
 
         // Timer functionality
         @if($remainingTime)
@@ -1675,6 +1722,65 @@
         } catch (error) {
             console.error('Translation error:', error);
             return text;
+        }
+    }
+
+    // Start question timer (10 seconds)
+    function startQuestionTimer() {
+        if (questionTimerInterval) {
+            clearInterval(questionTimerInterval);
+        }
+
+        questionTimeLeft = 10;
+        updateQuestionTimerDisplay();
+
+        questionTimerInterval = setInterval(function() {
+            questionTimeLeft--;
+
+            if (questionTimeLeft <= 0) {
+                clearInterval(questionTimerInterval);
+                questionTimerInterval = null;
+                
+                // Time's up - auto-submit the current question
+                autoSubmitQuestion();
+            } else {
+                updateQuestionTimerDisplay();
+                
+                // Add warning class when less than 3 seconds
+                if (questionTimeLeft <= 3 && questionTimerElement) {
+                    questionTimerElement.classList.add('warning');
+                }
+            }
+        }, 1000);
+    }
+
+    // Update question timer display
+    function updateQuestionTimerDisplay() {
+        if (questionTimerDisplay) {
+            const seconds = questionTimeLeft;
+            questionTimerDisplay.textContent = `00:${seconds < 10 ? '0' + seconds : seconds}`;
+        }
+    }
+
+    // Auto-submit current question when timer expires
+    function autoSubmitQuestion() {
+        const quizForm = document.getElementById('quizForm');
+        if (quizForm) {
+            // Create a hidden input to indicate auto-submit
+            const autoSubmitInput = document.createElement('input');
+            autoSubmitInput.type = 'hidden';
+            autoSubmitInput.name = 'auto_submit';
+            autoSubmitInput.value = '1';
+            quizForm.appendChild(autoSubmitInput);
+            
+            // Submit the form with next action
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.disabled = true;
+                nextBtn.innerHTML = '<span class="btn-spinner"></span> {{ App\Helpers\TranslationHelper::trans('quiz-take.saving') }}';
+            }
+            
+            quizForm.submit();
         }
     }
 </script>
