@@ -120,7 +120,7 @@
         min-height: 100vh;
         display: flex;
         align-items: center;
-        background-image: url('/storage/heroimages/hero-image.jpeg');
+        background-image: url('/images/hero-image.jpeg');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
