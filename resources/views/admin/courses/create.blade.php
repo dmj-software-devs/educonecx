@@ -1087,19 +1087,21 @@
             $('#videoUpload .upload-content .upload-hint').text('A short preview of your course');
         }
     });
-
     // Toggle price fields based on course type (for display only)
     function togglePriceFields() {
         const isFree = document.getElementById('typeFree').checked;
         const priceField = document.getElementById('priceField');
+        const priceInput = document.getElementById('priceInput');
 
         if (isFree) {
             priceField.style.display = 'none';
+            priceInput.value = ''; // Clear the price when free is selected
+            priceInput.removeAttribute('required');
         } else {
             priceField.style.display = 'block';
+            priceInput.setAttribute('required', 'required');
         }
     }
-
     // Add event listeners for radio buttons
     document.getElementById('typePaid').addEventListener('change', togglePriceFields);
     document.getElementById('typeFree').addEventListener('change', togglePriceFields);

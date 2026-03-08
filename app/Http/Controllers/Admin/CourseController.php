@@ -110,10 +110,15 @@ class CourseController extends Controller
         try {
             // Set is_free based on course_type
             $validated['is_free'] = $validated['course_type'] === 'free';
-            
+
+            // IMPORTANT FIX: Set price to null for free courses
+            if ($validated['course_type'] === 'free') {
+                $validated['price'] = null;
+            }
+
             // Generate slug
             $validated['slug'] = Str::slug($validated['title']);
-            
+
             // Set created_by
             $validated['created_by'] = auth()->id();
 
@@ -141,16 +146,15 @@ class CourseController extends Controller
 
             if ($request->has('save_and_continue')) {
                 return redirect()->route('admin.courses.edit', $course)
-                                ->with('success', 'Course created successfully. Continue editing.');
+                    ->with('success', 'Course created successfully. Continue editing.');
             }
 
             return redirect()->route('admin.courses.index')
-                            ->with('success', 'Course created successfully');
-
+                ->with('success', 'Course created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to create course: ' . $e->getMessage())
-                         ->withInput();
+                ->withInput();
         }
     }
 
@@ -159,10 +163,10 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        $course->load(['category', 'instructor', 'tags', 'sections.lessons' => function($q) {
+        $course->load(['category', 'instructor', 'tags', 'sections.lessons' => function ($q) {
             $q->orderBy('sort_order');
         }]);
-        
+
         return view('admin.courses.show', compact('course'));
     }
 
@@ -174,7 +178,7 @@ class CourseController extends Controller
         $categories = Category::all();
         $tags = Tag::all();
         $course->load('tags');
-        
+
         return view('admin.courses.edit', compact('course', 'categories', 'tags'));
     }
 
@@ -216,6 +220,11 @@ class CourseController extends Controller
             // Set is_free based on course_type
             $validated['is_free'] = $validated['course_type'] === 'free';
 
+            // IMPORTANT FIX: Set price to null for free courses
+            if ($validated['course_type'] === 'free') {
+                $validated['price'] = null;
+            }
+
             // Handle thumbnail upload
             if ($request->hasFile('thumbnail')) {
                 // Delete old thumbnail
@@ -250,16 +259,15 @@ class CourseController extends Controller
 
             if ($request->has('save_and_continue')) {
                 return redirect()->route('admin.courses.edit', $course)
-                                ->with('success', 'Course updated successfully.');
+                    ->with('success', 'Course updated successfully.');
             }
 
             return redirect()->route('admin.courses.index')
-                            ->with('success', 'Course updated successfully');
-
+                ->with('success', 'Course updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update course: ' . $e->getMessage())
-                         ->withInput();
+                ->withInput();
         }
     }
 
@@ -278,15 +286,14 @@ class CourseController extends Controller
             if ($course->video_intro) {
                 Storage::disk('public')->delete($course->video_intro);
             }
-            
+
             // Delete course (cascade will handle sections and lessons)
             $course->delete();
-            
+
             DB::commit();
 
             return redirect()->route('admin.courses.index')
-                            ->with('success', 'Course deleted successfully');
-
+                ->with('success', 'Course deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to delete course: ' . $e->getMessage());
@@ -298,12 +305,12 @@ class CourseController extends Controller
      */
     public function lessons(Course $course)
     {
-        $course->load(['sections' => function($q) {
+        $course->load(['sections' => function ($q) {
             $q->orderBy('sort_order');
-        }, 'sections.lessons' => function($q) {
+        }, 'sections.lessons' => function ($q) {
             $q->orderBy('sort_order');
         }]);
-        
+
         return view('admin.courses.lessons', compact('course'));
     }
 
@@ -328,8 +335,7 @@ class CourseController extends Controller
             DB::commit();
 
             return redirect()->route('admin.courses.lessons', $course)
-                            ->with('success', 'Section created successfully');
-
+                ->with('success', 'Section created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to create section: ' . $e->getMessage());
@@ -353,8 +359,7 @@ class CourseController extends Controller
             DB::commit();
 
             return redirect()->route('admin.courses.lessons', $section->course_id)
-                            ->with('success', 'Section updated successfully');
-
+                ->with('success', 'Section updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update section: ' . $e->getMessage());
@@ -374,8 +379,7 @@ class CourseController extends Controller
             DB::commit();
 
             return redirect()->route('admin.courses.lessons', $courseId)
-                            ->with('success', 'Section deleted successfully');
-
+                ->with('success', 'Section deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to delete section: ' . $e->getMessage());
@@ -408,7 +412,7 @@ class CourseController extends Controller
         try {
             $validated['course_id'] = $course->id;
             $validated['slug'] = Str::slug($validated['title']);
-            
+
             if (!isset($validated['sort_order'])) {
                 $validated['sort_order'] = Lesson::where('section_id', $validated['section_id'])->count() + 1;
             }
@@ -441,12 +445,11 @@ class CourseController extends Controller
             DB::commit();
 
             return redirect()->route('admin.courses.lessons', $course)
-                            ->with('success', 'Lesson created successfully');
-
+                ->with('success', 'Lesson created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to create lesson: ' . $e->getMessage())
-                         ->withInput();
+                ->withInput();
         }
     }
 
@@ -519,12 +522,11 @@ class CourseController extends Controller
             DB::commit();
 
             return redirect()->route('admin.courses.lessons', $lesson->course_id)
-                            ->with('success', 'Lesson updated successfully');
-
+                ->with('success', 'Lesson updated successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update lesson: ' . $e->getMessage())
-                         ->withInput();
+                ->withInput();
         }
     }
 
@@ -538,17 +540,16 @@ class CourseController extends Controller
         try {
             $courseId = $lesson->course_id;
             $sectionId = $lesson->section_id;
-            
+
             $lesson->delete();
-            
+
             // Update section stats
             Section::find($sectionId)->updateStats();
 
             DB::commit();
 
             return redirect()->route('admin.courses.lessons', $courseId)
-                            ->with('success', 'Lesson deleted successfully');
-
+                ->with('success', 'Lesson deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to delete lesson: ' . $e->getMessage());
@@ -575,7 +576,6 @@ class CourseController extends Controller
             DB::commit();
 
             return response()->json(['success' => true]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -602,7 +602,6 @@ class CourseController extends Controller
             DB::commit();
 
             return response()->json(['success' => true]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -647,8 +646,7 @@ class CourseController extends Controller
             DB::commit();
 
             return redirect()->route('admin.courses.edit', $newCourse)
-                            ->with('success', 'Course cloned successfully');
-
+                ->with('success', 'Course cloned successfully');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to clone course: ' . $e->getMessage());
@@ -662,7 +660,7 @@ class CourseController extends Controller
     {
         try {
             $lesson->load('section');
-            
+
             return response()->json([
                 'id' => $lesson->id,
                 'section_id' => $lesson->section_id,
