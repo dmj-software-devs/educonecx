@@ -239,6 +239,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/academy', [PageController::class, 'academy'])->name('academy');
+Route::get('/quiz-competition', [PageController::class, 'quizCompetition'])->name('quiz-competition');
 Route::get('/neo-ed-tech', [PageController::class, 'neoEdTech'])->name('neo-ed-tech');
 Route::get('/our-team', [PageController::class, 'ourTeam'])->name('our-team');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');

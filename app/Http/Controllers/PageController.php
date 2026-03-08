@@ -123,6 +123,11 @@ class PageController extends Controller
         return view('contact');
     }
 
+     public function quizCompetition()
+    {
+        return view('quiz-competition');
+    }
+
     public function quiz(Request $request)
     {
         // Get all published quizzes with their questions count

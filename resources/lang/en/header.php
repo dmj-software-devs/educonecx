@@ -11,6 +11,7 @@ return [
     'team' => 'Team',
     'contact' => 'Contact',
     'quiz' => 'Quiz',
+    'quiz_competition' => 'Quiz Competition',
     
     // User menu
     'dashboard' => 'Dashboard',
