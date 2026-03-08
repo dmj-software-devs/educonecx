@@ -342,7 +342,6 @@
         .btn {
             display: inline-block;
             padding: 14px 36px;
-            border-radius: var(--border-radius-liquid);
             font-weight: 600;
             font-size: 1rem;
             text-align: center;
