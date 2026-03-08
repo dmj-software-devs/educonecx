@@ -1858,8 +1858,7 @@
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
-                        <img src="https://images.unsplash.com/photo-1494790108777-78fdb682e5c7?w=60&h=60&fit=crop" alt="Sarah Mitchell" loading="lazy">
-                    </div>
+<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop&auto=format" alt="User Avatar" loading="lazy">                    </div>
                     <div class="neo-author-info">
                         <h4>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_name') }}</h4>
                         <p>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_role') }}</p>
