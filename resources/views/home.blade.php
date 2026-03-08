@@ -114,15 +114,30 @@
         color: var(--bright-amber);
     }
 
-    /* Hero Section */
+    /* Hero Section - Updated with background image */
     .hero {
         position: relative;
         min-height: 100vh;
         display: flex;
         align-items: center;
-        background: var(--gradient-liquid-1);
+        background-image: url('/storage/heroimages/hero-image.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         overflow: hidden;
         padding: 80px 0;
+    }
+
+    /* Add overlay for better text readability */
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 29, 68, 0.7); /* Prussian blue overlay */
+        z-index: 1;
     }
 
     @media (max-width: 768px) {
