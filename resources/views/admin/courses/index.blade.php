@@ -99,7 +99,7 @@
                 <th>Pricing</th>
                 <th>Status</th>
                 <th>Students</th>
-                <th>Rating</th>
+                <!-- <th>Rating</th> -->
                 <th width="120">Actions</th>
             </tr>
         </thead>
@@ -166,7 +166,7 @@
                         {{ number_format($course->total_students) }}
                     </div>
                 </td>
-                <td>
+                <!-- <td>
                     <div class="rating">
                         <span class="stars">
                             @for($i = 1; $i <= 5; $i++)
@@ -179,7 +179,7 @@
                         </span>
                         <span class="rating-value">({{ number_format($course->average_rating, 1) }})</span>
                     </div>
-                </td>
+                </td> -->
                 <td>
                     <div class="action-buttons">
                         <a href="{{ route('admin.courses.edit', $course) }}" class="action-btn edit-btn" title="Edit">

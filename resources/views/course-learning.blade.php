@@ -1367,54 +1367,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function markLessonAsCompleted(lessonId) {
-        console.log('Marking lesson as completed:', lessonId);
-        
-        fetch(`/lessons/${lessonId}/complete`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ completed: true })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    console.log('Marking lesson as completed:', lessonId);
+    
+    fetch(`/lessons/${lessonId}/complete`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ completed: true })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            updateLessonUI(lessonId, true);
+            updateProgress(data.progress, data.completed_count, data.total_lessons);
+
+            const markCompleteBtn = document.getElementById('markCompleteBtn');
+            if (markCompleteBtn) {
+                markCompleteBtn.textContent = '✓ Completed';
+                markCompleteBtn.classList.add('completed');
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                updateLessonUI(lessonId, true);
-                updateProgress(data.progress, data.completed_count, data.total_lessons);
 
-                const markCompleteBtn = document.getElementById('markCompleteBtn');
-                if (markCompleteBtn) {
-                    markCompleteBtn.textContent = '✓ Completed';
-                    markCompleteBtn.classList.add('completed');
-                }
-
-                if (!courseData.completedLessons.includes(parseInt(lessonId))) {
-                    courseData.completedLessons.push(parseInt(lessonId));
-                }
-
-                showCompletionModal(lessonId);
-                showNotification('Lesson completed! Great job! 🎉', 'success');
-            } else {
-                showNotification(data.message || 'Error updating lesson progress', 'error');
-                const checkbox = document.getElementById('markCompleteCheckbox');
-                if (checkbox) checkbox.checked = false;
+            if (!courseData.completedLessons.includes(parseInt(lessonId))) {
+                courseData.completedLessons.push(parseInt(lessonId));
             }
-        })
-        .catch(error => {
-            console.error('Error details:', error);
-            showNotification('Error updating lesson progress: ' + error.message, 'error');
+
+            // Store certificate URL if provided
+            if (data.certificate_url) {
+                window.lastCertificateUrl = data.certificate_url;
+            }
+
+            showCompletionModal(lessonId);
+            showNotification('Lesson completed! Great job! 🎉', 'success');
+        } else {
+            showNotification(data.message || 'Error updating lesson progress', 'error');
             const checkbox = document.getElementById('markCompleteCheckbox');
             if (checkbox) checkbox.checked = false;
-        });
-    }
-
+        }
+    })
+    .catch(error => {
+        console.error('Error details:', error);
+        showNotification('Error updating lesson progress: ' + error.message, 'error');
+        const checkbox = document.getElementById('markCompleteCheckbox');
+        if (checkbox) checkbox.checked = false;
+    });
+}
     function markLessonAsIncomplete(lessonId) {
         fetch(`/lessons/${lessonId}/complete`, {
             method: 'POST',
@@ -1453,51 +1457,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function showCompletionModal(lessonId) {
-        const nextLesson = getNextLesson(lessonId);
-        const nextLessonSuggestion = document.getElementById('nextLessonSuggestion');
-        const continueBtn = document.getElementById('continueToNextLesson');
-        const completedBtn = document.getElementById('courseCompletedBtn');
+function showCompletionModal(lessonId) {
+    const nextLesson = getNextLesson(lessonId);
+    const nextLessonSuggestion = document.getElementById('nextLessonSuggestion');
+    const continueBtn = document.getElementById('continueToNextLesson');
+    const completedBtn = document.getElementById('courseCompletedBtn');
 
-        if (!nextLessonSuggestion || !continueBtn || !completedBtn) {
-            console.error('Modal elements not found');
-            return;
-        }
-
-        if (nextLesson) {
-            nextLessonSuggestion.innerHTML = `
-                <p>Next lesson: <strong>${escapeHtml(nextLesson.dataset.lessonTitle || 'Next Lesson')}</strong></p>
-                <p class="mt-2">Duration: ${nextLesson.dataset.lessonDuration || 'N/A'}</p>
-            `;
-            continueBtn.style.display = 'inline-block';
-            completedBtn.style.display = 'none';
-
-            currentModalLessonId = nextLesson.dataset.lessonId;
-            
-            continueBtn.onclick = function() {
-                console.log('Continue button clicked, loading lesson:', currentModalLessonId);
-                if (currentModalLessonId) {
-                    modal.hide();
-                    window.loadLesson(currentModalLessonId);
-                }
-            };
-        } else {
-            const allCompleted = courseData.completedLessons.length === courseData.totalLessons;
-            
-            if (allCompleted) {
-                nextLessonSuggestion.innerHTML = '<p>Congratulations! You\'ve completed all lessons in this course! 🎉</p>';
-                continueBtn.style.display = 'none';
-                completedBtn.style.display = 'inline-block';
-            } else {
-                nextLessonSuggestion.innerHTML = '<p>Great job! Keep going with your learning journey!</p>';
-                continueBtn.style.display = 'none';
-                completedBtn.style.display = 'none';
-            }
-        }
-
-        modal.show();
+    if (!nextLessonSuggestion || !continueBtn || !completedBtn) {
+        console.error('Modal elements not found');
+        return;
     }
 
+    if (nextLesson) {
+        nextLessonSuggestion.innerHTML = `
+            <p>Next lesson: <strong>${escapeHtml(nextLesson.dataset.lessonTitle || 'Next Lesson')}</strong></p>
+            <p class="mt-2">Duration: ${nextLesson.dataset.lessonDuration || 'N/A'}</p>
+        `;
+        continueBtn.style.display = 'inline-block';
+        completedBtn.style.display = 'none';
+
+        currentModalLessonId = nextLesson.dataset.lessonId;
+        
+        continueBtn.onclick = function() {
+            console.log('Continue button clicked, loading lesson:', currentModalLessonId);
+            if (currentModalLessonId) {
+                modal.hide();
+                window.loadLesson(currentModalLessonId);
+            }
+        };
+    } else {
+        const allCompleted = courseData.completedLessons.length === courseData.totalLessons;
+        
+        if (allCompleted) {
+            // Check if certificate was generated from the last response
+            const certificateUrl = window.lastCertificateUrl;
+            
+            if (certificateUrl) {
+                nextLessonSuggestion.innerHTML = `
+                    <p>Congratulations! You've completed all lessons in this course! 🎉</p>
+                    <p class="mt-3">Your certificate has been generated and is ready to view!</p>
+                `;
+                continueBtn.style.display = 'none';
+                completedBtn.innerHTML = '<i class="fas fa-certificate"></i> View Certificate';
+                completedBtn.href = certificateUrl;
+                completedBtn.style.display = 'inline-block';
+            } else {
+                nextLessonSuggestion.innerHTML = '<p>Congratulations! You\'ve completed all lessons in this course! 🎉</p>';
+                continueBtn.style.display = 'none';
+                completedBtn.innerHTML = 'Course Completed! 🎉';
+                completedBtn.href = "{{ route('courses.show', $course->slug) }}";
+                completedBtn.style.display = 'inline-block';
+            }
+        } else {
+            nextLessonSuggestion.innerHTML = '<p>Great job! Keep going with your learning journey!</p>';
+            continueBtn.style.display = 'none';
+            completedBtn.style.display = 'none';
+        }
+    }
+
+    modal.show();
+}
     window.loadLesson = function(lessonId) {
         const lessonElement = document.querySelector(`[data-lesson-id="${lessonId}"]`);
         if (!lessonElement) return;

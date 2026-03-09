@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
+use App\Models\Certificate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -539,13 +540,52 @@ class CourseController extends Controller
             
             $overallProgress = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
 
+            // Check if all lessons are completed and generate certificate
+            $certificate = null;
+            if ($overallProgress >= 100) {
+                // Check if certificate already exists
+                $existingCertificate = Certificate::where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->first();
+
+                if (!$existingCertificate) {
+                    // Get the enrollment
+                    $enrollment = Enrollment::where('user_id', $user->id)
+                        ->where('course_id', $course->id)
+                        ->first();
+
+                    if ($enrollment) {
+                        // Generate unique certificate number
+                        $certificateNumber = $this->generateCertificateNumber($user, $course);
+
+                        // Create certificate
+                        $certificate = Certificate::create([
+                            'user_id' => $user->id,
+                            'course_id' => $course->id,
+                            'enrollment_id' => $enrollment->id,
+                            'certificate_number' => $certificateNumber,
+                            'issue_date' => now(),
+                            'expiry_date' => $enrollment->expiry_date,
+                        ]);
+
+                        // Update enrollment to mark certificate as generated
+                        $enrollment->update([
+                            'certificate_generated' => 1,
+                            'completed_at' => now()
+                        ]);
+                    }
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => $message,
                 'completed' => $completed,
                 'progress' => $overallProgress,
                 'completed_count' => $completedLessons,
-                'total_lessons' => $totalLessons
+                'total_lessons' => $totalLessons,
+                'certificate_generated' => $certificate ? true : false,
+                'certificate_url' => $certificate ? route('certificates.show', $certificate->id) : null
             ]);
 
         } catch (\Exception $e) {
@@ -555,6 +595,29 @@ class CourseController extends Controller
                 'message' => 'Error updating lesson progress: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Generate unique certificate number
+     */
+    private function generateCertificateNumber($user, $course)
+    {
+        $prefix = 'EDU';
+        $year = now()->year;
+        $month = now()->format('m');
+        $userId = str_pad($user->id, 4, '0', STR_PAD_LEFT);
+        $courseId = str_pad($course->id, 4, '0', STR_PAD_LEFT);
+        $random = strtoupper(Str::random(4));
+        
+        $number = "{$prefix}-{$year}{$month}-{$userId}-{$courseId}-{$random}";
+        
+        // Ensure uniqueness
+        while (Certificate::where('certificate_number', $number)->exists()) {
+            $random = strtoupper(Str::random(4));
+            $number = "{$prefix}-{$year}{$month}-{$userId}-{$courseId}-{$random}";
+        }
+        
+        return $number;
     }
 
     /**

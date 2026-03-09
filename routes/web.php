@@ -23,11 +23,11 @@ Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // routes/web.php
-Route::get('/deepl-usage', function() {
+Route::get('/deepl-usage', function () {
     try {
         $deepLService = app(App\Services\DeepLService::class);
         $usage = $deepLService->getUsage();
-        
+
         return response()->json([
             'success' => true,
             'usage' => $usage
@@ -45,13 +45,13 @@ Route::get('/deepl-usage', function() {
 |--------------------------------------------------------------------------
 */
 // Add to routes/web.php for testing
-Route::get('/test-deepl', function() {
+Route::get('/test-deepl', function () {
     $deepl = app(DeepLService::class);
     return $deepl->translate('Hello world', 'en', 'es');
 });
 
 // Add this temporarily to debug
-Route::get('/test-translate', function() {
+Route::get('/test-translate', function () {
     return response()->json([
         'route_exists' => true,
         'translate_url' => route('translate', [], false),
@@ -62,7 +62,7 @@ Route::get('/test-translate', function() {
 });
 
 // Add to routes/web.php temporarily
-Route::get('/debug-translate', function() {
+Route::get('/debug-translate', function () {
     return response()->json([
         'routes' => [
             'translate_named' => route('translate', [], false),
@@ -75,7 +75,7 @@ Route::get('/debug-translate', function() {
     ]);
 });
 
-Route::get('/test-deepl-direct', function() {
+Route::get('/test-deepl-direct', function () {
     try {
         $deepl = app(\App\Services\DeepLService::class);
         $result = $deepl->translate('Hello world', 'en', 'es');
@@ -93,9 +93,9 @@ Route::get('/test-deepl-direct', function() {
     }
 });
 
-Route::get('/debug-deepl-raw', function() {
+Route::get('/debug-deepl-raw', function () {
     $apiKey = config('deepl.api_key');
-    
+
     // Test with proper header authentication
     $response = Http::withHeaders([
         'Authorization' => 'DeepL-Auth-Key ' . $apiKey,
@@ -105,7 +105,7 @@ Route::get('/debug-deepl-raw', function() {
         'source_lang' => 'EN',
         'target_lang' => 'ES',
     ]);
-    
+
     return response()->json([
         'status' => $response->status(),
         'headers' => $response->headers(),
@@ -114,9 +114,9 @@ Route::get('/debug-deepl-raw', function() {
     ]);
 });
 
-Route::get('/test-deepl-api', function() {
+Route::get('/test-deepl-api', function () {
     $apiKey = config('deepl.api_key');
-    
+
     // Test DeepL API directly with curl
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'https://api-free.deepl.com/v2/translate');
@@ -131,12 +131,12 @@ Route::get('/test-deepl-api', function() {
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Content-Type: application/x-www-form-urlencoded'
     ]);
-    
+
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $error = curl_error($ch);
     curl_close($ch);
-    
+
     return response()->json([
         'api_key_configured' => $apiKey ? 'Yes' : 'No',
         'api_key_preview' => substr($apiKey, 0, 10) . '...',
@@ -197,6 +197,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-courses', [DashboardController::class, 'courses'])->name('my-courses');
     Route::get('/my-quizzes', [DashboardController::class, 'quizzes'])->name('my-quizzes');
     Route::get('/certificates', [DashboardController::class, 'certificates'])->name('certificates');
+
+    // Certificate Routes for authenticated users
+    Route::get('/certificates', [App\Http\Controllers\CertificateController::class, 'index'])->name('certificates');
+    Route::get('/certificates/{id}', [App\Http\Controllers\CertificateController::class, 'show'])->name('certificates.show');
+    Route::post('/courses/{course}/certificate/generate', [App\Http\Controllers\CertificateController::class, 'generate'])->name('certificates.generate');
+    Route::get('/certificates/{id}/download', [App\Http\Controllers\CertificateController::class, 'download'])->name('certificates.download');
 
     // ==================== SUBSCRIPTION ROUTES ====================
     Route::get('/subscription/plans', [PaymentController::class, 'subscriptionPlans'])->name('subscription.plans');
@@ -285,6 +291,9 @@ Route::middleware('auth')->group(function () {
 Route::post('/stripe/webhook', [App\Http\Controllers\StripePaymentController::class, 'handleWebhook'])
     ->name('stripe.webhook');
 
+// Public verification route (no auth required)
+Route::get('/verify-certificate/{certificateNumber}', [App\Http\Controllers\CertificateController::class, 'verify'])->name('certificates.verify');
+
 // ==================== ADMIN ROUTES ====================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard - Using AdminDashboardController
@@ -299,11 +308,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('courses/lessons/{lesson}', [App\Http\Controllers\Admin\CourseController::class, 'destroyLesson'])->name('courses.lessons.destroy');
     Route::post('courses/{course}/clone', [App\Http\Controllers\Admin\CourseController::class, 'clone'])->name('courses.clone');
     Route::get('courses/lessons/{lesson}/edit-data', [App\Http\Controllers\Admin\CourseController::class, 'editLessonData'])->name('courses.lessons.edit-data');
-    
+
     // Reordering
     Route::post('courses/sections/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderSections'])->name('courses.sections.reorder');
     Route::post('courses/lessons/reorder', [App\Http\Controllers\Admin\CourseController::class, 'reorderLessons'])->name('courses.lessons.reorder');
-    
+
     // Sections Management
     Route::post('courses/{course}/sections', [App\Http\Controllers\Admin\CourseController::class, 'storeSection'])->name('courses.sections.store');
     Route::put('courses/sections/{section}', [App\Http\Controllers\Admin\CourseController::class, 'updateSection'])->name('courses.sections.update');
@@ -312,7 +321,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Subscription Plans Management
     Route::resource('subscription-plans', App\Http\Controllers\Admin\SubscriptionPlanController::class);
     Route::post('subscription-plans/reorder', [App\Http\Controllers\Admin\SubscriptionPlanController::class, 'reorder'])->name('subscription-plans.reorder');
-    
+
     // User Subscriptions Management
     Route::get('subscriptions', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'index'])->name('subscriptions.index');
     Route::get('subscriptions/{subscription}', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'show'])->name('subscriptions.show');
@@ -435,15 +444,15 @@ Route::get('/stripe/success-test', function (Request $request) {
 })->name('stripe.success.test');
 
 // Add this with your other lesson routes
-Route::post('/save-current-lesson', function(Request $request) {
+Route::post('/save-current-lesson', function (Request $request) {
     try {
         $request->validate([
             'course_id' => 'required|integer',
             'lesson_id' => 'required|integer'
         ]);
-        
+
         session(['current_lesson_' . $request->course_id => $request->lesson_id]);
-        
+
         return response()->json(['success' => true]);
     } catch (\Exception $e) {
         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
