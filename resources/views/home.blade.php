@@ -114,7 +114,7 @@
         color: var(--bright-amber);
     }
 
-    /* Hero Section - Updated with background image */
+    /* Hero Section - Updated to highlight two main features */
     .hero {
         position: relative;
         min-height: 100vh;
@@ -136,7 +136,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(10, 29, 68, 0.7); /* Prussian blue overlay */
+        background: rgba(10, 29, 68, 0.85); /* Darker Prussian blue overlay */
         z-index: 1;
     }
 
@@ -159,7 +159,7 @@
         z-index: 2;
         color: var(--pure-white);
         text-align: center;
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 100px 0;
     }
@@ -237,17 +237,204 @@
         font-size: clamp(2rem, 8vw, 4rem);
         font-weight: 800;
         line-height: 1.1;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
 
     @media (max-width: 576px) {
         .hero-title {
-            margin-bottom: 15px;
+            margin-bottom: 25px;
         }
     }
 
     .hero-title-gradient {
         color: var(--bright-amber);
+    }
+
+    /* Feature Cards - New styles for highlighting two main features */
+    .hero-feature-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin: 40px 0 30px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-feature-cards {
+            gap: 20px;
+            margin: 30px 0 25px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .hero-feature-cards {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+
+    .hero-feature-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        text-align: left;
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        transition: var(--transition);
+    }
+
+    @media (max-width: 768px) {
+        .hero-feature-card {
+            padding: 25px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-feature-card {
+            padding: 20px;
+        }
+    }
+
+    .hero-feature-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--bright-amber);
+        box-shadow: var(--shadow-hover);
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .hero-feature-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient-liquid-2);
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: var(--prussian-blue);
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-feature-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+    }
+
+    .hero-feature-card h3 {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--bright-amber);
+    }
+
+    @media (max-width: 768px) {
+        .hero-feature-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-feature-card h3 {
+            font-size: 1.3rem;
+        }
+    }
+
+    .hero-feature-card .price {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--pure-white);
+        margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-feature-card .price {
+            font-size: 1.8rem;
+        }
+    }
+
+    .hero-feature-card .price span {
+        font-size: 1rem;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.7);
+        margin-left: 5px;
+    }
+
+    .hero-feature-card .description {
+        font-size: 1rem;
+        line-height: 1.5;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-feature-card .description {
+            font-size: 0.95rem;
+            margin-bottom: 18px;
+        }
+    }
+
+    .hero-feature-card .btn {
+        width: 100%;
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
+        font-weight: 700;
+        padding: 14px;
+    }
+
+    .hero-feature-card .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .hero-feature-card .btn i {
+        margin-left: 8px;
+    }
+
+    /* Checkout section highlight */
+    .checkout-highlight {
+        margin-top: 30px;
+        padding: 15px 25px;
+        background: rgba(251, 198, 12, 0.2);
+        border-radius: var(--radius-full);
+        display: inline-flex;
+        align-items: center;
+        gap: 15px;
+        border: 1px solid var(--bright-amber);
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    @media (max-width: 576px) {
+        .checkout-highlight {
+            padding: 12px 20px;
+            gap: 10px;
+            flex-direction: column;
+        }
+    }
+
+    .checkout-highlight i {
+        color: var(--bright-amber);
+        font-size: 1.5rem;
+    }
+
+    .checkout-highlight span {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .checkout-highlight a {
+        color: var(--bright-amber);
+        font-weight: 700;
+        text-decoration: underline;
+        transition: var(--transition);
+    }
+
+    .checkout-highlight a:hover {
+        color: var(--pure-white);
     }
 
     .hero-text {
@@ -1603,7 +1790,7 @@
 @endpush
 
 @section('content')
-<!-- Hero Section -->
+<!-- Hero Section - Updated with two main features -->
 <section class="hero">
     <div class="container">
         <div class="hero-content" data-aos="fade-up">
@@ -1629,6 +1816,42 @@
                 {{ App\Helpers\TranslationHelper::trans('home.hero_title_1') }} <span class="hero-title-gradient">{{ App\Helpers\TranslationHelper::trans('home.hero_title_highlight') }}</span><br>
                 {{ App\Helpers\TranslationHelper::trans('home.hero_title_2') }}
             </h1>
+
+            <!-- Two Main Features Cards -->
+            <div class="hero-feature-cards">
+                <!-- Courses Feature -->
+                <div class="hero-feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="hero-feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Access All Courses</h3>
+                    <div class="price">$22 <span>one-time payment</span></div>
+                    <p class="description">Get unlimited access to our complete library of AI-powered courses. Learn at your own pace with expert instructors.</p>
+                    <a href="{{ route('courses') }}" class="btn btn-primary">
+                        Get Access to All Courses <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Quiz Feature -->
+                <div class="hero-feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="hero-feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>Weekly Quiz Challenge</h3>
+                    <div class="price">$50 <span>minimum weekly earnings</span></div>
+                    <p class="description">Test your knowledge and earn real money! Participate in our weekly quizzes and win a minimum of $50 every week.</p>
+                    <a href="{{ route('quiz') }}" class="btn btn-primary">
+                        Play Quiz to Win <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Checkout Section - Clearly Visible -->
+            <div class="checkout-highlight" data-aos="fade-up" data-aos-delay="300">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Ready to start your learning journey?</span>
+                <a href="#">Go to Checkout →</a>
+            </div>
 
             <p class="hero-text">
                 {{ App\Helpers\TranslationHelper::trans('home.hero_description') }}
@@ -1690,8 +1913,6 @@
         </div>
     </div>
 </section>
-
-
 
 <!-- Process Section -->
 <section class="process-section">
