@@ -1226,10 +1226,10 @@
                             </button>
 
                             @if($attempt->answers->count() > 0)
-                            <button type="submit" name="action" value="previous" class="liquid-btn liquid-btn-secondary" id="previousBtn">
+                            <!-- <button type="submit" name="action" value="previous" class="liquid-btn liquid-btn-secondary" id="previousBtn">
                                 <i class="fas fa-arrow-left"></i>
                                 <span id="previousText" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.previous_question') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.previous_question') }}</span>
-                            </button>
+                            </button> -->
                             @endif
                         </div>
                     </form>
