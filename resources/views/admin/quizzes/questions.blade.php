@@ -3093,66 +3093,24 @@ function buildEditForm(question) {
     const fillBlanks = question.fill_blanks || [];
     const matchingPairs = question.matching_pairs || [];
     
+    // Build options HTML for multiple choice, single choice, true/false
     if (['multiple_choice', 'single_choice', 'true_false'].includes(question.question_type)) {
-        optionsHtml = options.map((option, index) => `
-            <div class="option-item" data-index="${index}">
-                <div class="option-drag">
-                    <i class="fas fa-grip-vertical"></i>
-                </div>
-                <div class="option-input-group">
-                    <div class="option-field">
-                        <input type="text" 
-                               name="options[${index}][text]" 
-                               class="option-text" 
-                               placeholder="Enter option ${index + 1}"
-                               value="${(option.option_text || '').replace(/"/g, '&quot;')}"
-                               ${question.question_type === 'true_false' ? 'readonly' : ''}>
+        if (options.length > 0) {
+            optionsHtml = options.map((option, index) => `
+                <div class="option-item" data-index="${index}">
+                    <div class="option-drag">
+                        <i class="fas fa-grip-vertical"></i>
                     </div>
-                    <div class="option-check">
-                        <label class="checkbox-label">
-                            <input type="checkbox" 
-                                   name="options[${index}][is_correct]" 
-                                   value="1"
-                                   class="correct-checkbox"
-                                   data-option-index="${index}"
-                                   ${option.is_correct ? 'checked' : ''}>
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-text">Correct</span>
-                        </label>
-                    </div>
-                    <button type="button" class="option-remove" onclick="removeOption(this)" ${question.question_type === 'true_false' ? 'style="opacity: 0.5; pointer-events: none;"' : ''}>
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-    
-    if (question.question_type === 'image_selection') {
-        imageOptionsHtml = options.map((option, index) => `
-            <div class="image-option-item" data-index="${index}">
-                <div class="option-drag">
-                    <i class="fas fa-grip-vertical"></i>
-                </div>
-                <div class="image-option-content">
-                    <div class="image-upload-box">
-                        <input type="file" 
-                               name="options[${index}][image]" 
-                               class="image-option-input" 
-                               accept="image/*"
-                               onchange="previewImageOption(this, ${index})">
-                        <div class="image-preview-box" id="editImagePreview${index}">
-                            ${option.image ? `<img src="/storage/${option.image}" alt="Preview">` : '<i class="fas fa-cloud-upload-alt"></i><span>Upload Image</span>'}
+                    <div class="option-input-group">
+                        <div class="option-field">
+                            <input type="text" 
+                                   name="options[${index}][text]" 
+                                   class="option-text" 
+                                   placeholder="Enter option ${index + 1}"
+                                   value="${(option.option_text || '').replace(/"/g, '&quot;')}"
+                                   ${question.question_type === 'true_false' ? 'readonly' : ''}>
                         </div>
-                        ${option.image ? `<input type="hidden" name="options[${index}][existing_image]" value="${option.image}">` : ''}
-                    </div>
-                    <div class="image-option-details">
-                        <input type="text" 
-                               name="options[${index}][text]" 
-                               class="image-option-text" 
-                               placeholder="Alt text / Label"
-                               value="${(option.option_text || '').replace(/"/g, '&quot;')}">
-                        <div class="image-option-check">
+                        <div class="option-check">
                             <label class="checkbox-label">
                                 <input type="checkbox" 
                                        name="options[${index}][is_correct]" 
@@ -3164,83 +3122,316 @@ function buildEditForm(question) {
                                 <span class="checkbox-text">Correct</span>
                             </label>
                         </div>
+                        <button type="button" class="option-remove" onclick="removeOption(this)" ${question.question_type === 'true_false' ? 'style="opacity: 0.5; pointer-events: none;"' : ''}>
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    <button type="button" class="option-remove" onclick="removeImageOption(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        } else if (question.question_type === 'true_false') {
+            // Default True/False options
+            optionsHtml = `
+                <div class="option-item" data-index="0">
+                    <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="option-input-group">
+                        <div class="option-field">
+                            <input type="text" name="options[0][text]" class="option-text" value="True" readonly>
+                        </div>
+                        <div class="option-check">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Correct</span>
+                            </label>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="option-item" data-index="1">
+                    <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="option-input-group">
+                        <div class="option-field">
+                            <input type="text" name="options[1][text]" class="option-text" value="False" readonly>
+                        </div>
+                        <div class="option-check">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Correct</span>
+                            </label>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Default empty options for other types
+            optionsHtml = `
+                <div class="option-item" data-index="0">
+                    <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="option-input-group">
+                        <div class="option-field">
+                            <input type="text" name="options[0][text]" class="option-text" placeholder="Enter option 1" value="">
+                        </div>
+                        <div class="option-check">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Correct</span>
+                            </label>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="option-item" data-index="1">
+                    <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="option-input-group">
+                        <div class="option-field">
+                            <input type="text" name="options[1][text]" class="option-text" placeholder="Enter option 2" value="">
+                        </div>
+                        <div class="option-check">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Correct</span>
+                            </label>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            `;
+        }
     }
     
+    // Build image options HTML
+    if (question.question_type === 'image_selection') {
+        if (options.length > 0) {
+            imageOptionsHtml = options.map((option, index) => `
+                <div class="image-option-item" data-index="${index}">
+                    <div class="option-drag">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
+                    <div class="image-option-content">
+                        <div class="image-upload-box">
+                            <input type="file" 
+                                   name="options[${index}][image]" 
+                                   class="image-option-input" 
+                                   accept="image/*"
+                                   onchange="previewImageOption(this, ${index})">
+                            <div class="image-preview-box" id="editImagePreview${index}">
+                                ${option.image ? `<img src="/storage/${option.image}" alt="Preview">` : '<i class="fas fa-cloud-upload-alt"></i><span>Upload Image</span>'}
+                            </div>
+                            ${option.image ? `<input type="hidden" name="options[${index}][existing_image]" value="${option.image}">` : ''}
+                        </div>
+                        <div class="image-option-details">
+                            <input type="text" 
+                                   name="options[${index}][text]" 
+                                   class="image-option-text" 
+                                   placeholder="Alt text / Label"
+                                   value="${(option.option_text || '').replace(/"/g, '&quot;')}">
+                            <div class="image-option-check">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" 
+                                           name="options[${index}][is_correct]" 
+                                           value="1"
+                                           class="correct-checkbox"
+                                           data-option-index="${index}"
+                                           ${option.is_correct ? 'checked' : ''}>
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Correct</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeImageOption(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            // Default empty image options
+            imageOptionsHtml = `
+                <div class="image-option-item" data-index="0">
+                    <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="image-option-content">
+                        <div class="image-upload-box">
+                            <input type="file" name="options[0][image]" class="image-option-input" accept="image/*" onchange="previewImageOption(this, 0)">
+                            <div class="image-preview-box" id="editImagePreview0">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Upload Image</span>
+                            </div>
+                        </div>
+                        <div class="image-option-details">
+                            <input type="text" name="options[0][text]" class="image-option-text" placeholder="Alt text / Label" value="">
+                            <div class="image-option-check">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Correct</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeImageOption(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="image-option-item" data-index="1">
+                    <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="image-option-content">
+                        <div class="image-upload-box">
+                            <input type="file" name="options[1][image]" class="image-option-input" accept="image/*" onchange="previewImageOption(this, 1)">
+                            <div class="image-preview-box" id="editImagePreview1">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Upload Image</span>
+                            </div>
+                        </div>
+                        <div class="image-option-details">
+                            <input type="text" name="options[1][text]" class="image-option-text" placeholder="Alt text / Label" value="">
+                            <div class="image-option-check">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
+                                    <span class="checkbox-custom"></span>
+                                    <span class="checkbox-text">Correct</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="button" class="option-remove" onclick="removeImageOption(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    // Build fill in the blanks HTML
     if (question.question_type === 'fill_blank') {
-        blanksHtml = fillBlanks.map((blank, index) => `
-            <div class="blank-item" data-index="${index}">
-                <div class="blank-drag">
-                    <i class="fas fa-grip-vertical"></i>
-                </div>
-                <div class="blank-input-group">
-                    <div class="blank-field">
-                        <input type="text" 
-                               name="fill_blanks[${index}][answer]" 
-                               class="blank-text" 
-                               placeholder="Enter correct answer"
-                               value="${(blank.correct_answer || '').replace(/"/g, '&quot;')}">
+        if (fillBlanks.length > 0) {
+            blanksHtml = fillBlanks.map((blank, index) => `
+                <div class="blank-item" data-index="${index}">
+                    <div class="blank-drag">
+                        <i class="fas fa-grip-vertical"></i>
                     </div>
-                    <div class="blank-case">
-                        <label class="checkbox-label">
-                            <input type="checkbox" 
-                                   name="fill_blanks[${index}][case_sensitive]" 
-                                   value="1"
-                                   ${blank.case_sensitive ? 'checked' : ''}>
-                            <span class="checkbox-custom"></span>
-                            <span class="checkbox-text">Case Sensitive</span>
-                        </label>
+                    <div class="blank-input-group">
+                        <div class="blank-field">
+                            <input type="text" 
+                                   name="fill_blanks[${index}][answer]" 
+                                   class="blank-text" 
+                                   placeholder="Enter correct answer"
+                                   value="${(blank.correct_answer || '').replace(/"/g, '&quot;')}">
+                        </div>
+                        <div class="blank-case">
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       name="fill_blanks[${index}][case_sensitive]" 
+                                       value="1"
+                                       ${blank.case_sensitive ? 'checked' : ''}>
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Case Sensitive</span>
+                            </label>
+                        </div>
+                        <button type="button" class="blank-remove" onclick="removeBlank(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
-                    <button type="button" class="blank-remove" onclick="removeBlank(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
-            </div>
-        `).join('');
+            `).join('');
+        } else {
+            blanksHtml = `
+                <div class="blank-item" data-index="0">
+                    <div class="blank-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="blank-input-group">
+                        <div class="blank-field">
+                            <input type="text" name="fill_blanks[0][answer]" class="blank-text" placeholder="Enter correct answer" value="">
+                        </div>
+                        <div class="blank-case">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="fill_blanks[0][case_sensitive]" value="1">
+                                <span class="checkbox-custom"></span>
+                                <span class="checkbox-text">Case Sensitive</span>
+                            </label>
+                        </div>
+                        <button type="button" class="blank-remove" onclick="removeBlank(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            `;
+        }
     }
     
+    // Build matching pairs HTML
     if (question.question_type === 'matching') {
-        matchingHtml = matchingPairs.map((pair, index) => `
-            <div class="matching-item" data-index="${index}">
-                <div class="matching-drag">
-                    <i class="fas fa-grip-vertical"></i>
+        if (matchingPairs.length > 0) {
+            matchingHtml = matchingPairs.map((pair, index) => `
+                <div class="matching-item" data-index="${index}">
+                    <div class="matching-drag">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
+                    <div class="matching-input-group">
+                        <div class="matching-left">
+                            <input type="text" 
+                                   name="matching_pairs[${index}][left]" 
+                                   class="matching-left-input" 
+                                   placeholder="Left item ${index + 1}"
+                                   value="${(pair.left_item || '').replace(/"/g, '&quot;')}">
+                        </div>
+                        <div class="matching-arrow">
+                            <i class="fas fa-long-arrow-alt-right"></i>
+                        </div>
+                        <div class="matching-right">
+                            <input type="text" 
+                                   name="matching_pairs[${index}][right]" 
+                                   class="matching-right-input" 
+                                   placeholder="Right item ${index + 1}"
+                                   value="${(pair.right_item || '').replace(/"/g, '&quot;')}">
+                        </div>
+                        <div class="matching-badge correct">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Correct Pair</span>
+                        </div>
+                        <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="matching-input-group">
-                    <div class="matching-left">
-                        <input type="text" 
-                               name="matching_pairs[${index}][left]" 
-                               class="matching-left-input" 
-                               placeholder="Left item ${index + 1}"
-                               value="${(pair.left_item || '').replace(/"/g, '&quot;')}">
+            `).join('');
+        } else {
+            matchingHtml = `
+                <div class="matching-item" data-index="0">
+                    <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="matching-input-group">
+                        <div class="matching-left">
+                            <input type="text" name="matching_pairs[0][left]" class="matching-left-input" placeholder="Left item 1" value="">
+                        </div>
+                        <div class="matching-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="matching-right">
+                            <input type="text" name="matching_pairs[0][right]" class="matching-right-input" placeholder="Right item 1" value="">
+                        </div>
+                        <div class="matching-badge correct">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Correct Pair</span>
+                        </div>
+                        <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="matching-arrow">
-                        <i class="fas fa-long-arrow-alt-right"></i>
-                    </div>
-                    <div class="matching-right">
-                        <input type="text" 
-                               name="matching_pairs[${index}][right]" 
-                               class="matching-right-input" 
-                               placeholder="Right item ${index + 1}"
-                               value="${(pair.right_item || '').replace(/"/g, '&quot;')}">
-                    </div>
-                    <div class="matching-badge correct">
-                        <i class="fas fa-check-circle"></i>
-                        <span>Correct Pair</span>
-                    </div>
-                    <button type="button" class="matching-remove" onclick="removeMatchingPair(this)">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
-            </div>
-        `).join('');
+                <div class="matching-item" data-index="1">
+                    <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
+                    <div class="matching-input-group">
+                        <div class="matching-left">
+                            <input type="text" name="matching_pairs[1][left]" class="matching-left-input" placeholder="Left item 2" value="">
+                        </div>
+                        <div class="matching-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
+                        <div class="matching-right">
+                            <input type="text" name="matching_pairs[1][right]" class="matching-right-input" placeholder="Right item 2" value="">
+                        </div>
+                        <div class="matching-badge correct">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Correct Pair</span>
+                        </div>
+                        <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+            `;
+        }
     }
     
+    // Rest of the function remains the same...
     return `
         <form id="editQuestionForm" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
@@ -3309,73 +3500,7 @@ function buildEditForm(question) {
                     <span class="options-badge" id="editOptionsCount">${options.length || 2} options</span>
                 </div>
                 <div id="editOptionsContainer" class="options-container">
-                    ${optionsHtml || (question.question_type === 'true_false' ? `
-                        <div class="option-item" data-index="0">
-                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="option-input-group">
-                                <div class="option-field">
-                                    <input type="text" name="options[0][text]" class="option-text" value="True" readonly>
-                                </div>
-                                <div class="option-check">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
-                                        <span class="checkbox-custom"></span>
-                                        <span class="checkbox-text">Correct</span>
-                                    </label>
-                                </div>
-                                <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="option-item" data-index="1">
-                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="option-input-group">
-                                <div class="option-field">
-                                    <input type="text" name="options[1][text]" class="option-text" value="False" readonly>
-                                </div>
-                                <div class="option-check">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
-                                        <span class="checkbox-custom"></span>
-                                        <span class="checkbox-text">Correct</span>
-                                    </label>
-                                </div>
-                                <button type="button" class="option-remove" onclick="removeOption(this)" style="opacity: 0.5; pointer-events: none;"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    ` : (optionsHtml || `
-                        <div class="option-item" data-index="0">
-                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="option-input-group">
-                                <div class="option-field">
-                                    <input type="text" name="options[0][text]" class="option-text" placeholder="Enter option 1">
-                                </div>
-                                <div class="option-check">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
-                                        <span class="checkbox-custom"></span>
-                                        <span class="checkbox-text">Correct</span>
-                                    </label>
-                                </div>
-                                <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="option-item" data-index="1">
-                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="option-input-group">
-                                <div class="option-field">
-                                    <input type="text" name="options[1][text]" class="option-text" placeholder="Enter option 2">
-                                </div>
-                                <div class="option-check">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
-                                        <span class="checkbox-custom"></span>
-                                        <span class="checkbox-text">Correct</span>
-                                    </label>
-                                </div>
-                                <button type="button" class="option-remove" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    `))}
+                    ${optionsHtml}
                 </div>
                 ${question.question_type !== 'true_false' ? `
                     <button type="button" class="btn-add" onclick="addEditOption()">
@@ -3393,54 +3518,7 @@ function buildEditForm(question) {
                     <span class="options-badge" id="editImageOptionsCount">${options.length || 2} images</span>
                 </div>
                 <div id="editImageOptionsContainer" class="image-options-container">
-                    ${imageOptionsHtml || `
-                        <div class="image-option-item" data-index="0">
-                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="image-option-content">
-                                <div class="image-upload-box">
-                                    <input type="file" name="options[0][image]" class="image-option-input" accept="image/*" onchange="previewImageOption(this, 0)">
-                                    <div class="image-preview-box" id="editImagePreview0">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        <span>Upload Image</span>
-                                    </div>
-                                </div>
-                                <div class="image-option-details">
-                                    <input type="text" name="options[0][text]" class="image-option-text" placeholder="Alt text / Label">
-                                    <div class="image-option-check">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="options[0][is_correct]" value="1" class="correct-checkbox" data-option-index="0">
-                                            <span class="checkbox-custom"></span>
-                                            <span class="checkbox-text">Correct</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <button type="button" class="option-remove" onclick="removeImageOption(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="image-option-item" data-index="1">
-                            <div class="option-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="image-option-content">
-                                <div class="image-upload-box">
-                                    <input type="file" name="options[1][image]" class="image-option-input" accept="image/*" onchange="previewImageOption(this, 1)">
-                                    <div class="image-preview-box" id="editImagePreview1">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        <span>Upload Image</span>
-                                    </div>
-                                </div>
-                                <div class="image-option-details">
-                                    <input type="text" name="options[1][text]" class="image-option-text" placeholder="Alt text / Label">
-                                    <div class="image-option-check">
-                                        <label class="checkbox-label">
-                                            <input type="checkbox" name="options[1][is_correct]" value="1" class="correct-checkbox" data-option-index="1">
-                                            <span class="checkbox-custom"></span>
-                                            <span class="checkbox-text">Correct</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <button type="button" class="option-remove" onclick="removeImageOption(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    `}
+                    ${imageOptionsHtml}
                 </div>
                 <button type="button" class="btn-add" onclick="addEditImageOption()">
                     <i class="fas fa-plus"></i> Add Image Option
@@ -3456,24 +3534,7 @@ function buildEditForm(question) {
                     <span class="options-badge" id="editBlanksCount">${fillBlanks.length || 1} answers</span>
                 </div>
                 <div id="editBlanksContainer" class="blanks-container">
-                    ${blanksHtml || `
-                        <div class="blank-item" data-index="0">
-                            <div class="blank-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="blank-input-group">
-                                <div class="blank-field">
-                                    <input type="text" name="fill_blanks[0][answer]" class="blank-text" placeholder="Enter correct answer">
-                                </div>
-                                <div class="blank-case">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="fill_blanks[0][case_sensitive]" value="1">
-                                        <span class="checkbox-custom"></span>
-                                        <span class="checkbox-text">Case Sensitive</span>
-                                    </label>
-                                </div>
-                                <button type="button" class="blank-remove" onclick="removeBlank(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    `}
+                    ${blanksHtml}
                 </div>
                 <button type="button" class="btn-add" onclick="addEditBlank()">
                     <i class="fas fa-plus"></i> Add Answer
@@ -3494,42 +3555,7 @@ function buildEditForm(question) {
                     <span class="options-badge" id="editMatchingCount">${matchingPairs.length || 2} pairs</span>
                 </div>
                 <div id="editMatchingContainer" class="matching-container">
-                    ${matchingHtml || `
-                        <div class="matching-item" data-index="0">
-                            <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="matching-input-group">
-                                <div class="matching-left">
-                                    <input type="text" name="matching_pairs[0][left]" class="matching-left-input" placeholder="Left item 1">
-                                </div>
-                                <div class="matching-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                                <div class="matching-right">
-                                    <input type="text" name="matching_pairs[0][right]" class="matching-right-input" placeholder="Right item 1">
-                                </div>
-                                <div class="matching-badge correct">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Correct Pair</span>
-                                </div>
-                                <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="matching-item" data-index="1">
-                            <div class="matching-drag"><i class="fas fa-grip-vertical"></i></div>
-                            <div class="matching-input-group">
-                                <div class="matching-left">
-                                    <input type="text" name="matching_pairs[1][left]" class="matching-left-input" placeholder="Left item 2">
-                                </div>
-                                <div class="matching-arrow"><i class="fas fa-long-arrow-alt-right"></i></div>
-                                <div class="matching-right">
-                                    <input type="text" name="matching_pairs[1][right]" class="matching-right-input" placeholder="Right item 2">
-                                </div>
-                                <div class="matching-badge correct">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Correct Pair</span>
-                                </div>
-                                <button type="button" class="matching-remove" onclick="removeMatchingPair(this)"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    `}
+                    ${matchingHtml}
                 </div>
                 <button type="button" class="btn-add" onclick="addEditMatchingPair()">
                     <i class="fas fa-plus"></i> Add Matching Pair
@@ -3549,7 +3575,6 @@ function buildEditForm(question) {
         </form>
     `;
 }
-
 function initializeEditForm(questionId) {
     const form = document.getElementById('editQuestionForm');
     const questionType = document.getElementById('editQuestionType');
