@@ -1147,70 +1147,77 @@
             $('#descCounter').text($(this).val().length);
         });
 
-        // Form validation
-        $('.course-form').on('submit', function(e) {
-            let isValid = true;
-            let errors = [];
+       // Form validation
+$('.course-form').on('submit', function(e) {
+    let isValid = true;
+    let errors = [];
 
-            // Title validation
-            const title = $('input[name="title"]').val();
-            if (!title || title.length < 5) {
-                isValid = false;
-                errors.push('Title must be at least 5 characters');
-                $('input[name="title"]').addClass('is-invalid');
-            } else {
-                $('input[name="title"]').removeClass('is-invalid');
-            }
+    // Title validation
+    const title = $('input[name="title"]').val();
+    if (!title || title.length < 5) {
+        isValid = false;
+        errors.push('Title must be at least 5 characters');
+        $('input[name="title"]').addClass('is-invalid');
+    } else {
+        $('input[name="title"]').removeClass('is-invalid');
+    }
 
-            // Description validation
-            const description = $('textarea[name="description"]').val();
-            if (!description || description.length < 50) {
-                isValid = false;
-                errors.push('Description must be at least 50 characters');
-                $('textarea[name="description"]').addClass('is-invalid');
-            } else {
-                $('textarea[name="description"]').removeClass('is-invalid');
-            }
+    // Description validation
+    const description = $('textarea[name="description"]').val();
+    if (!description || description.length < 50) {
+        isValid = false;
+        errors.push('Description must be at least 50 characters');
+        $('textarea[name="description"]').addClass('is-invalid');
+    } else {
+        $('textarea[name="description"]').removeClass('is-invalid');
+    }
 
-            // Price validation
-            const price = parseFloat($('input[name="price"]').val());
-            if (!price || price < 0) {
-                isValid = false;
-                errors.push('Price must be a positive number');
-                $('input[name="price"]').addClass('is-invalid');
-            } else {
-                $('input[name="price"]').removeClass('is-invalid');
-            }
+    // Price validation - ONLY if course type is paid
+    const isFree = document.getElementById('typeFree').checked;
+    if (!isFree) {
+        const price = parseFloat($('input[name="price"]').val());
+        if (!price || price <= 0) {
+            isValid = false;
+            errors.push('Price must be a positive number');
+            $('input[name="price"]').addClass('is-invalid');
+        } else {
+            $('input[name="price"]').removeClass('is-invalid');
+        }
 
-            // Sale price validation (if provided)
-            const salePrice = parseFloat($('input[name="sale_price"]').val());
-            if (salePrice && salePrice > price) {
-                isValid = false;
-                errors.push('Sale price cannot be greater than regular price');
-                $('input[name="sale_price"]').addClass('is-invalid');
-            } else {
-                $('input[name="sale_price"]').removeClass('is-invalid');
-            }
+        // Sale price validation (if provided)
+        const salePrice = parseFloat($('input[name="sale_price"]').val());
+        if (salePrice && salePrice > price) {
+            isValid = false;
+            errors.push('Sale price cannot be greater than regular price');
+            $('input[name="sale_price"]').addClass('is-invalid');
+        } else {
+            $('input[name="sale_price"]').removeClass('is-invalid');
+        }
+    } else {
+        // Clear validation errors for price fields when free
+        $('input[name="price"]').removeClass('is-invalid');
+        $('input[name="sale_price"]').removeClass('is-invalid');
+    }
 
-            if (!isValid) {
-                e.preventDefault();
-                let errorHtml = '<div class="alert alert-danger alert-dismissible fade show">';
-                errorHtml += '<strong>Please fix the following errors:</strong><ul>';
-                errors.forEach(error => {
-                    errorHtml += '<li>' + error + '</li>';
-                });
-                errorHtml += '</ul>';
-                errorHtml += '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-                errorHtml += '</div>';
-
-                $('.form-wrapper').prepend(errorHtml);
-
-                // Scroll to error message
-                $('html, body').animate({
-                    scrollTop: $('.alert-danger').offset().top - 100
-                }, 500);
-            }
+    if (!isValid) {
+        e.preventDefault();
+        let errorHtml = '<div class="alert alert-danger alert-dismissible fade show">';
+        errorHtml += '<strong>Please fix the following errors:</strong><ul>';
+        errors.forEach(error => {
+            errorHtml += '<li>' + error + '</li>';
         });
+        errorHtml += '</ul>';
+        errorHtml += '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        errorHtml += '</div>';
+
+        $('.form-wrapper').prepend(errorHtml);
+
+        // Scroll to error message
+        $('html, body').animate({
+            scrollTop: $('.alert-danger').offset().top - 100
+        }, 500);
+    }
+});
     });
 
     // Thumbnail preview
