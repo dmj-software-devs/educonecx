@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'Quiz Competition')
+@section('title', __('quiz-competition.title'))
 
-@section('meta_description', 'Join our exciting quiz competition for a chance to win prizes and test your knowledge across various categories.')
+@section('meta_description', __('quiz-competition.meta_description'))
 
 @push('styles')
 <style>
@@ -794,14 +794,14 @@
         font-weight: 700;
         color: var(--prussian-blue);
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
 
-    .modal-text {
+    .modal-subtitle {
         color: var(--text-muted);
         text-align: center;
         margin-bottom: 30px;
-        line-height: 1.6;
+        font-size: 1rem;
     }
 
     .terms-box {
@@ -809,15 +809,34 @@
         border-radius: 15px;
         padding: 20px;
         margin-bottom: 20px;
-        max-height: 200px;
+        max-height: 250px;
         overflow-y: auto;
         border: 1px solid var(--pale-slate);
     }
 
-    .terms-box p {
-        margin-bottom: 10px;
+    .terms-item {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--pale-slate);
+    }
+
+    .terms-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .terms-item-title {
+        font-weight: 700;
+        color: var(--prussian-blue);
+        margin-bottom: 5px;
+        font-size: 0.95rem;
+    }
+
+    .terms-item-desc {
         font-size: 0.9rem;
         color: var(--text-muted);
+        line-height: 1.5;
     }
 
     .checkbox-container {
@@ -837,6 +856,7 @@
     .checkbox-label {
         font-size: 0.95rem;
         color: var(--prussian-blue);
+        line-height: 1.4;
     }
 
     .checkbox-label a {
@@ -1090,30 +1110,30 @@
         <div class="quiz-hero-content" data-aos="fade-up">
             <div class="quiz-hero-badge">
                 <i class="fas fa-trophy"></i>
-                <span>Live Competition</span>
+                <span>{{ __('quiz-competition.hero_badge') }}</span>
             </div>
             
             <h1 class="quiz-hero-title">
-                Test Your Knowledge, 
-                <span>Win Big Prizes</span>
+                {{ __('quiz-competition.hero_title_1') }} 
+                <span>{{ __('quiz-competition.hero_title_highlight') }}</span>
             </h1>
             
             <p class="quiz-hero-text">
-                Join our exciting quiz competition and showcase your expertise across various categories. Top performers win amazing rewards!
+                {{ __('quiz-competition.hero_description') }}
             </p>
 
             <!-- Prize Card -->
             <div class="prize-card" data-aos="zoom-in">
                 <div class="prize-amount">$50</div>
-                <div class="prize-label">First Prize</div>
+                <div class="prize-label">{{ __('quiz-competition.first_prize') }}</div>
                 <div class="prize-meta">
                     <div class="prize-meta-item">
                         <i class="fas fa-users"></i>
-                        <span>Top 10 Finalists</span>
+                        <span>{{ __('quiz-competition.top_10') }}</span>
                     </div>
                     <div class="prize-meta-item">
                         <i class="fas fa-star"></i>
-                        <span>Perfect Score Bonus</span>
+                        <span>{{ __('quiz-competition.perfect_score') }}</span>
                     </div>
                 </div>
             </div>
@@ -1122,36 +1142,36 @@
             <div class="countdown-container" id="countdownContainer" data-aos="fade-up">
                 <div class="countdown-title">
                     <i class="fas fa-clock"></i>
-                    Competition Closes In
+                    {{ __('quiz-competition.competition_closes') }}
                 </div>
                 <div class="countdown-grid" id="countdown">
                     <div class="countdown-item">
                         <div class="countdown-value" id="days">00</div>
-                        <div class="countdown-label">Days</div>
+                        <div class="countdown-label">{{ __('quiz-competition.days') }}</div>
                     </div>
                     <div class="countdown-item">
                         <div class="countdown-value" id="hours">00</div>
-                        <div class="countdown-label">Hours</div>
+                        <div class="countdown-label">{{ __('quiz-competition.hours') }}</div>
                     </div>
                     <div class="countdown-item">
                         <div class="countdown-value" id="minutes">00</div>
-                        <div class="countdown-label">Minutes</div>
+                        <div class="countdown-label">{{ __('quiz-competition.minutes') }}</div>
                     </div>
                     <div class="countdown-item">
                         <div class="countdown-value" id="seconds">00</div>
-                        <div class="countdown-label">Seconds</div>
+                        <div class="countdown-label">{{ __('quiz-competition.seconds') }}</div>
                     </div>
                 </div>
                 <div class="countdown-note">
-                    Closing time: 
-                    <strong id="closingDate">March 15, 2025 23:59 GMT</strong>
+                    {{ __('quiz-competition.closing_time') }} 
+                    <strong id="closingDate">{{ __('common.march_15_2025') }}</strong>
                 </div>
             </div>
 
             <!-- CTA Button -->
             <button class="btn btn-primary" id="participateBtn" data-aos="zoom-in">
                 <i class="fas fa-play-circle"></i>
-                Participate Now
+                {{ __('quiz-competition.participate_btn') }}
             </button>
         </div>
     </div>
@@ -1161,14 +1181,14 @@
 <section class="video-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">How It Works</span>
-            <h2 class="section-title">Watch the Competition Overview</h2>
+            <span class="section-subtitle">{{ __('quiz-competition.video_subtitle') }}</span>
+            <h2 class="section-title">{{ __('quiz-competition.video_title') }}</h2>
         </div>
 
         <div class="video-container" data-aos="zoom-in">
             <div class="video-placeholder" id="videoPlaceholder">
                 <i class="fas fa-play-circle"></i>
-                <span>Watch Video</span>
+                <span>{{ __('quiz-competition.watch_video') }}</span>
             </div>
             <iframe id="videoIframe" style="display: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
@@ -1179,8 +1199,8 @@
 <section class="quiz-process-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Simple Steps</span>
-            <h2 class="section-title">How to Participate</h2>
+            <span class="section-subtitle">{{ __('quiz-competition.process_subtitle') }}</span>
+            <h2 class="section-title">{{ __('quiz-competition.process_title') }}</h2>
         </div>
 
         <div class="process-steps">
@@ -1189,8 +1209,8 @@
                 <div class="step-icon">
                     <i class="fas fa-file-signature"></i>
                 </div>
-                <h3 class="step-title">Accept Terms</h3>
-                <p class="step-text">Review and accept the competition rules and guidelines to get started.</p>
+                <h3 class="step-title">{{ __('quiz-competition.step_1_title') }}</h3>
+                <p class="step-text">{{ __('quiz-competition.step_1_desc') }}</p>
             </div>
 
             <div class="step-card" data-aos="fade-up" data-aos-delay="200">
@@ -1198,8 +1218,8 @@
                 <div class="step-icon">
                     <i class="fas fa-question-circle"></i>
                 </div>
-                <h3 class="step-title">Take Quizzes</h3>
-                <p class="step-text">Complete as many quizzes as you can across different categories.</p>
+                <h3 class="step-title">{{ __('quiz-competition.step_2_title') }}</h3>
+                <p class="step-text">{{ __('quiz-competition.step_2_desc') }}</p>
             </div>
 
             <div class="step-card" data-aos="fade-up" data-aos-delay="300">
@@ -1207,8 +1227,8 @@
                 <div class="step-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="step-title">Climb the Ranks</h3>
-                <p class="step-text">Earn points and improve your position on the leaderboard.</p>
+                <h3 class="step-title">{{ __('quiz-competition.step_3_title') }}</h3>
+                <p class="step-text">{{ __('quiz-competition.step_3_desc') }}</p>
             </div>
 
             <div class="step-card" data-aos="fade-up" data-aos-delay="400">
@@ -1216,8 +1236,8 @@
                 <div class="step-icon">
                     <i class="fas fa-trophy"></i>
                 </div>
-                <h3 class="step-title">Win Prizes</h3>
-                <p class="step-text">Top 10 finalists at closing time receive cash rewards.</p>
+                <h3 class="step-title">{{ __('quiz-competition.step_4_title') }}</h3>
+                <p class="step-text">{{ __('quiz-competition.step_4_desc') }}</p>
             </div>
         </div>
     </div>
@@ -1227,8 +1247,8 @@
 <section class="quizzes-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Test Your Skills</span>
-            <h2 class="section-title">Available Quizzes</h2>
+            <span class="section-subtitle">{{ __('quiz-competition.quizzes_subtitle') }}</span>
+            <h2 class="section-title">{{ __('quiz-competition.quizzes_title') }}</h2>
         </div>
 
         <div class="quizzes-grid" id="quizzesGrid">
@@ -1240,8 +1260,8 @@
             <div class="closed-banner-content">
                 <i class="fas fa-trophy"></i>
                 <div class="closed-banner-text">
-                    Competition is now closed
-                    <small>Congratulations to all participants! Winners will be announced soon.</small>
+                    {{ __('quiz-competition.competition_closed_message') }}
+                    <small>{{ __('quiz-competition.competition_closed_submessage') }}</small>
                 </div>
             </div>
         </div>
@@ -1252,19 +1272,19 @@
 <section class="ranking-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
-            <span class="section-subtitle">Leaderboard</span>
-            <h2 class="section-title">Current Rankings</h2>
+            <span class="section-subtitle">{{ __('quiz-competition.ranking_subtitle') }}</span>
+            <h2 class="section-title">{{ __('quiz-competition.ranking_title') }}</h2>
         </div>
 
         <div class="ranking-container" data-aos="fade-up">
             <div class="ranking-header">
                 <div class="ranking-title">
                     <i class="fas fa-crown" style="color: var(--bright-amber);"></i>
-                    Top Participants
+                    {{ __('quiz-competition.ranking_current') }}
                 </div>
                 <div class="ranking-badge">
                     <i class="fas fa-users"></i>
-                    <span id="participantsCount">0</span> Participants
+                    <span id="participantsCount">0</span> {{ __('quiz-competition.participants') }}
                 </div>
             </div>
 
@@ -1272,11 +1292,11 @@
                 <table class="ranking-table" id="rankingTable">
                     <thead>
                         <tr>
-                            <th>Rank</th>
-                            <th>Participant</th>
-                            <th>Attempts</th>
-                            <th>Score</th>
-                            <th>Status</th>
+                            <th>{{ __('quiz-competition.rank') }}</th>
+                            <th>{{ __('quiz-competition.participant') }}</th>
+                            <th>{{ __('quiz-competition.attempts') }}</th>
+                            <th>{{ __('quiz-competition.score') }}</th>
+                            <th>{{ __('quiz-competition.status') }}</th>
                         </tr>
                     </thead>
                     <tbody id="rankingBody">
@@ -1299,28 +1319,43 @@
             <i class="fas fa-file-contract"></i>
         </div>
         
-        <h2 class="modal-title">Terms & Conditions</h2>
+        <h2 class="modal-title">{{ __('quiz-competition.modal_title') }}</h2>
         
-        <p class="modal-text">Please read and accept the competition rules</p>
+        <p class="modal-subtitle">{{ __('quiz-competition.modal_subtitle') }}</p>
         
         <div class="terms-box">
-            <p><strong>Eligibility:</strong> Open to all registered users. One account per participant.</p>
-            <p><strong>Scoring:</strong> Each quiz has a maximum score of 100 points. Your best score counts.</p>
-            <p><strong>Prizes:</strong> Top 10 finalists at competition closing time win cash prizes.</p>
-            <p><strong>Rules:</strong> Fair play is expected. Any cheating will result in disqualification.</p>
-            <p><strong>Timing:</strong> Competition ends March 15, 2025 at 23:59 GMT.</p>
+            <div class="terms-item">
+                <div class="terms-item-title">{{ __('quiz-competition.terms_1_title') }}</div>
+                <div class="terms-item-desc">{{ __('quiz-competition.terms_1_desc') }}</div>
+            </div>
+            <div class="terms-item">
+                <div class="terms-item-title">{{ __('quiz-competition.terms_2_title') }}</div>
+                <div class="terms-item-desc">{{ __('quiz-competition.terms_2_desc') }}</div>
+            </div>
+            <div class="terms-item">
+                <div class="terms-item-title">{{ __('quiz-competition.terms_3_title') }}</div>
+                <div class="terms-item-desc">{{ __('quiz-competition.terms_3_desc') }}</div>
+            </div>
+            <div class="terms-item">
+                <div class="terms-item-title">{{ __('quiz-competition.terms_4_title') }}</div>
+                <div class="terms-item-desc">{{ __('quiz-competition.terms_4_desc') }}</div>
+            </div>
+            <div class="terms-item">
+                <div class="terms-item-title">{{ __('quiz-competition.terms_5_title') }}</div>
+                <div class="terms-item-desc">{{ __('quiz-competition.terms_5_desc') }}</div>
+            </div>
         </div>
         
         <label class="checkbox-container">
             <input type="checkbox" id="acceptTerms">
             <span class="checkbox-label">
-                I have read and agree to the Terms & Conditions
+                {{ __('quiz-competition.accept_terms') }}
             </span>
         </label>
         
         <button class="modal-btn" id="acceptAndPlay" disabled>
             <i class="fas fa-check-circle"></i>
-            Accept and Play
+            {{ __('quiz-competition.accept_and_play') }}
         </button>
     </div>
 </div>
@@ -1332,7 +1367,7 @@
             <i class="fas fa-bell"></i>
         </div>
         <div class="notification-message" id="notificationMessage">
-            Notification message
+            {{ __('common.notification_message') }}
         </div>
         <button class="notification-close" id="closeNotification">
             <i class="fas fa-times"></i>
@@ -1379,8 +1414,8 @@
                     time: 15, 
                     participants: 156, 
                     avgScore: 72, 
-                    category: 'Trivia', 
-                    description: 'Test your knowledge across various topics including history, geography, and current events.', 
+                    category: '{{ __('quiz-competition.category_trivia') }}', 
+                    description: '{{ __('quiz-competition.quiz_desc_general') }}', 
                     locked: false 
                 },
                 { 
@@ -1391,8 +1426,8 @@
                     time: 20, 
                     participants: 98, 
                     avgScore: 68, 
-                    category: 'Science', 
-                    description: 'Explore questions about physics, chemistry, biology, and the latest tech innovations.', 
+                    category: '{{ __('quiz-competition.category_science') }}', 
+                    description: '{{ __('quiz-competition.quiz_desc_science') }}', 
                     locked: false 
                 },
                 { 
@@ -1403,8 +1438,8 @@
                     time: 15, 
                     participants: 112, 
                     avgScore: 65, 
-                    category: 'History', 
-                    description: 'Journey through time and across continents with questions about world history and geography.', 
+                    category: '{{ __('quiz-competition.category_history') }}', 
+                    description: '{{ __('quiz-competition.quiz_desc_history') }}', 
                     locked: false 
                 },
                 { 
@@ -1415,8 +1450,8 @@
                     time: 12, 
                     participants: 67, 
                     avgScore: 70, 
-                    category: 'Arts', 
-                    description: 'From classic novels to modern masterpieces, test your knowledge of arts and literature.', 
+                    category: '{{ __('quiz-competition.category_arts') }}', 
+                    description: '{{ __('quiz-competition.quiz_desc_arts') }}', 
                     locked: true 
                 },
                 { 
@@ -1427,8 +1462,8 @@
                     time: 15, 
                     participants: 89, 
                     avgScore: 74, 
-                    category: 'Sports', 
-                    description: 'Questions about sports, movies, music, and pop culture from around the world.', 
+                    category: '{{ __('quiz-competition.category_sports') }}', 
+                    description: '{{ __('quiz-competition.quiz_desc_sports') }}', 
                     locked: true 
                 },
                 { 
@@ -1439,11 +1474,43 @@
                     time: 15, 
                     participants: 45, 
                     avgScore: 62, 
-                    category: 'Business', 
-                    description: 'Test your understanding of business principles, economics, and financial markets.', 
+                    category: '{{ __('quiz-competition.category_business') }}', 
+                    description: '{{ __('quiz-competition.quiz_desc_business') }}', 
                     locked: true 
                 }
             ]
+        };
+
+        // Translation strings for JavaScript
+        const translations = {
+            loginRequired: '{{ __("quiz-competition.login_required") }}',
+            quizStarted: '{{ __("quiz-competition.quiz_started") }}',
+            quizCompleted: '{{ __("quiz-competition.quiz_completed") }}',
+            perfectScore: '{{ __("quiz-competition.perfect_score_message") }}',
+            termsAccepted: '{{ __("quiz-competition.terms_accepted") }}',
+            earlyClose: '{{ __("quiz-competition.notification_early_close") }}',
+            scheduledClose: '{{ __("quiz-competition.notification_scheduled_close") }}',
+            competitionClosed: '{{ __("quiz-competition.competition_closed") }}',
+            
+            // Quiz card translations
+            quizQuestions: '{{ __("quiz-competition.quiz_questions", ["count" => ":count"]) }}',
+            quizTime: '{{ __("quiz-competition.quiz_time", ["count" => ":count"]) }}',
+            quizPlayers: '{{ __("quiz-competition.quiz_players") }}',
+            avgScore: '{{ __("quiz-competition.avg_score") }}',
+            yourProgress: '{{ __("quiz-competition.your_progress") }}',
+            locked: '{{ __("quiz-competition.locked") }}',
+            playQuiz: '{{ __("quiz-competition.play_quiz") }}',
+            
+            // Ranking translations
+            rank: '{{ __("quiz-competition.rank") }}',
+            participant: '{{ __("quiz-competition.participant") }}',
+            attempts: '{{ __("quiz-competition.attempts") }}',
+            score: '{{ __("quiz-competition.score") }}',
+            status: '{{ __("quiz-competition.status") }}',
+            qualified: '{{ __("quiz-competition.qualified") }}',
+            active: '{{ __("quiz-competition.active") }}',
+            finalist: '{{ __("quiz-competition.finalist") }}',
+            perfect: '{{ __("quiz-competition.perfect") }}'
         };
 
         // User session (simulated)
@@ -1549,9 +1616,9 @@
             // Send notification
             let message = '';
             if (type === 'early') {
-                message = '🎉 Congratulations! 10 perfect scores achieved! Competition closed early.';
+                message = translations.earlyClose;
             } else {
-                message = '🏆 Competition has ended. Thank you for participating!';
+                message = translations.scheduledClose;
             }
             
             showNotification(message, 'trophy');
@@ -1577,6 +1644,9 @@
                 const userProgress = userSession.playedQuizzes.find(q => q.id === quiz.id)?.score || 0;
                 const progressPercentage = (userProgress / 100) * 100;
 
+                const questionsText = translations.quizQuestions.replace(':count', quiz.questions);
+                const timeText = translations.quizTime.replace(':count', quiz.time);
+
                 const card = document.createElement('div');
                 card.className = `quiz-card ${quiz.locked ? 'locked' : ''}`;
                 card.dataset.quizId = quiz.id;
@@ -1589,8 +1659,8 @@
                         </div>
                         <h3 class="quiz-title">${quiz.title}</h3>
                         <div class="quiz-meta">
-                            <span><i class="fas fa-question-circle"></i> ${quiz.questions} Questions</span>
-                            <span><i class="fas fa-clock"></i> ${quiz.time} min</span>
+                            <span><i class="fas fa-question-circle"></i> ${questionsText}</span>
+                            <span><i class="fas fa-clock"></i> ${timeText}</span>
                         </div>
                     </div>
                     <div class="quiz-body">
@@ -1598,18 +1668,18 @@
                         <div class="quiz-stats">
                             <div class="quiz-stat">
                                 <div class="quiz-stat-value">${quiz.participants}</div>
-                                <div class="quiz-stat-label">Players</div>
+                                <div class="quiz-stat-label">${translations.quizPlayers}</div>
                             </div>
                             <div class="quiz-stat">
                                 <div class="quiz-stat-value">${quiz.avgScore}%</div>
-                                <div class="quiz-stat-label">Avg. Score</div>
+                                <div class="quiz-stat-label">${translations.avgScore}</div>
                             </div>
                         </div>
                     </div>
                     <div class="quiz-footer">
                         <div class="quiz-progress">
                             <div class="progress-info">
-                                <span>Your Progress</span>
+                                <span>${translations.yourProgress}</span>
                                 <span>${userProgress}%</span>
                             </div>
                             <div class="progress-bar-bg">
@@ -1617,9 +1687,9 @@
                             </div>
                         </div>
                         ${quiz.locked 
-                            ? '<button class="quiz-btn quiz-btn-secondary" disabled><i class="fas fa-lock"></i> Locked</button>'
+                            ? '<button class="quiz-btn quiz-btn-secondary" disabled><i class="fas fa-lock"></i> ' + translations.locked + '</button>'
                             : `<button class="quiz-btn quiz-btn-primary play-quiz-btn" data-quiz-id="${quiz.id}">
-                                <i class="fas fa-play"></i> Play Quiz
+                                <i class="fas fa-play"></i> ${translations.playQuiz}
                                </button>`
                         }
                     </div>
@@ -1653,10 +1723,18 @@
                 if (index === 0) row.classList.add('rank-1');
                 
                 let statusBadge = '';
+                let statusText = '';
+                
                 if (participant.status === 'finalist') {
-                    statusBadge = '<span class="rank-badge"><i class="fas fa-crown"></i> Finalist</span>';
+                    statusBadge = '<span class="rank-badge"><i class="fas fa-crown"></i> ' + translations.finalist + '</span>';
+                    statusText = '<span style="color: var(--bright-amber); font-weight: 600;">' + translations.qualified + '</span>';
                 } else if (participant.score === 100) {
-                    statusBadge = '<span class="rank-badge"><i class="fas fa-star"></i> Perfect</span>';
+                    statusBadge = '<span class="rank-badge"><i class="fas fa-star"></i> ' + translations.perfect + '</span>';
+                    statusText = '<span style="color: var(--bright-amber); font-weight: 600;">' + translations.qualified + '</span>';
+                } else if (index < 10) {
+                    statusText = '<span style="color: var(--bright-amber); font-weight: 600;">' + translations.qualified + '</span>';
+                } else {
+                    statusText = '<span style="color: var(--text-muted);">' + translations.active + '</span>';
                 }
 
                 row.innerHTML = `
@@ -1677,11 +1755,7 @@
                         </span>
                         ${statusBadge}
                     </td>
-                    <td>
-                        ${index < 10 
-                            ? '<span style="color: var(--bright-amber); font-weight: 600;">Qualified</span>' 
-                            : '<span style="color: var(--text-muted);">Active</span>'}
-                    </td>
+                    <td>${statusText}</td>
                 `;
 
                 tbody.appendChild(row);
@@ -1731,13 +1805,13 @@
         // ===== HANDLE PLAY QUIZ =====
         function handlePlayQuiz(quizId) {
             if (competitionData.isClosed) {
-                showNotification('Competition is now closed', 'error');
+                showNotification(translations.competitionClosed, 'error');
                 playSound('error');
                 return;
             }
 
             if (!userSession.isLoggedIn) {
-                showNotification('Please log in to participate', 'error');
+                showNotification(translations.loginRequired, 'error');
                 playSound('error');
                 
                 // Redirect to login after 2 seconds
@@ -1759,7 +1833,7 @@
             playSound('click');
             
             // Simulate starting quiz
-            showNotification('Starting quiz...', 'success');
+            showNotification(translations.quizStarted, 'success');
             
             // In a real implementation, you would redirect to the quiz page
             // window.location.href = `/quiz/${quizId}/play`;
@@ -1818,13 +1892,14 @@
             saveUserProgress();
             
             // Show result notification
-            showNotification(`Quiz completed! Your score: ${randomScore}/100`, 'success');
+            const message = translations.quizCompleted.replace(':score', randomScore);
+            showNotification(message, 'success');
             playSound('achievement');
             
             // Check for perfect score
             if (randomScore === 100) {
                 competitionData.perfectScoreCount++;
-                showNotification('Perfect score! Congratulations!', 'success');
+                showNotification(translations.perfectScore, 'success');
             }
             
             // Re-render quizzes to update progress
@@ -1891,7 +1966,7 @@
             // Participate button
             document.getElementById('participateBtn').addEventListener('click', function() {
                 if (!userSession.isLoggedIn) {
-                    showNotification('Please log in to participate', 'error');
+                    showNotification(translations.loginRequired, 'error');
                     playSound('error');
                     
                     setTimeout(() => {
@@ -1930,7 +2005,7 @@
                 closeTermsModal();
                 playSound('success');
                 
-                showNotification('Terms accepted! You can now participate.', 'success');
+                showNotification(translations.termsAccepted, 'success');
                 
                 if (quizId) {
                     startQuiz(quizId);
