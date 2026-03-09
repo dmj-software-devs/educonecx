@@ -1850,7 +1850,7 @@
             <div class="checkout-highlight" data-aos="fade-up" data-aos-delay="300">
                 <i class="fas fa-shopping-cart"></i>
                 <span>{{ App\Helpers\TranslationHelper::trans('home.checkout_text') }}</span>
-                <a href="#">{{ App\Helpers\TranslationHelper::trans('home.checkout_link') }} →</a>
+                <a href="{{ route('courses') }}">{{ App\Helpers\TranslationHelper::trans('home.checkout_link') }} →</a>
             </div>
 
             <p class="hero-text">
