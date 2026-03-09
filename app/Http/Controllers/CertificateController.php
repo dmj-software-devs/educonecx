@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
+
 class CertificateController extends Controller
 {
     /**
