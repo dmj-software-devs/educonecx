@@ -13,6 +13,23 @@ return [
     'hero_btn_academy' => 'Join Academy',
     'hero_btn_courses' => 'Explore Courses',
 
+    // Hero Feature Cards
+    'feature_card_1_title' => 'Access All Courses',
+    'feature_card_1_price' => '$22',
+    'feature_card_1_price_suffix' => 'one-time payment',
+    'feature_card_1_desc' => 'Get unlimited access to our complete library of AI-powered courses. Learn at your own pace with expert instructors.',
+    'feature_card_1_btn' => 'Get Access to All Courses',
+    
+    'feature_card_2_title' => 'Weekly Quiz Challenge',
+    'feature_card_2_price' => '$50',
+    'feature_card_2_price_suffix' => 'minimum weekly earnings',
+    'feature_card_2_desc' => 'Test your knowledge and earn real money! Participate in our weekly quizzes and win a minimum of $50 every week.',
+    'feature_card_2_btn' => 'Play Quiz to Win',
+
+    // Checkout Highlight
+    'checkout_text' => 'Ready to start your learning journey?',
+    'checkout_link' => 'Go to Checkout →',
+
     // Process Section
     'process_subtitle' => 'How It Works',
     'process_title' => 'Your <span>Learning Journey</span> in 3 Simple Steps',
@@ -50,6 +67,8 @@ return [
     'course_start' => 'Start',
     'course_free' => 'Free',
     'course_view_all' => 'View All Courses',
+    'course_title_placeholder' => 'Featured Course',
+    'course_desc_placeholder' => 'Learn practical skills with our comprehensive course designed for your success.',
     
     // Sample Courses
     'course_1_title' => 'Business English Mastery',
@@ -60,9 +79,13 @@ return [
     'course_3_desc' => 'From beginner to fluent - learn French with AI-powered guidance.',
 
     // Stats Section
+    'stats_students_number' => '10,000+',
     'stats_students' => 'Students Enrolled',
+    'stats_instructors_number' => '50+',
     'stats_instructors' => 'Expert Instructors',
+    'stats_countries_number' => '15+',
     'stats_countries' => 'Countries',
+    'stats_rating_number' => '4.9',
     'stats_rating' => 'Average Rating',
 
     // About Section
@@ -75,6 +98,7 @@ return [
     'about_feature_3' => 'Practical Skills Focus',
     'about_feature_4' => 'Expert Instructors',
     'about_btn' => 'Learn More About Us',
+    'about_experience_years' => '5+',
     'about_experience' => 'Years of Excellence',
 
     // Testimonials Section
@@ -104,6 +128,8 @@ return [
     'faq_1_a' => 'EDUCONECX is an innovative online educational platform that combines AI-powered learning with specialized training programs. We offer both free and premium educational content designed to accelerate your professional development in language skills and digital business.',
     'faq_2_q' => 'In which languages are the courses available?',
     'faq_2_a' => 'Our courses are available in English, French, Haitian Creole, and Spanish to serve our diverse international community of learners.',
+    'faq_3_q' => 'How do I get started?',
+    'faq_3_a' => 'Getting started is simple: create your account, select your preferred course, and start with our 3-day free trial to explore the platform risk-free.',
     'faq_4_q' => 'Can I access courses on mobile?',
     'faq_4_a' => 'Yes! Our platform is fully responsive and optimized for all devices. You can access your courses on desktop, tablet, or smartphone anytime, anywhere.',
 ];

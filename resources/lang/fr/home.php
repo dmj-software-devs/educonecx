@@ -13,6 +13,23 @@ return [
     'hero_btn_academy' => 'Rejoindre l\'Académie',
     'hero_btn_courses' => 'Explorer les Cours',
 
+    // Hero Feature Cards
+    'feature_card_1_title' => 'Accès à Tous les Cours',
+    'feature_card_1_price' => '22$',
+    'feature_card_1_price_suffix' => 'paiement unique',
+    'feature_card_1_desc' => 'Obtenez un accès illimité à notre bibliothèque complète de cours alimentés par l\'IA. Apprenez à votre rythme avec des instructeurs experts.',
+    'feature_card_1_btn' => 'Obtenir l\'Accès à Tous les Cours',
+    
+    'feature_card_2_title' => 'Défi Quiz Hebdomadaire',
+    'feature_card_2_price' => '50$',
+    'feature_card_2_price_suffix' => 'gains minimums hebdomadaires',
+    'feature_card_2_desc' => 'Testez vos connaissances et gagnez de l\'argent réel ! Participez à nos quiz hebdomadaires et gagnez un minimum de 50$ chaque semaine.',
+    'feature_card_2_btn' => 'Jouer au Quiz pour Gagner',
+
+    // Checkout Highlight
+    'checkout_text' => 'Prêt à commencer votre voyage d\'apprentissage ?',
+    'checkout_link' => 'Aller au Paiement →',
+
     // Process Section
     'process_subtitle' => 'Comment Ça Marche',
     'process_title' => 'Votre <span>Parcours d\'Apprentissage</span> en 3 Étapes Simples',
@@ -60,9 +77,13 @@ return [
     'course_3_desc' => 'Du débutant au courant - apprenez le français avec des conseils alimentés par l\'IA.',
 
     // Stats Section
+    'stats_students_number' => '10 000+',
     'stats_students' => 'Étudiants Inscrits',
+    'stats_instructors_number' => '50+',
     'stats_instructors' => 'Instructeurs Experts',
+    'stats_countries_number' => '15+',
     'stats_countries' => 'Pays',
+    'stats_rating_number' => '4.9',
     'stats_rating' => 'Note Moyenne',
 
     // About Section
@@ -75,6 +96,7 @@ return [
     'about_feature_3' => 'Focus sur les Compétences Pratiques',
     'about_feature_4' => 'Instructeurs Experts',
     'about_btn' => 'En Savoir Plus sur Nous',
+    'about_experience_years' => '5+',
     'about_experience' => 'Années d\'Excellence',
 
     // Testimonials Section

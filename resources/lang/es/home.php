@@ -13,6 +13,23 @@ return [
     'hero_btn_academy' => 'Unirse a la Academia',
     'hero_btn_courses' => 'Explorar Cursos',
 
+    // Hero Feature Cards
+    'feature_card_1_title' => 'Accede a Todos los Cursos',
+    'feature_card_1_price' => '$22',
+    'feature_card_1_price_suffix' => 'pago único',
+    'feature_card_1_desc' => 'Obtén acceso ilimitado a nuestra biblioteca completa de cursos impulsados por IA. Aprende a tu propio ritmo con instructores expertos.',
+    'feature_card_1_btn' => 'Obtener Acceso a Todos los Cursos',
+    
+    'feature_card_2_title' => 'Desafío Semanal de Quiz',
+    'feature_card_2_price' => '$50',
+    'feature_card_2_price_suffix' => 'ganancias mínimas semanales',
+    'feature_card_2_desc' => '¡Pon a prueba tus conocimientos y gana dinero real! Participa en nuestros quizzes semanales y gana un mínimo de $50 cada semana.',
+    'feature_card_2_btn' => 'Jugar Quiz para Ganar',
+
+    // Checkout Highlight
+    'checkout_text' => '¿Listo para comenzar tu viaje de aprendizaje?',
+    'checkout_link' => 'Ir a Pagar →',
+
     // Process Section
     'process_subtitle' => 'Cómo Funciona',
     'process_title' => 'Tu <span>Viaje de Aprendizaje</span> en 3 Simples Pasos',
@@ -60,9 +77,13 @@ return [
     'course_3_desc' => 'De principiante a fluido - aprende francés con guía impulsada por IA.',
 
     // Stats Section
+    'stats_students_number' => '10,000+',
     'stats_students' => 'Estudiantes Inscritos',
+    'stats_instructors_number' => '50+',
     'stats_instructors' => 'Instructores Expertos',
+    'stats_countries_number' => '15+',
     'stats_countries' => 'Países',
+    'stats_rating_number' => '4.9',
     'stats_rating' => 'Calificación Promedio',
 
     // About Section
@@ -75,6 +96,7 @@ return [
     'about_feature_3' => 'Enfoque en Habilidades Prácticas',
     'about_feature_4' => 'Instructores Expertos',
     'about_btn' => 'Más Información Sobre Nosotros',
+    'about_experience_years' => '5+',
     'about_experience' => 'Años de Excelencia',
 
     // Testimonials Section

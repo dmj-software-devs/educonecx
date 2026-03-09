@@ -1824,11 +1824,11 @@
                     <div class="hero-feature-icon">
                         <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <h3>Access All Courses</h3>
-                    <div class="price">$22 <span>one-time payment</span></div>
-                    <p class="description">Get unlimited access to our complete library of AI-powered courses. Learn at your own pace with expert instructors.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_title') }}</h3>
+                    <div class="price">{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_price') }} <span>{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_price_suffix') }}</span></div>
+                    <p class="description">{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_desc') }}</p>
                     <a href="{{ route('courses') }}" class="btn btn-primary">
-                        Get Access to All Courses <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('home.feature_card_1_btn') }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
 
@@ -1837,11 +1837,11 @@
                     <div class="hero-feature-icon">
                         <i class="fas fa-trophy"></i>
                     </div>
-                    <h3>Weekly Quiz Challenge</h3>
-                    <div class="price">$50 <span>minimum weekly earnings</span></div>
-                    <p class="description">Test your knowledge and earn real money! Participate in our weekly quizzes and win a minimum of $50 every week.</p>
+                    <h3>{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_title') }}</h3>
+                    <div class="price">{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_price') }} <span>{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_price_suffix') }}</span></div>
+                    <p class="description">{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_desc') }}</p>
                     <a href="{{ route('quiz') }}" class="btn btn-primary">
-                        Play Quiz to Win <i class="fas fa-arrow-right"></i>
+                        {{ App\Helpers\TranslationHelper::trans('home.feature_card_2_btn') }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -1849,8 +1849,8 @@
             <!-- Checkout Section - Clearly Visible -->
             <div class="checkout-highlight" data-aos="fade-up" data-aos-delay="300">
                 <i class="fas fa-shopping-cart"></i>
-                <span>Ready to start your learning journey?</span>
-                <a href="#">Go to Checkout →</a>
+                <span>{{ App\Helpers\TranslationHelper::trans('home.checkout_text') }}</span>
+                <a href="#">{{ App\Helpers\TranslationHelper::trans('home.checkout_link') }} →</a>
             </div>
 
             <p class="hero-text">
@@ -2027,7 +2027,7 @@
                 <div class="course-content">
                     <div class="course-meta">
                         <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => $course->duration ?? '10']) }}</span>
-                        <span><i class="fas fa-signal"></i> {{ $course->level ?? __('common.beginner') }}</span>
+                        <span><i class="fas fa-signal"></i> {{ $course->level ?? App\Helpers\TranslationHelper::trans('common.beginner') }}</span>
                     </div>
                     <h3 class="course-title">
                         <a href="{{ route('courses.show', $course->slug ?? '#') }}">{{ $course->title ?? App\Helpers\TranslationHelper::trans('home.course_title_placeholder') }}</a>
@@ -2179,28 +2179,28 @@
                 <div class="stats-icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <div class="stats-number" data-target="10000">10,000+</div>
+                <div class="stats-number" data-target="10000">{{ App\Helpers\TranslationHelper::trans('home.stats_students_number') }}</div>
                 <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_students') }}</div>
             </div>
             <div class="stats-item" data-aos="zoom-in" data-aos-delay="200">
                 <div class="stats-icon">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <div class="stats-number" data-target="50">50+</div>
+                <div class="stats-number" data-target="50">{{ App\Helpers\TranslationHelper::trans('home.stats_instructors_number') }}</div>
                 <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_instructors') }}</div>
             </div>
             <div class="stats-item" data-aos="zoom-in" data-aos-delay="300">
                 <div class="stats-icon">
                     <i class="fas fa-globe"></i>
                 </div>
-                <div class="stats-number" data-target="15">15+</div>
+                <div class="stats-number" data-target="15">{{ App\Helpers\TranslationHelper::trans('home.stats_countries_number') }}</div>
                 <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_countries') }}</div>
             </div>
             <div class="stats-item" data-aos="zoom-in" data-aos-delay="400">
                 <div class="stats-icon">
                     <i class="fas fa-award"></i>
                 </div>
-                <div class="stats-number" data-target="4.9">4.9</div>
+                <div class="stats-number" data-target="4.9">{{ App\Helpers\TranslationHelper::trans('home.stats_rating_number') }}</div>
                 <div class="stats-label">{{ App\Helpers\TranslationHelper::trans('home.stats_rating') }}</div>
             </div>
         </div>
@@ -2241,7 +2241,7 @@
             <div class="about-image" data-aos="fade-left">
                 <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80" alt="About EDUCONECX" loading="lazy">
                 <div class="experience-badge">
-                    <span class="years">5+</span>
+                    <span class="years">{{ App\Helpers\TranslationHelper::trans('home.about_experience_years') }}</span>
                     <span class="text">{{ App\Helpers\TranslationHelper::trans('home.about_experience') }}</span>
                 </div>
             </div>
@@ -2379,7 +2379,15 @@
                 </div>
             </div>
 
-    
+            <div class="faq-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="faq-question">
+                    <span>{{ App\Helpers\TranslationHelper::trans('home.faq_3_q') }}</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>{{ App\Helpers\TranslationHelper::trans('home.faq_3_a') }}</p>
+                </div>
+            </div>
 
             <div class="faq-item" data-aos="fade-up" data-aos-delay="300">
                 <div class="faq-question">
