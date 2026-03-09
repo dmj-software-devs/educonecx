@@ -67,8 +67,6 @@ return [
     'course_start' => 'Start',
     'course_free' => 'Free',
     'course_view_all' => 'View All Courses',
-    'course_title_placeholder' => 'Featured Course',
-    'course_desc_placeholder' => 'Learn practical skills with our comprehensive course designed for your success.',
     
     // Sample Courses
     'course_1_title' => 'Business English Mastery',
