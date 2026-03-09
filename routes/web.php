@@ -249,6 +249,7 @@ Route::get('/faqs', [PageController::class, 'faqs'])->name('faqs');
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/refund-policy', [PageController::class, 'refund'])->name('refund');
 Route::get('/terms-conditions', [PageController::class, 'terms'])->name('terms');
+Route::post('/contact/submit', [App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit');
 
 // ==================== PUBLIC COURSE ROUTES ====================
 Route::get('/courses', [CourseController::class, 'index'])->name('courses');
