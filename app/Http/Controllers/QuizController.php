@@ -219,34 +219,60 @@ class QuizController extends Controller
 
         $action = $request->input('action', 'next');
         $answers = $request->input('answers', []);
+        
+        // Check if this is an auto-skip request (timer expired)
+        $isAutoSkip = $request->has('auto_skip') && $request->input('auto_skip') == '1';
+        $noAnswer = $request->has('no_answer') && $request->input('no_answer') == '1';
 
         // Get current question index
         $questions = $quiz->questions()->orderBy('sort_order')->get();
         $currentIndex = $attempt->answers()->count();
 
-        // Save current answer if provided
-        if (!empty($answers) && isset($questions[$currentIndex])) {
+        // Save current answer if provided OR handle auto-skip
+        if (isset($questions[$currentIndex])) {
             $currentQuestion = $questions[$currentIndex];
 
-            // Extract the actual answer values from the nested structure
-            $processedAnswers = $this->processAnswerInput($answers, $currentQuestion);
-
-            // Check if answer is correct
-            $isCorrect = $this->validateAnswer($currentQuestion, $processedAnswers);
-            $pointsEarned = $isCorrect ? $currentQuestion->points : 0;
-
-            QuizAnswer::updateOrCreate(
-                [
-                    'attempt_id' => $attempt->id,
+            if ($isAutoSkip && $noAnswer) {
+                // Auto-skip: Save as null/not answered
+                QuizAnswer::updateOrCreate(
+                    [
+                        'attempt_id' => $attempt->id,
+                        'question_id' => $currentQuestion->id,
+                    ],
+                    [
+                        'answer_data' => json_encode(['skipped' => true, 'auto_skipped' => true]),
+                        'is_correct' => false,
+                        'points_earned' => 0,
+                        'answered_at' => now(),
+                    ]
+                );
+                
+                // Log for debugging
+                \Log::info('Question auto-skipped due to timer expiration', [
                     'question_id' => $currentQuestion->id,
-                ],
-                [
-                    'answer_data' => json_encode($processedAnswers),
-                    'is_correct' => $isCorrect,
-                    'points_earned' => $pointsEarned,
-                    'answered_at' => now(),
-                ]
-            );
+                    'attempt_id' => $attempt->id
+                ]);
+            } elseif (!empty($answers) && isset($answers[$currentQuestion->id])) {
+                // Extract the actual answer values from the nested structure
+                $processedAnswers = $this->processAnswerInput($answers, $currentQuestion);
+
+                // Check if answer is correct
+                $isCorrect = $this->validateAnswer($currentQuestion, $processedAnswers);
+                $pointsEarned = $isCorrect ? $currentQuestion->points : 0;
+
+                QuizAnswer::updateOrCreate(
+                    [
+                        'attempt_id' => $attempt->id,
+                        'question_id' => $currentQuestion->id,
+                    ],
+                    [
+                        'answer_data' => json_encode($processedAnswers),
+                        'is_correct' => $isCorrect,
+                        'points_earned' => $pointsEarned,
+                        'answered_at' => now(),
+                    ]
+                );
+            }
         }
 
         // Handle different actions
@@ -321,6 +347,15 @@ class QuizController extends Controller
         $percentage = $totalPoints > 0 ? round(($earnedPoints / $totalPoints) * 100) : 0;
         $passed = $percentage >= $quiz->pass_percentage;
 
+        // Count skipped questions for logging
+        $skippedCount = 0;
+        foreach ($answers as $answer) {
+            $answerData = json_decode($answer->answer_data, true);
+            if (isset($answerData['skipped']) && $answerData['skipped'] === true) {
+                $skippedCount++;
+            }
+        }
+
         $attempt->update([
             'score' => $earnedPoints,
             'percentage' => $percentage,
@@ -329,22 +364,33 @@ class QuizController extends Controller
             'status' => 'completed'
         ]);
 
+        // Log skipped questions count
+        \Log::info('Quiz completed with skipped questions', [
+            'quiz_id' => $quiz->id,
+            'attempt_id' => $attempt->id,
+            'skipped_count' => $skippedCount,
+            'total_questions' => $questions->count()
+        ]);
+
         // Create notification
         if (Auth::check()) {
             Auth::user()->notifications()->create([
                 'type' => 'quiz_completed',
                 'title' => 'Quiz Completed',
-                'message' => "You have completed the quiz '{$quiz->title}' with a score of {$percentage}%.",
+                'message' => "You have completed the quiz '{$quiz->title}' with a score of {$percentage}%. " . 
+                            ($skippedCount > 0 ? "{$skippedCount} questions were auto-skipped." : ""),
                 'data' => json_encode([
                     'quiz_id' => $quiz->id,
                     'score' => $percentage,
-                    'passed' => $passed
+                    'passed' => $passed,
+                    'skipped_count' => $skippedCount
                 ])
             ]);
         }
 
         return redirect()->route('quizzes.results', ['quiz' => $quiz->id, 'attempt' => $attempt->id])
-            ->with('success', 'Quiz completed successfully!');
+            ->with('success', 'Quiz completed successfully!' . 
+                    ($skippedCount > 0 ? " {$skippedCount} questions were auto-skipped due to time limits." : ""));
     }
 
     /**
@@ -352,6 +398,11 @@ class QuizController extends Controller
      */
     private function validateAnswer($question, $answers)
     {
+        // Handle skipped questions
+        if (is_array($answers) && isset($answers['skipped']) && $answers['skipped'] === true) {
+            return false;
+        }
+        
         // Handle if answers is a string (for fill_in_blank or single choice)
         if (is_string($answers)) {
             $answers = trim($answers);

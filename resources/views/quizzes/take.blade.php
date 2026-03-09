@@ -1741,7 +1741,7 @@
                 clearInterval(questionTimerInterval);
                 questionTimerInterval = null;
                 
-                // Time's up - auto-submit the current question
+                // Time's up - auto-skip the current question
                 autoSubmitQuestion();
             } else {
                 updateQuestionTimerDisplay();
@@ -1766,20 +1766,28 @@
     function autoSubmitQuestion() {
         const quizForm = document.getElementById('quizForm');
         if (quizForm) {
-            // Create a hidden input to indicate auto-submit
-            const autoSubmitInput = document.createElement('input');
-            autoSubmitInput.type = 'hidden';
-            autoSubmitInput.name = 'auto_submit';
-            autoSubmitInput.value = '1';
-            quizForm.appendChild(autoSubmitInput);
+            // Create a hidden input to indicate auto-skip
+            const autoSkipInput = document.createElement('input');
+            autoSkipInput.type = 'hidden';
+            autoSkipInput.name = 'auto_skip';
+            autoSkipInput.value = '1';
+            quizForm.appendChild(autoSkipInput);
             
-            // Submit the form with next action
+            // Create a hidden input to indicate no answer was provided
+            const noAnswerInput = document.createElement('input');
+            noAnswerInput.type = 'hidden';
+            noAnswerInput.name = 'no_answer';
+            noAnswerInput.value = '1';
+            quizForm.appendChild(noAnswerInput);
+            
+            // Disable the submit button
             const nextBtn = document.getElementById('nextBtn');
             if (nextBtn) {
                 nextBtn.disabled = true;
-                nextBtn.innerHTML = '<span class="btn-spinner"></span> {{ App\Helpers\TranslationHelper::trans('quiz-take.saving') }}';
+                nextBtn.innerHTML = '<span class="btn-spinner"></span> Skipping...';
             }
             
+            // Submit the form with next action
             quizForm.submit();
         }
     }
