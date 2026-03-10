@@ -158,7 +158,7 @@ class CertificateController extends Controller
             ->orderBy('issue_date', 'desc')
             ->paginate(10);
 
-        return view('certificates.index', compact('certificates'));
+        return view('dashboard.certificates', compact('certificates'));
     }
 
     /**
