@@ -318,16 +318,48 @@
         transform: rotate(-45deg) translate(8px, -8px);
     }
 
-    /* Hero Section */
+    /* Hero Section - Updated with background image */
     .neo-hero {
         position: relative;
         min-height: 100vh;
         display: flex;
         align-items: center;
-        background: var(--gradient-1);
+        background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         overflow: hidden;
         padding: 120px 0 60px;
         margin-top: 0;
+    }
+
+    /* Add overlay for better text readability */
+    .neo-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.9) 0%, rgba(58, 12, 163, 0.9) 100%);
+        z-index: 1;
+    }
+
+    /* Keep the grid pattern but adjust opacity */
+    .neo-hero::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: 
+            linear-gradient(rgba(255, 255, 255, 0.03) 2px, transparent 2px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 2px, transparent 2px),
+            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+        background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px;
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 2;
     }
 
     @media (max-width: 768px) {
@@ -344,25 +376,10 @@
         }
     }
 
-    .neo-hero::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: 
-            linear-gradient(rgba(255, 255, 255, 0.03) 2px, transparent 2px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 2px, transparent 2px),
-            linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
-        background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px;
-        opacity: 0.5;
-        pointer-events: none;
-    }
-
     .neo-hero-particles {
         position: absolute;
         inset: 0;
-        z-index: 1;
+        z-index: 3;
     }
 
     .neo-hero-particle {
@@ -431,7 +448,7 @@
 
     .neo-hero-content {
         position: relative;
-        z-index: 2;
+        z-index: 4;
         color: var(--white);
         max-width: 900px;
         padding: 0 20px;
@@ -1523,7 +1540,7 @@
     </div>
 </header>
 
-<!-- Hero Section -->
+<!-- Hero Section - Updated with background image -->
 <section class="neo-hero" id="hero">
     <div class="neo-hero-particles">
         <div class="neo-hero-particle"></div>
