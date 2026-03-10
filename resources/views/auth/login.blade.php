@@ -382,6 +382,7 @@
             transform: translateX(100%);
             opacity: 0;
         }
+
         to {
             transform: translateX(0);
             opacity: 1;
@@ -519,7 +520,8 @@
                     <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
                     <span>Remember me</span>
                 </label>
-                <a href="#" class="login-page-forgot-link" onclick="showNotification('Password reset coming soon!')">
+                <!-- In your login.blade.php, update the forgot password link -->
+                <a href="{{ route('password.request') }}" class="login-page-forgot-link">
                     Forgot password?
                 </a>
             </div>
@@ -620,11 +622,11 @@
         document.addEventListener('click', function(e) {
             if (e.target.closest('#googleLoginBtn')) {
                 e.preventDefault();
-                
+
                 const container = document.getElementById('googleButtonContainer');
                 const googleBtn = e.target.closest('#googleLoginBtn');
                 const href = googleBtn.getAttribute('href');
-                
+
                 // Show loading state
                 container.innerHTML = `
                     <div class="login-page-google-loading">
@@ -632,7 +634,7 @@
                         <span>Redirecting to Google...</span>
                     </div>
                 `;
-                
+
                 // Redirect after a brief delay to show loading state
                 setTimeout(() => {
                     window.location.href = href;
