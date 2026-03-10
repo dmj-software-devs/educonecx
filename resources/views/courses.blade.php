@@ -1635,12 +1635,13 @@
                             </span>
                             @endif
 
-                            <div class="course-bookmark">
-                                <button class="bookmark-btn" data-course-id="{{ $course->id }}" data-bookmarked="{{ $course->isBookmarked ? 'true' : 'false' }}">
-                                    <i class="{{ $course->isBookmarked ? 'fas' : 'far' }} fa-bookmark"></i>
-                                </button>
-                            </div>
-
+                            {{-- 
+<div class="course-bookmark">
+    <button class="bookmark-btn" data-course-id="{{ $course->id }}" data-bookmarked="{{ $course->isBookmarked ? 'true' : 'false' }}">
+        <i class="{{ $course->isBookmarked ? 'fas' : 'far' }} fa-bookmark"></i>
+    </button>
+</div>
+--}}
                             <div class="course-thumbnail">
                                 <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
                                 <div class="course-overlay">
