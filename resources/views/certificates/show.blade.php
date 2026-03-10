@@ -43,7 +43,7 @@
             <div class="certificate-content">
                 <!-- Logo & Badge -->
                 <div class="certificate-header">
-                    <img src="{{ asset('images/logo.png') }}" alt="Educonecx Logo" class="certificate-logo">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Educonecx Logo" class="certificate-logo">
                     <div class="certificate-badge">
                         <i class="fas fa-certificate"></i>
                     </div>
@@ -110,7 +110,7 @@
                 </div>
 
                 <!-- Signatures -->
-                <div class="signatures-section">
+                <!-- <div class="signatures-section">
                     <div class="signature-item">
                         <div class="signature-line"></div>
                         <div class="signature-name">Dr. Sarah Johnson</div>
@@ -127,7 +127,7 @@
                             <span>Educonecx</span>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Verification Note -->
                 <div class="verification-note">
