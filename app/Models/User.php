@@ -13,13 +13,27 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'first_name', 'last_name', 'name', 'email', 'password',
-        'avatar', 'phone', 'address', 'city', 'state', 'country',
-        'postal_code', 'bio', 'role', 'status','google_id'
+        'first_name',
+        'last_name',
+        'name',
+        'email',
+        'password',
+        'avatar',
+        'phone',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
+        'bio',
+        'role',
+        'status',
+        'google_id'
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     protected $casts = [
@@ -37,8 +51,8 @@ class User extends Authenticatable implements MustVerifyEmail
     public function courses()
     {
         return $this->belongsToMany(Course::class, 'enrollments')
-                    ->withPivot('progress', 'completed_at', 'enrollment_date', 'access_type')
-                    ->withTimestamps();
+            ->withPivot('progress', 'completed_at', 'enrollment_date', 'access_type')
+            ->withTimestamps();
     }
 
     public function enrollments()
@@ -105,22 +119,22 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $course = Course::find($courseId);
         if (!$course) return false;
-        
+
         // Free courses are accessible to everyone
         if ($course->is_free) {
             return true;
         }
-        
+
         // Check if user is enrolled (via subscription)
         $isEnrolled = $this->enrollments()
             ->where('course_id', $courseId)
             ->where('status', 'active')
             ->exists();
-            
+
         if ($isEnrolled) {
             return true;
         }
-        
+
         // Check if user has active subscription (for paid courses)
         return $this->has_active_subscription;
     }
@@ -132,16 +146,16 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('status', 'active')
             ->pluck('course_id')
             ->toArray();
-        
+
         if ($this->has_active_subscription) {
             // If user has subscription, they can access all paid courses
             $paidCourseIds = Course::where('is_free', false)
                 ->pluck('id')
                 ->toArray();
-            
+
             return array_unique(array_merge($enrolledCourseIds, $paidCourseIds));
         }
-        
+
         // If no subscription, they can only access free courses they're enrolled in
         return $enrolledCourseIds;
     }
@@ -150,7 +164,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function enrollInAllPaidCourses($subscriptionId = null)
     {
         $paidCourses = Course::where('is_free', false)->get();
-        
+
         foreach ($paidCourses as $course) {
             // Check if already enrolled
             $existingEnrollment = Enrollment::where('user_id', $this->id)
@@ -202,6 +216,16 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarUrlAttribute()
     {
-        return $this->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+        if ($this->avatar) {
+            // Check if it's a full URL (Google avatar) or a local path
+            if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+                return $this->avatar;
+            }
+            // If it's a local path, make sure to use asset()
+            return asset('storage/' . $this->avatar);
+        }
+
+        // Default UI Avatar
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
 }
