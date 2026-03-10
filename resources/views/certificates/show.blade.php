@@ -12,10 +12,10 @@
                 <span>Back to Dashboard</span>
             </a>
             <div class="action-buttons">
-                <button onclick="window.print()" class="btn btn-outline">
+                <!-- <button onclick="window.print()" class="btn btn-outline">
                     <i class="fas fa-print"></i>
                     <span>Print</span>
-                </button>
+                </button> -->
                 <a href="{{ route('certificates.download', $certificate->id) }}" class="btn btn-primary">
                     <i class="fas fa-download"></i>
                     <span>Download PDF</span>
