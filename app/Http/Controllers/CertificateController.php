@@ -66,11 +66,9 @@ class CertificateController extends Controller
                 'certificate_generated' => 1
             ]);
 
-            // Generate PDF (optional - you can implement this later)
-            // $this->generatePDF($certificate);
-
             return redirect()->route('certificates.show', $certificate->id)
-                ->with('success', 'Congratulations! Your certificate has been generated.');
+                ->with('success', 'Congratulations! Your certificate has been generated.')
+                ->with('showConfetti', true);
 
         } catch (\Exception $e) {
             Log::error('Certificate generation error: ' . $e->getMessage());
@@ -123,17 +121,28 @@ class CertificateController extends Controller
                 abort(403, 'Unauthorized access to certificate');
             }
 
-            // Generate PDF
+            // Generate PDF with styled template
             $pdf = Pdf::loadView('certificates.pdf', compact('certificate'));
             
-            $filename = 'certificate-' . $certificate->course->title . '-' . $certificate->certificate_number . '.pdf';
-            $filename = preg_replace('/[^A-Za-z0-9\-.]/', '-', $filename);
+            // Set paper size and orientation
+            $pdf->setPaper('A4', 'landscape');
+            
+            // Configure PDF options for better styling support
+            $pdf->setOptions([
+                'enable_php' => true,
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'dpi' => 150,
+                'defaultFont' => 'sans-serif'
+            ]);
+            
+            $filename = 'certificate-' . preg_replace('/[^A-Za-z0-9\-]/', '', $certificate->course->title) . '-' . $certificate->certificate_number . '.pdf';
 
             return $pdf->download($filename);
 
         } catch (\Exception $e) {
             Log::error('Certificate download error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error downloading certificate');
+            return redirect()->back()->with('error', 'Error downloading certificate: ' . $e->getMessage());
         }
     }
 
