@@ -1798,10 +1798,10 @@
                             </a>
                             @endauth
 
-                            <button class="course-page-btn-wishlist" id="wishlistBtn" data-course-id="{{ $course->id }}">
+                            <!-- <button class="course-page-btn-wishlist" id="wishlistBtn" data-course-id="{{ $course->id }}">
                                 <i class="far fa-heart"></i>
                                 Add to Wishlist
-                            </button>
+                            </button> -->
                         </div>
 
                         <div class="course-page-includes">
