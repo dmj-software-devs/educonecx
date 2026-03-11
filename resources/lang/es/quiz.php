@@ -9,7 +9,7 @@ return [
     'hero_title' => 'Portal del Conocimiento',
     'hero_description' => 'Desafíate con nuestros cuestionarios interactivos y sigue tu progreso',
     'hero_badge' => 'Portal 101',
-    'hero_subtitle' => 'El Conocimiento Correcto es Luz',
+    'hero_subtitle' => 'El Conocimiento es Luz',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total de Cuestionarios',

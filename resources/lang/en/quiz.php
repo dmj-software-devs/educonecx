@@ -9,7 +9,7 @@ return [
     'hero_title' => 'Knowledge Portal',
     'hero_description' => 'Challenge yourself with our interactive quizzes and track your progress',
     'hero_badge' => 'Portal 101',
-    'hero_subtitle' => 'Right Knowledge is Light',
+    'hero_subtitle' => 'Knowledge is Light',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total Quizzes',

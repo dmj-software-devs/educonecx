@@ -9,7 +9,7 @@ return [
     'hero_title' => 'Portail du Savoir',
     'hero_description' => 'Mettez-vous au défi avec nos quiz interactifs et suivez votre progression',
     'hero_badge' => 'Portal 101',
-    'hero_subtitle' => 'La Bonne Connaissance est Lumière',
+    'hero_subtitle' => 'La Connaissance est Lumière',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total des Quiz',
