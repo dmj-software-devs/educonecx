@@ -65,7 +65,7 @@
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         
         /* Layout */
-        --sidebar-width: 320px;
+        --sidebar-width: 280px;
     }
 
     /* ===== QUIZ LAYOUT ===== */
@@ -202,7 +202,6 @@
 
     /* ===== QUESTION TIMER ===== */
     .timer-wrapper {
-        display: inline-block;
         margin-bottom: 20px;
     }
 
@@ -637,6 +636,12 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .sidebar-title:hover {
+        color: var(--bright-amber);
     }
 
     .sidebar-title i {
@@ -644,11 +649,17 @@
         font-size: 1.2rem;
     }
 
-    /* ===== STATISTICS GRID ===== */
+    .chevron {
+        margin-left: auto;
+        transition: var(--transition);
+    }
+
+    /* ===== STATISTICS GRID (HIDDEN BY DEFAULT) ===== */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
+        margin-top: 20px;
     }
 
     .stat-item {
@@ -1052,7 +1063,7 @@
         }
 
         .stats-grid {
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
         }
 
         .navigator-grid {
@@ -1123,6 +1134,11 @@
     .mt-4 { margin-top: 30px; }
     .mb-4 { margin-bottom: 30px; }
     .text-center { text-align: center; }
+    
+    /* Accordion content hidden by default */
+    .accordion-content {
+        display: none;
+    }
 </style>
 @endpush
 
@@ -1165,14 +1181,14 @@
                     </a>
                 </div>
 
-                <!-- Secondary Info - Collapsible -->
+                <!-- Detailed Results - Hidden in Accordion -->
                 <div class="sidebar-card" style="text-align: left; margin-top: 30px;">
-                    <div class="sidebar-title" onclick="toggleAccordion('resultsDetails')" style="cursor: pointer; margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+                    <div class="sidebar-title" onclick="toggleAccordion('resultsDetails')" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
                         <i class="fas fa-info-circle"></i>
                         Detailed Results
-                        <i class="fas fa-chevron-down chevron" style="margin-left: auto; transition: var(--transition);"></i>
+                        <i class="fas fa-chevron-down chevron" id="resultsChevron"></i>
                     </div>
-                    <div class="accordion-content" id="resultsDetails" style="display: none; padding-top: 20px;">
+                    <div class="accordion-content" id="resultsDetails">
                         <div class="stats-grid">
                             <div class="stat-item">
                                 <span class="stat-label">Total Questions</span>
@@ -1203,14 +1219,15 @@
                 </div>
             </div>
         @else
-            <!-- QUIZ TAKING VIEW - GRID LAYOUT -->
+            <!-- QUIZ TAKING VIEW - CLEAN MINIMAL LAYOUT -->
             <div class="quiz-grid">
-                <!-- MAIN CONTENT -->
+                <!-- MAIN CONTENT - FOCUS ON QUIZ TITLE, START BUTTON, AND CONTENT -->
                 <div class="quiz-main">
-                    <!-- Quiz Header -->
+                    <!-- Quiz Header - Clean with just title -->
                     <div class="quiz-header">
                         <h1 class="quiz-title" id="quizTitle" data-original="{{ $quiz->title }}">{{ $quiz->title }}</h1>
                         
+                        <!-- Minimal meta info only -->
                         <div class="quiz-meta">
                             <div class="quiz-meta-item">
                                 <i class="fas fa-question-circle"></i>
@@ -1218,21 +1235,9 @@
                                     Question {{ $attempt->answers->count() + 1 }} of {{ $questions->count() }}
                                 </span>
                             </div>
-                            <div class="quiz-meta-item">
-                                <i class="fas fa-star"></i>
-                                <span id="questionType" data-original="{{ ucfirst(str_replace('_', ' ', $currentQuestion->question_type)) }}">
-                                    {{ ucfirst(str_replace('_', ' ', $currentQuestion->question_type)) }}
-                                </span>
-                            </div>
-                            @if($remainingTime)
-                            <div class="quiz-meta-item">
-                                <i class="far fa-clock"></i>
-                                <span id="overallTimer">{{ gmdate('H:i:s', $remainingTime) }}</span>
-                            </div>
-                            @endif
                         </div>
 
-                        <!-- Progress Bar -->
+                        <!-- Simple progress bar -->
                         <div class="progress-section">
                             <div class="progress-stats">
                                 <span>Progress</span>
@@ -1244,16 +1249,16 @@
                         </div>
                     </div>
 
-                    <!-- Question Timer -->
+                    <!-- Question Timer - 23 seconds per question -->
                     <div class="timer-wrapper">
                         <div class="question-timer" id="questionTimer">
                             <i class="far fa-hourglass"></i>
-                            <span class="timer-display" id="questionTimerDisplay">00:10</span>
-                            <span class="timer-label">remaining</span>
+                            <span class="timer-display" id="questionTimerDisplay">00:23</span>
+                            <span class="timer-label">seconds remaining</span>
                         </div>
                     </div>
 
-                    <!-- Question Card -->
+                    <!-- Question Card - Main Content -->
                     <div class="question-card">
                         <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST" id="quizForm">
                             @csrf
@@ -1320,48 +1325,50 @@
                     </div>
                 </div>
 
-                <!-- SIDEBAR - Statistics & Navigator -->
+                <!-- SIDEBAR - Clean with hidden statistics -->
                 <div class="quiz-sidebar">
-                    <!-- Statistics Card -->
+                    <!-- Statistics Card - Hidden by default in accordion -->
                     <div class="sidebar-card">
-                        <h3 class="sidebar-title">
+                        <div class="sidebar-title" onclick="toggleAccordion('quizStats')">
                             <i class="fas fa-chart-pie"></i>
                             Quiz Statistics
-                        </h3>
-                        
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span class="stat-label">Total Questions</span>
-                                <span class="stat-value">{{ $questions->count() }}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Answered</span>
-                                <span class="stat-value">{{ $attempt->answers->count() }}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Remaining</span>
-                                <span class="stat-value">{{ $questions->count() - $attempt->answers->count() }}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Total Points</span>
-                                <span class="stat-value">{{ $questions->sum('points') }}</span>
-                            </div>
-                            @if($quiz->pass_percentage)
-                            <div class="stat-item">
-                                <span class="stat-label">Passing Score</span>
-                                <span class="stat-value">{{ $quiz->pass_percentage }}%</span>
-                            </div>
-                            @endif
-                            <div class="stat-item">
-                                <span class="stat-label">Attempt</span>
-                                <span class="stat-value small">#{{ $attempt->attempt_number }}</span>
+                            <i class="fas fa-chevron-down chevron" id="statsChevron"></i>
+                        </div>
+                        <div class="accordion-content" id="quizStats">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Questions</span>
+                                    <span class="stat-value">{{ $questions->count() }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Answered</span>
+                                    <span class="stat-value">{{ $attempt->answers->count() }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Remaining</span>
+                                    <span class="stat-value">{{ $questions->count() - $attempt->answers->count() }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Total Points</span>
+                                    <span class="stat-value">{{ $questions->sum('points') }}</span>
+                                </div>
+                                @if($quiz->pass_percentage)
+                                <div class="stat-item">
+                                    <span class="stat-label">Passing Score</span>
+                                    <span class="stat-value">{{ $quiz->pass_percentage }}%</span>
+                                </div>
+                                @endif
+                                <div class="stat-item">
+                                    <span class="stat-label">Attempt</span>
+                                    <span class="stat-value small">#{{ $attempt->attempt_number }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Question Navigator Card -->
+                    <!-- Question Navigator Card - Always visible for easy navigation -->
                     <div class="sidebar-card">
-                        <h3 class="sidebar-title">
+                        <h3 class="sidebar-title" style="cursor: default;">
                             <i class="fas fa-th"></i>
                             Question Navigator
                         </h3>
@@ -1410,13 +1417,12 @@
     </div>
 </div>
 
-<!-- Auto-submit when timer expires -->
-@if($remainingTime)
+<!-- Auto-submit when question timer expires -->
 <form id="timeoutForm" action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST" style="display: none;">
     @csrf
     <input type="hidden" name="action" value="timeout">
+    <input type="hidden" name="auto_skip" value="1">
 </form>
-@endif
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
@@ -1426,11 +1432,11 @@
     (function() {
         'use strict';
 
-        // Configuration
+        // Configuration - 23 seconds per question
         const CONFIG = {
             TRANSLATE_API_URL: "{{ route('translate') }}",
-            QUESTION_TIME_LIMIT: 10,
-            WARNING_THRESHOLD: 3
+            QUESTION_TIME_LIMIT: 23,
+            WARNING_THRESHOLD: 5
         };
 
         // State
@@ -1438,7 +1444,6 @@
         const translationCache = new Map();
         let questionTimeLeft = CONFIG.QUESTION_TIME_LIMIT;
         let questionTimerInterval = null;
-        let mainTimerInterval = null;
 
         // DOM Elements
         const elements = {
@@ -1509,6 +1514,7 @@
             static autoSubmitQuestion() {
                 if (!elements.quizForm) return;
 
+                // Add hidden inputs to indicate auto-skip
                 const autoSkipInput = document.createElement('input');
                 autoSkipInput.type = 'hidden';
                 autoSkipInput.name = 'auto_skip';
@@ -1528,31 +1534,6 @@
 
                 elements.quizForm.submit();
             }
-
-            static startMainTimer(remainingSeconds) {
-                const timerDisplay = document.getElementById('overallTimer');
-                const timeoutForm = document.getElementById('timeoutForm');
-
-                if (!timerDisplay || !timeoutForm) return;
-
-                mainTimerInterval = setInterval(() => {
-                    remainingSeconds--;
-                    
-                    if (remainingSeconds <= 0) {
-                        clearInterval(mainTimerInterval);
-                        timeoutForm.submit();
-                    } else {
-                        const hours = Math.floor(remainingSeconds / 3600);
-                        const minutes = Math.floor((remainingSeconds % 3600) / 60);
-                        const seconds = remainingSeconds % 60;
-                        
-                        timerDisplay.textContent = 
-                            `${hours.toString().padStart(2, '0')}:` +
-                            `${minutes.toString().padStart(2, '0')}:` +
-                            `${seconds.toString().padStart(2, '0')}`;
-                    }
-                }, 1000);
-            }
         }
 
         // ===== UI INTERACTIONS =====
@@ -1561,17 +1542,22 @@
                 const content = document.getElementById(id);
                 if (!content) return;
 
-                const header = content.previousElementSibling;
-                const chevron = header?.querySelector('.chevron');
+                const chevron = id === 'quizStats' 
+                    ? document.getElementById('statsChevron')
+                    : document.getElementById('resultsChevron');
 
-                if (content.style.display === 'none') {
+                if (content.style.display === 'none' || !content.style.display) {
                     content.style.display = 'block';
-                    chevron?.classList.remove('fa-chevron-down');
-                    chevron?.classList.add('fa-chevron-up');
+                    if (chevron) {
+                        chevron.classList.remove('fa-chevron-down');
+                        chevron.classList.add('fa-chevron-up');
+                    }
                 } else {
                     content.style.display = 'none';
-                    chevron?.classList.remove('fa-chevron-up');
-                    chevron?.classList.add('fa-chevron-down');
+                    if (chevron) {
+                        chevron.classList.remove('fa-chevron-up');
+                        chevron.classList.add('fa-chevron-down');
+                    }
                 }
             }
 
@@ -1704,11 +1690,6 @@
                 TimerManager.startQuestionTimer();
             }
 
-            // Start main timer if exists
-            @if($remainingTime)
-            TimerManager.startMainTimer({{ $remainingTime }});
-            @endif
-
             // Setup form submission
             FormManager.setupFormSubmission();
 
@@ -1717,15 +1698,17 @@
             window.showRestartModal = UIManager.showRestartModal;
             window.closeRestartModal = UIManager.closeRestartModal;
             window.changeLanguage = TranslationService.changeLanguage;
+
+            // Hide all accordion content by default
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.style.display = 'none';
+            });
         });
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {
             if (questionTimerInterval) {
                 clearInterval(questionTimerInterval);
-            }
-            if (mainTimerInterval) {
-                clearInterval(mainTimerInterval);
             }
         });
     })();
