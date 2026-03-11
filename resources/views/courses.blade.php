@@ -70,6 +70,139 @@
         --transition-slow: all 0.5s ease;
     }
 
+    /* Video Modal Styles */
+    .video-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 29, 68, 0.95);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .video-modal.active {
+        display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .video-modal-content {
+        position: relative;
+        width: 90%;
+        max-width: 1000px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .video-modal-header {
+        padding: 15px 20px;
+        background: var(--gradient-1);
+        color: var(--pure-white);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .video-modal-header h3 {
+        font-size: 1.1rem;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .video-modal-close {
+        background: none;
+        border: none;
+        color: var(--pure-white);
+        font-size: 1.2rem;
+        cursor: pointer;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+
+    .video-modal-close:hover {
+        background: rgba(255,255,255,0.2);
+        transform: rotate(90deg);
+    }
+
+    .video-modal-body {
+        position: relative;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        background: #000;
+    }
+
+    .video-modal-body video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .video-modal-footer {
+        padding: 15px 20px;
+        background: var(--ivory);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .course-preview {
+        color: var(--pure-white);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(251, 198, 12, 0.2);
+        border-radius: var(--radius-full);
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        transition: var(--transition);
+    }
+
+    .course-preview:hover {
+        background: var(--bright-amber);
+        color: var(--prussian-blue);
+        transform: translateX(5px);
+    }
+
+    .course-preview i {
+        font-size: 1rem;
+        margin-right: 5px;
+    }
+
+    .course-preview.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: rgba(0,0,0,0.3);
+        border-color: transparent;
+        pointer-events: none;
+    }
+
+    .course-preview.disabled:hover {
+        transform: none;
+        background: rgba(0,0,0,0.3);
+        color: var(--pure-white);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
     /* ===== ANIMATIONS ===== */
     @keyframes float {
         0%, 100% { transform: translateY(0); }
@@ -857,17 +990,6 @@
         opacity: 1;
     }
 
-    .course-preview {
-        color: var(--pure-white);
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-
-    .course-preview i {
-        margin-right: 5px;
-        color: var(--bright-amber);
-    }
-
     .course-content {
         padding: 25px;
         flex: 1;
@@ -1645,7 +1767,15 @@
                             <div class="course-thumbnail">
                                 <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
                                 <div class="course-overlay">
-                                    <span class="course-preview"><i class="far fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.preview_course') }}</span>
+                                    @if($course->video_intro)
+                                        <a href="#" class="course-preview" onclick="openVideoPreview(event, '{{ Storage::url($course->video_intro) }}', '{{ $course->title }}')">
+                                            <i class="far fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.preview_course') }}
+                                        </a>
+                                    @else
+                                        <span class="course-preview disabled">
+                                            <i class="far fa-play-circle"></i> Preview Unavailable
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -1760,11 +1890,82 @@
         </div>
     </div>
 </section>
+
+<!-- Video Preview Modal -->
+<div class="video-modal" id="videoModal">
+    <div class="video-modal-content">
+        <div class="video-modal-header">
+            <h3 id="videoModalTitle">Course Preview</h3>
+            <button class="video-modal-close" onclick="closeVideoModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="video-modal-body">
+            <video id="videoPlayer" controls controlsList="nodownload">
+                <source src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="video-modal-footer">
+            <i class="fas fa-info-circle"></i> Preview of the course content
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
+    // Video Preview Modal Functions
+    function openVideoPreview(event, videoUrl, courseTitle) {
+        event.preventDefault();
+        
+        const modal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const modalTitle = document.getElementById('videoModalTitle');
+        
+        // Set video source
+        videoPlayer.querySelector('source').src = videoUrl;
+        videoPlayer.load();
+        
+        // Set modal title
+        modalTitle.textContent = courseTitle ? `Preview: ${courseTitle}` : 'Course Preview';
+        
+        // Show modal
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Play video
+        videoPlayer.play().catch(e => console.log('Autoplay prevented:', e));
+    }
+
+    function closeVideoModal() {
+        const modal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        
+        // Pause video
+        videoPlayer.pause();
+        videoPlayer.currentTime = 0;
+        
+        // Hide modal
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideoModal();
+            }
+        });
+
         // ========== MOBILE FILTER TOGGLE ==========
         const filterToggle = document.getElementById('filterToggle');
         const filterSidebar = document.getElementById('filterSidebar');
