@@ -1652,7 +1652,7 @@
                             <div class="course-content">
                                 <div class="course-meta-top">
                                     <span class="course-category">{{ $course->category->name ?? App\Helpers\TranslationHelper::trans('courses.course_category') }}</span>
-                                    <div class="course-rating">
+                                    <!-- <div class="course-rating">
                                         <span class="stars">
                                             @for($i = 1; $i <= 5; $i++)
                                                 @if($i <= floor($course->average_rating ?? 0))
@@ -1666,7 +1666,7 @@
                                         </span>
                                         <span class="rating-value">{{ number_format($course->average_rating ?? 0, 1) }}</span>
                                         <span class="rating-count">({{ $course->reviews_count ?? 0 }})</span>
-                                    </div>
+                                    </div> -->
                                 </div>
 
                                 <h3 class="course-title">
