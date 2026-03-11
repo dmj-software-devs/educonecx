@@ -2,13 +2,14 @@
 
 return [
     // Meta
-    'title' => 'Quiz - EDUCONECX | Pon a Prueba tus Conocimientos',
+    'title' => 'Portal 101 - Quiz | EDUCONECX | Pon a Prueba tus Conocimientos',
     'meta_description' => 'Explora nuestros cuestionarios interactivos, pon a prueba tus conocimientos y sigue tu progreso con EDUCONECX.',
 
     // Hero Section
-    'hero_title' => 'Pon a Prueba tus Conocimientos',
+    'hero_title' => 'Portal del Conocimiento',
     'hero_description' => 'Desafíate con nuestros cuestionarios interactivos y sigue tu progreso',
-    'hero_badge' => 'Pon a Prueba Tus Conocimientos',
+    'hero_badge' => 'Portal 101',
+    'hero_subtitle' => 'El Conocimiento Correcto es Luz',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total de Cuestionarios',

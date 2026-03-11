@@ -2,13 +2,14 @@
 
 return [
     // Meta
-    'title' => 'Quiz - EDUCONECX | Test Your Knowledge',
+    'title' => 'Portal 101 - Quiz | EDUCONECX | Test Your Knowledge',
     'meta_description' => 'Explore our interactive quizzes, test your knowledge, and track your progress with EDUCONECX.',
 
     // Hero Section
-    'hero_title' => 'Test Your Knowledge',
+    'hero_title' => 'Knowledge Portal',
     'hero_description' => 'Challenge yourself with our interactive quizzes and track your progress',
-    'hero_badge' => 'Test Your Knowledge',
+    'hero_badge' => 'Portal 101',
+    'hero_subtitle' => 'Right Knowledge is Light',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total Quizzes',

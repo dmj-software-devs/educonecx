@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', App\Helpers\TranslationHelper::trans('quiz.title'))
+@section('title', 'Portal 101 - ' . (App\Helpers\TranslationHelper::trans('quiz.title') ?? 'Quizzes'))
 
 @section('meta_description', App\Helpers\TranslationHelper::trans('quiz.meta_description'))
 
@@ -216,11 +216,20 @@
         color: var(--bright-amber);
     }
 
-    .quiz-hero-text {
-        font-size: clamp(1rem, 3vw, 1.2rem);
+    .quiz-hero-subtitle {
+        font-size: clamp(1rem, 3vw, 1.5rem);
         opacity: 0.95;
         margin-bottom: 30px;
         color: var(--ivory);
+        font-weight: 500;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .quiz-hero-subtitle i {
+        color: var(--bright-amber);
+        margin: 0 10px;
+        font-size: 0.9em;
     }
 
     /* ===== STATISTICS CARDS ===== */
@@ -915,9 +924,13 @@
 
     <div class="container">
         <div class="quiz-hero-content" data-aos="fade-up">
-            <span class="quiz-hero-badge">{{ App\Helpers\TranslationHelper::trans('quiz.hero_badge') ?? 'Test Your Knowledge' }}</span>
-            <h1 class="quiz-hero-title">{{ App\Helpers\TranslationHelper::trans('quiz.hero_title') }}</h1>
-            <p class="quiz-hero-text">{{ App\Helpers\TranslationHelper::trans('quiz.hero_description') }}</p>
+            <span class="quiz-hero-badge">{{ App\Helpers\TranslationHelper::trans('quiz.hero_badge') ?? 'Portal 101' }}</span>
+            <h1 class="quiz-hero-title">{{ App\Helpers\TranslationHelper::trans('quiz.hero_title') ?? 'Knowledge Portal' }}</h1>
+            <div class="quiz-hero-subtitle">
+                <i class="fas fa-lightbulb"></i>
+                {{ App\Helpers\TranslationHelper::trans('quiz.hero_subtitle') ?? 'Right Knowledge is Light' }}
+                <i class="fas fa-lightbulb"></i>
+            </div>
         </div>
     </div>
 </section>

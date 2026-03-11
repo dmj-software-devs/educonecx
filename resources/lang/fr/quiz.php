@@ -2,13 +2,14 @@
 
 return [
     // Meta
-    'title' => 'Quiz - EDUCONECX | Testez Vos Connaissances',
+    'title' => 'Portal 101 - Quiz | EDUCONECX | Testez Vos Connaissances',
     'meta_description' => 'Explorez nos quiz interactifs, testez vos connaissances et suivez votre progression avec EDUCONECX.',
 
     // Hero Section
-    'hero_title' => 'Testez Vos Connaissances',
+    'hero_title' => 'Portail du Savoir',
     'hero_description' => 'Mettez-vous au défi avec nos quiz interactifs et suivez votre progression',
-    'hero_badge' => 'Testez Vos Connaissances',
+    'hero_badge' => 'Portal 101',
+    'hero_subtitle' => 'La Bonne Connaissance est Lumière',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total des Quiz',
