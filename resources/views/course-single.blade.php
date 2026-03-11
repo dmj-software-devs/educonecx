@@ -1394,6 +1394,23 @@
             font-size: 1rem;
         }
     }
+
+    /* Mobile reorder for subscription - subscription comes before other courses */
+    @media (max-width: 768px) {
+        .row {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .col-lg-8 {
+            order: 2;
+        }
+        
+        .col-lg-4 {
+            order: 1;
+            margin-bottom: 30px;
+        }
+    }
 </style>
 @endpush
 
