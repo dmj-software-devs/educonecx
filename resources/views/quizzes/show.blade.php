@@ -32,6 +32,56 @@
         padding: 40px 0;
     }
 
+    /* ===== MARKETING BANNER ===== */
+    .marketing-banner {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        border-radius: var(--radius);
+        padding: 20px 32px;
+        margin-bottom: 24px;
+        color: var(--white);
+        box-shadow: var(--shadow-md);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        animation: slideInFade 1s ease-out;
+        border: 1px solid rgba(251, 198, 12, 0.3);
+    }
+
+    .banner-icon {
+        font-size: 2.5rem;
+        color: var(--accent);
+        animation: pulse 2s infinite;
+    }
+
+    .banner-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .banner-text span {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    @keyframes slideInFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
     /* ===== BACK LINK ===== */
     .back-link {
         display: inline-flex;
@@ -81,6 +131,96 @@
         .quiz-header h1 {
             font-size: 1.5rem;
         }
+    }
+
+    /* ===== START QUIZ BUTTON TOP ===== */
+    .start-quiz-top {
+        margin-bottom: 32px;
+    }
+
+    .btn-start-top {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 16px 40px;
+        background: var(--accent);
+        color: var(--primary);
+        border: none;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        box-shadow: var(--shadow-md);
+        border: 2px solid var(--white);
+    }
+
+    .btn-start-top:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(251, 198, 12, 0.4);
+        background: var(--white);
+        color: var(--primary);
+    }
+
+    .btn-start-top i {
+        font-size: 1.3rem;
+    }
+
+    /* ===== ACCORDION STYLES ===== */
+    .accordion-section {
+        background: var(--white);
+        border-radius: var(--radius);
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        padding: 20px 24px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--accent);
+    }
+
+    .accordion-header:hover {
+        background: var(--primary);
+    }
+
+    .accordion-header h4 {
+        margin: 0;
+        color: var(--white);
+        font-size: 1.1rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .accordion-header i {
+        color: var(--accent);
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-header.collapsed i.fa-chevron-up {
+        transform: rotate(180deg);
+    }
+
+    .accordion-content {
+        padding: 24px;
+        background: var(--white);
+        border-top: 1px solid var(--gray-200);
+        display: block;
+    }
+
+    .accordion-content.collapsed {
+        display: none;
     }
 
     /* ===== STATISTICS GRID ===== */
@@ -460,6 +600,18 @@
         .details-grid {
             grid-template-columns: 1fr;
         }
+        
+        .marketing-banner {
+            padding: 16px 20px;
+        }
+        
+        .banner-text {
+            font-size: 1rem;
+        }
+        
+        .banner-icon {
+            font-size: 2rem;
+        }
     }
 
     @media (max-width: 576px) {
@@ -486,11 +638,36 @@
 @section('content')
 <div class="quiz-container">
     <div class="container">
+        <!-- Marketing Banner -->
+        <div class="marketing-banner">
+            <div class="banner-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="banner-text">
+                <span>$ Take the Quiz. Hit the Recommended Score. Compete for Weekly Cash Rewards.</span>
+            </div>
+        </div>
+
         <!-- Back Link -->
         <a href="{{ route('quiz') }}" class="back-link">
             <i class="fas fa-arrow-left"></i>
             {{ App\Helpers\TranslationHelper::trans('quiz-show.back_to_quizzes') }}
         </a>
+
+        <!-- Start Quiz Button - Top Position -->
+        @auth
+            @if(isset($canAttempt) && $canAttempt)
+                <div class="start-quiz-top text-center">
+                    <form action="{{ route('quizzes.start', $quiz) }}" method="POST" id="startQuizFormTop" style="display: inline-block;">
+                        @csrf
+                        <button type="submit" class="btn-start-top" id="startQuizBtnTop">
+                            <i class="fas fa-play"></i>
+                            <span>{{ App\Helpers\TranslationHelper::trans('quiz-show.start_quiz_now') }}</span>
+                        </button>
+                    </form>
+                </div>
+            @endif
+        @endauth
 
         <!-- Quiz Header -->
         <div class="quiz-header">
@@ -544,110 +721,118 @@
         </div>
 
         <div class="row g-4">
-            <!-- Left Column - Details and Attempts -->
+            <!-- Left Column - Details and Attempts (Collapsible) -->
             <div class="col-lg-8">
-                <!-- Quiz Details Card -->
-                <div class="info-card mb-4">
-                    <h4 class="card-title">
-                        <i class="fas fa-info-circle"></i>
-                        {{ App\Helpers\TranslationHelper::trans('quiz-show.quiz_details') }}
-                    </h4>
-                    
-                    <div class="details-grid">
-                        <div class="detail-item">
-                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.type') }}</div>
-                            <div class="value">
-                                <span class="type-badge">
-                                    @if($quiz->type == 'standalone')
-                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.standalone') }}
-                                    @elseif($quiz->type == 'course')
-                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.course') }}
-                                    @elseif($quiz->type == 'lesson')
-                                        {{ App\Helpers\TranslationHelper::trans('quiz-show.lesson') }}
-                                    @else
-                                        {{ ucfirst($quiz->type) }}
-                                    @endif
-                                </span>
+                <!-- Quiz Details Card - Collapsible -->
+                <div class="accordion-section">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <h4>
+                            <i class="fas fa-info-circle"></i>
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.quiz_details') }}
+                        </h4>
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.type') }}</div>
+                                <div class="value">
+                                    <span class="type-badge">
+                                        @if($quiz->type == 'standalone')
+                                            {{ App\Helpers\TranslationHelper::trans('quiz-show.standalone') }}
+                                        @elseif($quiz->type == 'course')
+                                            {{ App\Helpers\TranslationHelper::trans('quiz-show.course') }}
+                                        @elseif($quiz->type == 'lesson')
+                                            {{ App\Helpers\TranslationHelper::trans('quiz-show.lesson') }}
+                                        @else
+                                            {{ ucfirst($quiz->type) }}
+                                        @endif
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="detail-item">
-                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.shuffle_questions') }}</div>
-                            <div class="value">{{ $quiz->shuffle_questions ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
-                        </div>
+                            <div class="detail-item">
+                                <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.shuffle_questions') }}</div>
+                                <div class="value">{{ $quiz->shuffle_questions ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
+                            </div>
 
-                        <div class="detail-item">
-                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.randomize_options') }}</div>
-                            <div class="value">{{ $quiz->randomize_options ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
-                        </div>
+                            <div class="detail-item">
+                                <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.randomize_options') }}</div>
+                                <div class="value">{{ $quiz->randomize_options ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
+                            </div>
 
-                        <div class="detail-item">
-                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.show_results') }}</div>
-                            <div class="value">{{ $quiz->show_results ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
-                        </div>
+                            <div class="detail-item">
+                                <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.show_results') }}</div>
+                                <div class="value">{{ $quiz->show_results ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
+                            </div>
 
-                        <div class="detail-item">
-                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.show_answers') }}</div>
-                            <div class="value">{{ $quiz->show_answers ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
-                        </div>
+                            <div class="detail-item">
+                                <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.show_answers') }}</div>
+                                <div class="value">{{ $quiz->show_answers ? App\Helpers\TranslationHelper::trans('quiz-show.yes') : App\Helpers\TranslationHelper::trans('quiz-show.no') }}</div>
+                            </div>
 
-                        <div class="detail-item">
-                            <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.category') }}</div>
-                            <div class="value">{{ $quiz->category ?? App\Helpers\TranslationHelper::trans('quiz-show.general') }}</div>
+                            <div class="detail-item">
+                                <div class="label">{{ App\Helpers\TranslationHelper::trans('quiz-show.category') }}</div>
+                                <div class="value">{{ $quiz->category ?? App\Helpers\TranslationHelper::trans('quiz-show.general') }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- User's Previous Attempts -->
+                <!-- User's Previous Attempts - Collapsible -->
                 @if(isset($attempts) && $attempts->count() > 0)
-                <div class="info-card">
-                    <h4 class="card-title">
-                        <i class="fas fa-history"></i>
-                        {{ App\Helpers\TranslationHelper::trans('quiz-show.your_attempts') }}
-                    </h4>
-
-                    <div class="table-responsive">
-                        <table class="attempts-table">
-                            <thead>
-                                <tr>
-                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.attempt') }}</th>
-                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.score') }}</th>
-                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.percentage') }}</th>
-                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.status') }}</th>
-                                    <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.date') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($attempts as $attempt)
-                                <tr>
-                                    <td>#{{ $attempt->attempt_number }}</td>
-                                    <td>{{ $attempt->score }}/{{ $quiz->questions->sum('points') }}</td>
-                                    <td>{{ $attempt->percentage }}%</td>
-                                    <td>
-                                        <span class="status-badge {{ $attempt->passed ? 'success' : 'danger' }}">
-                                            {{ $attempt->passed ? App\Helpers\TranslationHelper::trans('quiz-show.passed') : App\Helpers\TranslationHelper::trans('quiz-show.failed') }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : App\Helpers\TranslationHelper::trans('quiz-show.in_progress') }}</td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <div class="accordion-section">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <h4>
+                            <i class="fas fa-history"></i>
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.your_attempts') }}
+                        </h4>
+                        <i class="fas fa-chevron-up"></i>
                     </div>
-                    
-                    @if(isset($bestScore) && $bestScore > 0)
-                    <div class="best-score">
-                        <span><i class="fas fa-trophy" style="margin-right: 8px;"></i> {{ App\Helpers\TranslationHelper::trans('quiz-show.best_score') }}</span>
-                        <strong>{{ $bestScore }} {{ App\Helpers\TranslationHelper::trans('quiz-show.points') }}</strong>
+                    <div class="accordion-content">
+                        <div class="table-responsive">
+                            <table class="attempts-table">
+                                <thead>
+                                    <tr>
+                                        <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.attempt') }}</th>
+                                        <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.score') }}</th>
+                                        <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.percentage') }}</th>
+                                        <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.status') }}</th>
+                                        <th>{{ App\Helpers\TranslationHelper::trans('quiz-show.date') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($attempts as $attempt)
+                                    <tr>
+                                        <td>#{{ $attempt->attempt_number }}</td>
+                                        <td>{{ $attempt->score }}/{{ $quiz->questions->sum('points') }}</td>
+                                        <td>{{ $attempt->percentage }}%</td>
+                                        <td>
+                                            <span class="status-badge {{ $attempt->passed ? 'success' : 'danger' }}">
+                                                {{ $attempt->passed ? App\Helpers\TranslationHelper::trans('quiz-show.passed') : App\Helpers\TranslationHelper::trans('quiz-show.failed') }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : App\Helpers\TranslationHelper::trans('quiz-show.in_progress') }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        @if(isset($bestScore) && $bestScore > 0)
+                        <div class="best-score">
+                            <span><i class="fas fa-trophy" style="margin-right: 8px;"></i> {{ App\Helpers\TranslationHelper::trans('quiz-show.best_score') }}</span>
+                            <strong>{{ $bestScore }} {{ App\Helpers\TranslationHelper::trans('quiz-show.points') }}</strong>
+                        </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
                 @endif
             </div>
 
             <!-- Right Column - Start Quiz and Rules -->
             <div class="col-lg-4">
-                <!-- Start Quiz Card -->
+                <!-- Start Quiz Card (Bottom) -->
                 <div class="info-card start-card mb-4">
                     <h4 class="card-title">
                         <i class="fas fa-play-circle"></i>
@@ -727,43 +912,47 @@
                     @endauth
                 </div>
 
-                <!-- Quiz Rules Card -->
-                <div class="info-card">
-                    <h4 class="card-title">
-                        <i class="fas fa-gavel"></i>
-                        {{ App\Helpers\TranslationHelper::trans('quiz-show.quiz_rules') }}
-                    </h4>
-                    
-                    <ul class="rules-list">
-                        <li>
-                            <i class="fas fa-check-circle"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_read_carefully') }}
-                        </li>
-                        <li>
-                            <i class="fas fa-check-circle"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_no_pause') }}
-                        </li>
-                        @if($quiz->time_limit)
-                        <li>
-                            <i class="fas fa-check-circle"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_timer_starts') }}
-                        </li>
-                        @endif
-                        <li>
-                            <i class="fas fa-check-circle"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_all_required') }}
-                        </li>
-                        @if($quiz->pass_percentage)
-                        <li>
-                            <i class="fas fa-check-circle"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_pass_percentage', ['percentage' => $quiz->pass_percentage]) }}
-                        </li>
-                        @endif
-                        <li>
-                            <i class="fas fa-check-circle"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_results_after') }}
-                        </li>
-                    </ul>
+                <!-- Quiz Rules Card - Collapsible -->
+                <div class="accordion-section">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <h4>
+                            <i class="fas fa-gavel"></i>
+                            {{ App\Helpers\TranslationHelper::trans('quiz-show.quiz_rules') }}
+                        </h4>
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                    <div class="accordion-content">
+                        <ul class="rules-list">
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_read_carefully') }}
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_no_pause') }}
+                            </li>
+                            @if($quiz->time_limit)
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_timer_starts') }}
+                            </li>
+                            @endif
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_all_required') }}
+                            </li>
+                            @if($quiz->pass_percentage)
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_pass_percentage', ['percentage' => $quiz->pass_percentage]) }}
+                            </li>
+                            @endif
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-show.rule_results_after') }}
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -774,12 +963,47 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Confirmation before starting quiz
-    const startForm = document.getElementById('startQuizForm');
-    const startBtn = document.getElementById('startQuizBtn');
+    // Accordion functionality
+    window.toggleAccordion = function(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('i.fa-chevron-up, i.fa-chevron-down');
+        
+        if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            header.classList.remove('collapsed');
+            if (icon) {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        } else {
+            content.classList.add('collapsed');
+            header.classList.add('collapsed');
+            if (icon) {
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+    };
+
+    // Initially collapse all accordion sections
+    document.querySelectorAll('.accordion-content').forEach(content => {
+        content.classList.add('collapsed');
+    });
+    document.querySelectorAll('.accordion-header').forEach(header => {
+        header.classList.add('collapsed');
+        const icon = header.querySelector('i.fa-chevron-up');
+        if (icon) {
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
+    });
+
+    // Confirmation before starting quiz (for both top and bottom buttons)
+    const startForms = document.querySelectorAll('#startQuizForm, #startQuizFormTop');
+    const startBtns = document.querySelectorAll('#startQuizBtn, #startQuizBtnTop');
     
-    if (startForm) {
-        startForm.addEventListener('submit', function(e) {
+    startForms.forEach((form, index) => {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             
             const quizTitle = @json($quiz->title);
@@ -800,14 +1024,14 @@ document.addEventListener('DOMContentLoaded', function() {
             );
             
             if (confirmation) {
-                if (startBtn) {
-                    startBtn.innerHTML = '<span class="btn-spinner"></span> {{ App\Helpers\TranslationHelper::trans('quiz-show.starting') }}';
-                    startBtn.disabled = true;
+                if (startBtns[index]) {
+                    startBtns[index].innerHTML = '<span class="btn-spinner"></span> {{ App\Helpers\TranslationHelper::trans('quiz-show.starting') }}';
+                    startBtns[index].disabled = true;
                 }
                 this.submit();
             }
         });
-    }
+    });
 });
 </script>
 @endpush

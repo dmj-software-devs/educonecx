@@ -119,6 +119,58 @@
         .liquid-blob-3 { width: 200px; height: 200px; }
     }
 
+    /* ===== MARKETING BANNER ===== */
+    .marketing-banner {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        border-radius: var(--radius-lg);
+        padding: 20px 32px;
+        margin-bottom: 30px;
+        color: var(--white);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        animation: slideInFade 1s ease-out;
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .banner-icon {
+        font-size: 3rem;
+        color: var(--accent);
+        animation: pulse 2s infinite;
+    }
+
+    .banner-text {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .banner-text span {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    @keyframes slideInFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
     /* ===== CONTENT WRAPPER ===== */
     .results-content {
         position: relative;
@@ -417,6 +469,112 @@
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+    }
+
+    /* ===== ACCORDION STYLES ===== */
+    .accordion-section {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        padding: 20px 25px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: var(--transition);
+        border-left: 4px solid var(--accent);
+    }
+
+    .accordion-header:hover {
+        background: var(--primary-dark);
+    }
+
+    .accordion-header h3,
+    .accordion-header h4 {
+        margin: 0;
+        color: var(--white);
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .accordion-header i {
+        color: var(--accent);
+        transition: transform 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .accordion-header.collapsed i {
+        transform: rotate(180deg);
+    }
+
+    .accordion-content {
+        padding: 25px;
+        background: var(--white);
+        border-top: 1px solid var(--gray-light);
+        display: block;
+    }
+
+    .accordion-content.collapsed {
+        display: none;
+    }
+
+    /* ===== CORRECT ANSWERS SECTION ===== */
+    .correct-answers-section {
+        margin-top: 30px;
+        display: none;
+    }
+
+    .correct-answers-section.visible {
+        display: block;
+    }
+
+    .correct-answers-header {
+        background: var(--gradient-liquid-1);
+        color: var(--white);
+        padding: 20px 25px;
+        border-radius: var(--radius-md);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        border-left: 4px solid var(--accent);
+    }
+
+    .correct-answers-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .correct-answers-header i {
+        color: var(--accent);
+        transition: transform 0.3s ease;
+    }
+
+    .correct-answers-header.collapsed i {
+        transform: rotate(180deg);
+    }
+
+    .correct-answers-content {
+        display: block;
+    }
+
+    .correct-answers-content.collapsed {
+        display: none;
     }
 
     /* ===== QUESTIONS REVIEW ===== */
@@ -779,6 +937,119 @@
         box-shadow: var(--shadow-md);
     }
 
+    .liquid-btn-success {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
+        box-shadow: var(--shadow-md);
+    }
+
+    .liquid-btn-success:hover {
+        background: var(--gradient-liquid-2);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    /* ===== RESTART MODAL ===== */
+    .restart-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 29, 68, 0.8);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .restart-modal.active {
+        display: flex;
+    }
+
+    .restart-modal-content {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        animation: modalSlideIn 0.3s ease;
+        border: 1px solid var(--accent);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .restart-modal-icon {
+        font-size: 4rem;
+        color: var(--warning);
+        margin-bottom: 20px;
+    }
+
+    .restart-modal h3 {
+        font-size: 1.8rem;
+        color: var(--text-primary);
+        margin-bottom: 15px;
+    }
+
+    .restart-modal p {
+        color: var(--text-muted);
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        background: var(--ivory);
+        padding: 20px;
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--warning);
+    }
+
+    .restart-modal-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .restart-modal-btn {
+        padding: 14px 30px;
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+    }
+
+    .restart-modal-btn.cancel {
+        background: var(--gray-light);
+        color: var(--text-primary);
+    }
+
+    .restart-modal-btn.cancel:hover {
+        background: var(--gray);
+    }
+
+    .restart-modal-btn.confirm {
+        background: var(--warning);
+        color: var(--prussian-blue);
+    }
+
+    .restart-modal-btn.confirm:hover {
+        background: var(--bright-amber);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     /* ===== SHARE CARD ===== */
     .liquid-share-card {
         background: var(--gradient-liquid-2);
@@ -936,6 +1207,15 @@
             width: 100%;
             min-width: auto;
         }
+        .marketing-banner {
+            padding: 16px 20px;
+        }
+        .banner-text {
+            font-size: 1rem;
+        }
+        .banner-icon {
+            font-size: 2rem;
+        }
     }
 
     @media (max-width: 576px) {
@@ -1027,7 +1307,9 @@
         }
         .liquid-actions,
         .liquid-share-card,
-        .liquid-blob {
+        .liquid-blob,
+        .marketing-banner,
+        .restart-modal {
             display: none !important;
         }
     }
@@ -1041,6 +1323,34 @@
     <div class="liquid-blob liquid-blob-3"></div>
 
     <div class="container results-content">
+        <!-- Marketing Banner -->
+        <div class="marketing-banner">
+            <div class="banner-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="banner-text">
+                <span>$ Take the Quiz. Hit the Recommended Score. Compete for Weekly Cash Rewards.</span>
+            </div>
+        </div>
+
+        <!-- Restart Confirmation Modal -->
+        <div class="restart-modal" id="restartModal">
+            <div class="restart-modal-content">
+                <div class="restart-modal-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Warning</h3>
+                <p>Warning: If you restart the quiz, your current progress and score will be permanently lost and the quiz will restart from zero.</p>
+                <div class="restart-modal-actions">
+                    <button class="restart-modal-btn cancel" onclick="closeRestartModal()">Cancel</button>
+                    <form id="restartForm" method="POST" action="{{ route('quizzes.start', $quiz->id) }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="restart-modal-btn confirm">Confirm Restart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Alert Messages -->
         @if(session('success'))
         <div class="liquid-alert liquid-alert-success">
@@ -1092,114 +1402,133 @@
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="liquid-stats-grid">
-                <div class="liquid-stat-item">
-                    <div class="liquid-stat-value">{{ $attempt->answers->count() }}</div>
-                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.questions_answered') }}</div>
+            <!-- Stats Grid (Collapsible) -->
+            <div class="accordion-section">
+                <div class="accordion-header" onclick="toggleAccordion('statsAccordion', this)">
+                    <h4>
+                        <i class="fas fa-chart-bar"></i>
+                        Performance Statistics
+                    </h4>
+                    <i class="fas fa-chevron-up"></i>
                 </div>
-                <div class="liquid-stat-item">
-                    <div class="liquid-stat-value">{{ $quiz->questions->count() }}</div>
-                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.total_questions') }}</div>
-                </div>
-                <div class="liquid-stat-item">
-                    <div class="liquid-stat-value">#{{ $attempt->attempt_number }}</div>
-                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.attempt_number') }}</div>
-                </div>
-                <div class="liquid-stat-item">
-                    <div class="liquid-stat-value">{{ $attempt->completed_at ? $attempt->completed_at->format(App\Helpers\TranslationHelper::trans('quiz-results.date_format')) : App\Helpers\TranslationHelper::trans('quiz-results.na') }}</div>
-                    <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.completed_on') }}</div>
+                <div class="accordion-content" id="statsAccordion">
+                    <div class="liquid-stats-grid">
+                        <div class="liquid-stat-item">
+                            <div class="liquid-stat-value">{{ $attempt->answers->count() }}</div>
+                            <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.questions_answered') }}</div>
+                        </div>
+                        <div class="liquid-stat-item">
+                            <div class="liquid-stat-value">{{ $quiz->questions->count() }}</div>
+                            <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.total_questions') }}</div>
+                        </div>
+                        <div class="liquid-stat-item">
+                            <div class="liquid-stat-value">#{{ $attempt->attempt_number }}</div>
+                            <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.attempt_number') }}</div>
+                        </div>
+                        <div class="liquid-stat-item">
+                            <div class="liquid-stat-value">{{ $attempt->completed_at ? $attempt->completed_at->format(App\Helpers\TranslationHelper::trans('quiz-results.date_format')) : App\Helpers\TranslationHelper::trans('quiz-results.na') }}</div>
+                            <div class="liquid-stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-results.completed_on') }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Questions Review -->
+            <!-- Correct Answers Section (Hidden by Default) -->
             @if($quiz->show_answers)
-            <div class="liquid-questions-review">
-                <h2 class="liquid-questions-title">
-                    <i class="fas fa-clipboard-list"></i>
-                    {{ App\Helpers\TranslationHelper::trans('quiz-results.questions_review') }}
-                </h2>
-
-                @foreach($quiz->questions as $index => $question)
-                @php
-                $answer = $answers[$question->id] ?? null;
-                $isCorrect = $answer ? $answer->is_correct : false;
-                $pointsEarned = $answer ? $answer->points_earned : 0;
-                $statusClass = $isCorrect ? 'liquid-question-correct' : ($pointsEarned > 0 ? 'liquid-question-partial' : 'liquid-question-incorrect');
-                $pointsClass = $isCorrect ? 'liquid-points-correct' : ($pointsEarned > 0 ? 'liquid-points-partial' : 'liquid-points-incorrect');
-
-                // Decode answer data
-                $answerData = $answer ? $answer->decoded_data : null;
-                @endphp
-
-                <div class="liquid-question-item {{ $statusClass }}">
-                    <div class="liquid-question-header">
-                        <div class="liquid-question-meta">
-                            <span class="liquid-question-number">{{ App\Helpers\TranslationHelper::trans('quiz-results.question_number', ['number' => $index + 1]) }}</span>
-                            <span class="liquid-question-type">{{ str_replace('_', ' ', ucfirst($question->question_type)) }}</span>
-                        </div>
-                        <span class="liquid-question-points {{ $pointsClass }}">
-                            {{ App\Helpers\TranslationHelper::trans('quiz-results.points_earned', ['earned' => $pointsEarned, 'total' => $question->points]) }}
-                        </span>
-                    </div>
-
-                    <div class="liquid-question-text">{{ $question->question_text }}</div>
-
-                    @if($question->image)
-                    <div style="margin-bottom: 15px;">
-                        <img src="{{ Storage::url($question->image) }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: var(--radius-sm); box-shadow: var(--shadow-md);">
-                    </div>
-                    @endif
-
-                    <!-- Show ALL options with user's answers and correct answers -->
-                    <div class="liquid-legend">
-                        <div class="liquid-legend-item">
-                            <span class="liquid-legend-color correct"></span>
-                            <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_correct') }}</span>
-                        </div>
-                        <div class="liquid-legend-item">
-                            <span class="liquid-legend-color incorrect"></span>
-                            <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_incorrect') }}</span>
-                        </div>
-                        <div class="liquid-legend-item">
-                            <span class="liquid-legend-color missed"></span>
-                            <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_missed') }}</span>
-                        </div>
-                    </div>
-
-                    @include('quizzes.partials.answer-display', [
-                    'question' => $question,
-                    'answerData' => $answerData,
-                    'type' => 'user'
-                    ])
-
-                    <!-- Question Explanation -->
-                    @if($question->explanation)
-                    <div class="liquid-answer-box">
-                        <div class="liquid-answer-label">
-                            <i class="fas fa-lightbulb" style="color: var(--bright-amber);"></i>
-                            {{ App\Helpers\TranslationHelper::trans('quiz-results.explanation') }}
-                        </div>
-                        <div style="color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; padding: 10px; background: var(--pure-white); border-radius: var(--radius-sm);">
-                            {{ $question->explanation }}
-                        </div>
-                    </div>
-                    @endif
+            <div class="correct-answers-section" id="correctAnswersSection">
+                <div class="correct-answers-header" onclick="toggleCorrectAnswers()">
+                    <h3>
+                        <i class="fas fa-check-circle"></i>
+                        Correct Answers Review
+                    </h3>
+                    <i class="fas fa-chevron-up" id="answersChevron"></i>
                 </div>
-                @endforeach
+                <div class="correct-answers-content" id="answersContent">
+                    @foreach($quiz->questions as $index => $question)
+                    @php
+                    $answer = $answers[$question->id] ?? null;
+                    $isCorrect = $answer ? $answer->is_correct : false;
+                    $pointsEarned = $answer ? $answer->points_earned : 0;
+                    $statusClass = $isCorrect ? 'liquid-question-correct' : ($pointsEarned > 0 ? 'liquid-question-partial' : 'liquid-question-incorrect');
+                    $pointsClass = $isCorrect ? 'liquid-points-correct' : ($pointsEarned > 0 ? 'liquid-points-partial' : 'liquid-points-incorrect');
+
+                    // Decode answer data
+                    $answerData = $answer ? $answer->decoded_data : null;
+                    @endphp
+
+                    <div class="liquid-question-item {{ $statusClass }}">
+                        <div class="liquid-question-header">
+                            <div class="liquid-question-meta">
+                                <span class="liquid-question-number">{{ App\Helpers\TranslationHelper::trans('quiz-results.question_number', ['number' => $index + 1]) }}</span>
+                                <span class="liquid-question-type">{{ str_replace('_', ' ', ucfirst($question->question_type)) }}</span>
+                            </div>
+                            <span class="liquid-question-points {{ $pointsClass }}">
+                                {{ App\Helpers\TranslationHelper::trans('quiz-results.points_earned', ['earned' => $pointsEarned, 'total' => $question->points]) }}
+                            </span>
+                        </div>
+
+                        <div class="liquid-question-text">{{ $question->question_text }}</div>
+
+                        @if($question->image)
+                        <div style="margin-bottom: 15px;">
+                            <img src="{{ Storage::url($question->image) }}" alt="Question image" style="max-width: 100%; max-height: 200px; border-radius: var(--radius-sm); box-shadow: var(--shadow-md);">
+                        </div>
+                        @endif
+
+                        <!-- Show ALL options with user's answers and correct answers -->
+                        <div class="liquid-legend">
+                            <div class="liquid-legend-item">
+                                <span class="liquid-legend-color correct"></span>
+                                <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_correct') }}</span>
+                            </div>
+                            <div class="liquid-legend-item">
+                                <span class="liquid-legend-color incorrect"></span>
+                                <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_incorrect') }}</span>
+                            </div>
+                            <div class="liquid-legend-item">
+                                <span class="liquid-legend-color missed"></span>
+                                <span class="liquid-legend-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.legend_missed') }}</span>
+                            </div>
+                        </div>
+
+                        @include('quizzes.partials.answer-display', [
+                        'question' => $question,
+                        'answerData' => $answerData,
+                        'type' => 'user'
+                        ])
+
+                        <!-- Question Explanation -->
+                        @if($question->explanation)
+                        <div class="liquid-answer-box">
+                            <div class="liquid-answer-label">
+                                <i class="fas fa-lightbulb" style="color: var(--bright-amber);"></i>
+                                {{ App\Helpers\TranslationHelper::trans('quiz-results.explanation') }}
+                            </div>
+                            <div style="color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; padding: 10px; background: var(--pure-white); border-radius: var(--radius-sm);">
+                                {{ $question->explanation }}
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
             </div>
             @endif
 
             <!-- Action Buttons -->
             <div class="liquid-actions">
                 @if($quiz->can_attempt)
-                <form method="POST" action="{{ route('quizzes.start', $quiz->id) }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="liquid-btn liquid-btn-primary">
-                        <i class="fas fa-redo-alt"></i>
-                        <span>{{ App\Helpers\TranslationHelper::trans('quiz-results.try_again') }}</span>
-                    </button>
-                </form>
+                <button class="liquid-btn liquid-btn-primary" onclick="showRestartModal()">
+                    <i class="fas fa-redo-alt"></i>
+                    <span>Retry Quiz</span>
+                </button>
+                @endif
+
+                @if($quiz->show_answers)
+                <button class="liquid-btn liquid-btn-success" onclick="toggleCorrectAnswers()" id="viewAnswersBtn">
+                    <i class="fas fa-eye"></i>
+                    <span>View Correct Answers</span>
+                </button>
                 @endif
 
                 <a href="{{ route('quiz') }}" class="liquid-btn liquid-btn-secondary">
@@ -1221,35 +1550,46 @@
             </div>
         </div>
 
-        <!-- Share Results Card -->
-        <div class="liquid-share-card">
-            <div class="liquid-share-content">
-                <h3 class="liquid-share-title">{{ App\Helpers\TranslationHelper::trans('quiz-results.share_title') }}</h3>
-                <p class="liquid-share-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) }}</p>
-                <div class="liquid-share-buttons">
-                    <a href="https://twitter.com/intent/tweet?text={{ urlencode(App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title])) }}&url={{ url()->current() }}"
-                        target="_blank"
-                        class="liquid-share-btn"
-                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_twitter') }}">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
-                        target="_blank"
-                        class="liquid-share-btn"
-                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_facebook') }}">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ url()->current() }}&title={{ $quiz->title }} {{ App\Helpers\TranslationHelper::trans('quiz-results.results') }}&summary={{ App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) }}"
-                        target="_blank"
-                        class="liquid-share-btn"
-                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_linkedin') }}">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <a href="mailto:?subject={{ urlencode($quiz->title . ' ' . App\Helpers\TranslationHelper::trans('quiz-results.results')) }}&body={{ urlencode(App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) . '\n\n' . url()->current()) }}"
-                        class="liquid-share-btn"
-                        title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_email') }}">
-                        <i class="fas fa-envelope"></i>
-                    </a>
+        <!-- Share Results Card (Collapsible) -->
+        <div class="accordion-section">
+            <div class="accordion-header" onclick="toggleAccordion('shareAccordion', this)">
+                <h4>
+                    <i class="fas fa-share-alt"></i>
+                    Share Your Results
+                </h4>
+                <i class="fas fa-chevron-up"></i>
+            </div>
+            <div class="accordion-content" id="shareAccordion">
+                <div class="liquid-share-card">
+                    <div class="liquid-share-content">
+                        <h3 class="liquid-share-title">{{ App\Helpers\TranslationHelper::trans('quiz-results.share_title') }}</h3>
+                        <p class="liquid-share-text">{{ App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) }}</p>
+                        <div class="liquid-share-buttons">
+                            <a href="https://twitter.com/intent/tweet?text={{ urlencode(App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title])) }}&url={{ url()->current() }}"
+                                target="_blank"
+                                class="liquid-share-btn"
+                                title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_twitter') }}">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ url()->current() }}"
+                                target="_blank"
+                                class="liquid-share-btn"
+                                title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_facebook') }}">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ url()->current() }}&title={{ $quiz->title }} {{ App\Helpers\TranslationHelper::trans('quiz-results.results') }}&summary={{ App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) }}"
+                                target="_blank"
+                                class="liquid-share-btn"
+                                title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_linkedin') }}">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="mailto:?subject={{ urlencode($quiz->title . ' ' . App\Helpers\TranslationHelper::trans('quiz-results.results')) }}&body={{ urlencode(App\Helpers\TranslationHelper::trans('quiz-results.share_text', ['percentage' => $percentage, 'title' => $quiz->title]) . '\n\n' . url()->current()) }}"
+                                class="liquid-share-btn"
+                                title="{{ App\Helpers\TranslationHelper::trans('quiz-results.share_email') }}">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1260,6 +1600,15 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Initially collapse all accordion sections
+        toggleAccordion('statsAccordion', document.querySelector('#statsAccordion').previousElementSibling);
+        
+        // Correct answers section is initially hidden
+        const correctAnswersSection = document.getElementById('correctAnswersSection');
+        if (correctAnswersSection) {
+            correctAnswersSection.classList.remove('visible');
+        }
+
         // Animate stats cards on scroll
         const statItems = document.querySelectorAll('.liquid-stat-item');
 
@@ -1288,8 +1637,6 @@
         const celebrationMessage = '{{ App\Helpers\TranslationHelper::trans('quiz-results.celebration') }}';
         console.log(celebrationMessage);
         
-        const colors = [var(--sky-blue), var(--bright-amber), var(--regal-navy), var(--light-gold), var(--prussian-blue)];
-
         function createConfetti() {
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
@@ -1352,5 +1699,72 @@
             });
         });
     });
+
+    // Accordion Functions
+    window.toggleAccordion = function(contentId, header) {
+        const content = document.getElementById(contentId);
+        const icon = header.querySelector('i');
+        
+        if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            header.classList.remove('collapsed');
+            if (icon) {
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        } else {
+            content.classList.add('collapsed');
+            header.classList.add('collapsed');
+            if (icon) {
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            }
+        }
+    };
+
+    // Correct Answers Functions
+    window.toggleCorrectAnswers = function() {
+        const section = document.getElementById('correctAnswersSection');
+        const content = document.getElementById('answersContent');
+        const chevron = document.getElementById('answersChevron');
+        const btn = document.getElementById('viewAnswersBtn');
+        
+        if (section) {
+            if (section.classList.contains('visible')) {
+                section.classList.remove('visible');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-eye"></i><span>View Correct Answers</span>';
+                }
+                if (content) {
+                    content.classList.add('collapsed');
+                }
+                if (chevron) {
+                    chevron.classList.remove('fa-chevron-up');
+                    chevron.classList.add('fa-chevron-down');
+                }
+            } else {
+                section.classList.add('visible');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-eye-slash"></i><span>Hide Correct Answers</span>';
+                }
+                if (content) {
+                    content.classList.remove('collapsed');
+                }
+                if (chevron) {
+                    chevron.classList.remove('fa-chevron-down');
+                    chevron.classList.add('fa-chevron-up');
+                }
+            }
+        }
+    };
+
+    // Restart Modal Functions
+    window.showRestartModal = function() {
+        document.getElementById('restartModal').classList.add('active');
+    };
+
+    window.closeRestartModal = function() {
+        document.getElementById('restartModal').classList.remove('active');
+    };
 </script>
 @endpush

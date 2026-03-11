@@ -4,7 +4,7 @@
 
 @section('meta_description', App\Helpers\TranslationHelper::trans('quiz-take.meta_description'))
 
-@section('content')
+@push('styles')
 <style>
     /* ===== LIQUID QUIZ TAKING PAGE - YOUR BEAUTIFUL COLORS ===== */
     :root {
@@ -117,6 +117,58 @@
         .liquid-blob-1 { width: 250px; height: 250px; }
         .liquid-blob-2 { width: 300px; height: 300px; }
         .liquid-blob-3 { width: 200px; height: 200px; }
+    }
+
+    /* ===== MARKETING BANNER ===== */
+    .marketing-banner {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        border-radius: var(--radius-lg);
+        padding: 20px 32px;
+        margin-bottom: 30px;
+        color: var(--white);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        animation: slideInFade 1s ease-out;
+        border: 1px solid rgba(251, 198, 12, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .banner-icon {
+        font-size: 3rem;
+        color: var(--accent);
+        animation: pulse 2s infinite;
+    }
+
+    .banner-text {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .banner-text span {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    @keyframes slideInFade {
+        0% {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
     }
 
     /* ===== CONTENT WRAPPER ===== */
@@ -462,10 +514,9 @@
         margin-right: 15px;
         cursor: pointer;
         border: 2px solid var(--gray);
-        accent-color: var(--bright-amber); /* This helps with native styling */
+        accent-color: var(--bright-amber);
     }
 
-    /* Better radio button styling */
     .liquid-option-item .form-check-input[type="radio"] {
         border-radius: 50%;
     }
@@ -487,7 +538,6 @@
         width: 100%;
     }
 
-    /* Remove the click event from the form-check div to avoid conflicts */
     .liquid-option-item .form-check {
         display: flex;
         align-items: center;
@@ -723,6 +773,18 @@
         box-shadow: var(--shadow-hover);
     }
 
+    .liquid-btn-danger {
+        background: var(--danger);
+        color: var(--prussian-blue);
+        box-shadow: var(--shadow-md);
+    }
+
+    .liquid-btn-danger:hover {
+        background: var(--bright-amber);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
     .liquid-btn:disabled {
         opacity: 0.6;
         cursor: not-allowed;
@@ -881,6 +943,232 @@
         margin-bottom: 30px !important;
     }
 
+    /* ===== RESULTS CARD ===== */
+    .liquid-results-card {
+        background: linear-gradient(135deg, var(--ivory), var(--pure-white));
+        border-radius: var(--radius-lg);
+        padding: 50px;
+        box-shadow: var(--shadow-lg);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(251, 198, 12, 0.1);
+        margin-bottom: 30px;
+    }
+
+    .score-circle {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 30px;
+        background: var(--gradient-liquid-2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--prussian-blue);
+        box-shadow: var(--shadow-lg);
+        border: 4px solid var(--white);
+    }
+
+    .results-actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin: 30px 0;
+    }
+
+    /* ===== CORRECT ANSWERS SECTION ===== */
+    .correct-answers-section {
+        margin-top: 30px;
+        border-top: 2px solid var(--pale-slate);
+        padding-top: 30px;
+        display: none;
+    }
+
+    .correct-answers-section.visible {
+        display: block;
+    }
+
+    .correct-answers-header {
+        background: var(--gradient-liquid-1);
+        color: var(--white);
+        padding: 20px 25px;
+        border-radius: var(--radius-md);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .correct-answers-header i {
+        color: var(--accent);
+        transition: transform 0.3s ease;
+    }
+
+    .correct-answers-header.collapsed i {
+        transform: rotate(180deg);
+    }
+
+    .correct-answers-content {
+        display: block;
+    }
+
+    .correct-answers-content.collapsed {
+        display: none;
+    }
+
+    .answer-item {
+        background: var(--white);
+        border-radius: var(--radius-md);
+        padding: 25px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--bright-amber);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .answer-question {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+
+    .answer-correct {
+        color: var(--success);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .answer-correct i {
+        color: var(--success);
+    }
+
+    .answer-user {
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .answer-user.correct {
+        color: var(--success);
+    }
+
+    .answer-user.incorrect {
+        color: var(--danger);
+    }
+
+    .answer-user i {
+        width: 20px;
+    }
+
+    /* ===== RESTART MODAL ===== */
+    .restart-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 29, 68, 0.8);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+
+    .restart-modal.active {
+        display: flex;
+    }
+
+    .restart-modal-content {
+        background: var(--white);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        animation: modalSlideIn 0.3s ease;
+        border: 1px solid var(--accent);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .restart-modal-icon {
+        font-size: 4rem;
+        color: var(--warning);
+        margin-bottom: 20px;
+    }
+
+    .restart-modal h3 {
+        font-size: 1.8rem;
+        color: var(--text-primary);
+        margin-bottom: 15px;
+    }
+
+    .restart-modal p {
+        color: var(--text-muted);
+        margin-bottom: 30px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        background: var(--ivory);
+        padding: 20px;
+        border-radius: var(--radius-md);
+        border-left: 4px solid var(--warning);
+    }
+
+    .restart-modal-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .restart-modal-btn {
+        padding: 14px 30px;
+        border-radius: var(--radius-full);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+    }
+
+    .restart-modal-btn.cancel {
+        background: var(--gray-light);
+        color: var(--text-primary);
+    }
+
+    .restart-modal-btn.cancel:hover {
+        background: var(--gray);
+    }
+
+    .restart-modal-btn.confirm {
+        background: var(--warning);
+        color: var(--prussian-blue);
+    }
+
+    .restart-modal-btn.confirm:hover {
+        background: var(--bright-amber);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 992px) {
         .liquid-image-grid {
@@ -892,6 +1180,9 @@
         }
         .liquid-btn {
             width: 100%;
+        }
+        .results-actions {
+            flex-direction: column;
         }
     }
 
@@ -917,6 +1208,15 @@
             width: 40px;
             height: 40px;
             font-size: 0.9rem;
+        }
+        .marketing-banner {
+            padding: 16px 20px;
+        }
+        .banner-text {
+            font-size: 1rem;
+        }
+        .banner-icon {
+            font-size: 2rem;
         }
     }
 
@@ -954,13 +1254,25 @@
         animation: spin 1s linear infinite;
     }
 </style>
+@endpush
 
+@section('content')
 <div class="liquid-quiz-container">
     <div class="liquid-blob liquid-blob-1"></div>
     <div class="liquid-blob liquid-blob-2"></div>
     <div class="liquid-blob liquid-blob-3"></div>
 
     <div class="container quiz-content">
+        <!-- Marketing Banner -->
+        <div class="marketing-banner">
+            <div class="banner-icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="banner-text">
+                <span>$ Take the Quiz. Hit the Recommended Score. Compete for Weekly Cash Rewards.</span>
+            </div>
+        </div>
+
         <!-- Translation Loading Indicator -->
         <div class="translation-loading" id="translationLoading">
             <i class="fas fa-spinner"></i>
@@ -981,6 +1293,24 @@
             <span>{{ session('success') }}</span>
         </div>
         @endif
+
+        <!-- Restart Confirmation Modal -->
+        <div class="restart-modal" id="restartModal">
+            <div class="restart-modal-content">
+                <div class="restart-modal-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3>Warning</h3>
+                <p>Warning: If you restart the quiz, your current progress and score will be permanently lost and the quiz will restart from zero.</p>
+                <div class="restart-modal-actions">
+                    <button class="restart-modal-btn cancel" onclick="closeRestartModal()">Cancel</button>
+                    <form id="restartForm" method="POST" action="{{ route('quizzes.start', $quiz->id) }}" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="restart-modal-btn confirm">Confirm Restart</button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
         <!-- Language Selector -->
         <div class="liquid-language-selector">
@@ -1224,42 +1554,41 @@
                                 <i class="fas fa-arrow-right"></i>
                                 @endif
                             </button>
-
-                            @if($attempt->answers->count() > 0)
-                            <!-- <button type="submit" name="action" value="previous" class="liquid-btn liquid-btn-secondary" id="previousBtn">
-                                <i class="fas fa-arrow-left"></i>
-                                <span id="previousText" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.previous_question') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.previous_question') }}</span>
-                            </button> -->
-                            @endif
                         </div>
                     </form>
                 </div>
                 @else
-                <!-- Quiz Complete -->
-                <div class="liquid-complete-card">
-                    <i class="fas fa-check-circle liquid-complete-icon"></i>
+                <!-- Quiz Complete - Results View -->
+                <div class="liquid-results-card">
+                    <div class="score-circle">
+                        {{ $attempt->score ?? 0 }}%
+                    </div>
                     <h2 id="completeTitle" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_title') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_title') }}</h2>
                     <p id="completeMessage" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_message') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.complete_message') }}</p>
-                    <form action="{{ route('quizzes.submit', ['quiz' => $quiz->id, 'attempt' => $attempt->id]) }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="action" value="complete">
-                        <button type="submit" class="liquid-btn liquid-btn-success" style="padding: 15px 40px; font-size: 1.2rem;" id="submitQuizBtn">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <span data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.submit_quiz') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.submit_quiz') }}</span>
+                    
+                    <div class="results-actions">
+                        <button class="liquid-btn liquid-btn-danger" onclick="showRestartModal()">
+                            <i class="fas fa-redo"></i>
+                            <span>Retry Quiz</span>
                         </button>
-                    </form>
+                        <a href="{{ route('quizzes.results', $quiz->id) }}" class="liquid-btn liquid-btn-secondary">
+                            <i class="fas fa-eye"></i>
+                            <span>View Results</span>
+                        </a>
+                    </div>
                 </div>
                 @endif
             </div>
 
             <div class="col-lg-4">
-                <!-- Question Navigator -->
+                <!-- Question Navigator - Collapsible -->
                 <div class="liquid-navigator-card">
-                    <h5 class="liquid-navigator-title">
+                    <div class="liquid-navigator-title" onclick="toggleNavigatorAccordion()" style="cursor: pointer;">
                         <i class="fas fa-th"></i>
                         <span id="navigatorTitle" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.navigator_title') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.navigator_title') }}</span>
-                    </h5>
-                    <div class="liquid-question-grid">
+                        <i class="fas fa-chevron-up" id="navigatorChevron" style="margin-left: auto;"></i>
+                    </div>
+                    <div class="liquid-question-grid" id="navigatorContent">
                         @foreach($questions as $index => $question)
                         @php
                         $isAnswered = $attempt->answers->contains('question_id', $question->id);
@@ -1272,13 +1601,14 @@
                     </div>
                 </div>
 
-                <!-- Quiz Info -->
+                <!-- Quiz Info - Collapsible -->
                 <div class="liquid-info-card">
-                    <h5 class="liquid-navigator-title">
+                    <div class="liquid-navigator-title" onclick="toggleInfoAccordion()" style="cursor: pointer;">
                         <i class="fas fa-info-circle"></i>
                         <span id="infoTitle" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.info_title') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.info_title') }}</span>
-                    </h5>
-                    <ul class="liquid-info-list">
+                        <i class="fas fa-chevron-up" id="infoChevron" style="margin-left: auto;"></i>
+                    </div>
+                    <ul class="liquid-info-list" id="infoContent">
                         <li>
                             <i class="fas fa-clock"></i>
                             <span id="timeRemainingLabel" data-original="{{ App\Helpers\TranslationHelper::trans('quiz-take.time_remaining') }}">{{ App\Helpers\TranslationHelper::trans('quiz-take.time_remaining') }}</span>
@@ -1323,7 +1653,9 @@
 
 <!-- Add CSRF token meta tag for AJAX -->
 <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
 
+@push('scripts')
 <script>
     // Translation API endpoint
     const TRANSLATE_API_URL = "{{ route('translate') }}";
@@ -1343,12 +1675,18 @@
     const questionTimerElement = document.getElementById('questionTimer');
     const questionTimerDisplay = document.getElementById('questionTimerDisplay');
 
+    // Accordion state
+    let navigatorCollapsed = false;
+    let infoCollapsed = false;
+
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize translatable elements
         initializeTranslatableElements();
 
-        // Start question timer
-        startQuestionTimer();
+        // Start question timer if we're on a question page
+        if (document.getElementById('quizForm')) {
+            startQuestionTimer();
+        }
 
         // Timer functionality
         @if($remainingTime)
@@ -1382,6 +1720,10 @@
             }
         }, 1000);
         @endif
+
+        // Initially collapse navigator and info sections
+        collapseNavigator();
+        collapseInfo();
 
         // Select option function - SIMPLIFIED to work with native radio/checkbox behavior
         window.selectOption = function(element, optionId) {
@@ -1589,7 +1931,6 @@
         addElement('completeTitle');
         addElement('completeMessage');
         addElement('nextText');
-        addElement('previousText');
         addElement('submitText');
 
         // Add option texts
@@ -1631,16 +1972,6 @@
                 });
             }
         });
-
-        const submitBtnSpan = document.querySelector('#submitQuizBtn span');
-        if (submitBtnSpan && submitBtnSpan.dataset.original) {
-            translatableElements.push({
-                element: submitBtnSpan,
-                original: submitBtnSpan.dataset.original
-            });
-        }
-
-        console.log('Total translatable elements:', translatableElements.length);
     }
 
     // Change language function
@@ -1791,5 +2122,75 @@
             quizForm.submit();
         }
     }
+
+    // Accordion Functions
+    function collapseNavigator() {
+        const content = document.getElementById('navigatorContent');
+        const chevron = document.getElementById('navigatorChevron');
+        if (content && chevron) {
+            content.style.display = 'none';
+            chevron.classList.remove('fa-chevron-up');
+            chevron.classList.add('fa-chevron-down');
+            navigatorCollapsed = true;
+        }
+    }
+
+    function expandNavigator() {
+        const content = document.getElementById('navigatorContent');
+        const chevron = document.getElementById('navigatorChevron');
+        if (content && chevron) {
+            content.style.display = 'grid';
+            chevron.classList.remove('fa-chevron-down');
+            chevron.classList.add('fa-chevron-up');
+            navigatorCollapsed = false;
+        }
+    }
+
+    window.toggleNavigatorAccordion = function() {
+        if (navigatorCollapsed) {
+            expandNavigator();
+        } else {
+            collapseNavigator();
+        }
+    };
+
+    function collapseInfo() {
+        const content = document.getElementById('infoContent');
+        const chevron = document.getElementById('infoChevron');
+        if (content && chevron) {
+            content.style.display = 'none';
+            chevron.classList.remove('fa-chevron-up');
+            chevron.classList.add('fa-chevron-down');
+            infoCollapsed = true;
+        }
+    }
+
+    function expandInfo() {
+        const content = document.getElementById('infoContent');
+        const chevron = document.getElementById('infoChevron');
+        if (content && chevron) {
+            content.style.display = 'block';
+            chevron.classList.remove('fa-chevron-down');
+            chevron.classList.add('fa-chevron-up');
+            infoCollapsed = false;
+        }
+    }
+
+    window.toggleInfoAccordion = function() {
+        if (infoCollapsed) {
+            expandInfo();
+        } else {
+            collapseInfo();
+        }
+    };
+
+    // Restart Modal Functions
+    window.showRestartModal = function() {
+        document.getElementById('restartModal').classList.add('active');
+    };
+
+    window.closeRestartModal = function() {
+        document.getElementById('restartModal').classList.remove('active');
+    };
 </script>
-@endsection
+@endpush
