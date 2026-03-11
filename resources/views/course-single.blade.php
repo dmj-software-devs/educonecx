@@ -1731,9 +1731,9 @@
                                         Subscription
                                         @endif
                                     </span>
-                                    <span class="course-page-related-rating">
+                                    <!-- <span class="course-page-related-rating">
                                         <i class="fas fa-star"></i> {{ number_format($relatedCourse->average_rating ?? 0, 1) }}
-                                    </span>
+                                    </span> -->
                                 </div>
                             </div>
                         </a>
