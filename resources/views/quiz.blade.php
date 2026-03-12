@@ -232,12 +232,57 @@
         font-size: 0.9em;
     }
 
-    /* ===== STATISTICS CARDS ===== */
+    /* ===== STATISTICS CARDS - HIDDEN IN ACCORDION ===== */
+    .quiz-stats-section {
+        margin-bottom: 40px;
+    }
+
+    .quiz-stats-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        padding: 20px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--pale-slate);
+        transition: var(--transition);
+        margin-bottom: 20px;
+    }
+
+    .quiz-stats-header:hover {
+        border-color: var(--bright-amber);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .quiz-stats-header i {
+        color: var(--bright-amber);
+        font-size: 1.5rem;
+    }
+
+    .quiz-stats-header h2 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        flex: 1;
+    }
+
+    .quiz-stats-header .chevron {
+        color: var(--bright-amber);
+        transition: transform 0.3s ease;
+    }
+
+    .quiz-stats-header .chevron.rotated {
+        transform: rotate(180deg);
+    }
+
     .quiz-stats-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 25px;
-        margin-bottom: 40px;
+        margin-top: 20px;
     }
 
     @media (max-width: 992px) {
@@ -531,23 +576,7 @@
         color: var(--pure-white);
     }
 
-    .quiz-time {
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        background: rgba(0, 0, 0, 0.2);
-        padding: 5px 12px;
-        border-radius: var(--radius-full);
-        position: relative;
-        z-index: 2;
-        color: var(--pure-white);
-    }
-
-    .quiz-time i {
-        font-size: 0.8rem;
-        color: var(--bright-amber);
-    }
+    /* Time removed from quiz card header */
 
     .quiz-card-body {
         padding: 25px;
@@ -585,6 +614,7 @@
         overflow: hidden;
     }
 
+    /* Meta items updated - removed question count and pass percentage */
     .quiz-meta {
         display: flex;
         flex-wrap: wrap;
@@ -898,6 +928,11 @@
     .position-relative { position: relative; }
     .overflow-hidden { overflow: hidden; }
     .text-center { text-align: center; }
+    
+    /* Accordion content hidden by default */
+    .accordion-content {
+        display: none;
+    }
 
     /* ===== ANIMATION ON SCROLL ===== */
     .quiz-card {
@@ -938,35 +973,44 @@
 <!-- Main Content -->
 <section class="quiz-main">
     <div class="container">
-        <!-- Statistics Cards -->
-        <div class="quiz-stats-grid">
-            <div class="quiz-stat-card" data-aos="fade-up">
-                <div class="quiz-stat-icon">
-                    <i class="fas fa-puzzle-piece"></i>
-                </div>
-                <div class="quiz-stat-details">
-                    <h3>{{ $totalQuizzes ?? 24 }}</h3>
-                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_quizzes') }}</p>
-                </div>
+        <!-- Statistics Section - Hidden in Accordion -->
+        <div class="quiz-stats-section">
+            <div class="quiz-stats-header" onclick="toggleStatsAccordion()">
+                <i class="fas fa-chart-bar"></i>
+                <h2>{{ App\Helpers\TranslationHelper::trans('quiz.statistics_title') ?? 'Quiz Statistics' }}</h2>
+                <i class="fas fa-chevron-down chevron" id="statsChevron"></i>
             </div>
+            <div class="accordion-content" id="statsAccordion">
+                <div class="quiz-stats-grid">
+                    <div class="quiz-stat-card" data-aos="fade-up">
+                        <div class="quiz-stat-icon">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                        <div class="quiz-stat-details">
+                            <h3>{{ $totalQuizzes ?? 24 }}</h3>
+                            <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_quizzes') ?? 'Total Quizzes' }}</p>
+                        </div>
+                    </div>
 
-            <div class="quiz-stat-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="quiz-stat-icon">
-                    <i class="fas fa-question-circle"></i>
-                </div>
-                <div class="quiz-stat-details">
-                    <h3>{{ $totalQuestions ?? 156 }}</h3>
-                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_questions') }}</p>
-                </div>
-            </div>
+                    <div class="quiz-stat-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="quiz-stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="quiz-stat-details">
+                            <h3>{{ $totalQuestions ?? 156 }}</h3>
+                            <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_questions') ?? 'Total Questions' }}</p>
+                        </div>
+                    </div>
 
-            <div class="quiz-stat-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="quiz-stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="quiz-stat-details">
-                    <h3>{{ $totalAttempts ?? 1250 }}</h3>
-                    <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_attempts') }}</p>
+                    <div class="quiz-stat-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="quiz-stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="quiz-stat-details">
+                            <h3>{{ $totalAttempts ?? 1250 }}</h3>
+                            <p>{{ App\Helpers\TranslationHelper::trans('quiz.stat_total_attempts') ?? 'Total Attempts' }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1012,12 +1056,7 @@
                                 {{ ucfirst($quiz->type) }}
                             @endif
                         </span>
-                        @if($quiz->time_limit)
-                            <span class="quiz-time">
-                                <i class="far fa-clock"></i>
-                                {{ App\Helpers\TranslationHelper::trans('quiz.time_minutes', ['count' => $quiz->time_limit]) }}
-                            </span>
-                        @endif
+                        <!-- Time limit removed from header -->
                     </div>
                     
                     <div class="quiz-card-body">
@@ -1027,15 +1066,10 @@
                             <p class="quiz-description">{{ Str::limit($quiz->description, 100) }}</p>
                         @endif
                         
+                        <!-- Meta items updated - only attempts info remains -->
                         <div class="quiz-meta">
-                            <div class="quiz-meta-item">
-                                <i class="fas fa-question-circle"></i>
-                                <span>{{ App\Helpers\TranslationHelper::trans('quiz.questions_count', ['count' => $quiz->questions_count ?? 0]) }}</span>
-                            </div>
-                            <div class="quiz-meta-item">
-                                <i class="fas fa-trophy"></i>
-                                <span>{{ App\Helpers\TranslationHelper::trans('quiz.pass_percentage', ['percentage' => $quiz->pass_percentage]) }}</span>
-                            </div>
+                            <!-- Questions count removed -->
+                            <!-- Pass percentage removed -->
                             <div class="quiz-meta-item">
                                 <i class="fas fa-redo"></i>
                                 <span>
@@ -1187,6 +1221,37 @@
                 }, { passive: true });
             });
         }
+
+        // Hide stats accordion by default
+        const statsAccordion = document.getElementById('statsAccordion');
+        if (statsAccordion) {
+            statsAccordion.style.display = 'none';
+        }
     });
+
+    // Toggle statistics accordion
+    function toggleStatsAccordion() {
+        const accordion = document.getElementById('statsAccordion');
+        const chevron = document.getElementById('statsChevron');
+        
+        if (accordion) {
+            if (accordion.style.display === 'none' || !accordion.style.display) {
+                accordion.style.display = 'block';
+                if (chevron) {
+                    chevron.classList.remove('fa-chevron-down');
+                    chevron.classList.add('fa-chevron-up');
+                }
+            } else {
+                accordion.style.display = 'none';
+                if (chevron) {
+                    chevron.classList.remove('fa-chevron-up');
+                    chevron.classList.add('fa-chevron-down');
+                }
+            }
+        }
+    }
+
+    // Make function globally available
+    window.toggleStatsAccordion = toggleStatsAccordion;
 </script>
 @endpush

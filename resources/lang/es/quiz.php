@@ -10,6 +10,7 @@ return [
     'hero_description' => 'Desafíate con nuestros cuestionarios interactivos y sigue tu progreso',
     'hero_badge' => 'Portal 101',
     'hero_subtitle' => 'El Conocimiento es Luz',
+    'statistics_title' => 'Estadísticas del cuestionario',
 
     // Statistics Cards
     'stat_total_quizzes' => 'Total de Cuestionarios',

@@ -670,15 +670,15 @@
         @endauth
 
         <!-- Quiz Header -->
-        <div class="quiz-header">
+        <!-- <div class="quiz-header">
             <h1>{{ $quiz->title }}</h1>
             @if($quiz->description)
                 <p>{{ $quiz->description }}</p>
             @endif
-        </div>
+        </div> -->
 
         <!-- Statistics Cards -->
-        <div class="stats-grid">
+        <!-- <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-question-circle"></i>
@@ -718,7 +718,7 @@
                     <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('quiz-show.attempts_allowed') }}</div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="row g-4">
             <!-- Left Column - Details and Attempts (Collapsible) -->
@@ -833,7 +833,7 @@
             <!-- Right Column - Start Quiz and Rules -->
             <div class="col-lg-4">
                 <!-- Start Quiz Card (Bottom) -->
-                <div class="info-card start-card mb-4">
+                <!-- <div class="info-card start-card mb-4">
                     <h4 class="card-title">
                         <i class="fas fa-play-circle"></i>
                         {{ App\Helpers\TranslationHelper::trans('quiz-show.ready_to_start') }}
@@ -910,7 +910,7 @@
                             <p>{{ App\Helpers\TranslationHelper::trans('quiz-show.no_account') }} <a href="{{ route('register') }}">{{ App\Helpers\TranslationHelper::trans('quiz-show.register_here') }}</a></p>
                         </div>
                     @endauth
-                </div>
+                </div> -->
 
                 <!-- Quiz Rules Card - Collapsible -->
                 <div class="accordion-section">
