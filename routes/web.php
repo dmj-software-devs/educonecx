@@ -168,6 +168,48 @@ Route::middleware('auth')->group(function () {
     })->name('verification.notice');
 });
 
+
+// Admin routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Progressive Quizzes
+    Route::resource('progressive-quizzes', App\Http\Controllers\Admin\ProgressiveQuizController::class);
+
+    // Progressive Quiz Levels - FIXED: Properly nested routes
+    Route::prefix('progressive-quizzes/{progressiveQuiz}')->name('progressive-quizzes.')->group(function () {
+        // Level management
+        Route::get('levels', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'levels'])->name('levels');
+        Route::post('levels', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'storeLevel'])->name('levels.store');
+        Route::put('levels/{progressiveLevel}', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'updateLevel'])->name('levels.update');
+        Route::delete('levels/{progressiveLevel}', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'destroyLevel'])->name('levels.destroy');
+        Route::post('levels/reorder', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'reorderLevels'])->name('levels.reorder');
+
+        // Question management for specific level - FIXED: Proper parameter order
+        Route::get('levels/{progressiveLevel}/questions', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'questions'])->name('questions');
+        Route::post('levels/{progressiveLevel}/questions', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'storeQuestion'])->name('questions.store');
+    });
+
+    // Progressive Questions (standalone) - FIXED: Proper route names with EDIT route added
+    Route::get('progressive-questions/{progressiveQuestion}/edit', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'editQuestion'])->name('progressive-questions.edit');
+    Route::put('progressive-questions/{progressiveQuestion}', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'updateQuestion'])->name('progressive-questions.update');
+    Route::delete('progressive-questions/{progressiveQuestion}', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'destroyQuestion'])->name('progressive-questions.destroy');
+    Route::post('progressive-questions/reorder', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'reorderQuestions'])->name('progressive-questions.reorder');
+});
+
+// Frontend routes
+Route::prefix('progressive-quizzes')->name('progressive-quizzes.')->group(function () {
+    Route::get('{slug}', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'show'])->name('show');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::post('{progressiveQuiz}/start', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'start'])->name('start');
+        Route::get('{progressiveQuiz}/continue', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'continue'])->name('continue');
+        Route::get('{progressiveQuiz}/results', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'results'])->name('results');
+
+        Route::get('{progressiveQuiz}/level/{level}/take', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'take'])->name('take');
+        Route::post('{progressiveQuiz}/level/{level}/submit', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'submitAnswer'])->name('submit');
+        Route::get('{progressiveQuiz}/level/{level}/results', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'levelResults'])->name('level-results');
+    });
+});
+
 Route::post('/translate', [App\Http\Controllers\TranslationController::class, 'translate'])->name('translate');
 
 // ==================== AUTHENTICATION ROUTES ====================
