@@ -72,6 +72,7 @@
     .quiz-page {
         padding: 40px 0;
         min-height: calc(100vh - 200px);
+        background-color: var(--ivory);
     }
 
     .quiz-grid {
@@ -630,9 +631,9 @@
         font-size: 1.1rem;
         font-weight: 700;
         color: var(--text-primary);
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid var(--pale-slate);
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -651,7 +652,11 @@
 
     .chevron {
         margin-left: auto;
-        transition: var(--transition);
+        transition: transform 0.3s ease;
+    }
+
+    .chevron.rotated {
+        transform: rotate(180deg);
     }
 
     /* ===== STATISTICS GRID (HIDDEN BY DEFAULT) ===== */
@@ -696,11 +701,12 @@
         font-size: 1.1rem;
     }
 
-    /* ===== QUESTION NAVIGATOR ===== */
+    /* ===== QUESTION NAVIGATOR (HIDDEN BY DEFAULT) ===== */
     .navigator-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 8px;
+        margin-top: 20px;
     }
 
     .nav-item {
@@ -1183,7 +1189,7 @@
 
                 <!-- Detailed Results - Hidden in Accordion -->
                 <div class="sidebar-card" style="text-align: left; margin-top: 30px;">
-                    <div class="sidebar-title" onclick="toggleAccordion('resultsDetails')" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none;">
+                    <div class="sidebar-title" onclick="toggleAccordion('resultsDetails')">
                         <i class="fas fa-info-circle"></i>
                         Detailed Results
                         <i class="fas fa-chevron-down chevron" id="resultsChevron"></i>
@@ -1325,7 +1331,7 @@
                     </div>
                 </div>
 
-                <!-- SIDEBAR - Clean with hidden statistics -->
+                <!-- SIDEBAR - Clean with hidden statistics and navigator -->
                 <div class="quiz-sidebar">
                     <!-- Statistics Card - Hidden by default in accordion -->
                     <div class="sidebar-card">
@@ -1366,23 +1372,25 @@
                         </div>
                     </div>
 
-                    <!-- Question Navigator Card - Always visible for easy navigation -->
+                    <!-- Question Navigator Card - Hidden by default in accordion -->
                     <div class="sidebar-card">
-                        <h3 class="sidebar-title" style="cursor: default;">
+                        <div class="sidebar-title" onclick="toggleAccordion('quizNavigator')">
                             <i class="fas fa-th"></i>
                             Question Navigator
-                        </h3>
-                        
-                        <div class="navigator-grid">
-                            @foreach($questions as $index => $question)
-                            @php
-                            $isAnswered = $attempt->answers->contains('question_id', $question->id);
-                            $isCurrent = $index == $attempt->answers->count();
-                            @endphp
-                            <div class="nav-item {{ $isAnswered ? 'answered' : '' }} {{ $isCurrent ? 'current' : '' }}">
-                                {{ $index + 1 }}
+                            <i class="fas fa-chevron-down chevron" id="navigatorChevron"></i>
+                        </div>
+                        <div class="accordion-content" id="quizNavigator">
+                            <div class="navigator-grid">
+                                @foreach($questions as $index => $question)
+                                @php
+                                $isAnswered = $attempt->answers->contains('question_id', $question->id);
+                                $isCurrent = $index == $attempt->answers->count();
+                                @endphp
+                                <div class="nav-item {{ $isAnswered ? 'answered' : '' }} {{ $isCurrent ? 'current' : '' }}">
+                                    {{ $index + 1 }}
+                                </div>
+                                @endforeach
                             </div>
-                            @endforeach
                         </div>
                     </div>
 
@@ -1542,10 +1550,15 @@
                 const content = document.getElementById(id);
                 if (!content) return;
 
-                const chevron = id === 'quizStats' 
-                    ? document.getElementById('statsChevron')
-                    : document.getElementById('resultsChevron');
+                // Get the corresponding chevron
+                let chevronId;
+                if (id === 'quizStats') chevronId = 'statsChevron';
+                else if (id === 'quizNavigator') chevronId = 'navigatorChevron';
+                else if (id === 'resultsDetails') chevronId = 'resultsChevron';
+                
+                const chevron = chevronId ? document.getElementById(chevronId) : null;
 
+                // Toggle content visibility
                 if (content.style.display === 'none' || !content.style.display) {
                     content.style.display = 'block';
                     if (chevron) {
