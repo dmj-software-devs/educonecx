@@ -1083,15 +1083,15 @@
                                 <span>{{ $quiz->total_questions }} {{ Str::plural(App\Helpers\TranslationHelper::trans('progressive-quizzes.question') ?? 'Question', $quiz->total_questions) }}</span>
                             </div>
                             
-                            <div class="meta-item">
+                            <!-- <div class="meta-item">
                                 <i class="fas fa-clock"></i>
                                 <span>{{ $quiz->time_limit_formatted }}</span>
-                            </div>
+                            </div> -->
                             
-                            <div class="meta-item">
+                            <!-- <div class="meta-item">
                                 <i class="fas fa-percent"></i>
                                 <span>{{ $quiz->pass_percentage }}% {{ App\Helpers\TranslationHelper::trans('progressive-quizzes.pass_percentage') ?? 'Pass' }}</span>
-                            </div>
+                            </div> -->
                         </div>
 
                         @if($user && $attempt)
