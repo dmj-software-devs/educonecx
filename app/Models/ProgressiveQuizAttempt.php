@@ -73,7 +73,7 @@ class ProgressiveQuizAttempt extends Model
     public function getCurrentLevel()
     {
         if ($this->current_level_id) {
-            return $this->currentLevel;
+            return ProgressiveLevel::find($this->current_level_id);
         }
         
         return $this->quiz->getLevelByNumber($this->current_level_number);
@@ -88,7 +88,9 @@ class ProgressiveQuizAttempt extends Model
 
     public function getCurrentLevelAttempt()
     {
-        return $this->getLevelAttempt($this->current_level_id);
+        return $this->levelAttempts()
+            ->where('progressive_level_id', $this->current_level_id)
+            ->first();
     }
 
     public function hasCompletedLevel($levelNumber)
@@ -97,7 +99,7 @@ class ProgressiveQuizAttempt extends Model
         if (!$level) return false;
 
         $attempt = $this->getLevelAttempt($level->id);
-        return $attempt && $attempt->status === 'completed';
+        return $attempt && $attempt->status === ProgressiveLevelAttempt::STATUS_COMPLETED;
     }
 
     public function getNextLevel()
@@ -114,7 +116,7 @@ class ProgressiveQuizAttempt extends Model
             return true; // Haven't started current level yet
         }
 
-        if ($currentLevelAttempt->status === 'completed') {
+        if ($currentLevelAttempt->status === ProgressiveLevelAttempt::STATUS_COMPLETED) {
             $nextLevel = $this->getNextLevel();
             return $nextLevel !== null;
         }
@@ -133,7 +135,7 @@ class ProgressiveQuizAttempt extends Model
         if ($totalLevels == 0) return 0;
 
         $completedLevels = $this->levelAttempts()
-            ->where('status', 'completed')
+            ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
             ->count();
 
         return round(($completedLevels / $totalLevels) * 100);

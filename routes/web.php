@@ -195,10 +195,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('progressive-questions/reorder', [App\Http\Controllers\Admin\ProgressiveQuizController::class, 'reorderQuestions'])->name('progressive-questions.reorder');
 });
 
-// Frontend routes
+// ==================== PROGRESSIVE QUIZZES FRONTEND ROUTES ====================
 Route::prefix('progressive-quizzes')->name('progressive-quizzes.')->group(function () {
+    // Public routes
+    Route::get('/', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'index'])->name('index');
     Route::get('{slug}', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'show'])->name('show');
+    Route::get('/history', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'history'])->name('history')->middleware('auth');
 
+    // Authenticated routes
     Route::middleware(['auth'])->group(function () {
         Route::post('{progressiveQuiz}/start', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'start'])->name('start');
         Route::get('{progressiveQuiz}/continue', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'continue'])->name('continue');
@@ -207,6 +211,9 @@ Route::prefix('progressive-quizzes')->name('progressive-quizzes.')->group(functi
         Route::get('{progressiveQuiz}/level/{level}/take', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'take'])->name('take');
         Route::post('{progressiveQuiz}/level/{level}/submit', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'submitAnswer'])->name('submit');
         Route::get('{progressiveQuiz}/level/{level}/results', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'levelResults'])->name('level-results');
+        
+        // AJAX endpoint for getting question data
+        Route::get('question/{questionId}', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'getQuestion'])->name('question');
     });
 });
 

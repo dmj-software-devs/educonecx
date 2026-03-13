@@ -49,6 +49,8 @@
                         <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                         @auth
                         <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li>
+                        <li><a href="{{ route('progressive-quizzes.index') }}" class="{{ request()->routeIs('progressive-quizzes.*') ? 'active' : '' }}"><span class="translate-text" data-original="Progressive Quizzes">Progressive Quizzes</span></a></li>
+
                         @endauth
                     </ul>
                 </nav>
@@ -155,6 +157,7 @@
                 <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                 @auth
                 <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><i class="fas fa-question-circle"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li>
+                <li><a href="{{ route('progressive-quizzes.index') }}" class="{{ request()->routeIs('progressive-quizzes.*') ? 'active' : '' }}"><span class="translate-text" data-original="Progressive Quizzes">Progressive Quizzes</span></a></li>
                 @endauth
             </ul>
         </nav>
@@ -505,9 +508,11 @@
             .lang-btn {
                 padding: 6px 8px;
             }
+
             .current-lang {
                 display: none;
             }
+
             .lang-dropdown {
                 width: 220px;
             }
@@ -632,10 +637,12 @@
         }
 
         @media (max-width: 992px) {
+
             .btn-login span,
             .btn-register span {
                 display: none;
             }
+
             .btn-login,
             .btn-register {
                 padding: 8px 12px;
@@ -643,6 +650,7 @@
         }
 
         @media (max-width: 480px) {
+
             .btn-login,
             .btn-register {
                 padding: 6px 10px;
@@ -736,6 +744,7 @@
             .user-name {
                 display: none;
             }
+
             .user-btn {
                 padding: 5px 8px;
             }
@@ -1134,6 +1143,7 @@
             .d-md-none {
                 display: none !important;
             }
+
             .d-md-inline {
                 display: inline !important;
             }
@@ -1143,6 +1153,7 @@
             .d-md-none {
                 display: inline !important;
             }
+
             .d-md-inline {
                 display: none !important;
             }
@@ -1253,9 +1264,21 @@
 
             // ===== LANGUAGE SELECTOR =====
             const languages = {
-                'en': { name: 'English', flag: '🇺🇸', native: 'English' },
-                'es': { name: 'Spanish', flag: '🇪🇸', native: 'Español' },
-                'fr': { name: 'French', flag: '🇫🇷', native: 'Français' }
+                'en': {
+                    name: 'English',
+                    flag: '🇺🇸',
+                    native: 'English'
+                },
+                'es': {
+                    name: 'Spanish',
+                    flag: '🇪🇸',
+                    native: 'Español'
+                },
+                'fr': {
+                    name: 'French',
+                    flag: '🇫🇷',
+                    native: 'Français'
+                }
             };
 
             let currentLang = '{{ app()->getLocale() }}';
@@ -1362,15 +1385,15 @@
             // Initialize languages
             const currentFlag = document.getElementById('currentFlag');
             const currentLangEl = document.getElementById('currentLang');
-            
+
             // Set initial values from server
             const initialLang = '{{ app()->getLocale() }}';
             const initialFlag = '{{ App\Helpers\TranslationHelper::getFlag() }}';
             const initialCode = '{{ App\Helpers\TranslationHelper::getCode() }}';
-            
+
             if (currentFlag) currentFlag.textContent = initialFlag;
             if (currentLangEl) currentLangEl.textContent = initialCode;
-            
+
             populateLanguages(initialLang);
         });
     </script>
