@@ -48,7 +48,7 @@
                         <li><a href="{{ route('quiz-competition') }}" class="{{ request()->routeIs('quiz-competition') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz_competition') }}">Quiz Competition</span></a></li>
                         <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                         @auth
-                        <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li>
+                        <!-- <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li> -->
                         <li><a href="{{ route('progressive-quizzes.index') }}" class="{{ request()->routeIs('progressive-quizzes.*') ? 'active' : '' }}"><span class="translate-text" data-original="Progressive Quizzes">Progressive Quizzes</span></a></li>
 
                         @endauth
