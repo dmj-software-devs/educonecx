@@ -982,7 +982,7 @@
         <div class="stats-section">
             <div class="stats-header" onclick="toggleStatsAccordion()">
                 <i class="fas fa-chart-bar"></i>
-                <h2>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.statistics_title') ?? 'Progressive Quiz Statistics' }}</h2>
+                <h2>{{ App\Helpers\TranslationHelper::trans('quiz.statistics_title') ?? 'Quiz Statistics' }}</h2>
                 <i class="fas fa-chevron-down chevron" id="statsChevron"></i>
             </div>
             <div class="accordion-content" id="statsAccordion">

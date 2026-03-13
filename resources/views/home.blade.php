@@ -1840,7 +1840,7 @@
                     <h3>{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_title') }}</h3>
                     <div class="price">{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_price') }} <span>{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_price_suffix') }}</span></div>
                     <p class="description">{{ App\Helpers\TranslationHelper::trans('home.feature_card_2_desc') }}</p>
-                    <a href="{{ route('quiz') }}" class="btn btn-primary">
+                    <a href="{{ route('progressive-quizzes.index') }}" class="btn btn-primary">
                         {{ App\Helpers\TranslationHelper::trans('home.feature_card_2_btn') }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
