@@ -202,13 +202,8 @@ class ProgressiveQuizController extends Controller
     /**
      * Update a level.
      */
-    public function updateLevel(Request $request, ProgressiveQuiz $progressiveQuiz, ProgressiveLevel $progressiveLevel)
+    public function updateLevel(Request $request, ProgressiveLevel $progressiveLevel)
     {
-        // Ensure the level belongs to this quiz
-        if ($progressiveLevel->progressive_quiz_id !== $progressiveQuiz->id) {
-            abort(403, 'This level does not belong to the specified quiz.');
-        }
-
         $validated = $request->validate([
             'title' => 'required|max:255',
             'description' => 'nullable',
@@ -246,15 +241,10 @@ class ProgressiveQuizController extends Controller
     /**
      * Delete a level.
      */
-    public function destroyLevel(ProgressiveQuiz $progressiveQuiz, ProgressiveLevel $progressiveLevel)
+    public function destroyLevel(ProgressiveLevel $progressiveLevel)
     {
-        // Ensure the level belongs to this quiz
-        if ($progressiveLevel->progressive_quiz_id !== $progressiveQuiz->id) {
-            abort(403, 'This level does not belong to the specified quiz.');
-        }
-
         // Don't allow deleting the last level
-        if ($progressiveQuiz->levels()->count() <= 1) {
+        if ($progressiveLevel->quiz->levels()->count() <= 1) {
             return redirect()->back()->with('error', 'Cannot delete the last level');
         }
 
@@ -264,10 +254,10 @@ class ProgressiveQuizController extends Controller
         }
 
         $progressiveLevel->delete();
-        $progressiveQuiz->updateCounts();
+        $progressiveLevel->quiz->updateCounts();
 
         // Renumber remaining levels
-        $levels = $progressiveQuiz->levels()->orderBy('level_number')->get();
+        $levels = $progressiveLevel->quiz->levels()->orderBy('level_number')->get();
         foreach ($levels as $index => $level) {
             $level->update(['level_number' => $index + 1]);
         }
@@ -278,14 +268,9 @@ class ProgressiveQuizController extends Controller
     /**
      * Manage questions for a level.
      */
-    public function questions(ProgressiveQuiz $progressiveQuiz, ProgressiveLevel $progressiveLevel)
+    public function questions($progressiveQuizId, $progressiveLevelId)
     {
-        // Verify that the level belongs to the quiz
-        if ($progressiveLevel->progressive_quiz_id !== $progressiveQuiz->id) {
-            abort(404, 'Level does not belong to this quiz');
-        }
-
-        $progressiveLevel->load([
+        $progressiveLevel = ProgressiveLevel::with([
             'questions' => function($query) {
                 $query->orderBy('sort_order');
             },
@@ -298,9 +283,14 @@ class ProgressiveQuizController extends Controller
             'questions.matchingPairs' => function($query) {
                 $query->orderBy('sort_order');
             }
-        ]);
-
-        return view('admin.progressive-quizzes.questions', compact('progressiveLevel', 'progressiveQuiz'));
+        ])->findOrFail($progressiveLevelId);
+        
+        // Verify that the level belongs to the quiz
+        if ($progressiveLevel->progressive_quiz_id != $progressiveQuizId) {
+            abort(404, 'Level does not belong to this quiz');
+        }
+        
+        return view('admin.progressive-quizzes.questions', compact('progressiveLevel'));
     }
 
     /**
@@ -316,17 +306,22 @@ class ProgressiveQuizController extends Controller
     /**
      * Store a new question.
      */
-    public function storeQuestion(Request $request, ProgressiveQuiz $progressiveQuiz, ProgressiveLevel $progressiveLevel)
+    public function storeQuestion(Request $request, $progressiveQuizId, $progressiveLevelId)
     {
+        $progressiveLevel = ProgressiveLevel::findOrFail($progressiveLevelId);
+        
         // Verify that the level belongs to the quiz
-        if ($progressiveLevel->progressive_quiz_id !== $progressiveQuiz->id) {
+        if ($progressiveLevel->progressive_quiz_id != $progressiveQuizId) {
             abort(404, 'Level does not belong to this quiz');
         }
-
+        
+        // Log the incoming request for debugging
         \Log::info('Store Question Request:', [
-            'quiz_id' => $progressiveQuiz->id,
-            'level_id' => $progressiveLevel->id,
+            'quiz_id' => $progressiveQuizId,
+            'level_id' => $progressiveLevelId,
             'question_type' => $request->question_type,
+            'options' => $request->input('options'),
+            'all_data' => $request->all()
         ]);
 
         $rules = [
