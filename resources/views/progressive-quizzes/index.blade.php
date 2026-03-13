@@ -2,9 +2,9 @@
 @php
     use App\Models\ProgressiveLevelAttempt;
 @endphp
-@section('title', 'Progressive Quizzes - ' . (App\Helpers\TranslationHelper::trans('progressive-quiz.title') ?? 'Level-Based Quizzes'))
+@section('title', App\Helpers\TranslationHelper::trans('progressive-quizzes.title'))
 
-@section('meta_description', App\Helpers\TranslationHelper::trans('progressive-quiz.meta_description'))
+@section('meta_description', App\Helpers\TranslationHelper::trans('progressive-quizzes.meta_description'))
 
 @push('styles')
 <style>
@@ -604,9 +604,9 @@
 
     <div class="container">
         <div class="hero-content" data-aos="fade-up">
-            <span class="hero-badge">{{ App\Helpers\TranslationHelper::trans('progressive-quiz.hero_badge') ?? 'Progressive Learning' }}</span>
-            <h1 class="hero-title">{{ App\Helpers\TranslationHelper::trans('progressive-quiz.hero_title') ?? 'Master Skills Level by Level' }}</h1>
-            <p class="hero-subtitle">{{ App\Helpers\TranslationHelper::trans('progressive-quiz.hero_subtitle') ?? 'Challenge yourself with our progressive quizzes. Complete levels to unlock the next stage!' }}</p>
+            <span class="hero-badge">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.hero_badge') }}</span>
+            <h1 class="hero-title">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.hero_title') }}</h1>
+            <p class="hero-subtitle">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.hero_subtitle') }}</p>
         </div>
     </div>
 </section>
@@ -623,7 +623,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-value">{{ $totalQuizzes ?? 0 }}</div>
-                        <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('progressive-quiz.total_quizzes') ?? 'Total Quizzes' }}</div>
+                        <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.total_quizzes') }}</div>
                     </div>
                 </div>
 
@@ -633,7 +633,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-value">{{ $totalLevels ?? 0 }}</div>
-                        <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('progressive-quiz.total_levels') ?? 'Total Levels' }}</div>
+                        <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.total_levels') }}</div>
                     </div>
                 </div>
 
@@ -643,7 +643,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-value">{{ $totalAttempts ?? 0 }}</div>
-                        <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('progressive-quiz.total_attempts') ?? 'Total Attempts' }}</div>
+                        <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.total_attempts') }}</div>
                     </div>
                 </div>
             </div>
@@ -656,12 +656,13 @@
                     <input type="text" 
                            name="search" 
                            class="search-input" 
-                           placeholder="{{ App\Helpers\TranslationHelper::trans('progressive-quiz.search_placeholder') ?? 'Search progressive quizzes...' }}" 
-                           value="{{ request('search') }}">
+                           placeholder="{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.search_placeholder') }}" 
+                           value="{{ request('search') }}"
+                           aria-label="{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.aria_label_search') }}">
                     
                     <button class="search-btn" type="submit">
                         <i class="fas fa-search"></i>
-                        <span>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.search_button') ?? 'Search' }}</span>
+                        <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.search_button') }}</span>
                     </button>
                 </div>
             </form>
@@ -688,14 +689,14 @@
                     }
                 @endphp
 
-                <div class="quiz-card" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 50, 300) }}">
+                <div class="quiz-card" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 50, 300) }}" aria-label="{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.aria_label_quiz_card') }}">
                     <div class="quiz-image">
                         @if($quiz->featured_image)
                             <img src="{{ $quiz->featured_image_url }}" alt="{{ $quiz->title }}" style="width: 100%; height: 100%; object-fit: cover;">
                         @else
                             <i class="fas fa-layer-group"></i>
                         @endif
-                        <span class="quiz-level-badge">{{ $quiz->total_levels }} {{ Str::plural('Level', $quiz->total_levels) }}</span>
+                        <span class="quiz-level-badge">{{ $quiz->total_levels }} {{ Str::plural(App\Helpers\TranslationHelper::trans('progressive-quizzes.level'), $quiz->total_levels) }}</span>
                     </div>
                     
                     <div class="quiz-body">
@@ -708,7 +709,7 @@
                         <div class="quiz-meta">
                             <div class="meta-item">
                                 <i class="fas fa-question-circle"></i>
-                                <span>{{ $quiz->total_questions }} {{ Str::plural('Question', $quiz->total_questions) }}</span>
+                                <span>{{ $quiz->total_questions }} {{ Str::plural(App\Helpers\TranslationHelper::trans('progressive-quizzes.question'), $quiz->total_questions) }}</span>
                             </div>
                             
                             <div class="meta-item">
@@ -718,21 +719,21 @@
                             
                             <div class="meta-item">
                                 <i class="fas fa-percent"></i>
-                                <span>{{ $quiz->pass_percentage }}% Pass</span>
+                                <span>{{ $quiz->pass_percentage }}% {{ App\Helpers\TranslationHelper::trans('progressive-quizzes.pass_percentage') }}</span>
                             </div>
                         </div>
 
                         @if($user && $attempt)
-                            <div class="quiz-progress">
+                            <div class="quiz-progress" aria-label="{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.aria_label_progress') }}">
                                 <div class="progress-header">
-                                    <span>Progress</span>
+                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.progress') }}</span>
                                     <span>{{ $progress }}%</span>
                                 </div>
                                 <div class="progress-bar">
                                     <div class="progress-fill" style="width: {{ $progress }}%;"></div>
                                 </div>
                                 @if($currentLevel)
-                                    <small class="text-muted mt-1 d-block">Current: Level {{ $currentLevel }}</small>
+                                    <small class="text-muted mt-1 d-block">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.current_level') }} {{ $currentLevel }}</small>
                                 @endif
                             </div>
                         @endif
@@ -745,38 +746,38 @@
                                 $attempt = $quiz->getUserAttempt($user->id);
                             @endphp
 
-                            @if($attempt)
+                            @if($attempt && $attempt->status !== 'completed')
                                 <a href="{{ route('progressive-quizzes.continue', $quiz) }}" class="btn-start">
                                     <i class="fas fa-play-circle"></i>
-                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.btn_continue') ?? 'Continue' }}</span>
+                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_continue') }}</span>
                                 </a>
                             @elseif($canAttempt)
                                 <form action="{{ route('progressive-quizzes.start', $quiz) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn-start">
                                         <i class="fas fa-play"></i>
-                                        <span>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.btn_start') ?? 'Start' }}</span>
+                                        <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_start') }}</span>
                                     </button>
                                 </form>
                             @else
-                                <a href="{{ route('progressive-quizzes.show', $quiz->slug) }}" class="btn-start" style="opacity: 0.6; pointer-events: none;">
+                                <a href="{{ route('progressive-quizzes.show', $quiz->slug) }}" class="btn-start" style="opacity: 0.6; pointer-events: none;" aria-disabled="true">
                                     <i class="fas fa-lock"></i>
-                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.btn_max_attempts') ?? 'Max Attempts' }}</span>
+                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_max_attempts') }}</span>
                                 </a>
                             @endif
                         @else
                             <a href="{{ route('login') }}" class="btn-login">
                                 <i class="fas fa-sign-in-alt"></i>
-                                <span>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.btn_login') ?? 'Login to Start' }}</span>
+                                <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_login') }}</span>
                             </a>
                         @endauth
                         
                         <span class="attempts-info">
                             <i class="fas fa-redo"></i>
                             @if($quiz->attempts_allowed == 0)
-                                {{ App\Helpers\TranslationHelper::trans('progressive-quiz.unlimited_attempts') ?? 'Unlimited' }}
+                                {{ App\Helpers\TranslationHelper::trans('progressive-quizzes.unlimited_attempts') }}
                             @else
-                                {{ $quiz->attempts_allowed }} {{ Str::plural('attempt', $quiz->attempts_allowed) }}
+                                {{ $quiz->attempts_allowed }} {{ Str::plural(App\Helpers\TranslationHelper::trans('progressive-quizzes.attempt'), $quiz->attempts_allowed) }}
                             @endif
                         </span>
                     </div>
@@ -786,13 +787,16 @@
                     <div class="empty-icon">
                         <i class="fas fa-layer-group"></i>
                     </div>
-                    <h3>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.empty_title') ?? 'No Progressive Quizzes Found' }}</h3>
-                    <p>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.empty_description') ?? 'Check back later for new progressive quizzes!' }}</p>
                     @if(request('search'))
+                        <h3>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.empty_search_title') }}</h3>
+                        <p>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.empty_search_description') }}</p>
                         <a href="{{ route('progressive-quizzes.index') }}" class="btn-clear">
                             <i class="fas fa-times"></i>
-                            <span>{{ App\Helpers\TranslationHelper::trans('progressive-quiz.btn_clear') ?? 'Clear Search' }}</span>
+                            <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_clear') }}</span>
                         </a>
+                    @else
+                        <h3>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.empty_title') }}</h3>
+                        <p>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.empty_description') }}</p>
                     @endif
                 </div>
             @endforelse
@@ -800,7 +804,7 @@
 
         <!-- Pagination -->
         @if($quizzes instanceof \Illuminate\Pagination\LengthAwarePaginator && $quizzes->hasPages())
-            <div class="pagination-wrapper">
+            <div class="pagination-wrapper" aria-label="{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.aria_label_pagination') }}">
                 {{ $quizzes->withQueryString()->links() }}
             </div>
         @endif
