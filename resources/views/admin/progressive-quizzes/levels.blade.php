@@ -489,7 +489,7 @@ function editLevel(id, title, description, minPercentage, timeLimit, passRequire
     document.getElementById('edit_pass_required').checked = passRequired;
     
     const form = document.getElementById('editLevelForm');
-    form.action = `/admin/progressive-quizzes/levels/${id}`;
+    form.action = `/admin/progressive-quizzes/${quizId}/levels/${id}`;
     
     const modal = new bootstrap.Modal(document.getElementById('editLevelModal'));
     modal.show();
@@ -498,7 +498,7 @@ function editLevel(id, title, description, minPercentage, timeLimit, passRequire
 function deleteLevel(id, title) {
     if (confirm(`Are you sure you want to delete "${title}"? This will also delete all questions in this level.`)) {
         const form = document.getElementById('deleteLevelForm');
-        form.action = `/admin/progressive-quizzes/levels/${id}`;
+        form.action = `/admin/progressive-quizzes/${quizId}/levels/${id}`;
         form.submit();
     }
 }
