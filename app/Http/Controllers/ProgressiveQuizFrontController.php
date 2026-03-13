@@ -238,6 +238,75 @@ class ProgressiveQuizFrontController extends Controller
     }
 
     /**
+     * Restart a quiz — abandon current in-progress attempt and start fresh.
+     */
+    public function restart(Request $request, ProgressiveQuiz $progressiveQuiz)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Abandon ALL in-progress attempts for this quiz
+        DB::table('progressive_quiz_attempts')
+            ->where('progressive_quiz_id', $progressiveQuiz->id)
+            ->where('user_id', $user->id)
+            ->where('status', 'in_progress')
+            ->update(['status' => 'abandoned', 'updated_at' => now()]);
+
+        Log::info('Restarting quiz ' . $progressiveQuiz->id . ' for user ' . $user->id . '. Abandoned in-progress attempts.');
+
+        // Check if user can still attempt
+        if (!$progressiveQuiz->canAttempt($user->id)) {
+            return redirect()->route('progressive-quizzes.show', $progressiveQuiz->slug)
+                ->with('error', 'You have reached the maximum number of attempts for this quiz.');
+        }
+
+        // Now start fresh
+        DB::beginTransaction();
+        try {
+            $attemptNumber = $progressiveQuiz->attempts()
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['completed', 'abandoned'])
+                ->count() + 1;
+
+            $quizAttempt = ProgressiveQuizAttempt::create([
+                'progressive_quiz_id' => $progressiveQuiz->id,
+                'user_id' => $user->id,
+                'attempt_number' => $attemptNumber,
+                'current_level_number' => 1,
+                'status' => 'in_progress',
+                'started_at' => now()
+            ]);
+
+            $targetLevel = $progressiveQuiz->getFirstLevel();
+
+            ProgressiveLevelAttempt::create([
+                'progressive_quiz_attempt_id' => $quizAttempt->id,
+                'progressive_level_id' => $targetLevel->id,
+                'level_number' => $targetLevel->level_number,
+                'status' => ProgressiveLevelAttempt::STATUS_AVAILABLE,
+            ]);
+
+            $quizAttempt->update(['current_level_id' => $targetLevel->id]);
+
+            DB::commit();
+
+            return redirect()->route('progressive-quizzes.take', [
+                'progressiveQuiz' => $progressiveQuiz->id,
+                'level' => $targetLevel->id
+            ])->with('info', 'Quiz restarted from Level 1.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to restart quiz: ' . $e->getMessage());
+            return redirect()->route('progressive-quizzes.show', $progressiveQuiz->slug)
+                ->with('error', 'Failed to restart quiz. Please try again.');
+        }
+    }
+
+    /**
      * Continue an existing attempt.
      */
     public function continue(ProgressiveQuiz $progressiveQuiz)
@@ -326,8 +395,15 @@ class ProgressiveQuizFrontController extends Controller
             ]);
         }
 
-        // If level is already completed in this attempt, redirect to level results
+        // If level is already completed — never allow re-taking via back button
         if ($levelAttempt->isCompleted()) {
+            $nextLevel = $attempt->getNextLevel();
+            if ($nextLevel) {
+                return redirect()->route('progressive-quizzes.take', [
+                    'progressiveQuiz' => $progressiveQuiz->id,
+                    'level' => $nextLevel->id
+                ]);
+            }
             return redirect()->route('progressive-quizzes.level-results', [
                 'progressiveQuiz' => $progressiveQuiz->id,
                 'level' => $level->id
@@ -340,16 +416,15 @@ class ProgressiveQuizFrontController extends Controller
         } else {
             // Start the level
             $levelAttempt->start();
-            
-            // Get questions (optionally shuffled)
+
             $questionsQuery = $level->questions();
-            
+
             if ($level->shuffle_questions) {
                 $questionsQuery->inRandomOrder();
             } else {
                 $questionsQuery->orderBy('sort_order');
             }
-            
+
             $questions = $questionsQuery->get();
         }
 
@@ -365,14 +440,11 @@ class ProgressiveQuizFrontController extends Controller
         $answeredCount = $levelAttempt->answers()->count();
         $progress = $totalQuestions > 0 ? ($answeredCount / $totalQuestions) * 100 : 0;
 
-        // Check time limit
+        // Per-question timer: 27 seconds per question (no level-wide time limit)
         $remainingTime = null;
-        if ($level->time_limit) {
-            $elapsed = $levelAttempt->started_at ? now()->diffInSeconds($levelAttempt->started_at) : 0;
-            $remainingTime = max(0, ($level->time_limit * 60) - $elapsed);
-        }
+        $questionTimeLimit = 27;
 
-        return view('progressive-quizzes.take', compact(
+        $response = response()->view('progressive-quizzes.take', compact(
             'progressiveQuiz',
             'level',
             'levelAttempt',
@@ -380,8 +452,16 @@ class ProgressiveQuizFrontController extends Controller
             'totalQuestions',
             'answeredCount',
             'progress',
-            'remainingTime'
+            'remainingTime',
+            'questionTimeLimit'
         ));
+
+        // Prevent browser caching — back button must re-request from server
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+
+        return $response;
     }
 
     /**
@@ -484,7 +564,7 @@ class ProgressiveQuizFrontController extends Controller
 
             Log::info('Answer submitted for question ' . $question->id . '. Correct: ' . ($isCorrect ? 'yes' : 'no') . '. Points: ' . $pointsEarned);
 
-            // Resolve selected option ID (for single/multiple choice types)
+            // Resolve selected option ID (for choice types)
             $selectedOptionId = null;
             if (in_array($question->question_type, ['single_choice', 'true_false'])) {
                 $selectedOptionId = is_array($processedAnswer) ? ($processedAnswer[0] ?? null) : $processedAnswer;
@@ -492,7 +572,7 @@ class ProgressiveQuizFrontController extends Controller
                 $selectedOptionId = is_array($processedAnswer) ? ($processedAnswer[0] ?? null) : null;
             }
 
-            // Save answer - use answer_text (the actual fillable column on ProgressiveAnswer)
+            // Save answer — use answer_text (the actual fillable column on ProgressiveAnswer)
             $answer = ProgressiveAnswer::create([
                 'progressive_level_attempt_id' => $levelAttempt->id,
                 'progressive_question_id' => $question->id,
@@ -586,7 +666,7 @@ class ProgressiveQuizFrontController extends Controller
         Log::info('Level ID: ' . $level->id);
         Log::info('Level Attempt ID: ' . $levelAttempt->id);
 
-        // Refresh the model to get the latest score (increment() doesn't update the in-memory object)
+        // Refresh model — increment() only updates DB, not the in-memory object
         $levelAttempt = $levelAttempt->fresh();
 
         Log::info('Current score from database: ' . $levelAttempt->score);
@@ -597,12 +677,12 @@ class ProgressiveQuizFrontController extends Controller
         Log::info('Total points possible: ' . $totalPoints);
         Log::info('Current score: ' . $currentScore);
 
-        // Calculate percentage correctly
+        // Calculate percentage
         $percentage = $totalPoints > 0
             ? round(($currentScore / $totalPoints) * 100, 2)
             : 0;
 
-        // Use getRawOriginal to avoid accessor fallback issues; fall back to quiz pass_percentage
+        // Use getRawOriginal to avoid accessor issues; fall back to quiz pass_percentage
         $minPercentage = $level->getRawOriginal('min_percentage')
             ?? $attempt->quiz->pass_percentage
             ?? 0;

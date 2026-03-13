@@ -204,32 +204,75 @@
         gap: 10px;
         box-shadow: var(--shadow-md);
         border: 2px solid var(--bright-amber);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .question-timer::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        background: rgba(251, 198, 12, 0.12);
+        border-radius: var(--radius-full);
+        transition: width 1s linear;
+        width: var(--timer-progress, 100%);
     }
 
     .question-timer.warning {
         border-color: var(--danger);
+        background: #fff5f5;
+        animation: pulse 0.8s infinite;
+    }
+
+    .question-timer.warning::before {
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    .question-timer.critical {
+        border-color: var(--danger);
         background: #fee2e2;
-        animation: pulse 1s infinite;
+        animation: pulse 0.4s infinite;
+    }
+
+    .question-timer.critical::before {
+        background: rgba(239, 68, 68, 0.15);
     }
 
     .question-timer i {
         color: var(--prussian-blue);
+        position: relative;
+        z-index: 1;
+    }
+
+    .question-timer.warning i,
+    .question-timer.critical i {
+        color: var(--danger);
     }
 
     .timer-display {
-        font-size: 1.2rem;
-        font-weight: 700;
+        font-size: 1.4rem;
+        font-weight: 800;
         color: var(--prussian-blue);
         font-variant-numeric: tabular-nums;
+        min-width: 2ch;
+        text-align: center;
+        position: relative;
+        z-index: 1;
     }
 
-    .question-timer.warning .timer-display {
+    .question-timer.warning .timer-display,
+    .question-timer.critical .timer-display {
         color: var(--danger);
     }
 
     .timer-label {
         color: var(--text-muted);
         font-size: 0.9rem;
+        position: relative;
+        z-index: 1;
     }
 
     @keyframes pulse {
@@ -958,7 +1001,7 @@
 
         @php
             $letters = range('A', 'Z');
-            $currentQuestion = $questions && $questions->isNotEmpty() ? $questions->first() : null;
+            $currentQuestion = $questions && $questions->isNotEmpty() ? $questions[$answeredCount] ?? null : null;
             $isLevelComplete = !$currentQuestion || $totalQuestions == 0;
             $quizAttempt = $levelAttempt->progressiveQuizAttempt ?? null;
         @endphp
@@ -1033,13 +1076,10 @@
                                 <i class="fas fa-question-circle"></i>
                                 <span>Question {{ $answeredCount + 1 }} of {{ $totalQuestions }}</span>
                             </div>
-                            
-                            @if($level->time_limit)
                             <div class="quiz-meta-item">
-                                <i class="fas fa-clock"></i>
-                                <span>{{ $level->time_limit }} minutes total</span>
+                                <i class="fas fa-stopwatch"></i>
+                                <span>{{ $questionTimeLimit ?? 27 }}s per question</span>
                             </div>
-                            @endif
                         </div>
 
                         <!-- Progress bar -->
@@ -1054,16 +1094,14 @@
                         </div>
                     </div>
 
-                    <!-- Question Timer (if time limit exists) -->
-                    @if($remainingTime)
+                    <!-- Per-Question Timer: 27 seconds -->
                     <div class="timer-wrapper">
                         <div class="question-timer" id="questionTimer">
                             <i class="far fa-hourglass"></i>
-                            <span class="timer-display" id="timerDisplay">{{ gmdate('i:s', $remainingTime) }}</span>
-                            <span class="timer-label">remaining in this level</span>
+                            <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
+                            <span class="timer-label">seconds for this question</span>
                         </div>
                     </div>
-                    @endif
 
                     <!-- Question Card -->
                     <div class="question-card">
@@ -1346,15 +1384,17 @@
         quizId: {{ $progressiveQuiz->id }},
         totalQuestions: {{ $totalQuestions }},
         answeredCount: {{ $answeredCount }},
-        remainingTime: {{ $remainingTime ?? 'null' }},
+        remainingTime: null,
+        questionTimeLimit: {{ $questionTimeLimit ?? 27 }},
         submitUrl: "{{ route('progressive-quizzes.submit', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
         levelResultsUrl: "{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
-        restartUrl: "{{ route('progressive-quizzes.start', $progressiveQuiz) }}"
+        restartUrl: "{{ route('progressive-quizzes.restart', $progressiveQuiz) }}"
     };
 
     // State
-    let timerInterval = null;
-    let timeLeft = CONFIG.remainingTime;
+    let questionTimerInterval = null;
+    let questionTimeLeft = CONFIG.questionTimeLimit;
+    let isSubmitting = false;
 
     // DOM Elements
     const elements = {
@@ -1368,87 +1408,101 @@
         navigatorGrid: document.getElementById('navigatorGrid')
     };
 
-    // Log the configuration to verify
     console.log('CONFIG:', CONFIG);
-    console.log('Total Questions:', CONFIG.totalQuestions);
-    console.log('Answered Count:', CONFIG.answeredCount);
 
-    // Only initialize timer and form if we have a form
     if (elements.form) {
-        // ===== TIMER MANAGEMENT =====
-        if (CONFIG.remainingTime && CONFIG.remainingTime > 0) {
-            startTimer();
-        }
 
-        function startTimer() {
-            if (timerInterval) clearInterval(timerInterval);
-            
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
+        // ===== PER-QUESTION TIMER =====
+        function startQuestionTimer() {
+            if (questionTimerInterval) clearInterval(questionTimerInterval);
+            questionTimeLeft = CONFIG.questionTimeLimit;
+            updateQuestionTimerDisplay();
+            updateTimerProgress();
 
-                if (timeLeft <= 30) {
+            questionTimerInterval = setInterval(() => {
+                questionTimeLeft--;
+                updateQuestionTimerDisplay();
+                updateTimerProgress();
+
+                if (questionTimeLeft <= 10 && questionTimeLeft > 5) {
                     elements.timer?.classList.add('warning');
+                    elements.timer?.classList.remove('critical');
+                } else if (questionTimeLeft <= 5) {
+                    elements.timer?.classList.remove('warning');
+                    elements.timer?.classList.add('critical');
                 }
 
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                    autoSubmit();
+                if (questionTimeLeft <= 0) {
+                    clearInterval(questionTimerInterval);
+                    questionTimerInterval = null;
+                    autoSubmitQuestion();
                 }
             }, 1000);
         }
 
-        function updateTimerDisplay() {
+        function updateQuestionTimerDisplay() {
             if (elements.timerDisplay) {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                elements.timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                elements.timerDisplay.textContent = questionTimeLeft;
             }
         }
 
-        function autoSubmit() {
-            showToast('Time expired! Submitting...');
-            
-            // For auto-submit, we need to submit with empty answer
+        function updateTimerProgress() {
+            if (elements.timer) {
+                const pct = (questionTimeLeft / CONFIG.questionTimeLimit) * 100;
+                elements.timer.style.setProperty('--timer-progress', pct + '%');
+            }
+        }
+
+        function stopQuestionTimer() {
+            if (questionTimerInterval) {
+                clearInterval(questionTimerInterval);
+                questionTimerInterval = null;
+            }
+        }
+
+        function autoSubmitQuestion() {
+            if (isSubmitting) return;
+            showToast('⏰ Time\'s up! Moving on...', 'error');
+            const questionId = document.getElementById('questionId')?.value;
+            if (!questionId) return;
             const formData = new FormData();
-            formData.append('question_id', document.getElementById('questionId').value);
-            formData.append('answer', '');
+            formData.append('question_id', questionId);
+            formData.append('answer', '0');
+            formData.append('time_spent', CONFIG.questionTimeLimit);
             formData.append('timeout', '1');
-            
             submitAnswer(formData);
         }
+
+        // Start timer immediately on page load
+        startQuestionTimer();
 
         // ===== FORM SUBMISSION =====
         elements.form.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+            if (isSubmitting) return;
+
             const questionId = document.getElementById('questionId').value;
             const formData = new FormData();
             formData.append('question_id', questionId);
-            
-            // Get answer based on question type
+
             const answerInputs = document.querySelectorAll('[name="answer"], [name="answer[]"], [name^="matching["]');
-            
+
             if (answerInputs.length === 0) {
                 alert('Please select an answer');
                 return;
             }
 
-            // Handle different input types
             const firstInput = answerInputs[0];
-            
+
             if (firstInput.type === 'checkbox' && firstInput.name === 'answer[]') {
-                // Multiple choice checkboxes
                 const checkedBoxes = document.querySelectorAll('[name="answer[]"]:checked');
                 if (checkedBoxes.length === 0) {
                     alert('Please select at least one option');
                     return;
                 }
                 checkedBoxes.forEach(box => formData.append('answer[]', box.value));
-            } 
+            }
             else if (firstInput.name === 'answer' && firstInput.type === 'radio') {
-                // Single choice radio
                 const selectedRadio = document.querySelector('[name="answer"]:checked');
                 if (!selectedRadio) {
                     alert('Please select an option');
@@ -1457,7 +1511,6 @@
                 formData.append('answer', selectedRadio.value);
             }
             else if (firstInput.tagName === 'INPUT' && firstInput.type === 'text') {
-                // Fill in the blank
                 if (!firstInput.value.trim()) {
                     alert('Please enter an answer');
                     return;
@@ -1465,44 +1518,36 @@
                 formData.append('answer', firstInput.value.trim());
             }
             else if (firstInput.tagName === 'SELECT') {
-                // Matching questions
                 const selects = document.querySelectorAll('[name^="matching["]');
                 let allSelected = true;
-                
                 selects.forEach(select => {
-                    if (!select.value) {
-                        allSelected = false;
-                    }
+                    if (!select.value) allSelected = false;
                     formData.append(select.name, select.value);
                 });
-                
                 if (!allSelected) {
                     alert('Please match all items');
                     return;
                 }
             }
 
-            // Add time spent (if timer exists)
-            if (CONFIG.remainingTime) {
-                const timeSpent = CONFIG.remainingTime - timeLeft;
-                formData.append('time_spent', timeSpent);
-            }
+            // Record time spent on this question
+            formData.append('time_spent', CONFIG.questionTimeLimit - questionTimeLeft);
 
-            // Disable submit button and show loading
+            stopQuestionTimer();
             elements.submitBtn.disabled = true;
             elements.submitBtn.innerHTML = '<div class="spinner"></div> Submitting...';
-            
-            // Submit answer
+
             submitAnswer(formData);
         });
     }
 
     function submitAnswer(formData) {
+        if (isSubmitting) return;
+        isSubmitting = true;
+
         showToast('Submitting answer...');
 
         console.log('Submitting answer to:', CONFIG.submitUrl);
-        
-        // Log the form data
         for (let pair of formData.entries()) {
             console.log(pair[0] + ': ' + pair[1]);
         }
@@ -1523,56 +1568,46 @@
         .then(data => {
             console.log('Response data:', data);
             hideToast();
-            
+            isSubmitting = false;
+
             if (data.success) {
                 if (data.level_completed) {
                     console.log('Level completed!', data);
+                    stopQuestionTimer();
                     handleLevelComplete(data);
                 } else {
-                    // Update navigator
-                    updateNavigator();
-                    
-                    // Show feedback
                     if (data.is_correct) {
                         showToast('✓ Correct!', 'success');
                     } else {
                         showToast('✗ Incorrect', 'error');
                     }
-                    
-                    // Load next question if available
-                    if (data.next_question) {
-                        console.log('Next question available, reloading...');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        // Refresh page to show next question
-                        console.log('No next question, reloading...');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 1000);
-                    }
+                    updateNavigator();
+                    // Reload for next question — timer resets automatically on page load
+                    setTimeout(() => { location.reload(); }, 900);
                 }
             } else {
-                alert(data.error || 'Error submitting answer');
                 if (elements.submitBtn) {
                     elements.submitBtn.disabled = false;
-                    elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete') ? 
-                        'Complete Level <i class="fas fa-check-circle"></i>' : 
-                        'Next Question <i class="fas fa-arrow-right"></i>';
+                    elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete')
+                        ? 'Complete Level <i class="fas fa-check-circle"></i>'
+                        : 'Next Question <i class="fas fa-arrow-right"></i>';
                 }
+                startQuestionTimer();
+                alert(data.error || 'Error submitting answer');
             }
         })
         .catch(error => {
             console.error('Error:', error);
             hideToast();
-            alert('An error occurred. Please try again.');
+            isSubmitting = false;
             if (elements.submitBtn) {
                 elements.submitBtn.disabled = false;
-                elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete') ? 
-                    'Complete Level <i class="fas fa-check-circle"></i>' : 
-                    'Next Question <i class="fas fa-arrow-right"></i>';
+                elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete')
+                    ? 'Complete Level <i class="fas fa-check-circle"></i>'
+                    : 'Next Question <i class="fas fa-arrow-right"></i>';
             }
+            startQuestionTimer();
+            alert('An error occurred. Please try again.');
         });
     }
 
@@ -1710,8 +1745,8 @@
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', function() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
+        if (questionTimerInterval) {
+            clearInterval(questionTimerInterval);
         }
     });
 </script>

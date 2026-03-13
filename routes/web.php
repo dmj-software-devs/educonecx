@@ -205,6 +205,7 @@ Route::prefix('progressive-quizzes')->name('progressive-quizzes.')->group(functi
     // Authenticated routes
     Route::middleware(['auth'])->group(function () {
         Route::post('{progressiveQuiz}/start', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'start'])->name('start');
+        Route::post('{progressiveQuiz}/restart', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'restart'])->name('restart');
         Route::get('{progressiveQuiz}/continue', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'continue'])->name('continue');
         Route::get('{progressiveQuiz}/results', [App\Http\Controllers\ProgressiveQuizFrontController::class, 'results'])->name('results');
 
