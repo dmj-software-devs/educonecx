@@ -1032,7 +1032,7 @@
                 @endphp
                 
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    {{-- Only show "Continue to next level" if the user PASSED this level --}}
+                    {{-- Only show next level link if user PASSED --}}
                     @if($levelAttempt->passed && $nextLevel)
                         <a href="{{ route('progressive-quizzes.take', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $nextLevel->id]) }}" class="btn-back">
                             <i class="fas fa-play"></i>
@@ -1044,7 +1044,6 @@
                             View Final Results
                         </a>
                     @elseif(!$levelAttempt->passed)
-                        {{-- Failed — show retry option --}}
                         <a href="{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}" class="btn-back">
                             <i class="fas fa-chart-bar"></i>
                             View Results
@@ -1378,7 +1377,7 @@
         </div>
 
         <!-- Hidden form for restart -->
-        <form id="restartForm" method="POST" action="{{ route('progressive-quizzes.start', $progressiveQuiz) }}" style="display: none;">
+        <form id="restartForm" method="POST" action="{{ route('progressive-quizzes.restart', $progressiveQuiz) }}" style="display: none;">
             @csrf
         </form>
     </div>

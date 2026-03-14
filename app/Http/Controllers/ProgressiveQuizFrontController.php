@@ -95,7 +95,7 @@ class ProgressiveQuizFrontController extends Controller
                       ->where('user_id', $user->id);
                 })
                 ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
-                ->where('passed', true)
+                ->where('passed', 1)
                 ->get();
 
             // Extract level IDs that are completed
@@ -439,24 +439,6 @@ class ProgressiveQuizFrontController extends Controller
         // If level is in progress, get unanswered questions
         if ($levelAttempt->isInProgress()) {
             $questions = $levelAttempt->getUnansweredQuestions();
-
-            // CRITICAL GUARD: if all questions are answered but level still "in_progress",
-            // the AJAX completion was interrupted. Complete the level now server-side
-            // before rendering, so the DB is consistent and the next level unlocks.
-            $totalQCount   = $level->questions()->count();
-            $answeredQCount = $levelAttempt->answers()->count();
-            if ($totalQCount > 0 && $answeredQCount >= $totalQCount && $questions->isEmpty()) {
-                DB::beginTransaction();
-                try {
-                    $completionResponse = $this->completeLevel($attempt, $levelAttempt, $level);
-                    DB::commit();
-                    // Reload the levelAttempt so the blade sees the updated passed/percentage
-                    $levelAttempt = $levelAttempt->fresh();
-                } catch (\Exception $e) {
-                    DB::rollBack();
-                    Log::error('Auto-complete level failed in take(): ' . $e->getMessage());
-                }
-            }
         } else {
             // Start the level
             $levelAttempt->start();
@@ -529,7 +511,7 @@ class ProgressiveQuizFrontController extends Controller
             })
             ->where('progressive_level_id', $previousLevel->id)
             ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
-            ->where('passed', true)
+            ->where('passed', 1)
             ->exists();
 
         Log::info('Checking if level ' . $levelNumber . ' is unlocked. Previous level completed: ' . ($previousLevelCompleted ? 'yes' : 'no'));
