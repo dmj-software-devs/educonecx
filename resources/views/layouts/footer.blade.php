@@ -54,7 +54,7 @@
                     <h4>{{ App\Helpers\TranslationHelper::trans('footer.support') }}</h4>
                     <ul class="footer-links">
                         <li><a href="{{ route('faqs') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.faqs') }}</a></li>
-                        <li><a href="{{ route('pricing') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.pricing') }}</a></li>
+                        <!-- <li><a href="{{ route('pricing') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.pricing') }}</a></li> -->
                         <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.privacy_policy') }}</a></li>
                         <li><a href="{{ route('refund') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.refund_policy') }}</a></li>
                         <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right"></i> {{ App\Helpers\TranslationHelper::trans('footer.terms_conditions') }}</a></li>
