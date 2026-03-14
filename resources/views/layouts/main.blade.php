@@ -10,6 +10,24 @@
     <title>@yield('title', 'EDUCONECX - Learn Connect Grow Together')</title>
     <meta name="description" content="@yield('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')">
 
+    <!-- Google / Search Engine Tags -->
+    <meta itemprop="name" content="@yield('title', 'EDUCONECX - Learn Connect Grow Together')">
+    <meta itemprop="description" content="@yield('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')">
+    <meta itemprop="image" content="@yield('meta_og_image', asset('images/logo.jpg'))">
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title', 'EDUCONECX - Learn Connect Grow Together')">
+    <meta property="og:description" content="@yield('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')">
+    <meta property="og:image" content="@yield('meta_og_image', asset('images/logo.jpg'))">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', 'EDUCONECX - Learn Connect Grow Together')">
+    <meta name="twitter:description" content="@yield('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')">
+    <meta name="twitter:image" content="@yield('meta_og_image', asset('images/logo.jpg'))">
+
     <link rel="canonical" href="{{ url()->current() }}" />
     <link rel="profile" href="https://gmpg.org/xfn/11">
 

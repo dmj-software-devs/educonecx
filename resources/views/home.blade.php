@@ -1,9 +1,10 @@
 @extends('layouts.main')
 
-@section('title', App\Helpers\TranslationHelper::trans('home.title', [], 'en') ?? 'Empower Your Learning Journey Today - EDUCONECX')
+@section('title', 'Empower Your Learning Journey Today - EDUCONECX')
 
-@section('meta_description', App\Helpers\TranslationHelper::trans('home.meta_description', [], 'en') ?? 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')
+@section('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')
 
+@section('meta_og_image', asset('images/logo.jpg'))
 @push('styles')
 <style>
     /* Root Variables - Your Beautiful Logo Colors */
