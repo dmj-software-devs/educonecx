@@ -738,15 +738,32 @@
                             <a href="{{ route('dashboard') }}" class="btn-outline-custom">
                                 <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
+                            @if($canAttempt)
+                                <form action="{{ route('progressive-quizzes.restart', $progressiveQuiz) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" class="btn-outline-custom" style="border-color:var(--accent);color:var(--prussian-blue);">
+                                        <i class="fas fa-redo"></i> Re-attempt
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     @else
                         <p style="font-size:0.9rem;color:var(--khaki-beige);margin-bottom:20px;">
                             You didn't reach the {{ $minPct }}% pass mark this time. Review the level breakdowns above and try again.
                         </p>
                         <div class="action-buttons">
-                            <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-primary-custom">
-                                <i class="fas fa-redo"></i> Try Again
-                            </a>
+                            @if($canAttempt)
+                                <form action="{{ route('progressive-quizzes.restart', $progressiveQuiz) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" class="btn-primary-custom">
+                                        <i class="fas fa-redo"></i> Try Again
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-primary-custom" style="opacity:0.6;pointer-events:none;">
+                                    <i class="fas fa-lock"></i> Max Attempts Reached
+                                </a>
+                            @endif
                             <a href="{{ route('progressive-quizzes.index') }}" class="btn-outline-custom">
                                 <i class="fas fa-list"></i> All Quizzes
                             </a>

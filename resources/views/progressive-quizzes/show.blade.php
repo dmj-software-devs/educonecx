@@ -993,9 +993,9 @@
 
             <!-- Right Column - Progress and Start Quiz -->
             <div class="col-lg-4">
-                <!-- Progress Card (if attempt in progress) -->
+                <!-- Progress Card (if attempt in progress OR quiz completed) -->
                 @auth
-                    @if($attempt)
+                    @if($attempt || $quizCompleted)
                         <div class="progress-card">
                             <div class="progress-title">
                                 <i class="fas fa-chart-line"></i>
@@ -1004,16 +1004,26 @@
                             <div class="progress-bar-container">
                                 <div class="progress-header">
                                     <span>Overall Completion</span>
-                                    <span>{{ $attempt->getProgressPercentage() }}%</span>
+                                    <span>{{ $overallProgress }}%</span>
                                 </div>
                                 <div class="progress-bar-custom">
-                                    <div class="progress-fill" style="width: {{ $attempt->getProgressPercentage() }}%;"></div>
+                                    <div class="progress-fill" style="width: {{ $overallProgress }}%;"></div>
                                 </div>
                             </div>
-                            <div class="current-level">
-                                <span>Current Level:</span>
-                                <strong>Level {{ $attempt->current_level_number }}</strong>
-                            </div>
+                            @if($attempt)
+                                <div class="current-level">
+                                    <span>Current Level:</span>
+                                    <strong>Level {{ $attempt->current_level_number }}</strong>
+                                </div>
+                            @elseif($quizCompleted && $lastCompletedAttempt)
+                                <div class="current-level">
+                                    <span>Status:</span>
+                                    <strong style="color: {{ $lastCompletedAttempt->passed ? '#22c55e' : '#ef4444' }};">
+                                        {{ $lastCompletedAttempt->passed ? '✓ Passed' : '✗ Not Passed' }}
+                                        ({{ round($lastCompletedAttempt->overall_percentage ?? 0) }}%)
+                                    </strong>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 @endauth
@@ -1036,6 +1046,33 @@
                             <small style="color: var(--gray-300); display: block; text-align: center;">
                                 You have an ongoing attempt
                             </small>
+                        @elseif($quizCompleted)
+                            {{-- Quiz is fully completed — show results link and optional re-attempt --}}
+                            <a href="{{ route('progressive-quizzes.results', $quiz) }}" class="btn-continue" style="margin-bottom: 12px; background: linear-gradient(135deg, #16a34a, #22c55e);">
+                                <i class="fas fa-trophy"></i>
+                                View Results
+                            </a>
+                            @if($canAttempt)
+                                <form action="{{ route('progressive-quizzes.restart', $quiz) }}" method="POST" style="margin-top: 8px;">
+                                    @csrf
+                                    <button type="submit" class="btn-start" style="background: linear-gradient(135deg, var(--primary), var(--dark-slate));">
+                                        <i class="fas fa-redo"></i>
+                                        <span>Re-attempt Quiz</span>
+                                    </button>
+                                </form>
+                                <small style="color: var(--gray-300); display: block; text-align: center; margin-top: 6px;">
+                                    @if($quiz->attempts_allowed == 0)
+                                        Unlimited attempts available
+                                    @else
+                                        @php $usedAttempts = \App\Models\ProgressiveQuizAttempt::where('progressive_quiz_id', $quiz->id)->where('user_id', Auth::id())->where('status','completed')->count(); @endphp
+                                        {{ $usedAttempts }} of {{ $quiz->attempts_allowed }} attempts used
+                                    @endif
+                                </small>
+                            @else
+                                <small style="color: var(--gray-300); display: block; text-align: center; margin-top: 8px;">
+                                    Maximum attempts reached
+                                </small>
+                            @endif
                         @elseif($canAttempt)
                             <div class="alert-info">
                                 <i class="fas fa-info-circle"></i>

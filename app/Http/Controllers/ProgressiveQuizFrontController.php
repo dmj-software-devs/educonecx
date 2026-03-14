@@ -57,6 +57,9 @@ class ProgressiveQuizFrontController extends Controller
         $currentLevel = null;
         $canAttempt = true;
         $levelStatuses = [];
+        $quizCompleted = false;
+        $lastCompletedAttempt = null;
+        $overallProgress = 0;
 
         if ($user) {
             // Get current in-progress attempt
@@ -65,6 +68,15 @@ class ProgressiveQuizFrontController extends Controller
                 ->where('status', 'in_progress')
                 ->latest()
                 ->first();
+
+            // Get the most recent completed attempt (for showing results/progress after finish)
+            $lastCompletedAttempt = ProgressiveQuizAttempt::where('progressive_quiz_id', $quiz->id)
+                ->where('user_id', $user->id)
+                ->where('status', 'completed')
+                ->latest()
+                ->first();
+
+            $quizCompleted = !$attempt && $lastCompletedAttempt !== null;
 
             // Count completed attempts
             $completedAttempts = ProgressiveQuizAttempt::where('progressive_quiz_id', $quiz->id)
@@ -90,6 +102,17 @@ class ProgressiveQuizFrontController extends Controller
             $completedLevelIds = $completedLevelAttempts->pluck('progressive_level_id')->toArray();
 
             Log::info('Completed Level IDs: ' . json_encode($completedLevelIds));
+
+            // Calculate overall progress — use in-progress attempt if available, else last completed
+            $activeAttemptForProgress = $attempt ?? $lastCompletedAttempt;
+            if ($activeAttemptForProgress) {
+                $completedLevelsCount = $activeAttemptForProgress->levelAttempts()
+                    ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
+                    ->count();
+                $overallProgress = $quiz->total_levels > 0
+                    ? round(($completedLevelsCount / $quiz->total_levels) * 100)
+                    : 0;
+            }
 
             // Get current level from in-progress attempt
             if ($attempt) {
@@ -143,7 +166,10 @@ class ProgressiveQuizFrontController extends Controller
             'currentLevel', 
             'canAttempt',
             'totalQuestions',
-            'levelStatuses'
+            'levelStatuses',
+            'quizCompleted',
+            'lastCompletedAttempt',
+            'overallProgress'
         ));
     }
 
@@ -1042,6 +1068,9 @@ class ProgressiveQuizFrontController extends Controller
         $totalPoints = $progressiveQuiz->questions()->sum('points');
         $passed = $attempt->passed;
 
+        // Can the user attempt again?
+        $canAttempt = $progressiveQuiz->canAttempt($user->id);
+
         // Calculate stats per level
         $levelStats = [];
         foreach ($levelAttempts as $levelAttempt) {
@@ -1064,7 +1093,8 @@ class ProgressiveQuizFrontController extends Controller
             'levelStats',
             'totalQuestions',
             'totalPoints',
-            'passed'
+            'passed',
+            'canAttempt'
         ));
     }
 

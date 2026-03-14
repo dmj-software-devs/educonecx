@@ -1047,15 +1047,31 @@
                     $progress = 0;
                     $currentLevel = null;
                     $completedLevels = 0;
+                    $quizIsCompleted = false;
+                    $lastCompleted = null;
+                    $canAttemptQuiz = true;
                     
                     if ($user) {
-                        $attempt = $quiz->getUserAttempt($user->id);
-                        if ($attempt) {
-                            $completedLevels = $attempt->levelAttempts()
+                        $inProgressAttempt = $quiz->getUserAttempt($user->id);
+                        $lastCompleted = $quiz->attempts()
+                            ->where('user_id', $user->id)
+                            ->where('status', 'completed')
+                            ->latest()
+                            ->first();
+
+                        $canAttemptQuiz = $quiz->canAttempt($user->id);
+                        $quizIsCompleted = !$inProgressAttempt && $lastCompleted !== null;
+
+                        // Use in-progress attempt first, then last completed for progress display
+                        $activeAttempt = $inProgressAttempt ?? $lastCompleted;
+                        $attempt = $inProgressAttempt; // keep $attempt as in-progress only for button logic
+
+                        if ($activeAttempt) {
+                            $completedLevels = $activeAttempt->levelAttempts()
                                 ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
                                 ->count();
                             $progress = $quiz->total_levels > 0 ? round(($completedLevels / $quiz->total_levels) * 100) : 0;
-                            $currentLevel = $attempt->current_level_number;
+                            $currentLevel = $activeAttempt->current_level_number;
                         }
                     }
                 @endphp
@@ -1094,7 +1110,7 @@
                             </div> -->
                         </div>
 
-                        @if($user && $attempt)
+                        @if($user && ($attempt || $quizIsCompleted))
                             <div class="quiz-progress" aria-label="{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.aria_label_progress') }}">
                                 <div class="progress-header">
                                     <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.progress') ?? 'Progress' }}</span>
@@ -1103,7 +1119,12 @@
                                 <div class="progress-bar">
                                     <div class="progress-fill" style="width: {{ $progress }}%;"></div>
                                 </div>
-                                @if($currentLevel)
+                                @if($quizIsCompleted && $lastCompleted)
+                                    <small class="text-muted mt-1 d-block">
+                                        {{ $lastCompleted->passed ? '✓ Passed' : '✗ Not Passed' }}
+                                        — {{ round($lastCompleted->overall_percentage ?? 0) }}%
+                                    </small>
+                                @elseif($currentLevel)
                                     <small class="text-muted mt-1 d-block">{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.current_level') ?? 'Current Level' }}: {{ $currentLevel }}</small>
                                 @endif
                             </div>
@@ -1113,16 +1134,31 @@
                     <div class="quiz-footer">
                         @auth
                             @php
-                                $canAttempt = $quiz->canAttempt($user->id);
-                                $attempt = $quiz->getUserAttempt($user->id);
+                                $canAttemptQuiz = $canAttemptQuiz ?? $quiz->canAttempt($user->id);
                             @endphp
 
-                            @if($attempt && $attempt->status !== 'completed')
+                            @if($attempt)
+                                {{-- In-progress attempt --}}
                                 <a href="{{ route('progressive-quizzes.continue', $quiz) }}" class="btn-start">
                                     <i class="fas fa-play-circle"></i>
                                     <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_continue') ?? 'Continue' }}</span>
                                 </a>
-                            @elseif($canAttempt)
+                            @elseif($quizIsCompleted)
+                                {{-- Quiz fully completed --}}
+                                <a href="{{ route('progressive-quizzes.results', $quiz) }}" class="btn-start" style="background: linear-gradient(135deg, #16a34a, #22c55e);">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>View Results</span>
+                                </a>
+                                @if($canAttemptQuiz)
+                                    <form action="{{ route('progressive-quizzes.restart', $quiz) }}" method="POST" style="margin-top: 8px;">
+                                        @csrf
+                                        <button type="submit" class="btn-start" style="background: var(--gradient-1); opacity: 0.85;">
+                                            <i class="fas fa-redo"></i>
+                                            <span>Re-attempt</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            @elseif($canAttemptQuiz)
                                 <form action="{{ route('progressive-quizzes.start', $quiz) }}" method="POST">
                                     @csrf
                                     <button type="submit" class="btn-start">
