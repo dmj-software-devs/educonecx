@@ -90,10 +90,10 @@ class ProgressiveQuizFrontController extends Controller
             }
 
             // Get ALL completed levels from ALL attempts (both in-progress and completed quiz attempts)
-            $completedLevelAttempts = ProgressiveLevelAttempt::whereHas('quizAttempt', function($q) use ($quiz, $user) {
-                    $q->where('progressive_quiz_id', $quiz->id)
-                      ->where('user_id', $user->id);
-                })
+            $completedLevelAttempts = ProgressiveLevelAttempt::whereHas('quizAttempt', function ($q) use ($quiz, $user) {
+                $q->where('progressive_quiz_id', $quiz->id)
+                    ->where('user_id', $user->id);
+            })
                 ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
                 ->where('passed', 1)
                 ->get();
@@ -160,10 +160,10 @@ class ProgressiveQuizFrontController extends Controller
         }
 
         return view('progressive-quizzes.show', compact(
-            'quiz', 
-            'attempt', 
-            'completedLevelIds', 
-            'currentLevel', 
+            'quiz',
+            'attempt',
+            'completedLevelIds',
+            'currentLevel',
             'canAttempt',
             'totalQuestions',
             'levelStatuses',
@@ -201,13 +201,13 @@ class ProgressiveQuizFrontController extends Controller
         $startLevel = null;
         if ($request->has('level_id')) {
             $startLevel = ProgressiveLevel::find($request->level_id);
-            
+
             // Verify the level belongs to this quiz
             if (!$startLevel || $startLevel->progressive_quiz_id != $progressiveQuiz->id) {
                 return redirect()->route('progressive-quizzes.show', $progressiveQuiz->slug)
                     ->with('error', 'Invalid level selected.');
             }
-            
+
             // Check if level is unlocked
             if (!$this->isLevelUnlocked($progressiveQuiz, $user->id, $startLevel->level_number)) {
                 return redirect()->route('progressive-quizzes.show', $progressiveQuiz->slug)
@@ -255,7 +255,6 @@ class ProgressiveQuizFrontController extends Controller
                 'progressiveQuiz' => $progressiveQuiz->id,
                 'level' => $targetLevel->id
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to start progressive quiz: ' . $e->getMessage());
@@ -323,7 +322,6 @@ class ProgressiveQuizFrontController extends Controller
                 'progressiveQuiz' => $progressiveQuiz->id,
                 'level' => $targetLevel->id
             ])->with('info', 'Quiz restarted from Level 1.');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to restart quiz: ' . $e->getMessage());
@@ -351,7 +349,7 @@ class ProgressiveQuizFrontController extends Controller
         }
 
         $currentLevel = $attempt->getCurrentLevel();
-        
+
         if (!$currentLevel) {
             return redirect()->route('progressive-quizzes.show', $progressiveQuiz->slug)
                 ->with('error', 'Unable to find current level.');
@@ -363,18 +361,23 @@ class ProgressiveQuizFrontController extends Controller
             ->first();
 
         if ($levelAttempt && $levelAttempt->isCompleted()) {
-            // Find next available level
-            $nextLevel = $attempt->getNextLevel();
-            if ($nextLevel) {
-                return redirect()->route('progressive-quizzes.take', [
-                    'progressiveQuiz' => $progressiveQuiz->id,
-                    'level' => $nextLevel->id
-                ]);
-            } else {
-                // Complete the quiz
-                return redirect()->route('progressive-quizzes.results', $progressiveQuiz)
-                    ->with('success', 'Congratulations! You have completed all levels!');
+            // Only advance to next level if this level was PASSED
+            // If failed, fall through and re-take this same level
+            if ($levelAttempt->passed) {
+                $nextLevel = $attempt->getNextLevel();
+                if ($nextLevel) {
+                    return redirect()->route('progressive-quizzes.take', [
+                        'progressiveQuiz' => $progressiveQuiz->id,
+                        'level' => $nextLevel->id
+                    ]);
+                } else {
+                    // All levels done
+                    return redirect()->route('progressive-quizzes.results', $progressiveQuiz)
+                        ->with('success', 'Congratulations! You have completed all levels!');
+                }
             }
+            // Level completed but FAILED — let user retry by falling through to take()
+            // The take() method will create a new level attempt since the old one is complete
         }
 
         return redirect()->route('progressive-quizzes.take', [
@@ -413,6 +416,7 @@ class ProgressiveQuizFrontController extends Controller
             ->first();
 
         if (!$levelAttempt) {
+            // No attempt exists - create new one
             $levelAttempt = ProgressiveLevelAttempt::create([
                 'progressive_quiz_attempt_id' => $attempt->id,
                 'progressive_level_id' => $level->id,
@@ -421,19 +425,41 @@ class ProgressiveQuizFrontController extends Controller
             ]);
         }
 
-        // If level is already completed — never allow re-taking via back button
+        // If level is already completed:
+        // - PASSED → forward to next level (back button protection)
+        // - FAILED → reset the existing attempt so user can retry
         if ($levelAttempt->isCompleted()) {
-            $nextLevel = $attempt->getNextLevel();
-            if ($nextLevel) {
-                return redirect()->route('progressive-quizzes.take', [
+            if ($levelAttempt->passed) {
+                // Passed — don't allow re-taking, push forward
+                $nextLevel = $attempt->getNextLevel();
+                if ($nextLevel) {
+                    return redirect()->route('progressive-quizzes.take', [
+                        'progressiveQuiz' => $progressiveQuiz->id,
+                        'level' => $nextLevel->id
+                    ]);
+                }
+                return redirect()->route('progressive-quizzes.level-results', [
                     'progressiveQuiz' => $progressiveQuiz->id,
-                    'level' => $nextLevel->id
+                    'level' => $level->id
                 ]);
+            } else {
+                // Failed — RESET the existing level attempt instead of creating a new one
+                $levelAttempt->update([
+                    'status' => ProgressiveLevelAttempt::STATUS_AVAILABLE,
+                    'score' => 0,
+                    'percentage' => null,
+                    'passed' => null,
+                    'started_at' => null,
+                    'completed_at' => null,
+                    'time_taken' => null
+                ]);
+
+                // Also delete any previous answers for this level attempt
+                $levelAttempt->answers()->delete();
+
+                // Refresh the model
+                $levelAttempt = $levelAttempt->fresh();
             }
-            return redirect()->route('progressive-quizzes.level-results', [
-                'progressiveQuiz' => $progressiveQuiz->id,
-                'level' => $level->id
-            ]);
         }
 
         // If level is in progress, get unanswered questions
@@ -505,10 +531,10 @@ class ProgressiveQuizFrontController extends Controller
             return false;
         }
 
-        $previousLevelCompleted = ProgressiveLevelAttempt::whereHas('quizAttempt', function($q) use ($quiz, $userId) {
-                $q->where('progressive_quiz_id', $quiz->id)
-                  ->where('user_id', $userId);
-            })
+        $previousLevelCompleted = ProgressiveLevelAttempt::whereHas('quizAttempt', function ($q) use ($quiz, $userId) {
+            $q->where('progressive_quiz_id', $quiz->id)
+                ->where('user_id', $userId);
+        })
             ->where('progressive_level_id', $previousLevel->id)
             ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
             ->where('passed', 1)
@@ -527,7 +553,7 @@ class ProgressiveQuizFrontController extends Controller
         // Log at the very beginning
         Log::info('========== SUBMIT ANSWER STARTED ==========');
         Log::info('Request data: ' . json_encode($request->all()));
-        
+
         $user = Auth::user();
 
         if (!$user) {
@@ -622,13 +648,13 @@ class ProgressiveQuizFrontController extends Controller
 
             if ($answeredCount >= $totalQuestions) {
                 Log::info('Level complete! Calling completeLevel method');
-                
+
                 // Complete the level
                 $result = $this->completeLevel($attempt, $levelAttempt, $level);
-                
+
                 // Commit the transaction
                 DB::commit();
-                
+
                 Log::info('========== SUBMIT ANSWER COMPLETED (LEVEL COMPLETE) ==========');
                 return $result;
             }
@@ -639,13 +665,13 @@ class ProgressiveQuizFrontController extends Controller
             // Get next question
             $nextQuestionQuery = $level->questions()
                 ->whereNotIn('id', $levelAttempt->answers()->pluck('progressive_question_id'));
-            
+
             if ($level->shuffle_questions) {
                 $nextQuestionQuery->inRandomOrder();
             } else {
                 $nextQuestionQuery->orderBy('sort_order');
             }
-            
+
             $nextQuestion = $nextQuestionQuery->first();
 
             Log::info('Next question: ' . ($nextQuestion ? $nextQuestion->id : 'none'));
@@ -674,7 +700,6 @@ class ProgressiveQuizFrontController extends Controller
                 ] : null,
                 'level_completed' => false
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error in submitAnswer: ' . $e->getMessage());
@@ -730,14 +755,14 @@ class ProgressiveQuizFrontController extends Controller
                 'time_taken' => $levelAttempt->started_at ? now()->diffInSeconds($levelAttempt->started_at) : null,
                 'updated_at' => now()
             ]);
-        
+
         Log::info('Direct DB update result: ' . ($updated ? 'success' : 'failed'));
 
         // Verify with a fresh query
         $check = DB::table('progressive_level_attempts')
             ->where('id', $levelAttempt->id)
             ->first();
-            
+
         Log::info('After update - ID: ' . $check->id);
         Log::info('After update - Status: ' . $check->status);
         Log::info('After update - Score: ' . $check->score);
@@ -750,7 +775,7 @@ class ProgressiveQuizFrontController extends Controller
             ->where('progressive_quiz_attempt_id', $attempt->id)
             ->where('status', ProgressiveLevelAttempt::STATUS_COMPLETED)
             ->count();
-        
+
         $totalLevels = DB::table('progressive_levels')
             ->where('progressive_quiz_id', $attempt->quiz->id)
             ->count();
@@ -780,7 +805,7 @@ class ProgressiveQuizFrontController extends Controller
                     'current_level_number' => $nextLevel->level_number,
                     'updated_at' => now()
                 ]);
-            
+
             Log::info('Quiz attempt update result: ' . ($quizUpdated ? 'success' : 'failed'));
         }
 
@@ -815,13 +840,13 @@ class ProgressiveQuizFrontController extends Controller
         $totalScore = DB::table('progressive_level_attempts')
             ->where('progressive_quiz_attempt_id', $attempt->id)
             ->sum('score');
-            
+
         $totalPossiblePoints = DB::table('progressive_questions')
             ->where('progressive_quiz_id', $attempt->quiz->id)
             ->sum('points');
-            
-        $overallPercentage = $totalPossiblePoints > 0 
-            ? round(($totalScore / $totalPossiblePoints) * 100, 2) 
+
+        $overallPercentage = $totalPossiblePoints > 0
+            ? round(($totalScore / $totalPossiblePoints) * 100, 2)
             : 0;
 
         $updated = DB::table('progressive_quiz_attempts')
@@ -1001,7 +1026,7 @@ class ProgressiveQuizFrontController extends Controller
                 ->where('status', 'completed')
                 ->latest()
                 ->first();
-                
+
             if (!$attempt) {
                 return redirect()->route('progressive-quizzes.show', $progressiveQuiz->slug)
                     ->with('error', 'No attempt found.');

@@ -1013,7 +1013,7 @@
                             @if($attempt)
                                 <div class="current-level">
                                     <span>Current Level:</span>
-                                    <strong>Level {{ $attempt->current_level_number }}</strong>
+                                    <strong>Level {{ $currentLevel ? $currentLevel->level_number : $attempt->current_level_number }}</strong>
                                 </div>
                             @elseif($quizCompleted && $lastCompletedAttempt)
                                 <div class="current-level">
@@ -1040,7 +1040,7 @@
                             <form action="{{ route('progressive-quizzes.continue', $quiz) }}" method="GET">
                                 <button type="submit" class="btn-continue">
                                     <i class="fas fa-play-circle"></i>
-                                    Continue Level {{ $attempt->current_level_number }}
+                                    Continue Level {{ $currentLevel ? $currentLevel->level_number : $attempt->current_level_number }}
                                 </button>
                             </form>
                             <small style="color: var(--gray-300); display: block; text-align: center;">
