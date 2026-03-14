@@ -1001,7 +1001,8 @@
 
         @php
             $letters = range('A', 'Z');
-            $currentQuestion = $questions && $questions->isNotEmpty() ? $questions[$answeredCount] ?? null : null;
+            // $questions is UNANSWERED questions — always first() not [$answeredCount]
+            $currentQuestion = $questions && $questions->isNotEmpty() ? $questions->first() : null;
             $isLevelComplete = !$currentQuestion || $totalQuestions == 0;
             $quizAttempt = $levelAttempt->progressiveQuizAttempt ?? null;
         @endphp
@@ -1031,15 +1032,26 @@
                 @endphp
                 
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    @if($nextLevel)
+                    {{-- Only show "Continue to next level" if the user PASSED this level --}}
+                    @if($levelAttempt->passed && $nextLevel)
                         <a href="{{ route('progressive-quizzes.take', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $nextLevel->id]) }}" class="btn-back">
                             <i class="fas fa-play"></i>
                             Continue to Level {{ $nextLevel->level_number }}
                         </a>
-                    @else
+                    @elseif($levelAttempt->passed && !$nextLevel)
                         <a href="{{ route('progressive-quizzes.results', $progressiveQuiz) }}" class="btn-back">
                             <i class="fas fa-trophy"></i>
                             View Final Results
+                        </a>
+                    @elseif(!$levelAttempt->passed)
+                        {{-- Failed — show retry option --}}
+                        <a href="{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}" class="btn-back">
+                            <i class="fas fa-chart-bar"></i>
+                            View Results
+                        </a>
+                        <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-back" style="background: var(--gray-light); color: var(--text-primary);">
+                            <i class="fas fa-redo"></i>
+                            Try Again
                         </a>
                     @endif
                     
