@@ -68,7 +68,60 @@
         --transition-slow: all 0.5s ease;
     }
 
+    /* Hide default site header and footer for this page */
+    body .main-header,
+    body header:not(.quiz-header),
+    body .site-header,
+    body #header,
+    body .header-area {
+        display: none !important;
+    }
+    
+    body .main-footer,
+    body footer:not(.quiz-footer),
+    body .site-footer,
+    body #footer,
+    body .footer-area {
+        display: none !important;
+    }
+
+    /* Reset body styles for this page */
+    body {
+        background: var(--pure-white);
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+        overflow-x: hidden;
+    }
+
+    /* Ensure main content starts from top */
+    main {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
     /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
     @keyframes float {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-20px); }
@@ -88,25 +141,230 @@
         to { transform: translateX(100%); opacity: 0; }
     }
 
+    /* ===== HEADER/NAVBAR STYLES ===== */
+    .quiz-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        z-index: 9999;
+        transition: var(--transition);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .quiz-header.scrolled {
+        box-shadow: var(--shadow-md);
+    }
+
+    .quiz-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-header .container {
+            padding: 15px 20px;
+        }
+    }
+
+    .quiz-logo {
+        flex-shrink: 0;
+    }
+
+    .quiz-logo img {
+        height: 50px;
+        width: auto;
+    }
+
+    @media (max-width: 576px) {
+        .quiz-logo img {
+            height: 40px;
+        }
+    }
+
+    .quiz-nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-nav-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--pure-white);
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 100px 30px 30px;
+            transition: right 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+        }
+
+        .quiz-nav-menu.active {
+            right: 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .quiz-nav-menu {
+            width: 85%;
+            padding: 80px 20px 20px;
+        }
+    }
+
+    .quiz-nav-links {
+        display: flex;
+        gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-nav-links {
+            flex-direction: column;
+            width: 100%;
+            gap: 20px;
+        }
+    }
+
+    .quiz-nav-links a {
+        color: var(--prussian-blue);
+        font-weight: 500;
+        font-size: 1rem;
+        transition: var(--transition);
+        position: relative;
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-nav-links a {
+            font-size: 1.1rem;
+            padding: 10px 0;
+            display: block;
+        }
+    }
+
+    .quiz-nav-links a:hover,
+    .quiz-nav-links a.active {
+        color: var(--bright-amber);
+    }
+
+    .quiz-nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--gradient-2);
+        transition: var(--transition);
+    }
+
+    @media (max-width: 768px) {
+        .quiz-nav-links a::after {
+            bottom: 5px;
+        }
+    }
+
+    .quiz-nav-links a:hover::after,
+    .quiz-nav-links a.active::after {
+        width: 100%;
+    }
+
+    .quiz-contact-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 30px;
+        background: var(--gradient-1);
+        color: var(--pure-white);
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+        text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-contact-btn {
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+    }
+
+    .quiz-contact-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+        color: var(--pure-white);
+        background: var(--gradient-2);
+    }
+
+    .quiz-mobile-menu-btn {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        cursor: pointer;
+        z-index: 10000;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-mobile-menu-btn {
+            display: flex;
+        }
+    }
+
+    .quiz-mobile-menu-btn span {
+        width: 30px;
+        height: 3px;
+        background: var(--prussian-blue);
+        border-radius: var(--radius-full);
+        transition: var(--transition);
+    }
+
+    .quiz-mobile-menu-btn.active span:nth-child(1) {
+        transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    .quiz-mobile-menu-btn.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .quiz-mobile-menu-btn.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(8px, -8px);
+    }
+
     /* ===== HERO SECTION ===== */
     .progressive-hero {
         position: relative;
         background: var(--gradient-1);
-        padding: 80px 0;
+        padding: 120px 0 80px;
         overflow: hidden;
         color: var(--pure-white);
-        margin-bottom: 40px;
+        margin-top: 0;
     }
 
     @media (max-width: 768px) {
         .progressive-hero {
-            padding: 60px 0;
+            padding: 100px 0 60px;
         }
     }
 
     @media (max-width: 576px) {
         .progressive-hero {
-            padding: 50px 0;
+            padding: 90px 0 50px;
         }
     }
 
@@ -234,9 +492,9 @@
         font-size: 0.9em;
     }
 
-    /* ===== STATISTICS CARDS - HIDDEN IN ACCORDION ===== */
+    /* ===== STATISTICS CARDS ===== */
     .stats-section {
-        margin-bottom: 40px;
+        margin: 40px 0;
     }
 
     .stats-header {
@@ -929,6 +1187,156 @@
         opacity: 0.6;
     }
 
+    /* ===== FOOTER STYLES ===== */
+    .quiz-footer-section {
+        background: var(--prussian-blue);
+        color: var(--pure-white);
+        padding: 60px 0 30px;
+        margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+        .quiz-footer-section {
+            padding: 50px 0 30px;
+            margin-top: 50px;
+        }
+    }
+
+    .quiz-footer-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 2fr;
+        gap: 40px;
+        margin-bottom: 40px;
+        padding: 0 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .quiz-footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .quiz-footer-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+    }
+
+    .quiz-footer-logo img {
+        height: 50px;
+        width: auto;
+        margin-bottom: 20px;
+    }
+
+    .quiz-footer-about {
+        opacity: 0.8;
+        line-height: 1.8;
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+        color: var(--ivory);
+    }
+
+    .quiz-footer-title {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        position: relative;
+        padding-bottom: 15px;
+        color: var(--bright-amber);
+    }
+
+    .quiz-footer-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 2px;
+        background: var(--gradient-2);
+    }
+
+    .quiz-footer-links {
+        list-style: none;
+        padding: 0;
+    }
+
+    .quiz-footer-links li {
+        margin-bottom: 12px;
+    }
+
+    .quiz-footer-links a {
+        color: rgba(255, 255, 255, 0.8);
+        transition: var(--transition);
+        font-size: 0.95rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .quiz-footer-links a:hover {
+        color: var(--bright-amber);
+        padding-left: 5px;
+    }
+
+    .quiz-footer-contact p {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+
+    .quiz-footer-contact i {
+        width: 20px;
+        color: var(--bright-amber);
+        flex-shrink: 0;
+    }
+
+    .quiz-social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+        flex-wrap: wrap;
+    }
+
+    .quiz-social-link {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--pure-white);
+        transition: var(--transition);
+        text-decoration: none;
+    }
+
+    .quiz-social-link:hover {
+        background: var(--gradient-2);
+        transform: translateY(-5px);
+        color: var(--prussian-blue);
+    }
+
+    .quiz-footer-bottom {
+        text-align: center;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+    }
+
+    .quiz-footer-bottom a {
+        color: rgba(255, 255, 255, 0.6);
+        margin: 0 10px;
+        text-decoration: none;
+    }
+
+    .quiz-footer-bottom a:hover {
+        color: var(--bright-amber);
+    }
+
     /* ===== UTILITY CLASSES ===== */
     .position-relative { position: relative; }
     .overflow-hidden { overflow: hidden; }
@@ -950,10 +1358,49 @@
         opacity: 1;
         transform: translateY(0);
     }
+
+    /* Body menu open state */
+    body.menu-open {
+        overflow: hidden;
+    }
 </style>
 @endpush
 
 @section('content')
+<!-- Custom Header for Progressive Quizzes Page -->
+<header class="quiz-header" id="quizHeader">
+    <div class="container">
+        <a href="{{ route('home') }}" class="quiz-logo">
+            <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="EDUCONECX Logo" loading="lazy">
+        </a>
+
+        <div class="quiz-mobile-menu-btn" id="quizMobileMenuBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <nav class="quiz-nav-menu" id="quizNavMenu">
+            <div class="quiz-nav-links">
+                <a href="{{ route('home') }}">Home</a>
+                <a href="{{ route('progressive-quizzes.index') }}" class="active">Quizzes</a>
+                <a href="{{ route('quiz-competition') }}" class="{{ request()->routeIs('quiz-competition') ? 'active' : '' }}">Quiz Competition</a>
+                <!-- <a href="#about">About</a>
+                <a href="#contact">Contact</a> -->
+            </div>
+            @auth
+                <a href="{{ route('dashboard') }}" class="quiz-contact-btn">
+                    <i class="fas fa-user"></i> Dashboard
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="quiz-contact-btn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            @endauth
+        </nav>
+    </div>
+</header>
+
 <!-- Hero Section -->
 <section class="progressive-hero">
     <div class="hero-particles">
@@ -963,10 +1410,10 @@
     </div>
 
     <div class="container">
-        <div class="quiz-hero-content text-center" data-aos="fade-up">
-            <span class="quiz-hero-badge">{{ App\Helpers\TranslationHelper::trans('quiz.hero_badge') ?? 'Portal 101' }}</span>
-            <h1 class="quiz-hero-title">{{ App\Helpers\TranslationHelper::trans('quiz.hero_title') ?? 'Knowledge Portal' }}</h1>
-            <div class="quiz-hero-subtitle">
+        <div class="hero-content">
+            <span class="hero-badge">{{ App\Helpers\TranslationHelper::trans('quiz.hero_badge') ?? 'Portal 101' }}</span>
+            <h1 class="hero-title">{{ App\Helpers\TranslationHelper::trans('quiz.hero_title') ?? 'Knowledge Portal' }}</h1>
+            <div class="hero-subtitle">
                 <i class="fas fa-lightbulb"></i>
                 {{ App\Helpers\TranslationHelper::trans('quiz.hero_subtitle') ?? 'Right Knowledge is Light' }}
                 <i class="fas fa-lightbulb"></i>
@@ -1217,11 +1664,147 @@
         @endif
     </div>
 </section>
+
+<!-- Custom Footer for Progressive Quizzes Page -->
+<footer class="quiz-footer-section">
+    <div class="container">
+        <div class="quiz-footer-grid">
+            <div class="quiz-footer-col">
+                <div class="quiz-footer-logo">
+                    <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="EDUCONECX" loading="lazy">
+                </div>
+                <p class="quiz-footer-about">
+                    {{ App\Helpers\TranslationHelper::trans('progressive-quizzes.footer_about') ?? 'Empowering minds through progressive learning and assessment. Test your knowledge and grow with us.' }}
+                </p>
+            </div>
+
+            <div class="quiz-footer-col">
+                <h4 class="quiz-footer-title">Quick Links</h4>
+                <ul class="quiz-footer-links">
+                    <li><a href="{{ route('home') }}">Home</a></li>
+                    <li><a href="{{ route('progressive-quizzes.index') }}">Quizzes</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="quiz-footer-col">
+                <h4 class="quiz-footer-title">Resources</h4>
+                <ul class="quiz-footer-links">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">FAQs</a></li>
+                </ul>
+            </div>
+
+            <div class="quiz-footer-col">
+                <h4 class="quiz-footer-title">Contact Us</h4>
+                <div class="quiz-footer-contact">
+                    <p><i class="fas fa-envelope"></i> info@educonecx.com</p>
+                    <p><i class="fas fa-phone"></i> +1 (833) 533-8228</p>
+                    <p><i class="fas fa-map-marker-alt"></i> United States</p>
+                </div>
+
+                <div class="quiz-social-links">
+                    <a href="https://www.facebook.com/profile.php?id=61584601012851" class="quiz-social-link" target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@educonecx.officia" class="quiz-social-link" target="_blank">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="https://www.instagram.com/educonecx/" class="quiz-social-link" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@EDUCONECX" class="quiz-social-link" target="_blank">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://wa.me/18335338228" class="quiz-social-link" target="_blank">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-footer-bottom">
+            <p>&copy; {{ date('Y') }} EDUCONECX. All rights reserved. <a href="{{ route('privacy') }}">Privacy Policy</a> | <a href="{{ route('terms') }}">Terms of Service</a></p>
+        </div>
+    </div>
+</footer>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('quizMobileMenuBtn');
+        const navMenu = document.getElementById('quizNavMenu');
+        const body = document.body;
+
+        if (mobileMenuBtn && navMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navMenu.classList.toggle('active');
+                body.classList.toggle('menu-open');
+            });
+
+            // Close menu when clicking on a link
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenuBtn.classList.remove('active');
+                    navMenu.classList.remove('active');
+                    body.classList.remove('menu-open');
+                });
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && navMenu.classList.contains('active')) {
+                    mobileMenuBtn.classList.remove('active');
+                    navMenu.classList.remove('active');
+                    body.classList.remove('menu-open');
+                }
+            });
+        }
+
+        // Header scroll effect
+        const header = document.getElementById('quizHeader');
+        let scrollTimeout;
+        
+        if (header) {
+            window.addEventListener('scroll', () => {
+                if (!scrollTimeout) {
+                    scrollTimeout = setTimeout(() => {
+                        if (window.scrollY > 50) {
+                            header.classList.add('scrolled');
+                        } else {
+                            header.classList.remove('scrolled');
+                        }
+                        scrollTimeout = null;
+                    }, 10);
+                }
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
         // Check if user prefers reduced motion
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         
@@ -1284,7 +1867,7 @@
 
         // Touch optimizations for mobile
         if ('ontouchstart' in window) {
-            const touchElements = document.querySelectorAll('.btn-start, .btn-login, .btn-clear, .page-link, .stats-header');
+            const touchElements = document.querySelectorAll('.btn-start, .btn-login, .btn-clear, .page-link, .stats-header, .quiz-contact-btn, .quiz-social-link');
             
             touchElements.forEach(element => {
                 element.addEventListener('touchstart', function() {
@@ -1306,6 +1889,19 @@
         if (statsAccordion) {
             statsAccordion.style.display = 'none';
         }
+
+        // Set active nav link based on current page
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.quiz-nav-links a');
+        
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === currentPath || (href === '/' && currentPath === '/')) {
+                link.classList.add('active');
+            } else if (href !== '#' && currentPath.includes(href) && href !== '/') {
+                link.classList.add('active');
+            }
+        });
     });
 
     // Toggle statistics accordion

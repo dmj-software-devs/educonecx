@@ -3,7 +3,7 @@
     <div class="top-bar">
         <div class="container">
             <div class="top-bar-content">
-                <div class="contact-info">
+                <div class="contact-info ">
                     <a href="tel:+18335338228">
                         <i class="fas fa-phone-alt"></i>
                         <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.phone') }}">{{ App\Helpers\TranslationHelper::trans('header.phone') }}</span>
@@ -45,7 +45,7 @@
                         <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}">{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}</span></a></li>
                         <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') || request()->routeIs('blog.show') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.blog') }}">{{ App\Helpers\TranslationHelper::trans('header.blog') }}</span></a></li>
                         <!-- <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.team') }}">{{ App\Helpers\TranslationHelper::trans('header.team') }}</span></a></li> -->
-                        <li><a href="{{ route('quiz-competition') }}" class="{{ request()->routeIs('quiz-competition') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz_competition') }}">Quiz Competition</span></a></li>
+                        <!-- <li><a href="{{ route('quiz-competition') }}" class="{{ request()->routeIs('quiz-competition') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz_competition') }}">Quiz Competition</span></a></li> -->
                         <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                         @auth
                         <!-- <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li> -->
@@ -153,7 +153,7 @@
                 <li><a href="{{ route('neo-ed-tech') }}" class="{{ request()->routeIs('neo-ed-tech') ? 'active' : '' }}"><i class="fas fa-microchip"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}">{{ App\Helpers\TranslationHelper::trans('header.neo_ed_tech') }}</span></a></li>
                 <li><a href="{{ route('blog') }}" class="{{ request()->routeIs('blog') ? 'active' : '' }}"><i class="fas fa-blog"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.blog') }}">{{ App\Helpers\TranslationHelper::trans('header.blog') }}</span></a></li>
                 <!-- <li><a href="{{ route('our-team') }}" class="{{ request()->routeIs('our-team') ? 'active' : '' }}"><i class="fas fa-users"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.team') }}">{{ App\Helpers\TranslationHelper::trans('header.team') }}</span></a></li> -->
-                <li><a href="{{ route('quiz-competition') }}" class="{{ request()->routeIs('quiz-competition') ? 'active' : '' }}"><i class="fas fa-question-circle"></i><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz_competition') }}">Quiz Competition</span></a></li>
+                <!-- <li><a href="{{ route('quiz-competition') }}" class="{{ request()->routeIs('quiz-competition') ? 'active' : '' }}"><i class="fas fa-question-circle"></i><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz_competition') }}">Quiz Competition</span></a></li> -->
                 <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="fas fa-envelope"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.contact') }}">{{ App\Helpers\TranslationHelper::trans('header.contact') }}</span></a></li>
                 @auth
                 <!-- <li><a href="{{ route('quiz') }}" class="{{ request()->routeIs('quiz') ? 'active' : '' }}"><i class="fas fa-question-circle"></i> <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.quiz') }}">{{ App\Helpers\TranslationHelper::trans('header.quiz') }}</span></a></li> -->
