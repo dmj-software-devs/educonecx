@@ -64,72 +64,40 @@
         min-width: 0;
     }
 
-    /* ===== LEVEL HEADER ===== */
+    /* ===== LEVEL HEADER - THIN LINE STYLE ===== */
     .level-header {
-        background: var(--gradient-primary);
-        border-radius: var(--radius-lg);
-        padding: 30px;
+        border-bottom: 1px solid var(--pale-slate);
+        padding: 16px 0;
         margin-bottom: 30px;
-        position: relative;
-        overflow: hidden;
-        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: transparent;
+        box-shadow: none;
     }
 
-    .level-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(251, 198, 12, 0.1);
-        border-radius: 50%;
-        pointer-events: none;
-    }
-
+    .level-header::before,
     .level-header::after {
-        content: '';
-        position: absolute;
-        bottom: -50%;
-        left: -10%;
-        width: 250px;
-        height: 250px;
-        background: rgba(90, 209, 228, 0.1);
-        border-radius: 50%;
-        pointer-events: none;
+        display: none;
     }
 
     .level-badge {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 6px 16px;
-        border-radius: var(--radius-full);
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 15px;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(251, 198, 12, 0.3);
-        color: var(--white);
+        display: none;
     }
 
     .level-title {
-        font-size: 2rem;
-        font-weight: 800;
-        color: var(--white);
-        margin-bottom: 10px;
-        position: relative;
-        z-index: 1;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0;
+        text-shadow: none;
     }
 
     .quiz-meta {
         display: flex;
         align-items: center;
         gap: 20px;
-        position: relative;
-        z-index: 1;
-        flex-wrap: wrap;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--text-muted);
     }
 
     .quiz-meta-item {
@@ -143,51 +111,34 @@
         color: var(--bright-amber);
     }
 
-    /* ===== PROGRESS BAR ===== */
     .progress-section {
-        margin-top: 20px;
-        position: relative;
-        z-index: 1;
+        width: 200px;
     }
 
     .progress-stats {
         display: flex;
         justify-content: space-between;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.9rem;
-        margin-bottom: 8px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-bottom: 4px;
     }
 
     .progress-bar-custom {
-        height: 8px;
-        background: rgba(255, 255, 255, 0.2);
+        height: 4px;
+        background: var(--pale-slate);
         border-radius: var(--radius-full);
         overflow: hidden;
     }
 
     .progress-fill {
         height: 100%;
-        background: var(--gradient-accent);
+        background: var(--bright-amber);
         border-radius: var(--radius-full);
         transition: width 0.5s ease;
-        position: relative;
-        overflow: hidden;
     }
 
     .progress-fill::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-        animation: shimmer 2s infinite;
-    }
-
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
+        display: none;
     }
 
     /* ===== QUESTION TIMER ===== */
@@ -944,6 +895,11 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
         .quiz-grid {
@@ -960,8 +916,12 @@
 
     @media (max-width: 768px) {
         .quiz-page { padding: 20px 0; }
-        .level-header { padding: 20px; }
-        .level-title { font-size: 1.5rem; }
+        .level-header { 
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .progress-section { width: 100%; }
         .question-card { padding: 20px; }
         .question-text { font-size: 1.2rem; }
         .option-marker { width: 36px; height: 36px; }
@@ -1065,24 +1025,11 @@
             <div class="quiz-grid">
                 <!-- MAIN CONTENT -->
                 <div class="quiz-main">
-                    <!-- Level Header -->
+                    <!-- Level Header - Thin Line Style -->
                     <div class="level-header">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="level-badge">Level {{ $level->level_number }} of {{ $progressiveQuiz->total_levels }}</span>
-                            @if($level->min_percentage)
-                                <span class="level-badge" style="background: rgba(90, 209, 228, 0.2);">
-                                    <i class="fas fa-percent me-1"></i> Pass: {{ $level->min_percentage }}%
-                                </span>
-                            @endif
-                        </div>
-                        
                         <h1 class="level-title">{{ $level->title }}</h1>
                         
-                        @if($level->description)
-                            <p class="text-white-50 mb-3">{{ $level->description }}</p>
-                        @endif
-                        
-                        <div class="quiz-meta">
+                        <!-- <div class="quiz-meta">
                             <div class="quiz-meta-item">
                                 <i class="fas fa-question-circle"></i>
                                 <span>Question {{ $answeredCount + 1 }} of {{ $totalQuestions }}</span>
@@ -1091,28 +1038,33 @@
                                 <i class="fas fa-stopwatch"></i>
                                 <span>{{ $questionTimeLimit ?? 27 }}s per question</span>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Progress bar -->
-                        <div class="progress-section">
+                        <!-- <div class="progress-section">
                             <div class="progress-stats">
-                                <span>Level Progress</span>
                                 <span>{{ round($progress) }}%</span>
                             </div>
                             <div class="progress-bar-custom">
                                 <div class="progress-fill" style="width: {{ $progress }}%;"></div>
                             </div>
-                        </div>
-                    </div>
+                        </div> -->
 
-                    <!-- Per-Question Timer: 27 seconds -->
-                    <div class="timer-wrapper">
                         <div class="question-timer" id="questionTimer">
                             <i class="far fa-hourglass"></i>
                             <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
                             <span class="timer-label">seconds for this question</span>
                         </div>
                     </div>
+
+                    <!-- Per-Question Timer: 27 seconds -->
+                    <!-- <div class="timer-wrapper">
+                        <div class="question-timer" id="questionTimer">
+                            <i class="far fa-hourglass"></i>
+                            <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
+                            <span class="timer-label">seconds for this question</span>
+                        </div>
+                    </div> -->
 
                     <!-- Question Card -->
                     <div class="question-card">
