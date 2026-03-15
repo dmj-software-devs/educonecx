@@ -1371,7 +1371,7 @@
 <header class="quiz-header" id="quizHeader">
     <div class="container">
         <a href="{{ route('home') }}" class="quiz-logo">
-            <img src="https://educonecx-com-745290.hostingersite.com/wp-content/uploads/2025/09/3b85279c-87ba-4749-a941-aa670bd0f3a7.png" alt="EDUCONECX Logo" loading="lazy">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="EDUCONECX Logo" class="logo-img">
         </a>
 
         <div class="quiz-mobile-menu-btn" id="quizMobileMenuBtn">
@@ -1388,15 +1388,7 @@
                 <!-- <a href="#about">About</a>
                 <a href="#contact">Contact</a> -->
             </div>
-            @auth
-                <a href="{{ route('dashboard') }}" class="quiz-contact-btn">
-                    <i class="fas fa-user"></i> Dashboard
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="quiz-contact-btn">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-            @endauth
+          
         </nav>
     </div>
 </header>
