@@ -1235,7 +1235,7 @@
                 <!-- SIDEBAR -->
                 <div class="quiz-sidebar">
                     <!-- Statistics Card -->
-                    <div class="sidebar-card">
+                    <!-- <div class="sidebar-card">
                         <div class="sidebar-title" onclick="toggleAccordion('levelStats')">
                             <i class="fas fa-chart-pie"></i>
                             Level Statistics
@@ -1277,10 +1277,10 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Question Navigator -->
-                    <div class="sidebar-card">
+                    <!-- <div class="sidebar-card">
                         <div class="sidebar-title" onclick="toggleAccordion('questionNav')">
                             <i class="fas fa-th"></i>
                             Question Navigator
@@ -1304,7 +1304,7 @@
                                 <span class="d-inline-block"><span class="badge bg-light" style="width: 12px; height: 12px; border-radius: 50%; border: 1px solid #ccc;"></span> Pending</span>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Next Level Preview (if not last level) -->
                     @php
