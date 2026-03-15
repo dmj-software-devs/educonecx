@@ -28,13 +28,13 @@
                         <span>EDUCONECX</span>
                     </div>
                     <p class="footer-desc">{{ App\Helpers\TranslationHelper::trans('footer.company_desc') ?? 'Empowering learning, connecting futures. International AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.' }}</p>
-                    <div class="footer-social">
+                    <!-- <div class="footer-social">
                         <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="https://www.tiktok.com/@educonecx.officia" target="_blank" class="social-icon" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
                         <a href="https://www.instagram.com/educonecx/" target="_blank" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="https://www.youtube.com/@EDUCONECX" target="_blank" class="social-icon" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                         <a href="https://wa.me/18335338228" target="_blank" class="social-icon" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Quick Links -->

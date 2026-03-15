@@ -13,13 +13,13 @@
                         <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.email') }}">{{ App\Helpers\TranslationHelper::trans('header.email') }}</span>
                     </a>
                 </div>
-                <div class="social-links">
+                <!-- <div class="social-links">
                     <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
                     <a href="https://www.tiktok.com/@educonecx.officia" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.instagram.com/educonecx/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     <a href="https://www.youtube.com/@EDUCONECX" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                     <a href="https://wa.me/18335338228" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
