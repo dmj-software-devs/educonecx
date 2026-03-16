@@ -908,45 +908,181 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
-        .quiz-grid {
-            flex-direction: column;
-            align-items: center;
-        }
-        .quiz-sidebar {
-            position: static;
-            width: 100%;
-            max-width: 800px;
-        }
-        .navigator-grid {
-            grid-template-columns: repeat(8, 1fr);
-        }
+    .quiz-grid {
+        flex-direction: column;
+        align-items: center;
     }
+    .quiz-sidebar {
+        position: static;
+        width: 100%;
+        max-width: 800px;
+    }
+    .navigator-grid {
+        grid-template-columns: repeat(8, 1fr);
+    }
+    /* Fix question card margin on tablet */
+    .question-card {
+        margin-left: 0;
+    }
+}
+
 
     @media (max-width: 768px) {
-        .quiz-page { padding: 20px 0; }
-        .level-header { 
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
-        }
-        .progress-section { width: 100%; }
-        .question-card { padding: 20px; }
-        .question-text { font-size: 1.2rem; }
-        .option-marker { width: 36px; height: 36px; }
-        .option-text { font-size: 1rem; }
-        .navigator-grid { grid-template-columns: repeat(6, 1fr); }
-        .matching-item { flex-direction: column; align-items: flex-start; }
-        .matching-arrow { transform: rotate(90deg); }
-        .matching-right select { width: 100%; }
+    .quiz-page { padding: 20px 0; }
+    .level-header { 
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
     }
+    .progress-section { width: 100%; }
+    .question-card { 
+        padding: 20px;
+        margin-left: 0; /* Remove left margin on mobile */
+        width: 100%; /* Ensure full width */
+    }
+    .question-text { 
+        font-size: 1.2rem;
+        word-wrap: break-word; /* Prevent text overflow */
+    }
+    .option-marker { 
+        width: 36px; 
+        height: 36px;
+        min-width: 36px; /* Prevent shrinking */
+    }
+    .option-text { 
+        font-size: 1rem;
+        word-wrap: break-word;
+    }
+    .navigator-grid { grid-template-columns: repeat(6, 1fr); }
+    .matching-item { 
+        flex-direction: column; 
+        align-items: flex-start;
+        width: 100%; /* Full width on mobile */
+    }
+    .matching-arrow { transform: rotate(90deg); }
+    .matching-right select { width: 100%; }
+    /* MCQ options mobile fix */
+    .mcq-option .option-content {
+        padding: 15px 20px;
+        flex-wrap: wrap; /* Allow wrapping if needed */
+    }
+    /* Timer mobile fix */
+    .question-timer {
+        padding: 6px 15px;
+        width: 100%; /* Full width on mobile */
+        justify-content: center;
+    }
+    .timer-label {
+        font-size: 0.85rem;
+    }
+    .timer-display {
+        font-size: 1.2rem;
+        min-width: 1.8ch;
+    }
+    /* Question header mobile fix */
+    .question-header {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .question-badge, .question-points {
+        padding: 4px 12px;
+        font-size: 0.8rem;
+    }
+}
 
-    @media (max-width: 576px) {
-        .question-header { flex-direction: column; align-items: flex-start; }
-        .option-marker { width: 32px; height: 32px; font-size: 0.9rem; }
-        .navigator-grid { grid-template-columns: repeat(4, 1fr); }
-        .modal-actions { flex-direction: column; }
-        .image-grid { grid-template-columns: repeat(2, 1fr); }
+
+   @media (max-width: 576px) {
+    .question-header { 
+        flex-direction: column; 
+        align-items: flex-start;
+        width: 100%;
     }
+    .option-marker { 
+        width: 32px; 
+        height: 32px; 
+        font-size: 0.9rem;
+        min-width: 32px; /* Prevent shrinking */
+        margin-right: 12px;
+    }
+    .navigator-grid { grid-template-columns: repeat(4, 1fr); }
+    .modal-actions { flex-direction: column; }
+    .image-grid { 
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    /* MCQ container mobile fix */
+    .mcq-container {
+        gap: 12px;
+    }
+    .mcq-option .option-content {
+        padding: 12px 16px;
+    }
+    .option-text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    /* Fill blank mobile fix */
+    .fill-blank-input {
+        padding: 14px 16px;
+        font-size: 1rem;
+    }
+    /* Image grid mobile fix */
+    .image-content img {
+        height: 100px;
+    }
+    .image-label {
+        padding: 8px;
+        font-size: 0.85rem;
+    }
+    /* Timer mobile fix for small screens */
+    .question-timer {
+        padding: 5px 12px;
+    }
+    .timer-display {
+        font-size: 1rem;
+    }
+    .timer-label {
+        font-size: 0.8rem;
+    }
+    .question-timer i {
+        font-size: 0.9rem;
+    }
+    /* Question text mobile fix */
+    .question-text {
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+}
+@media (max-width: 380px) {
+    .question-card {
+        padding: 15px;
+    }
+    .option-marker {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        font-size: 0.8rem;
+        margin-right: 10px;
+    }
+    .option-text {
+        font-size: 0.9rem;
+    }
+    .mcq-option .option-content {
+        padding: 10px 12px;
+    }
+    .image-grid {
+        grid-template-columns: 1fr; /* Stack images on very small screens */
+    }
+    .question-timer {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .timer-label {
+        width: 100%;
+        text-align: center;
+    }
+}
+
 
     .accordion-content {
         display: none;
