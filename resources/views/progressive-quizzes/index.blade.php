@@ -348,13 +348,14 @@
 
     /* ===== HERO SECTION ===== */
     .progressive-hero {
-        position: relative;
-        background: var(--gradient-1);
-        padding: 120px 0 80px;
-        overflow: hidden;
-        color: var(--pure-white);
-        margin-top: 0;
-    }
+    position: relative;
+    background: var(--gradient-1);
+    padding: 80px 0 40px;  /* Reduced from 120px 0 80px */
+    overflow: hidden;
+    color: var(--pure-white);
+    margin-top: 0;
+}
+
 
     @media (max-width: 768px) {
         .progressive-hero {
@@ -936,7 +937,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 10px 20px;
+        padding: 10px 75px;
         background: var(--gradient-1);
         color: var(--pure-white);
         border-radius: var(--radius-full);
@@ -1418,7 +1419,7 @@
 <section class="progressive-main">
     <div class="container">
         <!-- Statistics Section - Hidden in Accordion -->
-        <div class="stats-section">
+        <!-- <div class="stats-section">
             <div class="stats-header" onclick="toggleStatsAccordion()">
                 <i class="fas fa-chart-bar"></i>
                 <h2>{{ App\Helpers\TranslationHelper::trans('quiz.statistics_title') ?? 'Quiz Statistics' }}</h2>
@@ -1457,10 +1458,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Search Section -->
-        <div class="search-section">
+        <!-- <div class="search-section">
             <form action="{{ route('progressive-quizzes.index') }}" method="GET" class="search-form">
                 <div class="search-wrapper">
                     <input type="text" 
@@ -1476,7 +1477,7 @@
                     </button>
                 </div>
             </form>
-        </div>
+        </div> -->
 
         <!-- Quizzes Grid -->
         <div class="quizzes-grid">
