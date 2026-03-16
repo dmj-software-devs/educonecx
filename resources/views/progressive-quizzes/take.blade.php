@@ -241,6 +241,7 @@
         box-shadow: var(--shadow-md);
         border: 1px solid var(--pale-slate);
         margin-bottom: 30px;
+        margin-left: 250px;
     }
 
     .question-header {
