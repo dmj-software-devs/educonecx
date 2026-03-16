@@ -1178,7 +1178,7 @@
 </section>
 
 <!-- Video Section -->
-<section class="video-section">
+<!-- <section class="video-section">
     <div class="container">
         <div class="section-header" data-aos="fade-up">
             <span class="section-subtitle">{{ __('quiz-competition.video_subtitle') }}</span>
@@ -1193,7 +1193,7 @@
             <iframe id="videoIframe" style="display: none;" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
-</section>
+</section> -->
 
 <!-- How It Works Section -->
 <section class="quiz-process-section">
