@@ -1223,6 +1223,14 @@
                 <div class="quiz-main">
                     <!-- Level Header - Thin Line Style -->
                     <div class="level-header">
+
+
+                    <div class="question-timer" id="questionTimer">
+                            <i class="far fa-hourglass"></i>
+                            <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
+                            <span class="timer-label">seconds for this question</span>
+                        </div>
+
                         <!-- NEW: Level title with oval container -->
                         <div class="level-title-container">
                             <i class="fas fa-layer-group"></i>
@@ -1250,11 +1258,11 @@
                             </div>
                         </div> -->
 
-                        <div class="question-timer" id="questionTimer">
+                        <!-- <div class="question-timer" id="questionTimer">
                             <i class="far fa-hourglass"></i>
                             <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
                             <span class="timer-label">seconds for this question</span>
-                        </div>
+                        </div> -->
                     </div>
 
                     <!-- Question Card -->
