@@ -48,7 +48,7 @@
 
     /* ===== MAIN CONTAINER ===== */
     .quiz-page {
-        padding: 40px 0;
+        padding: 0px 0;
         min-height: calc(100vh - 200px);
         background-color: var(--ivory);
     }
@@ -70,7 +70,7 @@
     .level-header {
         border-bottom: 1px solid var(--pale-slate);
         padding: 16px 0;
-        margin-bottom: 30px;
+        margin-bottom: 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
