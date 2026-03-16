@@ -54,13 +54,15 @@
     }
 
     .quiz-grid {
-        display: grid;
-        grid-template-columns: 1fr var(--sidebar-width);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
         gap: 30px;
-        align-items: start;
     }
 
     .quiz-main {
+        max-width: 800px;
+        width: 100%;
         min-width: 0;
     }
 
@@ -564,6 +566,8 @@
     .quiz-sidebar {
         position: sticky;
         top: 100px;
+        width: var(--sidebar-width);
+        flex-shrink: 0;
     }
 
     .sidebar-card {
@@ -903,11 +907,13 @@
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
         .quiz-grid {
-            grid-template-columns: 1fr;
-            gap: 20px;
+            flex-direction: column;
+            align-items: center;
         }
         .quiz-sidebar {
             position: static;
+            width: 100%;
+            max-width: 800px;
         }
         .navigator-grid {
             grid-template-columns: repeat(8, 1fr);
@@ -1057,15 +1063,6 @@
                         </div>
                     </div>
 
-                    <!-- Per-Question Timer: 27 seconds -->
-                    <!-- <div class="timer-wrapper">
-                        <div class="question-timer" id="questionTimer">
-                            <i class="far fa-hourglass"></i>
-                            <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
-                            <span class="timer-label">seconds for this question</span>
-                        </div>
-                    </div> -->
-
                     <!-- Question Card -->
                     <div class="question-card">
                         <div class="question-header">
@@ -1184,112 +1181,8 @@
                     </div>
                 </div>
 
-                <!-- SIDEBAR -->
+                <!-- SIDEBAR - ONLY RESTART BUTTON VISIBLE -->
                 <div class="quiz-sidebar">
-                    <!-- Statistics Card -->
-                    <!-- <div class="sidebar-card">
-                        <div class="sidebar-title" onclick="toggleAccordion('levelStats')">
-                            <i class="fas fa-chart-pie"></i>
-                            Level Statistics
-                            <i class="fas fa-chevron-down chevron" id="statsChevron"></i>
-                        </div>
-                        <div class="accordion-content" id="levelStats">
-                            <div class="stats-grid">
-                                <div class="stat-item">
-                                    <span class="stat-label">Questions</span>
-                                    <span class="stat-value">{{ $totalQuestions }}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Answered</span>
-                                    <span class="stat-value">{{ $answeredCount }}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Remaining</span>
-                                    <span class="stat-value">{{ $totalQuestions - $answeredCount }}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Total Points</span>
-                                    <span class="stat-value">{{ $level->questions->sum('points') }}</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Passing Score</span>
-                                    <span class="stat-value">{{ $level->min_percentage }}%</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Attempt</span>
-                                    <span class="stat-value small">
-                                        #{{ optional($quizAttempt)->attempt_number ?? '1' }}
-                                    </span>
-                                </div>
-                                @if($levelAttempt->score > 0)
-                                <div class="stat-item">
-                                    <span class="stat-label">Current Score</span>
-                                    <span class="stat-value small">{{ $levelAttempt->score }} pts</span>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div> -->
-
-                    <!-- Question Navigator -->
-                    <!-- <div class="sidebar-card">
-                        <div class="sidebar-title" onclick="toggleAccordion('questionNav')">
-                            <i class="fas fa-th"></i>
-                            Question Navigator
-                            <i class="fas fa-chevron-down chevron" id="navChevron"></i>
-                        </div>
-                        <div class="accordion-content" id="questionNav">
-                            <div class="navigator-grid" id="navigatorGrid">
-                                @foreach($questions as $index => $q)
-                                @php
-                                    $isAnswered = $index < $answeredCount;
-                                    $isCurrent = $index == $answeredCount;
-                                @endphp
-                                <div class="nav-item {{ $isAnswered ? 'answered' : '' }} {{ $isCurrent ? 'current' : '' }}">
-                                    {{ $index + 1 }}
-                                </div>
-                                @endforeach
-                            </div>
-                            <div class="mt-3 small text-muted">
-                                <span class="d-inline-block me-2"><span class="badge bg-success" style="width: 12px; height: 12px; border-radius: 50%;"></span> Answered</span>
-                                <span class="d-inline-block me-2"><span class="badge bg-warning" style="width: 12px; height: 12px; border-radius: 50%;"></span> Current</span>
-                                <span class="d-inline-block"><span class="badge bg-light" style="width: 12px; height: 12px; border-radius: 50%; border: 1px solid #ccc;"></span> Pending</span>
-                            </div>
-                        </div>
-                    </div> -->
-
-                    <!-- Next Level Preview (if not last level) -->
-                    @php
-                        $nextLevel = $progressiveQuiz->getLevelByNumber($level->level_number + 1);
-                    @endphp
-                    @if($nextLevel)
-                    <div class="sidebar-card">
-                        <div class="sidebar-title" onclick="toggleAccordion('nextLevel')">
-                            <i class="fas fa-arrow-circle-right"></i>
-                            Next Level
-                            <i class="fas fa-chevron-down chevron" id="nextChevron"></i>
-                        </div>
-                        <div class="accordion-content" id="nextLevel">
-                            <div class="text-center mb-2">
-                                <span class="badge bg-info">Level {{ $nextLevel->level_number }}</span>
-                            </div>
-                            <h6 class="text-center mb-2">{{ $nextLevel->title }}</h6>
-                            @if($nextLevel->description)
-                                <p class="small text-muted">{{ Str::limit($nextLevel->description, 60) }}</p>
-                            @endif
-                            <div class="d-flex justify-content-between small">
-                                <span><i class="fas fa-question-circle text-primary"></i> {{ $nextLevel->question_count }} Q</span>
-                                <span><i class="fas fa-percent text-success"></i> {{ $nextLevel->min_percentage }}%</span>
-                            </div>
-                            @if($nextLevel->unlock_message)
-                                <div class="alert alert-info mt-2 py-1 px-2 small">
-                                    <i class="fas fa-info-circle me-1"></i> {{ $nextLevel->unlock_message }}
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    @endif
-
                     <!-- Restart Level Option -->
                     <button class="btn-restart-sidebar" onclick="showRestartModal()">
                         <i class="fas fa-redo-alt"></i>
