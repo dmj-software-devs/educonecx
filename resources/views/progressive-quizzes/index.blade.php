@@ -452,6 +452,7 @@
         font-weight: 600;
         font-size: 0.9rem;
         margin-bottom: 20px;
+        margin-top: 7px;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(251, 198, 12, 0.3);
