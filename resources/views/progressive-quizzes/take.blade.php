@@ -697,6 +697,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
+        margin-top:15px;
     }
 
     .btn-restart-sidebar:hover {
