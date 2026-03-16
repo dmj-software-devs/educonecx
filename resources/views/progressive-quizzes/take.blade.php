@@ -76,6 +76,8 @@
         justify-content: space-between;
         background: transparent;
         box-shadow: none;
+        flex-wrap: wrap;
+        gap: 15px;
     }
 
     .level-header::before,
@@ -87,12 +89,62 @@
         display: none;
     }
 
+    /* NEW: Oval container for level title */
+    .level-title-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(251, 198, 12, 0.1), rgba(249, 247, 233, 0.3));
+        border: 2px solid var(--bright-amber);
+        border-radius: 60px; /* Creates oval shape */
+        padding: 10px 30px;
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .level-title-container::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: var(--gradient-accent);
+        border-radius: 60px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+    }
+
+    .level-title-container:hover::before {
+        opacity: 0.2;
+    }
+
+    .level-title-container:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--prussian-blue);
+    }
+
     .level-title {
         font-size: 1.5rem;
-        font-weight: 500;
-        color: var(--text-primary);
+        font-weight: 600;
+        color: var(--prussian-blue);
         margin: 0;
         text-shadow: none;
+        position: relative;
+        z-index: 1;
+        letter-spacing: 0.5px;
+    }
+
+    /* Optional: Add a small decorative element */
+    .level-title-container i {
+        color: var(--bright-amber);
+        margin-right: 10px;
+        font-size: 1.2rem;
+        position: relative;
+        z-index: 1;
     }
 
     .quiz-meta {
@@ -1171,7 +1223,11 @@
                 <div class="quiz-main">
                     <!-- Level Header - Thin Line Style -->
                     <div class="level-header">
-                        <h1 class="level-title">{{ $level->title }}</h1>
+                        <!-- NEW: Level title with oval container -->
+                        <div class="level-title-container">
+                            <i class="fas fa-layer-group"></i>
+                            <h1 class="level-title">{{ $level->title }}</h1>
+                        </div>
                         
                         <!-- <div class="quiz-meta">
                             <div class="quiz-meta-item">

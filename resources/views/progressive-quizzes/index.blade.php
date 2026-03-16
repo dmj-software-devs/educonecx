@@ -735,6 +735,19 @@
         margin-bottom: 40px;
     }
 
+    /* Single quiz centering */
+    .quizzes-grid:has(.quiz-card:only-child) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .quizzes-grid:has(.quiz-card:only-child) .quiz-card {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
     @media (max-width: 1200px) {
         .quizzes-grid {
             grid-template-columns: repeat(2, 1fr);
