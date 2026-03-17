@@ -8,6 +8,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', 'EDUCONECX - Learn Connect Grow Together')</title>
+    
+    <!-- Favicon - Browser Tab Logo -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon/favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon/android-chrome-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('favicon/android-chrome-512x512.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon/apple-touch-icon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon/favicon.ico') }}" type="image/x-icon">
+    <link rel="manifest" href="{{ asset('favicon/site.webmanifest') }}">
+    <meta name="theme-color" content="#0A1D44">
+
     <meta name="description" content="@yield('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')">
 
     <!-- Google / Search Engine Tags -->
@@ -44,7 +55,6 @@
 
     <!-- AOS Animation Library - Load with media print then switch -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" media="print" onload="this.media='all'">
-
     <!-- Custom Styles -->
     @stack('styles')
 
