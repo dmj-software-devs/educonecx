@@ -40,6 +40,9 @@
                                 <p>Select a lesson to start learning</p>
                             </div>
                         </div>
+                        <button class="fullscreen-btn" id="fullscreenBtn" style="display: none;">
+                            <i class="fas fa-expand"></i>
+                        </button>
                     </div>
 
                     <div class="lesson-content-container" id="lessonContent">
@@ -389,6 +392,73 @@
     .video-placeholder p {
         font-size: 1.1rem;
         opacity: 0.8;
+    }
+
+    /* Fullscreen Button */
+    .fullscreen-btn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(10, 29, 68, 0.8);
+        color: var(--pure-white);
+        border: 2px solid var(--bright-amber);
+        border-radius: var(--radius-full);
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transition);
+        z-index: 20;
+        backdrop-filter: blur(5px);
+        font-size: 1.2rem;
+    }
+
+    .fullscreen-btn:hover {
+        background: var(--bright-amber);
+        color: var(--prussian-blue);
+        transform: scale(1.1);
+    }
+
+    .video-player-container:-webkit-full-screen {
+        width: 100vw;
+        height: 100vh;
+        background: black;
+    }
+
+    .video-player-container:-webkit-full-screen .video-player {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .video-player-container:-webkit-full-screen iframe,
+    .video-player-container:-webkit-full-screen video {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+    }
+
+    .video-player-container:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        background: black;
+    }
+
+    .video-player-container:fullscreen .video-player {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .video-player-container:fullscreen iframe,
+    .video-player-container:fullscreen video {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
     }
 
     /* Lesson Content */
@@ -1101,6 +1171,32 @@ document.addEventListener('DOMContentLoaded', function() {
     let lessonContent = document.getElementById('lessonContent');
     let currentModalLessonId = null;
 
+    // Fullscreen functionality
+    const videoContainer = document.querySelector('.video-player-container');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            videoContainer.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+            });
+            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        } else {
+            document.exitFullscreen();
+            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        }
+    }
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    document.addEventListener('fullscreenchange', () => {
+        if (document.fullscreenElement) {
+            fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+        } else {
+            fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+        }
+    });
+
     // ========== CUSTOM MODAL IMPLEMENTATION ==========
     const modal = {
         element: document.getElementById('lessonCompleteModal'),
@@ -1193,6 +1289,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${message}</p>
             </div>
         `;
+        fullscreenBtn.style.display = 'none';
     }
 
     function updateVideoProgress(seconds) {
@@ -1355,6 +1452,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </button>
                     </div>
                 `;
+
+                fullscreenBtn.style.display = 'flex';
 
                 const localVideo = document.getElementById('localVideo');
                 if (localVideo) {
@@ -1623,6 +1722,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load initial lesson if exists
     if (currentLessonId) {
         window.loadLesson(currentLessonId);
+    } else {
+        fullscreenBtn.style.display = 'none';
     }
 
     // Responsive Sidebar
@@ -1644,10 +1745,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const lessonId = urlParams.get('lesson');
         if (lessonId) {
             window.loadLesson(lessonId);
+        } else {
+            showVideoPlaceholder('Select a lesson to start learning');
+            fullscreenBtn.style.display = 'none';
         }
     });
 
-    console.log('Learning page initialized with custom modal');
+    console.log('Learning page initialized with fullscreen button');
 });
 </script>
 @endsection

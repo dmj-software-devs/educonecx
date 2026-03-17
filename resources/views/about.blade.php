@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', App\Helpers\TranslationHelper::trans('about.title', [], 'en') ?? 'About Us - EDUCONECX | Empowering Global Learners')
+@section('title', 'About Us - EDUCONECX | Empowering Global Learners')
 
 @section('meta_description', App\Helpers\TranslationHelper::trans('about.meta_description', [], 'en') ?? 'Learn about EDUCONECX, an international AI-powered educational platform dedicated to supporting learners worldwide with practical language and digital business skills.')
 
