@@ -121,7 +121,7 @@
         min-height: 100vh;
         display: flex;
         align-items: center;
-        background-image: url('/images/hero-image.jpeg');
+
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -1792,7 +1792,7 @@
 
 @section('content')
 <!-- Hero Section - Updated with two main features -->
-<section class="hero">
+<section class="hero" style="background-image: url('/images/hero-image.jpeg');">
     <div class="container">
         <div class="hero-content" data-aos="fade-up">
             <div class="hero-badge">
