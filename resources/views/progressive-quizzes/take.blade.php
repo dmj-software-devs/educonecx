@@ -96,7 +96,8 @@
         justify-content: center;
         background: linear-gradient(135deg, rgba(251, 198, 12, 0.1), rgba(249, 247, 233, 0.3));
         border: 2px solid var(--bright-amber);
-        border-radius: 60px; /* Creates oval shape */
+        border-radius: 60px;
+        /* Creates oval shape */
         padding: 10px 30px;
         box-shadow: var(--shadow-sm);
         position: relative;
@@ -281,8 +282,15 @@
     }
 
     @keyframes pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.02); }
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.02);
+        }
     }
 
     /* ===== QUESTION CARD ===== */
@@ -294,6 +302,7 @@
         border: 1px solid var(--pale-slate);
         margin-bottom: 30px;
         margin-left: 250px;
+        margin-top: 18px;
     }
 
     .question-header {
@@ -412,23 +421,23 @@
         color: var(--prussian-blue);
     }
 
-    .mcq-option input[type="radio"]:checked + .option-content,
-    .mcq-option input[type="checkbox"]:checked + .option-content {
+    .mcq-option input[type="radio"]:checked+.option-content,
+    .mcq-option input[type="checkbox"]:checked+.option-content {
         border-color: var(--bright-amber);
         background: linear-gradient(135deg, rgba(251, 198, 12, 0.05), rgba(249, 247, 233, 0.5));
         box-shadow: 0 0 0 4px rgba(251, 198, 12, 0.15);
     }
 
-    .mcq-option input[type="radio"]:checked + .option-content .option-marker,
-    .mcq-option input[type="checkbox"]:checked + .option-content .option-marker {
+    .mcq-option input[type="radio"]:checked+.option-content .option-marker,
+    .mcq-option input[type="checkbox"]:checked+.option-content .option-marker {
         background: var(--bright-amber);
         border-color: var(--bright-amber);
         color: var(--prussian-blue);
         position: relative;
     }
 
-    .mcq-option input[type="radio"]:checked + .option-content .option-marker::after,
-    .mcq-option input[type="checkbox"]:checked + .option-content .option-marker::after {
+    .mcq-option input[type="radio"]:checked+.option-content .option-marker::after,
+    .mcq-option input[type="checkbox"]:checked+.option-content .option-marker::after {
         content: '✓';
         position: absolute;
         font-size: 1.2rem;
@@ -436,12 +445,12 @@
         color: var(--prussian-blue);
     }
 
-    .mcq-option input[type="radio"]:checked + .option-content .option-marker span,
-    .mcq-option input[type="checkbox"]:checked + .option-content .option-marker span {
+    .mcq-option input[type="radio"]:checked+.option-content .option-marker span,
+    .mcq-option input[type="checkbox"]:checked+.option-content .option-marker span {
         opacity: 0;
     }
 
-    .mcq-option input[type="checkbox"] + .option-content .option-marker {
+    .mcq-option input[type="checkbox"]+.option-content .option-marker {
         border-radius: 8px;
     }
 
@@ -547,12 +556,12 @@
         font-size: 0.9rem;
     }
 
-    .image-option input:checked + .image-content {
+    .image-option input:checked+.image-content {
         border-color: var(--bright-amber);
         box-shadow: 0 0 0 4px rgba(251, 198, 12, 0.2);
     }
 
-    .image-option input:checked + .image-content .image-label {
+    .image-option input:checked+.image-content .image-label {
         background: var(--bright-amber);
         color: var(--prussian-blue);
         font-weight: 600;
@@ -749,7 +758,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        margin-top:15px;
+        margin-top: 15px;
     }
 
     .btn-restart-sidebar:hover {
@@ -940,200 +949,288 @@
     }
 
     @keyframes spin {
-        to { transform: rotate(360deg); }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     @keyframes slideIn {
-        from { opacity: 0; transform: translateX(100%); }
-        to { opacity: 1; transform: translateX(0); }
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
 
     @keyframes modalSlideIn {
-        from { opacity: 0; transform: translateY(-50px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
     }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
-    .quiz-grid {
-        flex-direction: column;
-        align-items: center;
+        .quiz-grid {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quiz-sidebar {
+            position: static;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .navigator-grid {
+            grid-template-columns: repeat(8, 1fr);
+        }
+
+        /* Fix question card margin on tablet */
+        .question-card {
+            margin-left: 0;
+        }
     }
-    .quiz-sidebar {
-        position: static;
-        width: 100%;
-        max-width: 800px;
-    }
-    .navigator-grid {
-        grid-template-columns: repeat(8, 1fr);
-    }
-    /* Fix question card margin on tablet */
-    .question-card {
-        margin-left: 0;
-    }
-}
 
 
     @media (max-width: 768px) {
-    .quiz-page { padding: 20px 0; }
-    .level-header { 
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        .quiz-page {
+            padding: 20px 0;
+        }
+
+        .level-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .progress-section {
+            width: 100%;
+        }
+
+        .question-card {
+            padding: 20px;
+            margin-left: 0;
+            /* Remove left margin on mobile */
+            width: 100%;
+            /* Ensure full width */
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            word-wrap: break-word;
+            /* Prevent text overflow */
+        }
+
+        .option-marker {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            /* Prevent shrinking */
+        }
+
+        .option-text {
+            font-size: 1rem;
+            word-wrap: break-word;
+        }
+
+        .navigator-grid {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .matching-item {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            /* Full width on mobile */
+        }
+
+        .matching-arrow {
+            transform: rotate(90deg);
+        }
+
+        .matching-right select {
+            width: 100%;
+        }
+
+        /* MCQ options mobile fix */
+        .mcq-option .option-content {
+            padding: 15px 20px;
+            flex-wrap: wrap;
+            /* Allow wrapping if needed */
+        }
+
+        /* Timer mobile fix */
+        .question-timer {
+            padding: 6px 15px;
+            width: 100%;
+            /* Full width on mobile */
+            justify-content: center;
+        }
+
+        .timer-label {
+            font-size: 0.85rem;
+        }
+
+        .timer-display {
+            font-size: 1.2rem;
+            min-width: 1.8ch;
+        }
+
+        /* Question header mobile fix */
+        .question-header {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .question-badge,
+        .question-points {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+        }
     }
-    .progress-section { width: 100%; }
-    .question-card { 
-        padding: 20px;
-        margin-left: 0; /* Remove left margin on mobile */
-        width: 100%; /* Ensure full width */
-    }
-    .question-text { 
-        font-size: 1.2rem;
-        word-wrap: break-word; /* Prevent text overflow */
-    }
-    .option-marker { 
-        width: 36px; 
-        height: 36px;
-        min-width: 36px; /* Prevent shrinking */
-    }
-    .option-text { 
-        font-size: 1rem;
-        word-wrap: break-word;
-    }
-    .navigator-grid { grid-template-columns: repeat(6, 1fr); }
-    .matching-item { 
-        flex-direction: column; 
-        align-items: flex-start;
-        width: 100%; /* Full width on mobile */
-    }
-    .matching-arrow { transform: rotate(90deg); }
-    .matching-right select { width: 100%; }
-    /* MCQ options mobile fix */
-    .mcq-option .option-content {
-        padding: 15px 20px;
-        flex-wrap: wrap; /* Allow wrapping if needed */
-    }
-    /* Timer mobile fix */
-    .question-timer {
-        padding: 6px 15px;
-        width: 100%; /* Full width on mobile */
-        justify-content: center;
-    }
-    .timer-label {
-        font-size: 0.85rem;
-    }
-    .timer-display {
-        font-size: 1.2rem;
-        min-width: 1.8ch;
-    }
-    /* Question header mobile fix */
-    .question-header {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    .question-badge, .question-points {
-        padding: 4px 12px;
-        font-size: 0.8rem;
-    }
-}
 
 
-   @media (max-width: 576px) {
-    .question-header { 
-        flex-direction: column; 
-        align-items: flex-start;
-        width: 100%;
+    @media (max-width: 576px) {
+        .question-header {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .option-marker {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+            min-width: 32px;
+            /* Prevent shrinking */
+            margin-right: 12px;
+        }
+
+        .navigator-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+
+        .image-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        /* MCQ container mobile fix */
+        .mcq-container {
+            gap: 12px;
+        }
+
+        .mcq-option .option-content {
+            padding: 12px 16px;
+        }
+
+        .option-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* Fill blank mobile fix */
+        .fill-blank-input {
+            padding: 14px 16px;
+            font-size: 1rem;
+        }
+
+        /* Image grid mobile fix */
+        .image-content img {
+            height: 100px;
+        }
+
+        .image-label {
+            padding: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Timer mobile fix for small screens */
+        .question-timer {
+            padding: 5px 12px;
+        }
+
+        .timer-display {
+            font-size: 1rem;
+        }
+
+        .timer-label {
+            font-size: 0.8rem;
+        }
+
+        .question-timer i {
+            font-size: 0.9rem;
+        }
+
+        /* Question text mobile fix */
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
     }
-    .option-marker { 
-        width: 32px; 
-        height: 32px; 
-        font-size: 0.9rem;
-        min-width: 32px; /* Prevent shrinking */
-        margin-right: 12px;
+
+    @media (max-width: 380px) {
+        .question-card {
+            padding: 15px;
+        }
+
+        .option-marker {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            font-size: 0.8rem;
+            margin-right: 10px;
+        }
+
+        .option-text {
+            font-size: 0.9rem;
+        }
+
+        .mcq-option .option-content {
+            padding: 10px 12px;
+        }
+
+        .image-grid {
+            grid-template-columns: 1fr;
+            /* Stack images on very small screens */
+        }
+
+        .question-timer {
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .timer-label {
+            width: 100%;
+            text-align: center;
+        }
     }
-    .navigator-grid { grid-template-columns: repeat(4, 1fr); }
-    .modal-actions { flex-direction: column; }
-    .image-grid { 
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-    /* MCQ container mobile fix */
-    .mcq-container {
-        gap: 12px;
-    }
-    .mcq-option .option-content {
-        padding: 12px 16px;
-    }
-    .option-text {
-        font-size: 0.95rem;
-        line-height: 1.4;
-    }
-    /* Fill blank mobile fix */
-    .fill-blank-input {
-        padding: 14px 16px;
-        font-size: 1rem;
-    }
-    /* Image grid mobile fix */
-    .image-content img {
-        height: 100px;
-    }
-    .image-label {
-        padding: 8px;
-        font-size: 0.85rem;
-    }
-    /* Timer mobile fix for small screens */
-    .question-timer {
-        padding: 5px 12px;
-    }
-    .timer-display {
-        font-size: 1rem;
-    }
-    .timer-label {
-        font-size: 0.8rem;
-    }
-    .question-timer i {
-        font-size: 0.9rem;
-    }
-    /* Question text mobile fix */
-    .question-text {
-        font-size: 1.1rem;
-        margin-bottom: 20px;
-    }
-}
-@media (max-width: 380px) {
-    .question-card {
-        padding: 15px;
-    }
-    .option-marker {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        font-size: 0.8rem;
-        margin-right: 10px;
-    }
-    .option-text {
-        font-size: 0.9rem;
-    }
-    .mcq-option .option-content {
-        padding: 10px 12px;
-    }
-    .image-grid {
-        grid-template-columns: 1fr; /* Stack images on very small screens */
-    }
-    .question-timer {
-        flex-wrap: wrap;
-        gap: 5px;
-    }
-    .timer-label {
-        width: 100%;
-        text-align: center;
-    }
-}
 
 
     .accordion-content {
@@ -1156,88 +1253,85 @@
         </div>
 
         @php
-            $letters = range('A', 'Z');
-            // $questions is UNANSWERED questions — always first() not [$answeredCount]
-            $currentQuestion = $questions && $questions->isNotEmpty() ? $questions->first() : null;
-            $isLevelComplete = !$currentQuestion || $totalQuestions == 0;
-            $quizAttempt = $levelAttempt->progressiveQuizAttempt ?? null;
+        $letters = range('A', 'Z');
+        // $questions is UNANSWERED questions — always first() not [$answeredCount]
+        $currentQuestion = $questions && $questions->isNotEmpty() ? $questions->first() : null;
+        $isLevelComplete = !$currentQuestion || $totalQuestions == 0;
+        $quizAttempt = $levelAttempt->progressiveQuizAttempt ?? null;
         @endphp
 
         @if($isLevelComplete)
-            <!-- Level Complete - No Questions or All Questions Answered -->
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <h3>Level {{ $level->level_number }} Complete!</h3>
-                <p class="mb-4">
-                    @if($totalQuestions == 0)
-                        This level has no questions yet. Please check back later.
-                    @else
-                        You have completed all {{ $totalQuestions }} questions in this level!
-                        @if($levelAttempt->passed)
-                            <br><strong>You passed with {{ $levelAttempt->percentage }}%!</strong>
-                        @else
-                            <br><strong>You scored {{ $levelAttempt->percentage }}%. You need {{ $level->min_percentage }}% to pass.</strong>
-                        @endif
-                    @endif
-                </p>
-                
-                @php
-                    $nextLevel = $progressiveQuiz->getLevelByNumber($level->level_number + 1);
-                @endphp
-                
-                <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    {{-- Only show next level link if user PASSED --}}
-                    @if($levelAttempt->passed && $nextLevel)
-                        <a href="{{ route('progressive-quizzes.take', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $nextLevel->id]) }}" class="btn-back">
-                            <i class="fas fa-play"></i>
-                            Continue to Level {{ $nextLevel->level_number }}
-                        </a>
-                    @elseif($levelAttempt->passed && !$nextLevel)
-                        <a href="{{ route('progressive-quizzes.results', $progressiveQuiz) }}" class="btn-back">
-                            <i class="fas fa-trophy"></i>
-                            View Final Results
-                        </a>
-                    @elseif(!$levelAttempt->passed)
-                        <a href="{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}" class="btn-back">
-                            <i class="fas fa-chart-bar"></i>
-                            View Results
-                        </a>
-                        <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-back" style="background: var(--gray-light); color: var(--text-primary);">
-                            <i class="fas fa-redo"></i>
-                            Try Again
-                        </a>
-                    @endif
-                    
-                    <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-back" style="background: var(--gray-light); color: var(--text-primary);">
-                        <i class="fas fa-arrow-left"></i>
-                        Back to Quiz Overview
-                    </a>
-                </div>
+        <!-- Level Complete - No Questions or All Questions Answered -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-trophy"></i>
             </div>
+            <h3>Level {{ $level->level_number }} Complete!</h3>
+            <p class="mb-4">
+                @if($totalQuestions == 0)
+                This level has no questions yet. Please check back later.
+                @else
+                You have completed all {{ $totalQuestions }} questions in this level!
+                @if($levelAttempt->passed)
+                <br><strong>You passed with {{ $levelAttempt->percentage }}%!</strong>
+                @else
+                <br><strong>You scored {{ $levelAttempt->percentage }}%. You need {{ $level->min_percentage }}% to pass.</strong>
+                @endif
+                @endif
+            </p>
+
+            @php
+            $nextLevel = $progressiveQuiz->getLevelByNumber($level->level_number + 1);
+            @endphp
+
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                {{-- Only show next level link if user PASSED --}}
+                @if($levelAttempt->passed && $nextLevel)
+                <a href="{{ route('progressive-quizzes.take', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $nextLevel->id]) }}" class="btn-back">
+                    <i class="fas fa-play"></i>
+                    Continue to Level {{ $nextLevel->level_number }}
+                </a>
+                @elseif($levelAttempt->passed && !$nextLevel)
+                <a href="{{ route('progressive-quizzes.results', $progressiveQuiz) }}" class="btn-back">
+                    <i class="fas fa-trophy"></i>
+                    View Final Results
+                </a>
+                @elseif(!$levelAttempt->passed)
+                <a href="{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}" class="btn-back">
+                    <i class="fas fa-chart-bar"></i>
+                    View Results
+                </a>
+                <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-back" style="background: var(--gray-light); color: var(--text-primary);">
+                    <i class="fas fa-redo"></i>
+                    Try Again
+                </a>
+                @endif
+
+                <a href="{{ route('progressive-quizzes.show', $progressiveQuiz->slug) }}" class="btn-back" style="background: var(--gray-light); color: var(--text-primary);">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Quiz Overview
+                </a>
+            </div>
+        </div>
         @else
-            <!-- QUIZ TAKING VIEW -->
-            <div class="quiz-grid">
-                <!-- MAIN CONTENT -->
-                <div class="quiz-main">
-                    <!-- Level Header - Thin Line Style -->
-                    <div class="level-header">
-
-
+        <!-- QUIZ TAKING VIEW -->
+        <div class="quiz-grid">
+            <!-- MAIN CONTENT -->
+            <div class="quiz-main">
+                <!-- Level Header - Thin Line Style -->
+                <div class="level-header">
                     <div class="question-timer" id="questionTimer">
-                            <i class="far fa-hourglass"></i>
-                            <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
-                            <span class="timer-label">seconds for this question</span>
-                        </div>
+                        <i class="far fa-hourglass"></i>
+                        <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
+                        <span class="timer-label">seconds for this question</span>
+                    </div>
+                    <!-- NEW: Level title with oval container -->
+                    <div class="level-title-container">
+                        <i class="fas fa-layer-group"></i>
+                        <h1 class="level-title">{{ $level->title }}</h1>
+                    </div>
 
-                        <!-- NEW: Level title with oval container -->
-                        <div class="level-title-container">
-                            <i class="fas fa-layer-group"></i>
-                            <h1 class="level-title">{{ $level->title }}</h1>
-                        </div>
-                        
-                        <!-- <div class="quiz-meta">
+                    <!-- <div class="quiz-meta">
                             <div class="quiz-meta-item">
                                 <i class="fas fa-question-circle"></i>
                                 <span>Question {{ $answeredCount + 1 }} of {{ $totalQuestions }}</span>
@@ -1248,8 +1342,8 @@
                             </div>
                         </div> -->
 
-                        <!-- Progress bar -->
-                        <!-- <div class="progress-section">
+                    <!-- Progress bar -->
+                    <!-- <div class="progress-section">
                             <div class="progress-stats">
                                 <span>{{ round($progress) }}%</span>
                             </div>
@@ -1258,140 +1352,140 @@
                             </div>
                         </div> -->
 
-                        <!-- <div class="question-timer" id="questionTimer">
+                    <!-- <div class="question-timer" id="questionTimer">
                             <i class="far fa-hourglass"></i>
                             <span class="timer-display" id="timerDisplay">{{ $questionTimeLimit ?? 27 }}</span>
                             <span class="timer-label">seconds for this question</span>
                         </div> -->
+                </div>
+
+                <!-- Question Card -->
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-badge">
+                            Question {{ $answeredCount + 1 }}
+                        </span>
+                        <span class="question-points">
+                            <i class="fas fa-star"></i> {{ $currentQuestion->points }} pts
+                        </span>
                     </div>
 
-                    <!-- Question Card -->
-                    <div class="question-card">
-                        <div class="question-header">
-                            <span class="question-badge">
-                                Question {{ $answeredCount + 1 }}
-                            </span>
-                            <span class="question-points">
-                                <i class="fas fa-star"></i> {{ $currentQuestion->points }} pts
-                            </span>
-                        </div>
-                        
-                        <div class="question-text">
-                            {{ $currentQuestion->question_text }}
+                    <div class="question-text">
+                        {{ $currentQuestion->question_text }}
+                    </div>
+
+                    @if($currentQuestion->image)
+                    <div class="mb-4 text-center">
+                        <img src="{{ Storage::url($currentQuestion->image) }}" alt="Question image" style="max-width: 100%; max-height: 300px; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                    </div>
+                    @endif
+
+                    <!-- Answer Input Based on Question Type -->
+                    <form id="quizForm">
+                        @csrf
+                        <input type="hidden" name="question_id" value="{{ $currentQuestion->id }}" id="questionId">
+
+                        @if(in_array($currentQuestion->question_type, ['multiple_choice', 'single_choice', 'true_false']))
+                        <div class="mcq-container">
+                            @foreach($currentQuestion->options as $index => $option)
+                            <label class="mcq-option">
+                                @if($currentQuestion->question_type == 'multiple_choice')
+                                <input type="checkbox"
+                                    name="answer[]"
+                                    value="{{ $option->id }}"
+                                    class="option-input">
+                                @else
+                                <input type="radio"
+                                    name="answer"
+                                    value="{{ $option->id }}"
+                                    class="option-input">
+                                @endif
+
+                                <div class="option-content">
+                                    <div class="option-marker">
+                                        <span>{{ $letters[$index] }}</span>
+                                    </div>
+
+                                    @if($option->image)
+                                    <img src="{{ Storage::url($option->image) }}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: var(--radius-sm); margin-right: 16px;">
+                                    @endif
+
+                                    <span class="option-text">{{ $option->option_text }}</span>
+                                </div>
+                            </label>
+                            @endforeach
                         </div>
 
-                        @if($currentQuestion->image)
-                        <div class="mb-4 text-center">
-                            <img src="{{ Storage::url($currentQuestion->image) }}" alt="Question image" style="max-width: 100%; max-height: 300px; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+                        @elseif($currentQuestion->question_type == 'fill_blank')
+                        <div class="fill-blank-container">
+                            <input type="text"
+                                name="answer"
+                                class="fill-blank-input"
+                                placeholder="Type your answer here..."
+                                autocomplete="off">
+                        </div>
+
+                        @elseif($currentQuestion->question_type == 'matching')
+                        <div class="matching-container">
+                            @foreach($currentQuestion->matchingPairs as $pair)
+                            <div class="matching-item">
+                                <div class="matching-left">{{ $pair->left_item }}</div>
+                                <div class="matching-arrow"><i class="fas fa-arrow-right"></i></div>
+                                <div class="matching-right">
+                                    <select name="matching[{{ $pair->id }}]" class="matching-select">
+                                        <option value="">Select match</option>
+                                        @foreach($currentQuestion->matchingPairs->shuffle() as $option)
+                                        <option value="{{ $option->right_item }}">{{ $option->right_item }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        @elseif($currentQuestion->question_type == 'image_selection')
+                        <div class="image-grid">
+                            @foreach($currentQuestion->options as $index => $option)
+                            <label class="image-option">
+                                <input type="checkbox" name="answer[]" value="{{ $option->id }}">
+                                <div class="image-content">
+                                    @if($option->image)
+                                    <img src="{{ Storage::url($option->image) }}" alt="{{ $option->option_text }}">
+                                    @else
+                                    <div style="height: 120px; background: var(--ivory); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-image fa-3x" style="color: var(--gray);"></i>
+                                    </div>
+                                    @endif
+                                    <div class="image-label">{{ $option->option_text }}</div>
+                                </div>
+                            </label>
+                            @endforeach
                         </div>
                         @endif
 
-                        <!-- Answer Input Based on Question Type -->
-                        <form id="quizForm">
-                            @csrf
-                            <input type="hidden" name="question_id" value="{{ $currentQuestion->id }}" id="questionId">
-
-                            @if(in_array($currentQuestion->question_type, ['multiple_choice', 'single_choice', 'true_false']))
-                                <div class="mcq-container">
-                                    @foreach($currentQuestion->options as $index => $option)
-                                    <label class="mcq-option">
-                                        @if($currentQuestion->question_type == 'multiple_choice')
-                                        <input type="checkbox" 
-                                               name="answer[]" 
-                                               value="{{ $option->id }}"
-                                               class="option-input">
-                                        @else
-                                        <input type="radio" 
-                                               name="answer" 
-                                               value="{{ $option->id }}"
-                                               class="option-input">
-                                        @endif
-                                        
-                                        <div class="option-content">
-                                            <div class="option-marker">
-                                                <span>{{ $letters[$index] }}</span>
-                                            </div>
-                                            
-                                            @if($option->image)
-                                            <img src="{{ Storage::url($option->image) }}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: var(--radius-sm); margin-right: 16px;">
-                                            @endif
-                                            
-                                            <span class="option-text">{{ $option->option_text }}</span>
-                                        </div>
-                                    </label>
-                                    @endforeach
-                                </div>
-
-                            @elseif($currentQuestion->question_type == 'fill_blank')
-                                <div class="fill-blank-container">
-                                    <input type="text" 
-                                           name="answer" 
-                                           class="fill-blank-input" 
-                                           placeholder="Type your answer here..."
-                                           autocomplete="off">
-                                </div>
-
-                            @elseif($currentQuestion->question_type == 'matching')
-                                <div class="matching-container">
-                                    @foreach($currentQuestion->matchingPairs as $pair)
-                                    <div class="matching-item">
-                                        <div class="matching-left">{{ $pair->left_item }}</div>
-                                        <div class="matching-arrow"><i class="fas fa-arrow-right"></i></div>
-                                        <div class="matching-right">
-                                            <select name="matching[{{ $pair->id }}]" class="matching-select">
-                                                <option value="">Select match</option>
-                                                @foreach($currentQuestion->matchingPairs->shuffle() as $option)
-                                                <option value="{{ $option->right_item }}">{{ $option->right_item }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    @endforeach
-                                </div>
-
-                            @elseif($currentQuestion->question_type == 'image_selection')
-                                <div class="image-grid">
-                                    @foreach($currentQuestion->options as $index => $option)
-                                    <label class="image-option">
-                                        <input type="checkbox" name="answer[]" value="{{ $option->id }}">
-                                        <div class="image-content">
-                                            @if($option->image)
-                                            <img src="{{ Storage::url($option->image) }}" alt="{{ $option->option_text }}">
-                                            @else
-                                            <div style="height: 120px; background: var(--ivory); display: flex; align-items: center; justify-content: center;">
-                                                <i class="fas fa-image fa-3x" style="color: var(--gray);"></i>
-                                            </div>
-                                            @endif
-                                            <div class="image-label">{{ $option->option_text }}</div>
-                                        </div>
-                                    </label>
-                                    @endforeach
-                                </div>
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-next" id="submitBtn">
+                            @if($answeredCount + 1 == $totalQuestions)
+                            <span>Complete Level</span>
+                            <i class="fas fa-check-circle"></i>
+                            @else
+                            <span>Next Question</span>
+                            <i class="fas fa-arrow-right"></i>
                             @endif
-
-                            <!-- Submit Button -->
-                            <button type="submit" class="btn-next" id="submitBtn">
-                                @if($answeredCount + 1 == $totalQuestions)
-                                <span>Complete Level</span>
-                                <i class="fas fa-check-circle"></i>
-                                @else
-                                <span>Next Question</span>
-                                <i class="fas fa-arrow-right"></i>
-                                @endif
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- SIDEBAR - ONLY RESTART BUTTON VISIBLE -->
-                <div class="quiz-sidebar">
-                    <!-- Restart Level Option -->
-                    <button class="btn-restart-sidebar" onclick="showRestartModal()">
-                        <i class="fas fa-redo-alt"></i>
-                        Restart Level
-                    </button>
+                        </button>
+                    </form>
                 </div>
             </div>
+
+            <!-- SIDEBAR - ONLY RESTART BUTTON VISIBLE -->
+            <div class="quiz-sidebar">
+                <!-- Restart Level Option -->
+                <button class="btn-restart-sidebar" onclick="showRestartModal()">
+                    <i class="fas fa-redo-alt"></i>
+                    Restart Level
+                </button>
+            </div>
+        </div>
         @endif
 
         <!-- Restart Modal -->
@@ -1437,13 +1531,37 @@
 <script>
     // Configuration
     const CONFIG = {
-        levelId: {{ $level->id }},
-        levelNumber: {{ $level->level_number }},
-        quizId: {{ $progressiveQuiz->id }},
-        totalQuestions: {{ $totalQuestions }},
-        answeredCount: {{ $answeredCount }},
+        levelId: {
+            {
+                $level - > id
+            }
+        },
+        levelNumber: {
+            {
+                $level - > level_number
+            }
+        },
+        quizId: {
+            {
+                $progressiveQuiz - > id
+            }
+        },
+        totalQuestions: {
+            {
+                $totalQuestions
+            }
+        },
+        answeredCount: {
+            {
+                $answeredCount
+            }
+        },
         remainingTime: null,
-        questionTimeLimit: {{ $questionTimeLimit ?? 27 }},
+        questionTimeLimit: {
+            {
+                $questionTimeLimit ?? 27
+            }
+        },
         submitUrl: "{{ route('progressive-quizzes.submit', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
         levelResultsUrl: "{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
         restartUrl: "{{ route('progressive-quizzes.restart', $progressiveQuiz) }}"
@@ -1559,23 +1677,20 @@
                     return;
                 }
                 checkedBoxes.forEach(box => formData.append('answer[]', box.value));
-            }
-            else if (firstInput.name === 'answer' && firstInput.type === 'radio') {
+            } else if (firstInput.name === 'answer' && firstInput.type === 'radio') {
                 const selectedRadio = document.querySelector('[name="answer"]:checked');
                 if (!selectedRadio) {
                     alert('Please select an option');
                     return;
                 }
                 formData.append('answer', selectedRadio.value);
-            }
-            else if (firstInput.tagName === 'INPUT' && firstInput.type === 'text') {
+            } else if (firstInput.tagName === 'INPUT' && firstInput.type === 'text') {
                 if (!firstInput.value.trim()) {
                     alert('Please enter an answer');
                     return;
                 }
                 formData.append('answer', firstInput.value.trim());
-            }
-            else if (firstInput.tagName === 'SELECT') {
+            } else if (firstInput.tagName === 'SELECT') {
                 const selects = document.querySelectorAll('[name^="matching["]');
                 let allSelected = true;
                 selects.forEach(select => {
@@ -1611,83 +1726,85 @@
         }
 
         fetch(CONFIG.submitUrl, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-        .then(response => {
-            console.log('Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response data:', data);
-            hideToast();
-            isSubmitting = false;
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                hideToast();
+                isSubmitting = false;
 
-            if (data.success) {
-                if (data.level_completed) {
-                    console.log('Level completed!', data);
-                    stopQuestionTimer();
-                    handleLevelComplete(data);
-                } else {
-                    if (data.is_correct) {
-                        showToast('✓ Correct!', 'success');
+                if (data.success) {
+                    if (data.level_completed) {
+                        console.log('Level completed!', data);
+                        stopQuestionTimer();
+                        handleLevelComplete(data);
                     } else {
-                        showToast('✗ Incorrect', 'error');
+                        if (data.is_correct) {
+                            showToast('✓ Correct!', 'success');
+                        } else {
+                            showToast('✗ Incorrect', 'error');
+                        }
+                        updateNavigator();
+                        // Reload for next question — timer resets automatically on page load
+                        setTimeout(() => {
+                            location.reload();
+                        }, 900);
                     }
-                    updateNavigator();
-                    // Reload for next question — timer resets automatically on page load
-                    setTimeout(() => { location.reload(); }, 900);
+                } else {
+                    if (elements.submitBtn) {
+                        elements.submitBtn.disabled = false;
+                        elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete') ?
+                            'Complete Level <i class="fas fa-check-circle"></i>' :
+                            'Next Question <i class="fas fa-arrow-right"></i>';
+                    }
+                    startQuestionTimer();
+                    alert(data.error || 'Error submitting answer');
                 }
-            } else {
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideToast();
+                isSubmitting = false;
                 if (elements.submitBtn) {
                     elements.submitBtn.disabled = false;
-                    elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete')
-                        ? 'Complete Level <i class="fas fa-check-circle"></i>'
-                        : 'Next Question <i class="fas fa-arrow-right"></i>';
+                    elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete') ?
+                        'Complete Level <i class="fas fa-check-circle"></i>' :
+                        'Next Question <i class="fas fa-arrow-right"></i>';
                 }
                 startQuestionTimer();
-                alert(data.error || 'Error submitting answer');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            hideToast();
-            isSubmitting = false;
-            if (elements.submitBtn) {
-                elements.submitBtn.disabled = false;
-                elements.submitBtn.innerHTML = elements.submitBtn.innerHTML.includes('Complete')
-                    ? 'Complete Level <i class="fas fa-check-circle"></i>'
-                    : 'Next Question <i class="fas fa-arrow-right"></i>';
-            }
-            startQuestionTimer();
-            alert('An error occurred. Please try again.');
-        });
+                alert('An error occurred. Please try again.');
+            });
     }
 
     function handleLevelComplete(data) {
         console.log('Handling level complete:', data);
-        
+
         if (data.quiz_completed) {
             // Quiz completed - redirect to final results
             console.log('Quiz completed, redirecting to results');
             window.location.href = "{{ route('progressive-quizzes.results', $progressiveQuiz) }}";
         } else {
             // Level completed but quiz continues
-            const message = data.next_level?.unlock_message || 
+            const message = data.next_level?.unlock_message ||
                 `Congratulations! You've completed Level ${CONFIG.levelNumber}. ` +
                 `Level ${data.next_level?.number} is now unlocked!`;
             document.getElementById('levelCompleteMessage').textContent = message;
-            
+
             const modal = document.getElementById('levelCompleteModal');
             modal.classList.add('active');
-            
+
             console.log('Redirecting to level results in 3 seconds');
-            
+
             // Auto-redirect after 3 seconds
             setTimeout(() => {
                 window.location.href = CONFIG.levelResultsUrl;
@@ -1699,7 +1816,7 @@
         // Update navigator to show one more answered question
         const answered = CONFIG.answeredCount + 1;
         const items = document.querySelectorAll('.nav-item');
-        
+
         items.forEach((item, index) => {
             if (index < answered) {
                 item.classList.add('answered');
@@ -1711,7 +1828,7 @@
                 item.classList.remove('answered', 'current');
             }
         });
-        
+
         // Update counter
         CONFIG.answeredCount = answered;
         console.log('Updated answered count to:', answered);
@@ -1720,10 +1837,10 @@
     // ===== UI FUNCTIONS =====
     function toggleAccordion(id) {
         const content = document.getElementById(id);
-        const chevron = id === 'levelStats' ? document.getElementById('statsChevron') : 
-                       (id === 'questionNav' ? document.getElementById('navChevron') : 
-                       document.getElementById('nextChevron'));
-        
+        const chevron = id === 'levelStats' ? document.getElementById('statsChevron') :
+            (id === 'questionNav' ? document.getElementById('navChevron') :
+                document.getElementById('nextChevron'));
+
         if (content) {
             if (content.classList.contains('active')) {
                 content.classList.remove('active');
@@ -1739,7 +1856,7 @@
         if (elements.toast) {
             const toastSpan = elements.toast.querySelector('span');
             toastSpan.textContent = message;
-            
+
             // Change color based on type
             if (type === 'success') {
                 elements.toast.style.background = 'linear-gradient(135deg, #10b981, #059669)';
@@ -1748,9 +1865,9 @@
             } else {
                 elements.toast.style.background = 'var(--gradient-accent)';
             }
-            
+
             elements.toast.style.display = 'flex';
-            
+
             // Hide after 2 seconds
             setTimeout(() => {
                 elements.toast.style.display = 'none';
