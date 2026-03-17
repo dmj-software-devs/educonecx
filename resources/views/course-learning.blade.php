@@ -1447,13 +1447,14 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 videoPlayer.innerHTML = videoHtml + `
                     <div class="video-controls">
-                        <button class="mark-complete-btn ${isCompleted ? 'completed' : ''}" onclick="toggleLessonComplete(${currentLessonId})" id="markCompleteBtn">
-                            ${isCompleted ? '✓ Completed' : 'Mark as Complete'}
-                        </button>
+                        
                     </div>
                 `;
+                // <button class="mark-complete-btn ${isCompleted ? 'completed' : ''}" onclick="toggleLessonComplete(${currentLessonId})" id="markCompleteBtn">
+                //             ${isCompleted ? '✓ Completed' : 'Mark as Complete'}
+                //         </button>
 
-                fullscreenBtn.style.display = 'flex';
+                // fullscreenBtn.style.display = 'flex';
 
                 const localVideo = document.getElementById('localVideo');
                 if (localVideo) {
