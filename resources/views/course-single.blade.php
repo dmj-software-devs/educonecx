@@ -57,13 +57,25 @@
         --transition: all 0.3s ease;
     }
 
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     /* Hero Section */
     .course-page-hero {
         position: relative;
         background: var(--gradient-1);
-        padding: 80px 0;
+        padding: 60px 0 40px;
         overflow: hidden;
         color: var(--pure-white);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-hero {
+            padding: 80px 0 60px;
+        }
     }
 
     .course-page-hero::before {
@@ -130,13 +142,23 @@
 
     .course-page-breadcrumb {
         margin-bottom: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
     }
 
     .course-page-breadcrumb a {
         color: rgba(255, 255, 255, 0.8);
         text-decoration: none;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         transition: var(--transition);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-breadcrumb a {
+            font-size: 0.95rem;
+        }
     }
 
     .course-page-breadcrumb a:hover {
@@ -145,31 +167,44 @@
 
     .course-page-breadcrumb i {
         font-size: 0.7rem;
-        margin: 0 10px;
+        margin: 0 5px;
         color: rgba(255, 255, 255, 0.5);
     }
 
     .course-page-breadcrumb span {
         color: var(--bright-amber);
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-breadcrumb span {
+            font-size: 0.95rem;
+        }
     }
 
     .course-page-badge-wrapper {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         margin-bottom: 20px;
         flex-wrap: wrap;
     }
 
     .course-page-badge {
         display: inline-block;
-        padding: 6px 16px;
+        padding: 4px 12px;
         background: rgba(255, 255, 255, 0.2);
         border-radius: var(--radius-full);
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: 600;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(251, 198, 12, 0.3);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-badge {
+            padding: 6px 16px;
+            font-size: 0.85rem;
+        }
     }
 
     .course-page-badge.featured {
@@ -188,131 +223,220 @@
     }
 
     .course-page-hero-title {
-        font-size: clamp(2rem, 5vw, 3rem);
+        font-size: 1.8rem;
         font-weight: 800;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         line-height: 1.2;
         color: var(--pure-white);
         text-shadow: 0 2px 4px rgba(10, 29, 68, 0.3);
     }
 
+    @media (min-width: 768px) {
+        .course-page-hero-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .course-page-hero-title {
+            font-size: 3rem;
+        }
+    }
+
     .course-page-hero-description {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         opacity: 0.95;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         max-width: 800px;
         color: var(--ivory);
         line-height: 1.6;
     }
 
+    @media (min-width: 768px) {
+        .course-page-hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+    }
+
     .course-page-meta-list {
-        display: flex;
-        gap: 30px;
-        flex-wrap: wrap;
-        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    @media (min-width: 480px) {
+        .course-page-meta-list {
+            grid-template-columns: repeat(4, 1fr);
+        }
     }
 
     .course-page-meta-item {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px;
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(251, 198, 12, 0.2);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-meta-item {
+            padding: 12px;
+            gap: 12px;
+        }
     }
 
     .course-page-meta-icon {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         background: rgba(255, 255, 255, 0.15);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(251, 198, 12, 0.2);
+        font-size: 1.1rem;
         color: var(--bright-amber);
+        flex-shrink: 0;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-meta-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+    }
+
+    .course-page-meta-content {
+        min-width: 0;
     }
 
     .course-page-meta-content h4 {
-        font-size: 0.9rem;
+        font-size: 0.7rem;
         font-weight: 400;
         opacity: 0.8;
-        margin: 0 0 5px 0;
+        margin: 0 0 3px 0;
         color: var(--ivory);
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-meta-content h4 {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
     }
 
     .course-page-meta-content p {
-        font-size: 1.1rem;
+        font-size: 0.85rem;
         font-weight: 600;
         margin: 0;
         color: var(--pure-white);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-meta-content p {
+            font-size: 1rem;
+        }
     }
 
     .course-page-instructor-mini {
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 15px;
-        margin-top: 20px;
-        padding: 15px 20px;
+        gap: 12px;
+        padding: 12px 20px;
         background: rgba(255, 255, 255, 0.1);
         border-radius: var(--radius-full);
         backdrop-filter: blur(10px);
         border: 1px solid rgba(251, 198, 12, 0.2);
-        max-width: 300px;
+        max-width: 100%;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-mini {
+            padding: 15px 20px;
+            max-width: 300px;
+        }
     }
 
     .course-page-instructor-mini-avatar {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         background: var(--gradient-2);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         font-weight: 600;
         color: var(--prussian-blue);
+        flex-shrink: 0;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-mini-avatar {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
     }
 
     .course-page-instructor-mini-info h4 {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         font-weight: 400;
         opacity: 0.8;
-        margin: 0 0 5px 0;
+        margin: 0 0 3px 0;
         color: var(--ivory);
     }
 
+    @media (min-width: 768px) {
+        .course-page-instructor-mini-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+    }
+
     .course-page-instructor-mini-info p {
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
         margin: 0;
         color: var(--bright-amber);
     }
 
+    @media (min-width: 768px) {
+        .course-page-instructor-mini-info p {
+            font-size: 1rem;
+        }
+    }
+
     /* Main Content */
     .course-page-main {
-        padding: 60px 0;
+        padding: 30px 0;
         background: linear-gradient(135deg, var(--ivory) 0%, var(--pure-white) 100%);
     }
 
-    /* Course Sidebar */
-    .course-page-sidebar {
-        position: sticky;
-        top: 100px;
+    @media (min-width: 768px) {
+        .course-page-main {
+            padding: 60px 0;
+        }
     }
 
-    .course-page-card {
+    /* Course Card - Mobile First */
+    .course-page-course-card {
         background: var(--pure-white);
         border-radius: var(--radius-xl);
         overflow: hidden;
         box-shadow: var(--shadow-lg);
         margin-bottom: 30px;
         border: 1px solid rgba(251, 198, 12, 0.1);
-        transition: var(--transition);
-    }
-
-    .course-page-card:hover {
-        box-shadow: var(--shadow-hover);
-        border-color: var(--bright-amber);
     }
 
     .course-page-thumbnail {
@@ -325,11 +449,24 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
     }
 
-    .course-page-card:hover .course-page-thumbnail img {
-        transform: scale(1.05);
+    .course-page-price-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
+        padding: 6px 12px;
+        border-radius: var(--radius-full);
+        font-size: 0.85rem;
+        font-weight: 700;
+        z-index: 2;
+        box-shadow: var(--shadow-md);
+    }
+
+    .course-page-price-badge.free {
+        background: var(--gradient-3);
     }
 
     .course-page-preview-btn {
@@ -337,8 +474,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 70px;
-        height: 70px;
+        width: 50px;
+        height: 50px;
         background: var(--pure-white);
         border: none;
         border-radius: 50%;
@@ -346,19 +483,28 @@
         align-items: center;
         justify-content: center;
         color: var(--prussian-blue);
-        font-size: 1.8rem;
+        font-size: 1.3rem;
         cursor: pointer;
         transition: var(--transition);
         box-shadow: var(--shadow-lg);
-        opacity: 0;
-        visibility: hidden;
         z-index: 10;
+        border: 2px solid var(--bright-amber);
     }
 
-    .course-page-thumbnail:hover .course-page-preview-btn {
-        opacity: 1;
-        visibility: visible;
-        transform: translate(-50%, -50%) scale(1.1);
+    @media (min-width: 768px) {
+        .course-page-preview-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 1.8rem;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .course-page-thumbnail:hover .course-page-preview-btn {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
     }
 
     .course-page-preview-btn:hover {
@@ -366,75 +512,82 @@
         color: var(--prussian-blue);
     }
 
-    .course-page-price-box {
-        padding: 25px;
+    /* Course Info Accordion */
+    .course-page-info-accordion {
+        border-top: 1px solid rgba(251, 198, 12, 0.1);
+    }
+
+    .course-page-accordion-item {
         border-bottom: 1px solid rgba(251, 198, 12, 0.1);
-        background: var(--ivory);
-        text-align: center;
     }
 
-    .course-page-price {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--prussian-blue);
-        margin-bottom: 5px;
-        line-height: 1;
-    }
-
-    .course-page-price.free {
-        color: var(--sky-blue);
-    }
-
-    .course-page-price.subscription {
-        color: var(--prussian-blue);
-        font-size: 2rem;
-    }
-
-    .course-page-price small {
-        font-size: 1rem;
-        font-weight: 400;
-        color: var(--text-muted);
-        text-decoration: line-through;
-        margin-left: 10px;
-    }
-
-    .course-page-price-label {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        display: block;
-        margin-top: 5px;
-    }
-
-    .subscription-badge {
-        display: inline-block;
-        background: var(--gradient-2);
-        color: var(--prussian-blue);
-        padding: 4px 12px;
-        border-radius: var(--radius-full);
-        font-size: 0.8rem;
+    .course-page-accordion-header {
+        padding: 16px 20px;
+        background: var(--pure-white);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
         font-weight: 600;
-        margin-bottom: 10px;
-        border: 1px solid rgba(251, 198, 12, 0.3);
+        color: var(--text-primary);
     }
 
+    .course-page-accordion-header:hover {
+        background: rgba(251, 198, 12, 0.05);
+    }
+
+    .course-page-accordion-header i {
+        transition: var(--transition);
+        color: var(--bright-amber);
+    }
+
+    .course-page-accordion-header.active i {
+        transform: rotate(180deg);
+    }
+
+    .course-page-accordion-content {
+        display: none;
+        padding: 20px;
+        background: var(--ivory);
+        border-top: 1px solid rgba(251, 198, 12, 0.1);
+    }
+
+    .course-page-accordion-content.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Course Actions */
     .course-page-actions {
-        padding: 25px;
+        padding: 20px;
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
     }
 
     .course-page-btn-enroll {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        padding: 16px 30px;
+        gap: 8px;
+        padding: 14px 20px;
         background: var(--gradient-1);
         color: var(--pure-white);
         border: none;
         border-radius: var(--radius-full);
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
@@ -443,35 +596,45 @@
         box-shadow: var(--shadow-md);
     }
 
+    @media (min-width: 768px) {
+        .course-page-btn-enroll {
+            padding: 16px 30px;
+            font-size: 1.1rem;
+            gap: 10px;
+        }
+    }
+
     .course-page-btn-enroll:hover {
         background: var(--gradient-2);
         color: var(--prussian-blue);
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: var(--shadow-hover);
-    }
-
-    .course-page-btn-enroll:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        transform: none;
     }
 
     .course-page-btn-wishlist {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        padding: 14px 30px;
+        gap: 8px;
+        padding: 12px 20px;
         background: transparent;
         color: var(--text-primary);
         border: 2px solid var(--pale-slate);
         border-radius: var(--radius-full);
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
         text-decoration: none;
         width: 100%;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-btn-wishlist {
+            padding: 14px 30px;
+            font-size: 1rem;
+            gap: 10px;
+        }
     }
 
     .course-page-btn-wishlist:hover {
@@ -486,30 +649,7 @@
         border-color: transparent;
     }
 
-    .course-page-btn-wishlist.active i {
-        color: var(--prussian-blue);
-    }
-
-    .course-page-includes {
-        padding: 25px;
-        background: var(--ivory);
-        border-top: 1px solid rgba(251, 198, 12, 0.1);
-    }
-
-    .course-page-includes h4 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .course-page-includes h4 i {
-        color: var(--bright-amber);
-    }
-
+    /* Includes List */
     .course-page-includes-list {
         list-style: none;
         padding: 0;
@@ -520,8 +660,17 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px 0;
+        padding: 10px 0;
         border-bottom: 1px solid rgba(251, 198, 12, 0.1);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-includes-list li {
+            font-size: 0.95rem;
+            padding: 12px 0;
+        }
     }
 
     .course-page-includes-list li:last-child {
@@ -536,44 +685,57 @@
 
     .course-page-includes-list span {
         flex: 1;
-        color: var(--text-muted);
-        font-size: 0.95rem;
     }
 
-    .course-page-includes-list strong {
-        color: var(--text-primary);
-        font-weight: 600;
-    }
-
-    /* Course Content */
-    .course-page-content-wrapper {
+    /* Main Tabs */
+    .course-page-tabs-wrapper {
         background: var(--pure-white);
         border-radius: var(--radius-xl);
-        padding: 40px;
+        overflow: hidden;
         box-shadow: var(--shadow-lg);
+        margin-bottom: 30px;
         border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
     .course-page-tabs {
         display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-        border-bottom: 2px solid var(--pale-slate);
-        padding-bottom: 15px;
-        flex-wrap: wrap;
+        gap: 5px;
+        padding: 15px 15px 0;
+        background: var(--ivory);
+        border-bottom: 1px solid rgba(251, 198, 12, 0.1);
+        overflow-x: auto;
+        scrollbar-width: thin;
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-tabs {
+            padding: 20px 20px 0;
+            gap: 10px;
+            overflow-x: visible;
+            flex-wrap: wrap;
+        }
     }
 
     .course-page-tab-btn {
-        padding: 12px 25px;
+        padding: 10px 16px;
         background: none;
         border: none;
-        border-radius: var(--radius-md);
-        font-size: 1rem;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        font-size: 0.9rem;
         font-weight: 600;
         color: var(--text-muted);
         cursor: pointer;
         transition: var(--transition);
         position: relative;
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-tab-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+        }
     }
 
     .course-page-tab-btn:hover {
@@ -583,17 +745,27 @@
 
     .course-page-tab-btn.active {
         color: var(--bright-amber);
-        background: rgba(251, 198, 12, 0.1);
+        background: var(--pure-white);
     }
 
     .course-page-tab-btn.active::after {
         content: '';
         position: absolute;
-        bottom: -17px;
+        bottom: -1px;
         left: 0;
         width: 100%;
         height: 2px;
         background: var(--gradient-2);
+    }
+
+    .course-page-tab-content {
+        padding: 20px;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-tab-content {
+            padding: 30px;
+        }
     }
 
     .course-page-tab-pane {
@@ -602,10 +774,10 @@
 
     .course-page-tab-pane.active {
         display: block;
-        animation: course-page-fadeIn 0.5s ease;
+        animation: fadeIn 0.5s ease;
     }
 
-    @keyframes course-page-fadeIn {
+    @keyframes fadeIn {
         from {
             opacity: 0;
             transform: translateY(10px);
@@ -616,13 +788,9 @@
         }
     }
 
-    /* Overview Tab */
-    .course-page-overview-section {
-        margin-bottom: 40px;
-    }
-
+    /* Section Titles */
     .course-page-section-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 700;
         margin-bottom: 20px;
         color: var(--text-primary);
@@ -630,110 +798,104 @@
         padding-bottom: 10px;
     }
 
+    @media (min-width: 768px) {
+        .course-page-section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+    }
+
     .course-page-section-title::after {
         content: '';
         position: absolute;
         bottom: 0;
         left: 0;
-        width: 60px;
+        width: 50px;
         height: 3px;
         background: var(--gradient-2);
         border-radius: var(--radius-full);
     }
 
-    .course-page-description {
-        color: var(--text-muted);
-        line-height: 1.8;
-        font-size: 1.05rem;
-    }
-
-    .course-page-description h1,
-    .course-page-description h2,
-    .course-page-description h3 {
-        color: var(--text-primary);
-        margin-top: 30px;
-        margin-bottom: 15px;
-    }
-
-    .course-page-description p {
-        margin-bottom: 15px;
-    }
-
-    .course-page-description ul,
-    .course-page-description ol {
-        margin-bottom: 20px;
-        padding-left: 20px;
-    }
-
-    .course-page-description li {
-        margin-bottom: 8px;
-    }
-
-    .course-page-description img {
-        max-width: 100%;
-        border-radius: var(--radius-lg);
-        margin: 20px 0;
-        border: 1px solid rgba(251, 198, 12, 0.2);
-    }
-
+    /* Learning Outcomes */
     .course-page-learning-outcomes {
         background: var(--ivory);
-        padding: 30px;
+        padding: 20px;
         border-radius: var(--radius-lg);
-        margin: 30px 0;
+        margin: 25px 0;
         border-left: 4px solid var(--bright-amber);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-learning-outcomes {
+            padding: 30px;
+            margin: 30px 0;
+        }
     }
 
     .course-page-outcomes-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 20px;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    @media (min-width: 640px) {
+        .course-page-outcomes-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
     .course-page-outcome-item {
         display: flex;
-        gap: 15px;
+        gap: 12px;
         align-items: flex-start;
     }
 
     .course-page-outcome-icon {
-        width: 30px;
-        height: 30px;
+        width: 24px;
+        height: 24px;
         background: rgba(251, 198, 12, 0.1);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--bright-amber);
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         flex-shrink: 0;
     }
 
     .course-page-outcome-text {
         color: var(--text-secondary);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         line-height: 1.5;
     }
 
-    /* Curriculum Tab */
-    .course-page-curriculum-section {
-        margin-bottom: 30px;
+    @media (min-width: 768px) {
+        .course-page-outcome-text {
+            font-size: 0.95rem;
+        }
     }
 
+    /* Curriculum */
     .course-page-curriculum-header {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        gap: 10px;
         margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 15px;
+    }
+
+    @media (min-width: 640px) {
+        .course-page-curriculum-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
     }
 
     .course-page-curriculum-stats {
         display: flex;
-        gap: 20px;
+        gap: 15px;
         color: var(--text-muted);
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     .course-page-curriculum-stats i {
@@ -741,92 +903,21 @@
         margin-right: 5px;
     }
 
-    .course-page-accordion-item {
-        background: var(--pure-white);
-        border: 1px solid rgba(251, 198, 12, 0.1);
-        border-radius: var(--radius-lg);
-        margin-bottom: 15px;
-        overflow: hidden;
-        transition: var(--transition);
-    }
-
-    .course-page-accordion-item:hover {
-        border-color: var(--bright-amber);
-        box-shadow: var(--shadow-md);
-    }
-
-    .course-page-accordion-header {
-        padding: 18px 20px;
-        background: var(--ivory);
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: var(--transition);
-    }
-
-    .course-page-accordion-header:hover {
-        background: rgba(251, 198, 12, 0.05);
-    }
-
-    .course-page-accordion-header h3 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 0;
-        color: var(--text-primary);
-    }
-
-    .course-page-section-meta {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        font-size: 0.9rem;
-        color: var(--text-muted);
-    }
-
-    .course-page-section-meta i {
-        transition: var(--transition);
-        color: var(--bright-amber);
-    }
-
-    .course-page-accordion-header.active .course-page-section-meta i {
-        transform: rotate(180deg);
-    }
-
-    .course-page-accordion-content {
-        display: none;
-        padding: 20px;
-        border-top: 1px solid rgba(251, 198, 12, 0.1);
-        background: var(--pure-white);
-    }
-
-    .course-page-accordion-content.show {
-        display: block;
-        animation: course-page-slideDown 0.3s ease;
-    }
-
-    @keyframes course-page-slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
     .course-page-lesson-item {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 15px;
-        padding: 15px;
+        gap: 12px;
+        padding: 12px;
         border-bottom: 1px solid rgba(251, 198, 12, 0.1);
         transition: var(--transition);
     }
 
-    .course-page-lesson-item:last-child {
-        border-bottom: none;
+    @media (min-width: 640px) {
+        .course-page-lesson-item {
+            flex-wrap: nowrap;
+            padding: 15px;
+        }
     }
 
     .course-page-lesson-item:hover {
@@ -839,23 +930,33 @@
         color: var(--bright-amber);
         font-size: 1rem;
         text-align: center;
+        flex-shrink: 0;
     }
 
     .course-page-lesson-info {
         flex: 1;
+        min-width: 200px;
     }
 
     .course-page-lesson-title {
         font-weight: 500;
         color: var(--text-primary);
         margin-bottom: 5px;
+        font-size: 0.95rem;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-lesson-title {
+            font-size: 1rem;
+        }
     }
 
     .course-page-lesson-meta {
         display: flex;
-        gap: 15px;
-        font-size: 0.85rem;
+        gap: 12px;
+        font-size: 0.8rem;
         color: var(--text-muted);
+        flex-wrap: wrap;
     }
 
     .course-page-lesson-meta i {
@@ -866,12 +967,21 @@
     .course-page-lesson-preview {
         color: var(--bright-amber);
         text-decoration: none;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 500;
-        padding: 8px 15px;
+        padding: 6px 12px;
         border-radius: var(--radius-full);
         transition: var(--transition);
         border: 1px solid rgba(251, 198, 12, 0.3);
+        white-space: nowrap;
+        margin-left: auto;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-lesson-preview {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
     }
 
     .course-page-lesson-preview:hover {
@@ -883,62 +993,120 @@
     .course-page-lesson-locked {
         color: var(--text-muted);
         font-size: 1rem;
+        margin-left: auto;
     }
 
-    /* Instructor Tab */
+    /* Instructor */
     .course-page-instructor-profile {
         display: flex;
-        gap: 40px;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-profile {
+            flex-direction: row;
+            gap: 40px;
+        }
     }
 
     .course-page-instructor-avatar-large {
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         border-radius: 50%;
         background: var(--gradient-2);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 4rem;
+        font-size: 3rem;
         font-weight: 600;
         color: var(--prussian-blue);
         flex-shrink: 0;
         box-shadow: var(--shadow-lg);
-        border: 4px solid var(--bright-amber);
+        border: 3px solid var(--bright-amber);
+        margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-avatar-large {
+            width: 200px;
+            height: 200px;
+            font-size: 4rem;
+            border-width: 4px;
+            margin: 0;
+        }
     }
 
     .course-page-instructor-details {
         flex: 1;
+        text-align: center;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-details {
+            text-align: left;
+        }
     }
 
     .course-page-instructor-name {
-        font-size: 2rem;
+        font-size: 1.6rem;
         font-weight: 700;
         margin-bottom: 5px;
         color: var(--text-primary);
     }
 
+    @media (min-width: 768px) {
+        .course-page-instructor-name {
+            font-size: 2rem;
+        }
+    }
+
     .course-page-instructor-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         color: var(--bright-amber);
-        margin-bottom: 20px;
+        margin-bottom: 15px;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-title {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
     }
 
     .course-page-instructor-bio {
         color: var(--text-muted);
-        line-height: 1.8;
-        margin-bottom: 25px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-bio {
+            font-size: 1rem;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
     }
 
     .course-page-instructor-stats {
         display: flex;
-        gap: 40px;
-        margin-bottom: 25px;
-        padding: 20px 0;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 20px;
+        padding: 15px 0;
         border-top: 1px solid rgba(251, 198, 12, 0.1);
         border-bottom: 1px solid rgba(251, 198, 12, 0.1);
         flex-wrap: wrap;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-instructor-stats {
+            justify-content: flex-start;
+            gap: 40px;
+            margin-bottom: 25px;
+            padding: 20px 0;
+        }
     }
 
     .course-page-stat-item {
@@ -946,27 +1114,47 @@
     }
 
     .course-page-stat-value {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
         font-weight: 700;
         color: var(--bright-amber);
         line-height: 1;
         margin-bottom: 5px;
     }
 
+    @media (min-width: 768px) {
+        .course-page-stat-value {
+            font-size: 1.8rem;
+        }
+    }
+
     .course-page-stat-label {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
         color: var(--text-muted);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-stat-label {
+            font-size: 0.9rem;
+        }
     }
 
     .course-page-instructor-social {
         display: flex;
-        gap: 15px;
+        justify-content: center;
+        gap: 12px;
         flex-wrap: wrap;
     }
 
+    @media (min-width: 768px) {
+        .course-page-instructor-social {
+            justify-content: flex-start;
+            gap: 15px;
+        }
+    }
+
     .course-page-social-link {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
         background: var(--ivory);
         border-radius: 50%;
         display: flex;
@@ -975,8 +1163,16 @@
         color: var(--bright-amber);
         text-decoration: none;
         transition: var(--transition);
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         border: 1px solid rgba(251, 198, 12, 0.2);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-social-link {
+            width: 45px;
+            height: 45px;
+            font-size: 1.2rem;
+        }
     }
 
     .course-page-social-link:hover {
@@ -988,48 +1184,88 @@
 
     /* Related Courses */
     .course-page-related-courses {
-        margin-top: 60px;
+        margin-top: 30px;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-related-courses {
+            margin-top: 60px;
+        }
     }
 
     .course-page-related-header {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-        gap: 15px;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    @media (min-width: 640px) {
+        .course-page-related-header {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
     }
 
     .course-page-related-title {
-        font-size: 1.8rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: var(--text-primary);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-related-title {
+            font-size: 1.8rem;
+        }
     }
 
     .course-page-view-all {
         color: var(--bright-amber);
         text-decoration: none;
         font-weight: 600;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 5px;
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: var(--radius-full);
         transition: var(--transition);
         border: 1px solid rgba(251, 198, 12, 0.3);
+        font-size: 0.9rem;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-view-all {
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
     }
 
     .course-page-view-all:hover {
         background: var(--gradient-2);
         color: var(--prussian-blue);
         border-color: transparent;
-        gap: 10px;
+        gap: 8px;
     }
 
     .course-page-related-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 25px;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    @media (min-width: 480px) {
+        .course-page-related-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (min-width: 992px) {
+        .course-page-related-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
     }
 
     .course-page-related-card {
@@ -1044,9 +1280,15 @@
     }
 
     .course-page-related-card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-5px);
         box-shadow: var(--shadow-hover);
         border-color: var(--bright-amber);
+    }
+
+    @media (min-width: 768px) {
+        .course-page-related-card:hover {
+            transform: translateY(-8px);
+        }
     }
 
     .course-page-related-thumbnail {
@@ -1066,24 +1308,44 @@
     }
 
     .course-page-related-content {
-        padding: 20px;
+        padding: 15px;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-related-content {
+            padding: 20px;
+        }
     }
 
     .course-page-related-category {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         color: var(--bright-amber);
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         font-weight: 600;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
     }
 
-    .course-page-related-title {
-        font-size: 1.1rem;
+    @media (min-width: 768px) {
+        .course-page-related-category {
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+    }
+
+    .course-page-related-title-small {
+        font-size: 0.9rem;
         font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         color: var(--text-primary);
-        line-height: 1.4;
+        line-height: 1.3;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-related-title-small {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
     }
 
     .course-page-related-meta {
@@ -1092,19 +1354,14 @@
         align-items: center;
     }
 
-    .course-page-related-price {
-        font-size: 1.2rem;
+    .course-page-related-price-small {
+        font-size: 1rem;
         font-weight: 700;
         color: var(--prussian-blue);
     }
 
-    .course-page-related-price.free {
+    .course-page-related-price-small.free {
         color: var(--sky-blue);
-    }
-
-    .course-page-related-rating {
-        color: var(--bright-amber);
-        font-size: 0.9rem;
     }
 
     /* Video Modal */
@@ -1115,20 +1372,21 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(10, 29, 68, 0.9);
+        background: rgba(10, 29, 68, 0.95);
         z-index: 99999;
         align-items: center;
         justify-content: center;
+        padding: 15px;
     }
 
     .course-page-modal.show {
         display: flex;
-        animation: course-page-fadeIn 0.3s ease;
+        animation: fadeIn 0.3s ease;
     }
 
     .course-page-modal-content {
         position: relative;
-        width: 90%;
+        width: 100%;
         max-width: 900px;
         background: var(--prussian-blue);
         border-radius: var(--radius-lg);
@@ -1138,21 +1396,31 @@
 
     .course-page-modal-close {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 40px;
-        height: 40px;
+        top: 10px;
+        right: 10px;
+        width: 35px;
+        height: 35px;
         background: rgba(255, 255, 255, 0.2);
         border: none;
         border-radius: 50%;
         color: var(--pure-white);
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: var(--transition);
         z-index: 10;
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    @media (min-width: 768px) {
+        .course-page-modal-close {
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
     }
 
     .course-page-modal-close:hover {
@@ -1182,17 +1450,26 @@
         position: fixed;
         bottom: 20px;
         right: 20px;
-        padding: 15px 25px;
+        left: 20px;
+        padding: 15px 20px;
         border-radius: var(--radius-full);
         box-shadow: var(--shadow-lg);
         z-index: 10000;
-        animation: course-page-slideIn 0.3s ease;
+        animation: slideIn 0.3s ease;
         font-weight: 500;
         display: flex;
         align-items: center;
         gap: 10px;
-        max-width: 400px;
+        max-width: none;
         border-left: 4px solid var(--bright-amber);
+    }
+
+    @media (min-width: 640px) {
+        .course-page-notification {
+            left: auto;
+            right: 20px;
+            max-width: 400px;
+        }
     }
 
     .course-page-notification.success {
@@ -1210,12 +1487,7 @@
         color: var(--prussian-blue);
     }
 
-    .course-page-notification.warning {
-        background: var(--gradient-2);
-        color: var(--prussian-blue);
-    }
-
-    @keyframes course-page-slideIn {
+    @keyframes slideIn {
         from {
             transform: translateX(100%);
             opacity: 0;
@@ -1226,7 +1498,7 @@
         }
     }
 
-    @keyframes course-page-slideOut {
+    @keyframes slideOut {
         from {
             transform: translateX(0);
             opacity: 1;
@@ -1237,178 +1509,55 @@
         }
     }
 
-    /* Responsive */
-    @media (max-width: 992px) {
-        .course-page-sidebar {
-            position: static;
-            margin-top: 40px;
-        }
-
-        .course-page-content-wrapper {
-            padding: 30px;
-        }
-
-        .course-page-instructor-profile {
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .course-page-instructor-stats {
-            justify-content: center;
-        }
-
-        .course-page-instructor-social {
-            justify-content: center;
-        }
-
-        .course-page-section-title::after {
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .course-page-hero {
-            padding: 60px 0;
-        }
+    /* Responsive Layout - Mobile First */
+    .row {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
     }
 
-    @media (max-width: 768px) {
-        .course-page-hero {
-            padding: 40px 0;
-        }
-
-        .course-page-hero-title {
-            font-size: 1.8rem;
-        }
-
-        .course-page-meta-list {
-            gap: 20px;
-        }
-
-        .course-page-meta-item {
-            width: 100%;
-        }
-
-        .course-page-content-wrapper {
-            padding: 20px;
-        }
-
-        .course-page-instructor-stats {
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .course-page-tabs {
-            justify-content: center;
-        }
-
-        .course-page-tab-btn.active::after {
-            display: none;
-        }
-
-        .course-page-curriculum-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .course-page-instructor-mini {
-            max-width: 100%;
-        }
-
-        .course-page-related-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
+    /* Mobile Order (default) */
+    .col-lg-8 {
+        order: 2;
+    }
+    
+    .col-lg-4 {
+        order: 1;
     }
 
-    @media (max-width: 576px) {
-        .course-page-badge-wrapper {
-            justify-content: center;
-        }
-
-        .course-page-meta-item {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .course-page-meta-icon {
-            margin: 0 auto;
-        }
-
-        .course-page-instructor-mini {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .course-page-lesson-item {
-            flex-wrap: wrap;
-        }
-
-        .course-page-lesson-preview {
-            width: 100%;
-            text-align: center;
-        }
-
-        .course-page-actions {
-            padding: 20px;
-        }
-
-        .course-page-btn-enroll,
-        .course-page-btn-wishlist {
-            padding: 14px 20px;
-            font-size: 1rem;
-        }
-
-        .course-page-notification {
-            left: 20px;
-            right: 20px;
-            max-width: none;
-        }
-    }
-
-    @media (max-width: 380px) {
-        .course-page-hero-title {
-            font-size: 1.5rem;
-        }
-
-        .course-page-meta-icon {
-            width: 40px;
-            height: 40px;
-            font-size: 1.1rem;
-        }
-
-        .course-page-meta-content p {
-            font-size: 1rem;
-        }
-
-        .course-page-section-title {
-            font-size: 1.3rem;
-        }
-
-        .course-page-tab-btn {
-            padding: 8px 16px;
-            font-size: 0.9rem;
-        }
-
-        .course-page-related-title {
-            font-size: 1rem;
-        }
-    }
-
-    /* Mobile reorder for subscription - subscription comes before other courses */
-    @media (max-width: 768px) {
+    /* Desktop Order */
+    @media (min-width: 992px) {
         .row {
-            display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            gap: 30px;
         }
         
         .col-lg-8 {
-            order: 2;
+            flex: 0 0 calc(66.666% - 15px);
+            max-width: calc(66.666% - 15px);
+            order: 1;
         }
         
         .col-lg-4 {
-            order: 1;
-            margin-bottom: 30px;
+            flex: 0 0 calc(33.333% - 15px);
+            max-width: calc(33.333% - 15px);
+            order: 2;
+        }
+    }
+
+    /* Hide extra content behind accordion */
+    .course-page-hidden-content {
+        display: none;
+    }
+
+    /* Print styles */
+    @media print {
+        .course-page-hero,
+        .course-page-actions,
+        .course-page-tabs,
+        .course-page-modal,
+        .course-page-notification {
+            display: none;
         }
     }
 </style>
@@ -1444,15 +1593,12 @@
                 <span class="course-page-badge featured"><i class="fas fa-star"></i> Featured</span>
                 @endif
                 @if($course->is_free)
-                <span class="course-page-badge free"><i class="fas fa-gift"></i> Free Course</span>
+                <span class="course-page-badge free"><i class="fas fa-gift"></i> Free</span>
                 @else
-                <span class="course-page-badge subscription"><i class="fas fa-crown"></i> Subscription Required</span>
+                <span class="course-page-badge subscription"><i class="fas fa-crown"></i> Premium</span>
                 @endif
                 @if($course->level)
                 <span class="course-page-badge"><i class="fas fa-signal"></i> {{ ucfirst($course->level) }}</span>
-                @endif
-                @if($course->language)
-                <span class="course-page-badge"><i class="fas fa-language"></i> {{ ucfirst($course->language) }}</span>
                 @endif
             </div>
 
@@ -1460,7 +1606,7 @@
             <h1 class="course-page-hero-title">{{ $course->title }}</h1>
 
             <!-- Description -->
-            <p class="course-page-hero-description">{{ $course->excerpt ?? Str::limit(strip_tags($course->description), 200) }}</p>
+            <p class="course-page-hero-description">{{ $course->excerpt ?? Str::limit(strip_tags($course->description), 150) }}</p>
 
             <!-- Meta Info -->
             <div class="course-page-meta-list">
@@ -1469,7 +1615,7 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <div class="course-page-meta-content">
-                        <h4>Students Enrolled</h4>
+                        <h4>Students</h4>
                         <p>{{ number_format($course->total_students ?? 0) }}+</p>
                     </div>
                 </div>
@@ -1500,7 +1646,7 @@
                     </div>
                     <div class="course-page-meta-content">
                         <h4>Level</h4>
-                        <p>{{ ucfirst($course->level ?? 'All Levels') }}</p>
+                        <p>{{ ucfirst($course->level ?? 'All') }}</p>
                     </div>
                 </div>
             </div>
@@ -1509,11 +1655,11 @@
             @if($course->instructor)
             <div class="course-page-instructor-mini">
                 <div class="course-page-instructor-mini-avatar">
-                    {{ substr($course->instructor->name ?? 'EA', 0, 1) }}
+                    {{ substr($course->instructor->name ?? 'E', 0, 1) }}
                 </div>
                 <div class="course-page-instructor-mini-info">
                     <h4>Created by</h4>
-                    <p>{{ $course->instructor->name ?? 'EDUCONECX ACADEMY' }}</p>
+                    <p>{{ $course->instructor->name ?? 'EDUCONECX' }}</p>
                 </div>
             </div>
             @endif
@@ -1525,10 +1671,150 @@
 <section class="course-page-main">
     <div class="container">
         <div class="row">
-            <!-- Left Column - Course Content -->
+            <!-- Right Column - Course Sidebar (mobile: appears first) -->
+            <div class="col-lg-4">
+                <div class="course-page-sidebar" data-aos="fade-left">
+                    <!-- Course Card -->
+                    <div class="course-page-course-card">
+                        <div class="course-page-thumbnail">
+                            <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}">
+                            <span class="course-page-price-badge {{ $course->is_free ? 'free' : '' }}">
+                                @if($course->is_free)
+                                <i class="fas fa-gift"></i> Free
+                                @else
+                                <i class="fas fa-crown"></i> Premium
+                                @endif
+                            </span>
+                            @if($course->video_intro ?? $course->intro_video)
+                            <button class="course-page-preview-btn" id="previewVideo" data-video="{{ $course->video_intro_url ?? $course->intro_video }}">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            @endif
+                        </div>
+
+                        <!-- Course Actions -->
+                        <div class="course-page-actions">
+                            @auth
+                                @if(isset($isEnrolled) && $isEnrolled)
+                                <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
+                                    <i class="fas fa-play-circle"></i>
+                                    Continue Learning
+                                    @if(isset($course->user_progress) && $course->user_progress > 0)
+                                    ({{ $course->user_progress }}%)
+                                    @endif
+                                </a>
+                                @elseif($course->is_free)
+                                <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    Enroll Now - Free
+                                </button>
+                                @else
+                                    @if(isset($hasActiveSubscription) && $hasActiveSubscription)
+                                    <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        Enroll Now
+                                    </button>
+                                    @else
+                                    <a href="{{ route('subscription.plans') }}" class="course-page-btn-enroll">
+                                        <i class="fas fa-crown"></i>
+                                        Get Subscription
+                                    </a>
+                                    @endif
+                                @endif
+                            @else
+                            <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login to
+                                @if($course->is_free)
+                                Enroll
+                                @else
+                                Access
+                                @endif
+                            </a>
+                            @endauth
+
+                            <!-- <button class="course-page-btn-wishlist" id="wishlistBtn" data-course-id="{{ $course->id }}">
+                                <i class="far fa-heart"></i>
+                                Add to Wishlist
+                            </button> -->
+                        </div>
+
+                        <!-- Accordion for Course Details -->
+                        <div class="course-page-info-accordion">
+                            <div class="course-page-accordion-item">
+                                <div class="course-page-accordion-header active" data-accordion="includes">
+                                    <span>What's Included</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="course-page-accordion-content show" id="accordion-includes">
+                                    <ul class="course-page-includes-list">
+                                        <li>
+                                            <i class="fas fa-video"></i>
+                                            <span>{{ $course->lessons_count ?? $course->total_lessons ?? 0 }} on-demand videos</span>
+                                        </li>
+                                        <li>
+                                            <i class="far fa-file"></i>
+                                            <span>{{ $course->total_articles ?? 0 }} articles</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-download"></i>
+                                            <span>{{ $course->total_resources ?? 0 }} downloadable resources</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-infinity"></i>
+                                            <span>Full lifetime access</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-mobile-alt"></i>
+                                            <span>Access on mobile and TV</span>
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-certificate"></i>
+                                            <span>Certificate of completion</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            @if($course->requirements)
+                            <div class="course-page-accordion-item">
+                                <div class="course-page-accordion-header" data-accordion="requirements">
+                                    <span>Requirements</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="course-page-accordion-content" id="accordion-requirements">
+                                    <ul class="course-page-includes-list">
+                                        @foreach(explode("\n", $course->requirements) as $requirement)
+                                        @if(trim($requirement))
+                                        <li>
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>{{ trim($requirement) }}</span>
+                                        </li>
+                                        @endif
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                            @endif
+
+                            <div class="course-page-accordion-item">
+                                <div class="course-page-accordion-header" data-accordion="target">
+                                    <span>Target Audience</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <div class="course-page-accordion-content" id="accordion-target">
+                                    <p class="text-muted mb-0">{{ $course->target_audience ?? 'Anyone interested in learning this subject' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left Column - Course Content (mobile: appears after sidebar) -->
             <div class="col-lg-8">
-                <div class="course-page-content-wrapper" data-aos="fade-right">
-                    <!-- Tabs -->
+                <!-- Main Tabs -->
+                <div class="course-page-tabs-wrapper" data-aos="fade-right">
                     <div class="course-page-tabs">
                         <button class="course-page-tab-btn active" data-tab="overview">Overview</button>
                         <button class="course-page-tab-btn" data-tab="curriculum">Curriculum</button>
@@ -1538,9 +1824,9 @@
                         @endif
                     </div>
 
-                    <!-- Overview Tab -->
-                    <div class="course-page-tab-pane active" id="overview">
-                        <div class="course-page-overview-section">
+                    <div class="course-page-tab-content">
+                        <!-- Overview Tab -->
+                        <div class="course-page-tab-pane active" id="overview">
                             <h2 class="course-page-section-title">About This Course</h2>
                             <div class="course-page-description">
                                 {!! $course->description !!}
@@ -1582,13 +1868,11 @@
                             </div>
                             @endif
                         </div>
-                    </div>
 
-                    <!-- Curriculum Tab -->
-                    <div class="course-page-tab-pane" id="curriculum">
-                        <div class="course-page-curriculum-section">
+                        <!-- Curriculum Tab -->
+                        <div class="course-page-tab-pane" id="curriculum">
                             <div class="course-page-curriculum-header">
-                                <h2 class="course-page-section-title">Course Curriculum</h2>
+                                <h2 class="course-page-section-title">Curriculum</h2>
                                 <div class="course-page-curriculum-stats">
                                     <span><i class="far fa-file-video"></i> {{ $course->lessons_count ?? $course->total_lessons ?? 0 }} Lessons</span>
                                     <span><i class="far fa-clock"></i> {{ $course->total_duration ?? $course->duration ?? 'Self-Paced' }}</span>
@@ -1599,10 +1883,9 @@
                             @foreach($course->sections as $sectionIndex => $section)
                             <div class="course-page-accordion-item">
                                 <div class="course-page-accordion-header" data-section="{{ $sectionIndex }}">
-                                    <h3>{{ $section->title }}</h3>
+                                    <span>{{ $section->title }}</span>
                                     <div class="course-page-section-meta">
                                         <span>{{ $section->lessons->count() }} lessons</span>
-                                        <span>{{ $section->duration ?? '' }}</span>
                                         <i class="fas fa-chevron-down"></i>
                                     </div>
                                 </div>
@@ -1622,13 +1905,13 @@
                                             <div class="course-page-lesson-meta">
                                                 <span><i class="far fa-clock"></i> {{ $lesson->duration ?? 'N/A' }}</span>
                                                 @if($lesson->is_free_preview)
-                                                <span style="color: var(--sky-blue);"><i class="fas fa-unlock-alt"></i> Free Preview</span>
+                                                <span><i class="fas fa-unlock-alt"></i> Preview</span>
                                                 @endif
                                             </div>
                                         </div>
                                         @if($lesson->is_free_preview)
                                         <a href="#" class="course-page-lesson-preview" data-video="{{ $lesson->video_url ?? '' }}">
-                                            Preview <i class="fas fa-arrow-right"></i>
+                                            Preview
                                         </a>
                                         @else
                                         <div class="course-page-lesson-locked">
@@ -1647,62 +1930,60 @@
                             <p class="text-center py-4">Curriculum is being updated. Check back soon!</p>
                             @endif
                         </div>
-                    </div>
 
-                    <!-- Instructor Tab -->
-                    <div class="course-page-tab-pane" id="instructor">
-                        @if($course->instructor)
-                        <div class="course-page-instructor-profile">
-                            <div class="course-page-instructor-avatar-large">
-                                {{ substr($course->instructor->name, 0, 1) }}
-                            </div>
-                            <div class="course-page-instructor-details">
-                                <h2 class="course-page-instructor-name">{{ $course->instructor->name }}</h2>
-                                <p class="course-page-instructor-title">{{ $course->instructor->title ?? 'Expert Instructor' }}</p>
-                                <div class="course-page-instructor-bio">
-                                    {{ $course->instructor->bio ?? 'Experienced professional dedicated to helping students achieve their learning goals.' }}
+                        <!-- Instructor Tab -->
+                        <div class="course-page-tab-pane" id="instructor">
+                            @if($course->instructor)
+                            <div class="course-page-instructor-profile">
+                                <div class="course-page-instructor-avatar-large">
+                                    {{ substr($course->instructor->name, 0, 1) }}
                                 </div>
-                                <div class="course-page-instructor-stats">
-                                    <div class="course-page-stat-item">
-                                        <div class="course-page-stat-value">{{ $course->instructor->courses_count ?? 0 }}</div>
-                                        <div class="course-page-stat-label">Courses</div>
+                                <div class="course-page-instructor-details">
+                                    <h2 class="course-page-instructor-name">{{ $course->instructor->name }}</h2>
+                                    <p class="course-page-instructor-title">{{ $course->instructor->title ?? 'Expert Instructor' }}</p>
+                                    <div class="course-page-instructor-bio">
+                                        {{ $course->instructor->bio ?? 'Experienced professional dedicated to helping students achieve their learning goals.' }}
                                     </div>
-                                    <div class="course-page-stat-item">
-                                        <div class="course-page-stat-value">{{ $course->instructor->students_count ?? 0 }}</div>
-                                        <div class="course-page-stat-label">Students</div>
+                                    <div class="course-page-instructor-stats">
+                                        <div class="course-page-stat-item">
+                                            <div class="course-page-stat-value">{{ $course->instructor->courses_count ?? 0 }}</div>
+                                            <div class="course-page-stat-label">Courses</div>
+                                        </div>
+                                        <div class="course-page-stat-item">
+                                            <div class="course-page-stat-value">{{ $course->instructor->students_count ?? 0 }}</div>
+                                            <div class="course-page-stat-label">Students</div>
+                                        </div>
+                                    </div>
+                                    <div class="course-page-instructor-social">
+                                        @if($course->instructor->twitter)
+                                        <a href="{{ $course->instructor->twitter }}" class="course-page-social-link" target="_blank">
+                                            <i class="fab fa-twitter"></i>
+                                        </a>
+                                        @endif
+                                        @if($course->instructor->linkedin)
+                                        <a href="{{ $course->instructor->linkedin }}" class="course-page-social-link" target="_blank">
+                                            <i class="fab fa-linkedin-in"></i>
+                                        </a>
+                                        @endif
+                                        @if($course->instructor->website)
+                                        <a href="{{ $course->instructor->website }}" class="course-page-social-link" target="_blank">
+                                            <i class="fas fa-globe"></i>
+                                        </a>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="course-page-instructor-social">
-                                    @if($course->instructor->twitter)
-                                    <a href="{{ $course->instructor->twitter }}" class="course-page-social-link" target="_blank">
-                                        <i class="fab fa-twitter"></i>
-                                    </a>
-                                    @endif
-                                    @if($course->instructor->linkedin)
-                                    <a href="{{ $course->instructor->linkedin }}" class="course-page-social-link" target="_blank">
-                                        <i class="fab fa-linkedin-in"></i>
-                                    </a>
-                                    @endif
-                                    @if($course->instructor->website)
-                                    <a href="{{ $course->instructor->website }}" class="course-page-social-link" target="_blank">
-                                        <i class="fas fa-globe"></i>
-                                    </a>
-                                    @endif
-                                </div>
                             </div>
+                            @endif
                         </div>
-                        @endif
-                    </div>
 
-                    <!-- Reviews Tab -->
-                    @if(isset($course->reviews_count) && $course->reviews_count > 0)
-                    <div class="course-page-tab-pane" id="reviews">
-                        <div class="course-page-reviews-section">
+                        <!-- Reviews Tab -->
+                        @if(isset($course->reviews_count) && $course->reviews_count > 0)
+                        <div class="course-page-tab-pane" id="reviews">
                             <h2 class="course-page-section-title">Student Reviews</h2>
                             <!-- Add reviews content here -->
                         </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
 
                 <!-- Related Courses -->
@@ -1722,18 +2003,15 @@
                             </div>
                             <div class="course-page-related-content">
                                 <div class="course-page-related-category">{{ $relatedCourse->category->name ?? 'General' }}</div>
-                                <h3 class="course-page-related-title">{{ $relatedCourse->title }}</h3>
+                                <h3 class="course-page-related-title-small">{{ $relatedCourse->title }}</h3>
                                 <div class="course-page-related-meta">
-                                    <span class="course-page-related-price {{ $relatedCourse->is_free ? 'free' : '' }}">
+                                    <span class="course-page-related-price-small {{ $relatedCourse->is_free ? 'free' : '' }}">
                                         @if($relatedCourse->is_free)
                                         Free
                                         @else
-                                        Subscription
+                                        Premium
                                         @endif
                                     </span>
-                                    <!-- <span class="course-page-related-rating">
-                                        <i class="fas fa-star"></i> {{ number_format($relatedCourse->average_rating ?? 0, 1) }}
-                                    </span> -->
                                 </div>
                             </div>
                         </a>
@@ -1741,117 +2019,6 @@
                     </div>
                 </div>
                 @endif
-            </div>
-
-            <!-- Right Column - Course Sidebar -->
-            <div class="col-lg-4">
-                <div class="course-page-sidebar" data-aos="fade-left">
-                    <!-- Course Card -->
-                    <div class="course-page-card">
-                        <div class="course-page-thumbnail">
-                            <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}">
-                            @if($course->video_intro ?? $course->intro_video)
-                            <button class="course-page-preview-btn" id="previewVideo" data-video="{{ $course->video_intro_url ?? $course->intro_video }}">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            @endif
-                        </div>
-
-                        <div class="course-page-price-box">
-                            @if($course->is_free)
-                            <div class="course-page-price free">
-                                Free
-                            </div>
-                            <span class="course-page-price-label">No payment required</span>
-                            @else
-                            <div class="subscription-badge">
-                                <i class="fas fa-crown"></i> SUBSCRIPTION REQUIRED
-                            </div>
-                            <div class="course-page-price subscription">
-                                One Payment
-                            </div>
-                            <span class="course-page-price-label">Get access to ALL paid courses</span>
-                            @endif
-                        </div>
-
-                        <!-- Course Actions -->
-                        <div class="course-page-actions">
-                            @auth
-                                @if(isset($isEnrolled) && $isEnrolled)
-                                <a href="{{ route('courses.learning', $course->slug) }}" class="course-page-btn-enroll" id="continueLearningBtn">
-                                    <i class="fas fa-play-circle"></i>
-                                    Continue Learning
-                                    @if(isset($course->user_progress) && $course->user_progress > 0)
-                                    ({{ $course->user_progress }}%)
-                                    @endif
-                                </a>
-                                @elseif($course->is_free)
-                                <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
-                                    <i class="fas fa-graduation-cap"></i>
-                                    Enroll Now - Free
-                                </button>
-                                @else
-                                    @if(isset($hasActiveSubscription) && $hasActiveSubscription)
-                                    <button class="course-page-btn-enroll" id="enrollBtn" data-course-id="{{ $course->id }}">
-                                        <i class="fas fa-graduation-cap"></i>
-                                        Enroll Now (With Subscription)
-                                    </button>
-                                    @else
-                                    <a href="{{ route('subscription.plans') }}" class="course-page-btn-enroll">
-                                        <i class="fas fa-crown"></i>
-                                        Get Subscription to Access
-                                    </a>
-                                    @endif
-                                @endif
-                            @else
-                            <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="course-page-btn-enroll">
-                                <i class="fas fa-sign-in-alt"></i>
-                                Login to
-                                @if($course->is_free)
-                                Enroll
-                                @else
-                                Get Subscription
-                                @endif
-                            </a>
-                            @endauth
-
-                            <!-- <button class="course-page-btn-wishlist" id="wishlistBtn" data-course-id="{{ $course->id }}">
-                                <i class="far fa-heart"></i>
-                                Add to Wishlist
-                            </button> -->
-                        </div>
-
-                        <div class="course-page-includes">
-                            <h4><i class="fas fa-gift"></i> This course includes:</h4>
-                            <ul class="course-page-includes-list">
-                                <li>
-                                    <i class="fas fa-video"></i>
-                                    <span>{{ $course->lessons_count ?? $course->total_lessons ?? 0 }} on-demand videos</span>
-                                </li>
-                                <li>
-                                    <i class="far fa-file"></i>
-                                    <span>{{ $course->total_articles ?? 0 }} articles</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-download"></i>
-                                    <span>{{ $course->total_resources ?? 0 }} downloadable resources</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-infinity"></i>
-                                    <span>Full lifetime access</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-mobile-alt"></i>
-                                    <span>Access on mobile and TV</span>
-                                </li>
-                                <li>
-                                    <i class="fas fa-certificate"></i>
-                                    <span>Certificate of completion</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -1871,15 +2038,6 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ========== YOUR BEAUTIFUL COLORS ==========
-        const colors = {
-            brightAmber: '#FBC60C',
-            prussianBlue: '#0A1D44',
-            regalNavy: '#18386E',
-            skyBlue: '#5AD1E4',
-            ivory: '#F9F7E9'
-        };
-
         // ========== TAB SWITCHING ==========
         const tabBtns = document.querySelectorAll('.course-page-tab-btn');
         const tabPanes = document.querySelectorAll('.course-page-tab-pane');
@@ -1888,40 +2046,65 @@
             btn.addEventListener('click', function() {
                 const tabId = this.dataset.tab;
 
-                // Remove active class from all tabs and panes
                 tabBtns.forEach(b => b.classList.remove('active'));
                 tabPanes.forEach(p => p.classList.remove('active'));
 
-                // Add active class to current tab and pane
                 this.classList.add('active');
                 document.getElementById(tabId).classList.add('active');
             });
         });
 
-        // ========== CURRICULUM ACCORDION ==========
+        // ========== ACCORDION (Main & Sidebar) ==========
         const accordionHeaders = document.querySelectorAll('.course-page-accordion-header');
 
         accordionHeaders.forEach(header => {
-            header.addEventListener('click', function() {
-                const sectionId = this.dataset.section;
-                const content = document.getElementById(`section-${sectionId}`);
-
-                // Toggle active class
-                this.classList.toggle('active');
-
-                // Toggle content
-                if (content.classList.contains('show')) {
-                    content.classList.remove('show');
-                } else {
-                    content.classList.add('show');
+            header.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // For curriculum accordion
+                if (this.dataset.section) {
+                    const sectionId = this.dataset.section;
+                    const content = document.getElementById(`section-${sectionId}`);
+                    
+                    this.classList.toggle('active');
+                    
+                    if (content.classList.contains('show')) {
+                        content.classList.remove('show');
+                    } else {
+                        // Close other sections in the same accordion group
+                        if (this.closest('.course-page-curriculum-section')) {
+                            document.querySelectorAll('.course-page-accordion-header[data-section]').forEach(h => {
+                                if (h !== this) {
+                                    h.classList.remove('active');
+                                    const otherContent = document.getElementById(`section-${h.dataset.section}`);
+                                    if (otherContent) otherContent.classList.remove('show');
+                                }
+                            });
+                        }
+                        content.classList.add('show');
+                    }
+                } 
+                // For sidebar accordion
+                else if (this.dataset.accordion) {
+                    const accordionId = this.dataset.accordion;
+                    const content = document.getElementById(`accordion-${accordionId}`);
+                    
+                    this.classList.toggle('active');
+                    
+                    if (content.classList.contains('show')) {
+                        content.classList.remove('show');
+                    } else {
+                        content.classList.add('show');
+                    }
                 }
             });
         });
 
-        // Open first accordion by default
-        if (accordionHeaders.length > 0) {
+        // Open first curriculum section by default
+        const firstCurriculumHeader = document.querySelector('.course-page-curriculum-section .course-page-accordion-header');
+        if (firstCurriculumHeader) {
             setTimeout(() => {
-                accordionHeaders[0].click();
+                firstCurriculumHeader.click();
             }, 100);
         }
 
@@ -1931,7 +2114,6 @@
         const closeBtn = document.getElementById('closeModal');
         const videoContainer = document.getElementById('videoContainer');
 
-        // Helper function to extract YouTube ID
         function extractYoutubeId(url) {
             if (!url) return null;
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -1939,7 +2121,6 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // Helper function to extract Vimeo ID
         function extractVimeoId(url) {
             if (!url) return null;
             const regExp = /vimeo\.com\/(?:video\/)?(\d+)/;
@@ -1963,7 +2144,6 @@
                     return true;
                 }
             } else {
-                // Assume it's a local video file
                 videoContainer.innerHTML = `<video src="${url}" controls autoplay style="width:100%; height:100%;"></video>`;
                 return true;
             }
@@ -1986,7 +2166,6 @@
             });
         }
 
-        // Preview links from curriculum
         const previewLinks = document.querySelectorAll('.course-page-lesson-preview');
         previewLinks.forEach(link => {
             link.addEventListener('click', function(e) {
@@ -2008,12 +2187,11 @@
             closeBtn.addEventListener('click', function() {
                 modal.classList.remove('show');
                 setTimeout(() => {
-                    videoContainer.innerHTML = ''; // Clear video when closing
+                    videoContainer.innerHTML = '';
                 }, 300);
             });
         }
 
-        // Close modal when clicking outside
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
                 modal.classList.remove('show');
@@ -2033,14 +2211,10 @@
                 @auth
                 const courseId = this.dataset.courseId;
                 const originalText = this.innerHTML;
-                const originalWidth = this.offsetWidth;
 
-                // Save original content and show loading
                 this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enrolling...';
                 this.disabled = true;
-                this.style.width = originalWidth + 'px';
 
-                // Make AJAX request to enroll
                 fetch('{{ route("courses.enroll.ajax", $course->id) }}', {
                         method: 'POST',
                         headers: {
@@ -2051,22 +2225,17 @@
                     })
                     .then(response => {
                         if (!response.ok) {
-                            return response.json().then(err => {
-                                throw err;
-                            });
+                            return response.json().then(err => { throw err; });
                         }
                         return response.json();
                     })
                     .then(data => {
                         if (data.success) {
                             showNotification(data.message || 'Successfully enrolled!', 'success');
-
-                            // Redirect to learning page
                             setTimeout(() => {
                                 window.location.href = data.redirect_url || '{{ route("courses.learning", $course->slug) }}';
                             }, 1500);
                         } else if (data.redirect_to_subscription) {
-                            // Redirect to subscription plans
                             showNotification(data.message || 'Subscription required', 'info');
                             setTimeout(() => {
                                 window.location.href = data.subscription_url || '{{ route("subscription.plans") }}';
@@ -2084,7 +2253,6 @@
                         this.disabled = false;
                     });
                 @else
-                // Redirect to login with return URL
                 showNotification('Please login to enroll in this course', 'info');
                 setTimeout(() => {
                     window.location.href = '{{ route("login") }}?redirect={{ url()->current() }}';
@@ -2097,7 +2265,6 @@
         const wishlistBtn = document.getElementById('wishlistBtn');
 
         if (wishlistBtn) {
-            // Check initial wishlist status
             @auth
             @if(isset($course) && ($course->is_wishlisted ?? false))
             wishlistBtn.classList.add('active');
@@ -2111,7 +2278,6 @@
                 e.preventDefault();
 
                 @auth
-                // Check if user is enrolled (can't wishlist enrolled courses)
                 @if(isset($isEnrolled) && $isEnrolled)
                 showNotification('You are already enrolled in this course!', 'info');
                 return;
@@ -2161,7 +2327,6 @@
                         this.disabled = false;
                     });
                 @else
-                // Store the current page in session to redirect back after login
                 sessionStorage.setItem('redirectAfterLogin', window.location.href);
                 showNotification('Please login to add to wishlist', 'info');
                 setTimeout(() => {
@@ -2173,14 +2338,12 @@
 
         // ========== NOTIFICATION SYSTEM ==========
         function showNotification(message, type = 'success') {
-            // Remove any existing notifications
             const existingNotifications = document.querySelectorAll('.course-page-notification');
             existingNotifications.forEach(notification => notification.remove());
 
             const notification = document.createElement('div');
             notification.className = `course-page-notification ${type}`;
 
-            // Add icon
             const icons = {
                 success: 'fa-check-circle',
                 error: 'fa-exclamation-circle',
@@ -2192,16 +2355,14 @@
             icon.className = `fas ${icons[type]}`;
             notification.appendChild(icon);
 
-            // Add message
             const textSpan = document.createElement('span');
             textSpan.textContent = message;
             notification.appendChild(textSpan);
 
             document.body.appendChild(notification);
 
-            // Auto remove after 3 seconds
             setTimeout(() => {
-                notification.style.animation = 'course-page-slideOut 0.3s ease';
+                notification.style.animation = 'slideOut 0.3s ease';
                 setTimeout(() => {
                     notification.remove();
                 }, 300);
@@ -2211,7 +2372,7 @@
         // ========== ADD SLIDE OUT ANIMATION ==========
         const style = document.createElement('style');
         style.textContent = `
-            @keyframes course-page-slideOut {
+            @keyframes slideOut {
                 from {
                     transform: translateX(0);
                     opacity: 1;
@@ -2224,45 +2385,18 @@
         `;
         document.head.appendChild(style);
 
-        // ========== RATING STARS GENERATOR ==========
-        function generateRatingStars(rating) {
-            const fullStars = Math.floor(rating);
-            const halfStar = rating % 1 >= 0.5;
-            const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-
-            let stars = '';
-            for (let i = 0; i < fullStars; i++) stars += '<i class="fas fa-star" style="color: var(--bright-amber);"></i>';
-            if (halfStar) stars += '<i class="fas fa-star-half-alt" style="color: var(--bright-amber);"></i>';
-            for (let i = 0; i < emptyStars; i++) stars += '<i class="far fa-star" style="color: var(--bright-amber);"></i>';
-
-            return stars;
-        }
-
         // ========== SCROLL TO TOP WHEN TABS CHANGE ==========
         tabBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                const contentWrapper = document.querySelector('.course-page-content-wrapper');
-                if (contentWrapper) {
-                    contentWrapper.scrollIntoView({
+                const tabsWrapper = document.querySelector('.course-page-tabs-wrapper');
+                if (tabsWrapper && window.innerWidth <= 768) {
+                    tabsWrapper.scrollIntoView({
                         behavior: 'smooth',
                         block: 'start'
                     });
                 }
             });
         });
-
-        // ========== RESPONSIVE SIDEBAR FIX ==========
-        function handleResize() {
-            const sidebar = document.querySelector('.course-page-sidebar');
-            if (window.innerWidth <= 992) {
-                sidebar.style.position = 'static';
-            } else {
-                sidebar.style.position = 'sticky';
-            }
-        }
-
-        window.addEventListener('resize', handleResize);
-        handleResize();
 
         console.log('Course page JavaScript initialized successfully');
     });
