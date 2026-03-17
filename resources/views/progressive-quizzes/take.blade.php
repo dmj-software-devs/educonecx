@@ -1530,42 +1530,19 @@
 @push('scripts')
 <script>
     // Configuration
-    const CONFIG = {
-        levelId: {
-            {
-                $level - > id
-            }
-        },
-        levelNumber: {
-            {
-                $level - > level_number
-            }
-        },
-        quizId: {
-            {
-                $progressiveQuiz - > id
-            }
-        },
-        totalQuestions: {
-            {
-                $totalQuestions
-            }
-        },
-        answeredCount: {
-            {
-                $answeredCount
-            }
-        },
-        remainingTime: null,
-        questionTimeLimit: {
-            {
-                $questionTimeLimit ?? 27
-            }
-        },
-        submitUrl: "{{ route('progressive-quizzes.submit', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
-        levelResultsUrl: "{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
-        restartUrl: "{{ route('progressive-quizzes.restart', $progressiveQuiz) }}"
-    };
+    // CORRECT:
+const CONFIG = {
+    levelId: {{ $level->id }},
+    levelNumber: {{ $level->level_number }},
+    quizId: {{ $progressiveQuiz->id }},
+    totalQuestions: {{ $totalQuestions }},
+    answeredCount: {{ $answeredCount }},
+    remainingTime: null,
+    questionTimeLimit: {{ $questionTimeLimit ?? 27 }},
+    submitUrl: "{{ route('progressive-quizzes.submit', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
+    levelResultsUrl: "{{ route('progressive-quizzes.level-results', ['progressiveQuiz' => $progressiveQuiz->id, 'level' => $level->id]) }}",
+    restartUrl: "{{ route('progressive-quizzes.restart', $progressiveQuiz) }}"
+};
 
     // State
     let questionTimerInterval = null;
