@@ -2272,8 +2272,7 @@
                 </p>
                 <div class="testimonial-author">
                     <div class="author-image">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop" alt="Sarah M." loading="lazy">
-                    </div>
+<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop" alt="Sarah M." loading="lazy">                    </div>
                     <div class="author-info">
                         <h4>{{ App\Helpers\TranslationHelper::trans('home.testimonial_1_name') }}</h4>
                         <p>{{ App\Helpers\TranslationHelper::trans('home.testimonial_1_role') }}</p>

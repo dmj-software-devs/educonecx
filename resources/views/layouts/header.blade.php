@@ -100,10 +100,10 @@
                         </div>
                     </div>
                     @else
-                    <!-- Auth Buttons -->
+                    <!-- Auth Buttons - Updated to always show text -->
                     <div class="auth-buttons">
-                        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-sign-in-alt d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="{{ App\Helpers\TranslationHelper::trans('header.login') }}">{{ App\Helpers\TranslationHelper::trans('header.login') }}</span></a>
-                        <a href="{{ route('register') }}" class="btn-register"><i class="fas fa-user-plus d-md-none"></i><span class="translate-text d-none d-md-inline" data-original="{{ App\Helpers\TranslationHelper::trans('header.register') }}">{{ App\Helpers\TranslationHelper::trans('header.register') }}</span></a>
+                        <a href="{{ route('login') }}" class="btn-login"><i class="fas fa-sign-in-alt"></i><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.login') }}">{{ App\Helpers\TranslationHelper::trans('header.login') }}</span></a>
+                        <a href="{{ route('register') }}" class="btn-register"><i class="fas fa-user-plus"></i><span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.register') }}">{{ App\Helpers\TranslationHelper::trans('header.register') }}</span></a>
                     </div>
                     @endauth
 
@@ -634,27 +634,6 @@
             border-color: var(--bright-amber);
             color: var(--prussian-blue);
             transform: translateY(-2px);
-        }
-
-        @media (max-width: 992px) {
-
-            .btn-login span,
-            .btn-register span {
-                display: none;
-            }
-
-            .btn-login,
-            .btn-register {
-                padding: 8px 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-
-            .btn-login,
-            .btn-register {
-                padding: 6px 10px;
-            }
         }
 
         /* User Menu */

@@ -14,6 +14,8 @@ return [
     'hero_stat_3' => 'Países',
     'hero_stat_4' => 'Calificación Estudiantil',
 
+    'category_default_title' => 'Cursos Prácticos en Línea para el Éxito Digital',
+
     // Features Section
     'features_subtitle' => 'Por Qué Elegirnos',
     'features_title' => 'La <span>Ventaja de la Academia</span>',

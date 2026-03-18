@@ -219,7 +219,7 @@ class PageController extends Controller
                 ],
                 [
                     'question' => 'In which languages are the courses available?',
-                    'answer' => 'Our courses are available in English, French, Haitian Creole, and Spanish to serve our diverse international community of learners.'
+                    'answer' => 'Our courses are available in English, French, and Spanish to serve our diverse international community of learners.'
                 ],
                 
                 [

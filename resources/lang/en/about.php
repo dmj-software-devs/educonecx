@@ -53,7 +53,7 @@ return [
     
     'service_1_title' => 'Language Learning Programs',
     'service_1_subtitle' => 'Master practical communication skills',
-    'service_1_feature_1' => 'English, French, Spanish & Haitian Creole',
+    'service_1_feature_1' => 'English, French, & Spanish',
     'service_1_feature_2' => 'Professional & everyday communication',
     'service_1_feature_3' => 'AI-powered speaking practice',
     'service_1_feature_4' => 'Cultural context integration',

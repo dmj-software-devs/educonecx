@@ -14,6 +14,7 @@ return [
     'hero_stat_3' => 'Countries',
     'hero_stat_4' => 'Student Rating',
 
+    'category_default_title' => 'Practical Online Courses for Digital Success',
     // Features Section
     'features_subtitle' => 'Why Choose Us',
     'features_title' => 'The <span>Academy Advantage</span>',

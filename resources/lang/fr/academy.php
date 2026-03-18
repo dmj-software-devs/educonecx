@@ -14,6 +14,8 @@ return [
     'hero_stat_3' => 'Pays',
     'hero_stat_4' => 'Note des Étudiants',
 
+    'category_default_title' => 'Cours Pratiques en Ligne pour la Réussite Numérique',
+
     // Features Section
     'features_subtitle' => 'Pourquoi Nous Choisir',
     'features_title' => 'L\'<span>Avantage de l\'Académie</span>',
