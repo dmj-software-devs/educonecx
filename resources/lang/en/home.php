@@ -34,7 +34,7 @@ return [
     'process_subtitle' => 'How It Works',
     'process_title' => 'Your <span>Learning Journey</span> in 3 Simple Steps',
     'process_1_title' => 'Create Account',
-    'process_1_desc' => 'Sign up for free and get instant access to our platform with a 3-day trial period.',
+    'process_1_desc' => 'Sign up for free and get instant access to our platform.',
     'process_2_title' => 'Choose Your Path',
     'process_2_desc' => 'Select from our curated courses in language learning or digital business skills.',
     'process_3_title' => 'Start Learning',
@@ -127,7 +127,7 @@ return [
     'faq_2_q' => 'In which languages are the courses available?',
     'faq_2_a' => 'Our courses are available in English, French, and Spanish to serve our diverse international community of learners.',
     'faq_3_q' => 'How do I get started?',
-    'faq_3_a' => 'Getting started is simple: create your account, select your preferred course, and start with our 3-day free trial to explore the platform risk-free.',
+    'faq_3_a' => 'Getting started is simple: create your account, select your preferred course, and start to explore the platform risk-free.',
     'faq_4_q' => 'Can I access courses on mobile?',
     'faq_4_a' => 'Yes! Our platform is fully responsive and optimized for all devices. You can access your courses on desktop, tablet, or smartphone anytime, anywhere.',
 ];
