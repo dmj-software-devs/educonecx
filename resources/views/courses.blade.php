@@ -1806,7 +1806,7 @@
                                 <p class="course-description">{{ $course->excerpt ?? Str::limit($course->description, 100) }}</p>
 
                                 <div class="course-meta">
-                                    <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_hours', ['count' => $course->duration_hours ?? 0]) }}</span>
+                                    <!-- <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_hours', ['count' => $course->duration_hours ?? 0]) }}</span> -->
                                     <span><i class="fas fa-signal"></i> {{ ucfirst($course->level ?? 'Beginner') }}</span>
                                     <span><i class="fas fa-video"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_lessons', ['count' => $course->lessons_count ?? 0]) }}</span>
                                 </div>
