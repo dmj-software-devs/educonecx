@@ -1937,7 +1937,7 @@
                 <h4 class="quiz-footer-title">Contact Us</h4>
                 <div class="quiz-footer-contact">
                     <p><i class="fas fa-envelope"></i> info@educonecx.com</p>
-                    <p><i class="fas fa-phone"></i> +1 (833) 533-8228</p>
+                    <!-- <p><i class="fas fa-phone"></i> +1 (833) 533-8228</p> -->
                     <p><i class="fas fa-map-marker-alt"></i> United States</p>
                 </div>
 

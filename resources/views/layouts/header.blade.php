@@ -4,10 +4,10 @@
         <div class="container">
             <div class="top-bar-content">
                 <div class="contact-info ">
-                    <a href="tel:+18335338228">
+                    <!-- <a href="tel:+18335338228">
                         <i class="fas fa-phone-alt"></i>
                         <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.phone') }}">{{ App\Helpers\TranslationHelper::trans('header.phone') }}</span>
-                    </a>
+                    </a> -->
                     <a href="mailto:contact@educonecx.com">
                         <i class="fas fa-envelope"></i>
                         <span class="translate-text" data-original="{{ App\Helpers\TranslationHelper::trans('header.email') }}">{{ App\Helpers\TranslationHelper::trans('header.email') }}</span>

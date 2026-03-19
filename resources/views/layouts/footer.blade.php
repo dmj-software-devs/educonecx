@@ -65,13 +65,13 @@
                 <div class="footer-col" data-aos="fade-up" data-aos-delay="400">
                     <h4>{{ App\Helpers\TranslationHelper::trans('footer.contact_info') }}</h4>
                     <ul class="footer-contact">
-                        <li>
+                        <!-- <li>
                             <i class="fas fa-phone-alt"></i>
                             <div>
                                 <span>{{ App\Helpers\TranslationHelper::trans('common.phone') }}</span>
                                 <a href="tel:+18335338228">{{ App\Helpers\TranslationHelper::trans('header.phone') }}</a>
                             </div>
-                        </li>
+                        </li> -->
                         <li>
                             <i class="fas fa-envelope"></i>
                             <div>

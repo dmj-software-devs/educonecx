@@ -940,13 +940,13 @@
                                 <span>Florida, USA</span>
                             </div>
                         </div>
-                        <div class="contact-item">
+                        <!-- <div class="contact-item">
                             <i class="fas fa-phone-alt"></i>
                             <div class="contact-item-content">
                                 <strong>Phone</strong>
                                 <a href="tel:+18335338228">+1 (833) 533-8228</a>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 

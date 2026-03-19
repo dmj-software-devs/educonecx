@@ -1116,7 +1116,7 @@
     <div class="container">
         <div class="academy-hero-content">
             <span class="academy-hero-badge">{{ App\Helpers\TranslationHelper::trans('academy.hero_badge') }}</span>
-            <h1 class="academy-hero-title">{!! App\Helpers\TranslationHelper::trans('academy.hero_title') !!}</h1>
+            <h1 class="academy-hero-title" style="line-height: 100px;">{!! App\Helpers\TranslationHelper::trans('academy.hero_title') !!}</h1>
             <p class="academy-hero-text">
                 {{ App\Helpers\TranslationHelper::trans('academy.hero_description') }}
             </p>
