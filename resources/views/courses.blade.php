@@ -876,9 +876,9 @@
 
     .course-badge {
         position: absolute;
-        top: 15px;
-        left: 15px;
-        z-index: 2;
+        bottom: 15px;
+        right: 15px;
+        z-index: 3;
         padding: 5px 15px;
         background: var(--gradient-1);
         color: var(--pure-white);
@@ -886,14 +886,20 @@
         font-size: 0.8rem;
         font-weight: 600;
         box-shadow: var(--shadow-md);
+        pointer-events: none;
+        max-width: calc(100% - 30px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     @media (max-width: 576px) {
         .course-badge {
-            top: 10px;
-            left: 10px;
+            bottom: 10px;
+            right: 10px;
             padding: 4px 12px;
             font-size: 0.7rem;
+            max-width: calc(100% - 20px);
         }
     }
 
@@ -1747,24 +1753,17 @@
                     <div class="course-grid">
                         @foreach($paginatedCourses as $course)
                         <div class="course-card" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 50, 300) }}">
-                            @if($course->featured)
-                            <span class="course-badge popular">{{ App\Helpers\TranslationHelper::trans('courses.badge_popular') }}</span>
-                            @elseif($course->is_free)
-                            <span class="course-badge free">{{ App\Helpers\TranslationHelper::trans('courses.badge_free') }}</span>
-                            @elseif(Auth::check() && Auth::user()->has_active_subscription)
-                            <span class="course-badge" style="background: var(--gradient-3); color: var(--prussian-blue);">
-                                <i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.badge_subscribed') }}
-                            </span>
-                            @endif
-
-                            {{-- 
-<div class="course-bookmark">
-    <button class="bookmark-btn" data-course-id="{{ $course->id }}" data-bookmarked="{{ $course->isBookmarked ? 'true' : 'false' }}">
-        <i class="{{ $course->isBookmarked ? 'fas' : 'far' }} fa-bookmark"></i>
-    </button>
-</div>
---}}
                             <div class="course-thumbnail">
+                                @if($course->featured)
+                                <span class="course-badge popular">{{ App\Helpers\TranslationHelper::trans('courses.badge_popular') }}</span>
+                                @elseif($course->is_free)
+                                <span class="course-badge free">{{ App\Helpers\TranslationHelper::trans('courses.badge_free') }}</span>
+                                @elseif(Auth::check() && Auth::user()->has_active_subscription)
+                                <span class="course-badge" style="background: var(--gradient-3); color: var(--prussian-blue);">
+                                    <i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.badge_subscribed') }}
+                                </span>
+                                @endif
+
                                 <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
                                 <div class="course-overlay">
                                     @if($course->video_intro)

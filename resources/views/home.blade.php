@@ -778,7 +778,7 @@
         line-height: 1.6;
     }
 
-    /* Course Cards - Clean */
+    /* Course Cards - Clean with badge styling */
     .courses-section {
         padding: 80px 0;
         background: var(--ivory);
@@ -824,6 +824,8 @@
         box-shadow: var(--shadow-md);
         transition: var(--transition);
         height: 100%;
+        display: flex;
+        flex-direction: column;
         border: 1px solid rgba(251, 198, 12, 0.1);
     }
 
@@ -856,10 +858,50 @@
         transform: scale(1.05);
     }
 
+    /* Badge styles - matching courses page */
+    .course-badge {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        z-index: 3;
+        padding: 5px 15px;
+        background: var(--gradient-liquid-1);
+        color: var(--pure-white);
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: var(--shadow-md);
+        pointer-events: none;
+        max-width: calc(100% - 30px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    @media (max-width: 576px) {
+        .course-badge {
+            bottom: 10px;
+            right: 10px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            max-width: calc(100% - 20px);
+        }
+    }
+
+    .course-badge.free {
+        background: var(--gradient-liquid-3);
+        color: var(--prussian-blue);
+    }
+
+    .course-badge.popular {
+        background: var(--gradient-liquid-2);
+        color: var(--prussian-blue);
+    }
+
     .course-category {
         position: absolute;
-        top: 15px;
-        right: 15px;
+        bottom: 15px;
+        left: 15px;
         background: var(--gradient-liquid-1);
         color: var(--pure-white);
         padding: 4px 12px;
@@ -867,6 +909,20 @@
         font-size: 0.75rem;
         font-weight: 600;
         z-index: 2;
+        max-width: calc(100% - 30px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    @media (max-width: 576px) {
+        .course-category {
+            bottom: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            max-width: calc(100% - 20px);
+        }
     }
 
     .course-discount-badge {
@@ -884,6 +940,9 @@
 
     .course-content {
         padding: 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
     @media (max-width: 768px) {
@@ -934,6 +993,7 @@
         font-size: 0.9rem;
         margin-bottom: 15px;
         line-height: 1.5;
+        flex: 1;
     }
 
     .course-stats {
@@ -958,6 +1018,7 @@
         border-top: 1px solid var(--pale-slate);
         flex-wrap: wrap;
         gap: 10px;
+        margin-top: auto;
     }
 
     .course-price {
@@ -2020,10 +2081,18 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                 <div class="course-image">
                     <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop' }}" alt="{{ $course->title }}" loading="lazy">
-                    <span class="course-category">{{ $course->category->name ?? App\Helpers\TranslationHelper::trans('common.general') }}</span>
-                    @if(isset($course->hasDiscount) && $course->hasDiscount)
-                    <span class="course-discount-badge">-{{ $course->discount_percentage ?? 20 }}%</span>
+                    
+                    @if($course->featured)
+                    <span class="course-badge popular">{{ App\Helpers\TranslationHelper::trans('courses.badge_popular') }}</span>
+                    @elseif($course->is_free)
+                    <span class="course-badge free">{{ App\Helpers\TranslationHelper::trans('courses.badge_free') }}</span>
+                    @elseif(isset($course->hasDiscount) && $course->hasDiscount)
+                    <span class="course-badge" style="background: var(--gradient-liquid-2); color: var(--prussian-blue);">
+                        -{{ $course->discount_percentage ?? 20 }}%
+                    </span>
                     @endif
+                    
+                    <span class="course-category">{{ $course->category->name ?? App\Helpers\TranslationHelper::trans('common.general') }}</span>
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
@@ -2066,12 +2135,12 @@
                 </div>
             </div>
             @empty
-            <!-- Sample courses for demonstration -->
+            <!-- Sample courses for demonstration with badges -->
             <div class="course-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="course-image">
                     <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" alt="Business English" loading="lazy">
+                    <span class="course-badge popular">{{ App\Helpers\TranslationHelper::trans('courses.badge_popular') }}</span>
                     <span class="course-category">{{ App\Helpers\TranslationHelper::trans('common.language') }}</span>
-                    <span class="course-discount-badge">-20%</span>
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
@@ -2103,6 +2172,7 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="200">
                 <div class="course-image">
                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop" alt="Digital Marketing" loading="lazy">
+                    <span class="course-badge free">{{ App\Helpers\TranslationHelper::trans('courses.badge_free') }}</span>
                     <span class="course-category">{{ App\Helpers\TranslationHelper::trans('common.business') }}</span>
                 </div>
                 <div class="course-content">
@@ -2122,10 +2192,10 @@
 
                     <div class="course-footer">
                         <div class="course-price">
-                            $29.99
+                            {{ App\Helpers\TranslationHelper::trans('home.course_free') }}
                         </div>
                         <a href="#" class="course-btn">
-                            {{ App\Helpers\TranslationHelper::trans('home.course_enroll') }} <i class="fas fa-arrow-right"></i>
+                            {{ App\Helpers\TranslationHelper::trans('home.course_start') }} <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
@@ -2134,6 +2204,7 @@
             <div class="course-card" data-aos="fade-up" data-aos-delay="300">
                 <div class="course-image">
                     <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400&h=250&fit=crop" alt="French Language" loading="lazy">
+                    <span class="course-badge" style="background: var(--gradient-liquid-2); color: var(--prussian-blue);">-20%</span>
                     <span class="course-category">{{ App\Helpers\TranslationHelper::trans('common.language') }}</span>
                 </div>
                 <div class="course-content">
