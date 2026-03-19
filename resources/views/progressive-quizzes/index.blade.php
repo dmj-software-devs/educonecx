@@ -977,7 +977,214 @@
         cursor: pointer;
         box-shadow: var(--shadow-md);
     }
+/* ===== BUTTON STYLES FOR COMPLETED QUIZZES ===== */
+.completed-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
 
+@media (max-width: 768px) {
+    .completed-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+.btn-results {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 30px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: var(--pure-white);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    min-width: 160px;
+}
+
+@media (max-width: 768px) {
+    .btn-results {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1.1rem;
+        min-width: auto;
+    }
+}
+
+.btn-results:hover {
+    background: linear-gradient(135deg, #15803d, #16a34a);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    color: var(--pure-white);
+}
+
+.btn-results i {
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.btn-results:hover i {
+    transform: scale(1.1);
+}
+
+.btn-reattempt {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 30px;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: var(--prussian-blue);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    min-width: 160px;
+}
+
+@media (max-width: 768px) {
+    .btn-reattempt {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1.1rem;
+        min-width: auto;
+    }
+}
+
+.btn-reattempt:hover {
+    background: linear-gradient(135deg, #d97706, #f59e0b);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    color: var(--prussian-blue);
+}
+
+.btn-reattempt i {
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.btn-reattempt:hover i {
+    transform: rotate(180deg);
+}
+
+.reattempt-form {
+    display: inline-flex;
+}
+
+@media (max-width: 768px) {
+    .reattempt-form {
+        width: 100%;
+    }
+}
+
+/* Update existing btn-start for consistency */
+.btn-start {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 30px;
+    background: var(--gradient-1);
+    color: var(--pure-white);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    min-width: 160px;
+}
+
+@media (max-width: 768px) {
+    .btn-start {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1.1rem;
+        min-width: auto;
+    }
+}
+
+.btn-start.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    background: var(--gray);
+}
+
+.btn-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 30px;
+    background: transparent;
+    color: var(--prussian-blue);
+    border: 2px solid var(--prussian-blue);
+    border-radius: var(--radius-full);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    transition: var(--transition);
+    min-width: 160px;
+}
+
+@media (max-width: 768px) {
+    .btn-login {
+        width: 100%;
+        padding: 14px 20px;
+        font-size: 1.1rem;
+        min-width: auto;
+    }
+}
+
+.btn-login:hover {
+    background: var(--prussian-blue);
+    color: var(--pure-white);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--bright-amber);
+}
+
+.attempts-info {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .attempts-info {
+        width: 100%;
+        justify-content: center;
+        white-space: normal;
+        text-align: center;
+        font-size: 1rem;
+        padding: 10px 0;
+        border-top: 1px solid rgba(251, 198, 12, 0.2);
+    }
+}
+
+.attempts-info i {
+    color: var(--bright-amber);
+    font-size: 0.9rem;
+}
     @media (max-width: 768px) {
         .btn-start {
             width: 100%;
@@ -1604,62 +1811,64 @@
                     </div>
 
                     <div class="quiz-footer">
-                        @auth
-                            @php
-                                $canAttemptQuiz = $canAttemptQuiz ?? $quiz->canAttempt($user->id);
-                            @endphp
+    @auth
+        @php
+            $canAttemptQuiz = $canAttemptQuiz ?? $quiz->canAttempt($user->id);
+        @endphp
 
-                            @if($attempt)
-                                {{-- In-progress attempt --}}
-                                <a href="{{ route('progressive-quizzes.continue', $quiz) }}" class="btn-start">
-                                    <i class="fas fa-play-circle"></i>
-                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_continue') ?? 'Continue' }}</span>
-                                </a>
-                            @elseif($quizIsCompleted)
-                                {{-- Quiz fully completed --}}
-                                <a href="{{ route('progressive-quizzes.results', $quiz) }}" class="btn-start" style="background: linear-gradient(135deg, #16a34a, #22c55e);">
-                                    <i class="fas fa-trophy"></i>
-                                    <span>View Results</span>
-                                </a>
-                                @if($canAttemptQuiz)
-                                    <form action="{{ route('progressive-quizzes.restart', $quiz) }}" method="POST" style="margin-top: 8px;">
-                                        @csrf
-                                        <button type="submit" class="btn-start" style="background: var(--gradient-1); opacity: 0.85;">
-                                            <i class="fas fa-redo"></i>
-                                            <span>Re-attempt</span>
-                                        </button>
-                                    </form>
-                                @endif
-                            @elseif($canAttemptQuiz)
-                                <form action="{{ route('progressive-quizzes.start', $quiz) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn-start">
-                                        <i class="fas fa-play"></i>
-                                        <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_start') ?? 'Start' }}</span>
-                                    </button>
-                                </form>
-                            @else
-                                <a href="{{ route('progressive-quizzes.show', $quiz->slug) }}" class="btn-start" style="opacity: 0.6; pointer-events: none;" aria-disabled="true">
-                                    <i class="fas fa-lock"></i>
-                                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_max_attempts') ?? 'Max Attempts Reached' }}</span>
-                                </a>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}" class="btn-login">
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_login') ?? 'Login to Start' }}</span>
-                            </a>
-                        @endauth
-                        
-                        <span class="attempts-info">
-                            <i class="fas fa-redo"></i>
-                            @if($quiz->attempts_allowed == 0)
-                                {{ App\Helpers\TranslationHelper::trans('progressive-quizzes.unlimited_attempts') ?? 'Unlimited Attempts' }}
-                            @else
-                                {{ $quiz->attempts_allowed }} {{ Str::plural(App\Helpers\TranslationHelper::trans('progressive-quizzes.attempt') ?? 'Attempt', $quiz->attempts_allowed) }}
-                            @endif
-                        </span>
-                    </div>
+        @if($attempt)
+            {{-- In-progress attempt --}}
+            <a href="{{ route('progressive-quizzes.continue', $quiz) }}" class="btn-start">
+                <i class="fas fa-play-circle"></i>
+                <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_continue') ?? 'Continue' }}</span>
+            </a>
+        @elseif($quizIsCompleted)
+            {{-- Quiz fully completed --}}
+            <div class="completed-actions">
+                <a href="{{ route('progressive-quizzes.results', $quiz) }}" class="btn-results">
+                    <i class="fas fa-trophy"></i>
+                    <span>View Results</span>
+                </a>
+                @if($canAttemptQuiz)
+                    <form action="{{ route('progressive-quizzes.restart', $quiz) }}" method="POST" class="reattempt-form">
+                        @csrf
+                        <button type="submit" class="btn-reattempt">
+                            <i class="fas fa-redo-alt"></i>
+                            <span>Re-attempt</span>
+                        </button>
+                    </form>
+                @endif
+            </div>
+        @elseif($canAttemptQuiz)
+            <form action="{{ route('progressive-quizzes.start', $quiz) }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-start">
+                    <i class="fas fa-play"></i>
+                    <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_start') ?? 'Start' }}</span>
+                </button>
+            </form>
+        @else
+            <a href="{{ route('progressive-quizzes.show', $quiz->slug) }}" class="btn-start disabled" aria-disabled="true">
+                <i class="fas fa-lock"></i>
+                <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_max_attempts') ?? 'Max Attempts Reached' }}</span>
+            </a>
+        @endif
+    @else
+        <a href="{{ route('login') }}" class="btn-login">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>{{ App\Helpers\TranslationHelper::trans('progressive-quizzes.btn_login') ?? 'Login to Start' }}</span>
+        </a>
+    @endauth
+    
+    <span class="attempts-info">
+        <i class="fas fa-redo-alt"></i>
+        @if($quiz->attempts_allowed == 0)
+            {{ App\Helpers\TranslationHelper::trans('progressive-quizzes.unlimited_attempts') ?? 'Unlimited Attempts' }}
+        @else
+            {{ $quiz->attempts_allowed }} {{ Str::plural(App\Helpers\TranslationHelper::trans('progressive-quizzes.attempt') ?? 'Attempt', $quiz->attempts_allowed) }}
+        @endif
+    </span>
+</div>
                 </div>
             @empty
                 <div class="empty-state" data-aos="fade-up">
