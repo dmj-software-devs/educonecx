@@ -1013,7 +1013,7 @@
                             @if($attempt)
                                 <div class="current-level">
                                     <span>Current Level:</span>
-                                    <strong>Level {{ $currentLevel ? $currentLevel->level_number : $attempt->current_level_number }}</strong>
+                                    <strong>Level {{ $attempt->current_level_number }}</strong>
                                 </div>
                             @elseif($quizCompleted && $lastCompletedAttempt)
                                 <div class="current-level">
@@ -1040,7 +1040,7 @@
                             <form action="{{ route('progressive-quizzes.continue', $quiz) }}" method="GET">
                                 <button type="submit" class="btn-continue">
                                     <i class="fas fa-play-circle"></i>
-                                    Continue Level {{ $currentLevel ? $currentLevel->level_number : $attempt->current_level_number }}
+                                    Continue Level {{ $attempt->current_level_number }}
                                 </button>
                             </form>
                             <small style="color: var(--gray-300); display: block; text-align: center;">
@@ -1053,9 +1053,9 @@
                                 View Results
                             </a>
                             @if($canAttempt)
-                                <form action="{{ route('progressive-quizzes.restart', $quiz) }}" method="POST" style="margin-top: 8px;">
+                                <form action="{{ route('progressive-quizzes.restart', $quiz) }}" method="POST" style="margin-top: 8px;" id="showReattemptForm">
                                     @csrf
-                                    <button type="submit" class="btn-start" style="background: linear-gradient(135deg, var(--primary), var(--dark-slate));">
+                                    <button type="button" class="btn-start" style="background: linear-gradient(135deg, var(--primary), var(--dark-slate));" onclick="document.getElementById('reattemptConfirmModal').style.display='flex'">
                                         <i class="fas fa-redo"></i>
                                         <span>Re-attempt Quiz</span>
                                     </button>
@@ -1175,6 +1175,40 @@
         </div>
     </div>
 </div>
+
+{{-- ===== RE-ATTEMPT CONFIRMATION MODAL ===== --}}
+<div id="reattemptConfirmModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,29,68,0.55);align-items:center;justify-content:center;z-index:99999;backdrop-filter:blur(4px);">
+    <div style="background:#FEFDFE;border-radius:20px;padding:36px 32px;max-width:420px;width:90%;box-shadow:0 12px 40px rgba(10,29,68,0.2);text-align:center;animation:reattemptModalIn 0.3s ease;">
+        <div style="width:68px;height:68px;background:#fef3c7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2rem;color:#FBC60C;">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 style="font-size:1.4rem;font-weight:700;color:#0A1D44;margin-bottom:10px;">Re-attempt Quiz?</h3>
+        <p style="color:#5f5f5f;font-size:0.95rem;line-height:1.6;margin-bottom:28px;">
+            Are you sure you want to reattempt this quiz?<br>
+            <strong style="color:#0A1D44;">Your current result and progress may be affected.</strong><br><br>
+            <span style="font-size:0.85rem;color:#9F9A87;">This is especially important if you have already qualified for the competition.</span>
+        </p>
+        <div style="display:flex;gap:12px;justify-content:center;">
+            <button onclick="document.getElementById('reattemptConfirmModal').style.display='none'"
+                style="flex:1;max-width:160px;padding:12px 20px;background:#CBD1DA;color:#0A1D44;border:none;border-radius:12px;font-weight:600;font-size:0.95rem;cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.background='#b0b8c4'" onmouseout="this.style.background='#CBD1DA'">
+                Cancel
+            </button>
+            <button onclick="document.getElementById('showReattemptForm').submit()"
+                style="flex:1;max-width:160px;padding:12px 20px;background:linear-gradient(135deg,#0A1D44,#18386E);color:#FEFDFE;border:none;border-radius:12px;font-weight:600;font-size:0.95rem;cursor:pointer;transition:all 0.2s;"
+                onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <i class="fas fa-redo" style="margin-right:6px;"></i>Yes, Re-attempt
+            </button>
+        </div>
+    </div>
+</div>
+<style>
+@keyframes reattemptModalIn {
+    from { opacity:0; transform:translateY(-30px) scale(0.95); }
+    to   { opacity:1; transform:translateY(0)     scale(1);    }
+}
+</style>
+
 @endsection
 
 @push('scripts')
