@@ -1257,6 +1257,9 @@
                         <p class="welcome-text">
                             {{ App\Helpers\TranslationHelper::trans('dashboard.welcome_text') }}
                         </p>
+                         <a href="{{ route('progressive-quizzes.index') }}" class="empty-btn" >
+                            <i class="fas fa-bolt"></i>Start Quiz <i class="fas fa-arrow-right"></i>
+                        </a>
             </div>
         </div>
 
