@@ -949,10 +949,10 @@
                     </p>
                     
                     <ul class="contact-page-info-list">
-                        <li>
+                        <!-- <li>
                             <i class="fas fa-phone"></i>
                             <a href="tel:+18335338228">{{ App\Helpers\TranslationHelper::trans('contact.contact_phone') }}</a>
-                        </li>
+                        </li> -->
                         <li>
                             <i class="far fa-envelope"></i>
                             <a href="mailto:contact@educonecx.com">{{ App\Helpers\TranslationHelper::trans('contact.contact_email') }}</a>
