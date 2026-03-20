@@ -1005,21 +1005,21 @@
                 <div class="contact-page-social-card" data-aos="fade-right" data-aos-delay="200">
                     <h3 class="contact-page-social-title">{{ App\Helpers\TranslationHelper::trans('contact.social_title') }}</h3>
                     <div class="contact-page-social-grid">
-                        <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="contact-page-social-link">
+                        <!-- <a href="https://www.facebook.com/profile.php?id=61584601012851" target="_blank" class="contact-page-social-link">
                             <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="https://www.tiktok.com/@educonecx.officia" target="_blank" class="contact-page-social-link">
+                        </a> -->
+                        <a href="https://www.tiktok.com/@educonecx.official04?_r=1&_t=ZP-94pVYyt1sQI" target="_blank" class="contact-page-social-link">
                             <i class="fab fa-tiktok"></i>
                         </a>
-                        <a href="https://www.instagram.com/educonecx/" target="_blank" class="contact-page-social-link">
+                        <!-- <a href="https://www.instagram.com/educonecx/" target="_blank" class="contact-page-social-link">
                             <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://www.youtube.com/@EDUCONECX" target="_blank" class="contact-page-social-link">
+                        </a> -->
+                        <!-- <a href="https://www.youtube.com/@EDUCONECX" target="_blank" class="contact-page-social-link">
                             <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="https://wa.me/18335338228" target="_blank" class="contact-page-social-link">
+                        </a> -->
+                        <!-- <a href="https://wa.me/18335338228" target="_blank" class="contact-page-social-link">
                             <i class="fab fa-whatsapp"></i>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
@@ -1168,8 +1168,7 @@
     <div class="container">
         <div class="contact-page-map-container" data-aos="fade-up">
             <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3593.210407431367!2d-80.192964684382!3d25.761989583629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b682b0b1b1b1%3A0x1b1b1b1b1b1b1b1b!2s1200%20Brickell%20Ave%2C%20Miami%2C%20FL%2033131%2C%20USA!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" 
-                allowfullscreen="" 
+src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3593.210407431367!2d-80.192964684382!3d25.761989583629!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b682b0b1b1b1%3A0x1b1b1b1b1b1b1b1b!2s7520%20NW%20104th%20Ave%20Ste%20A103%2C%20Doral%2C%20FL%2033178%2C%20USA!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"                allowfullscreen="" 
                 loading="lazy"
                 title="EDUCONECX Location"
             ></iframe>

@@ -15,7 +15,7 @@ return [
     'contact_card_description' => 'Whether you have questions about our courses, want to discuss partnership opportunities, or need technical support, our team is ready to assist you.',
     'contact_phone' => '+1 (833) 533-8228',
     'contact_email' => 'contact@educonecx.com',
-    'contact_address' => '1200 Brickell Ave, Miami, FL 33131, USA',
+    'contact_address' => '7520 NW 104th AveSte A103 Doral, FL 33178 United States',
     
     'highlights_title' => 'What You Can Ask Us:',
     'highlight_1' => 'Course offerings and pricing',

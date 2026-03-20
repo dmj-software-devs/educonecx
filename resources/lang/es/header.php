@@ -31,5 +31,5 @@ return [
     // Contact info - KEEP EXACT
     'phone' => '+1 (833) 533-8228',
     'email' => 'contact@educonecx.com',
-    'address' => '1200 Brickell Ave, Miami, FL 33131, USA',
+    'address' => '7520 NW 104th AveSte A103 Doral, FL 33178 United States',
 ];
