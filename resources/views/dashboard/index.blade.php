@@ -1426,55 +1426,67 @@
         </div>
 
         <!-- Recommended Courses -->
-        <div class="content-card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-star"></i>
-                    {{ App\Helpers\TranslationHelper::trans('dashboard.recommended_title') }}
-                </h2>
-            </div>
+        <!-- Recommended Courses -->
+<div class="content-card">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-star"></i>
+            {{ App\Helpers\TranslationHelper::trans('dashboard.recommended_title') }}
+        </h2>
+    </div>
 
-            @if(($recommendedCourses ?? collect())->count() > 0)
-            <div class="course-grid">
-                @foreach($recommendedCourses as $course)
-                <div class="course-card">
-                    <div class="card-image">
-                        <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }}"
-                            alt="{{ $course->title ?? 'Course' }}">
-                        <span class="card-badge">{{ $course->category ?? 'Course' }}</span>
-                    </div>
-                    <div class="card-body">
-                        <h3>
-                            <a href="{{ route('courses.show', $course->slug ?? '#') }}">
-                                {{ $course->title ?? 'Course Title' }}
-                            </a>
-                        </h3>
-                        <p class="card-excerpt">
-                            {{ Str::limit($course->excerpt ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 70) }}
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="card-btn">
-                            {{ App\Helpers\TranslationHelper::trans('dashboard.recommended_btn') }}
-                        </a>
-                    </div>
-                </div>
-                @endforeach
+    @if(($recommendedCourses ?? collect())->count() > 0)
+    <div class="course-grid">
+        @foreach($recommendedCourses as $course)
+        <div class="course-card">
+            <div class="card-image">
+                <img src="{{ $course->thumbnail_url ?? 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80' }}"
+                    alt="{{ $course->title ?? 'Course' }}">
+                <!-- FIXED: Display category name properly -->
+                <span class="card-badge">
+                    @if(is_object($course->category) && isset($course->category->name))
+                        {{ $course->category->name }}
+                    @elseif(is_string($course->category))
+                        {{ $course->category }}
+                    @elseif(isset($course->category_name))
+                        {{ $course->category_name }}
+                    @else
+                        {{ $course->category ?? 'Course' }}
+                    @endif
+                </span>
             </div>
-            @else
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-                <h3 class="empty-title">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_title') }}</h3>
-                <p class="empty-text">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_text') }}</p>
-                <a href="{{ route('courses') }}" class="empty-btn">
-                    {{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_btn') }} <i class="fas fa-arrow-right"></i>
+            <div class="card-body">
+                <h3>
+                    <a href="{{ route('courses.show', $course->slug ?? '#') }}">
+                        <!-- FIXED: Display only the title, not the whole object -->
+                        {{ $course->title ?? 'Course Title' }}
+                    </a>
+                </h3>
+                <p class="card-excerpt">
+                    {{ Str::limit($course->excerpt ?? ($course->description ?? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'), 70) }}
+                </p>
+            </div>
+            <div class="card-footer">
+                <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="card-btn">
+                    {{ App\Helpers\TranslationHelper::trans('dashboard.recommended_btn') }}
                 </a>
             </div>
-            @endif
         </div>
-
+        @endforeach
+    </div>
+    @else
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fas fa-star"></i>
+        </div>
+        <h3 class="empty-title">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_title') }}</h3>
+        <p class="empty-text">{{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_text') }}</p>
+        <a href="{{ route('courses') }}" class="empty-btn">
+            {{ App\Helpers\TranslationHelper::trans('dashboard.empty_recommended_btn') }} <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    @endif
+</div>
         <!-- Learning Streak -->
         @if(($streak ?? 0) > 0)
         <div class="streak-card">
