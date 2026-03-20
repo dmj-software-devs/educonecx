@@ -176,7 +176,7 @@ return [
     'contact_address_label' => 'Visit Us',
     'contact_email' => 'neoedtech22@gmail.com',
     'contact_phone' => '+1 (833) 533-8228',
-    'contact_address' => '1200 Brickell Ave, Miami, FL 33131, USA',
+    'contact_address' => '7520 NW 104th AveSte A103 Doral, FL 33178 United States',
     'contact_form_title' => 'Send us a message',
     'contact_form_first_name' => 'First Name',
     'contact_form_last_name' => 'Last Name',

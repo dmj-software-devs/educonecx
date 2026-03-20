@@ -158,7 +158,7 @@
         display: block !important;
     }
 
-    /* Password Toggle */
+    /* Password Toggle - Professional Version */
     .register-page-password-toggle {
         position: absolute !important;
         right: 12px !important;
@@ -166,19 +166,34 @@
         transform: translateY(-50%) !important;
         background: none !important;
         border: none !important;
-        color: #6b7280 !important;
+        color: #9ca3af !important;
         cursor: pointer !important;
-        font-size: 18px !important;
-        padding: 4px !important;
+        padding: 8px !important;
         width: auto !important;
         height: auto !important;
         line-height: 1 !important;
         display: flex !important;
         align-items: center !important;
+        justify-content: center !important;
+        border-radius: 8px !important;
+        transition: all 0.2s ease !important;
     }
 
     .register-page-password-toggle:hover {
         color: #2563eb !important;
+        background: rgba(37, 99, 235, 0.05) !important;
+    }
+
+    .register-page-password-toggle:focus-visible {
+        outline: 2px solid #2563eb !important;
+        outline-offset: 2px !important;
+    }
+
+    .register-page-password-toggle .eye-icon {
+        width: 20px;
+        height: 20px;
+        display: block;
+        transition: all 0.2s ease;
     }
 
     /* Password Strength */
@@ -408,8 +423,18 @@
                     <button type="button"
                         class="register-page-password-toggle"
                         onclick="togglePassword('password')"
-                        tabindex="-1">
-                        👁️
+                        tabindex="-1"
+                        aria-label="Toggle password visibility">
+                        <!-- Eye closed icon (default) -->
+                        <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <!-- Eye open icon (hidden by default) -->
+                        <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
                     </button>
                 </div>
                 @error('password')
@@ -438,8 +463,18 @@
                     <button type="button"
                         class="register-page-password-toggle"
                         onclick="togglePassword('password_confirmation')"
-                        tabindex="-1">
-                        👁️
+                        tabindex="-1"
+                        aria-label="Toggle password visibility">
+                        <!-- Eye closed icon (default) -->
+                        <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <!-- Eye open icon (hidden by default) -->
+                        <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -461,13 +496,24 @@
 </section>
 
 <script>
-    // Toggle password visibility
+    // Toggle password visibility with professional icons
     window.togglePassword = function(fieldId) {
         const field = document.getElementById(fieldId);
         const button = field.nextElementSibling;
-        const type = field.type === 'password' ? 'text' : 'password';
-        field.type = type;
-        button.textContent = type === 'password' ? '👁️' : '🔒';
+        const eyeClosed = button.querySelector('.eye-closed');
+        const eyeOpen = button.querySelector('.eye-open');
+        
+        if (field.type === 'password') {
+            field.type = 'text';
+            eyeClosed.style.display = 'none';
+            eyeOpen.style.display = 'block';
+            button.setAttribute('aria-label', 'Hide password');
+        } else {
+            field.type = 'password';
+            eyeClosed.style.display = 'block';
+            eyeOpen.style.display = 'none';
+            button.setAttribute('aria-label', 'Show password');
+        }
     };
 
     // Password strength indicator
