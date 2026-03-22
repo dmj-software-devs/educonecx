@@ -46,7 +46,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Process subscription payment
+     * Process subscription payment (monthly billing)
      */
     public function processSubscription(Request $request)
     {
@@ -72,7 +72,7 @@ class PaymentController extends Controller
             // Generate unique order number
             $orderNumber = 'SUB-' . strtoupper(uniqid());
 
-            // Create order - REMOVED the 'status' field
+            // Create order
             $order = Order::create([
                 'user_id' => $user->id,
                 'order_number' => $orderNumber,
@@ -84,15 +84,12 @@ class PaymentController extends Controller
                 'payment_status' => 'pending',
                 'billing_name' => $user->name,
                 'billing_email' => $user->email
-                // 'discount_amount' will use default 0
-                // 'coupon_code' will be null
-                // other fields will use defaults
             ]);
 
-            // Create order item - explicitly set course_id to null
+            // Create order item
             OrderItem::create([
                 'order_id' => $order->id,
-                'course_id' => null, // Explicitly set to null for subscription
+                'course_id' => null,
                 'subscription_id' => $plan->id,
                 'subscription_name' => $plan->name,
                 'price' => $plan->price,
@@ -115,7 +112,9 @@ class PaymentController extends Controller
                     'order_number' => $order->order_number,
                     'plan_id' => $plan->id,
                     'plan_name' => $plan->name,
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
+                    'billing_period' => 'monthly',
+                    'duration_days' => $plan->duration_days,
                 ]
             ]);
 
@@ -127,25 +126,38 @@ class PaymentController extends Controller
                     'stripe_payment_intent' => $paymentIntent->id
                 ]);
 
+                // Calculate end date from plan's duration_days (30 days for monthly)
+                $endDate = $plan->calculateEndDate();
+
                 // Create user subscription
                 $subscription = UserSubscription::create([
                     'user_id' => $user->id,
                     'plan_id' => $plan->id,
                     'order_id' => $order->id,
                     'start_date' => now(),
-                    'end_date' => $plan->calculateEndDate(),
+                    'end_date' => $endDate,
                     'status' => 'active',
                     'payment_status' => 'paid',
                     'auto_renew' => true
                 ]);
 
-                // Enroll user in all paid courses
+                // Enroll user in all paid courses with monthly expiry
                 $this->enrollInAllPaidCourses($user, $subscription);
 
                 DB::commit();
 
                 return response()->json([
                     'success' => true,
+                    'redirect_url' => route('payment.subscription.success', ['order' => $order->id])
+                ]);
+            } elseif ($paymentIntent->status === 'requires_action') {
+                // 3D Secure required
+                DB::commit();
+
+                return response()->json([
+                    'success' => false,
+                    'requires_action' => true,
+                    'payment_intent_client_secret' => $paymentIntent->client_secret,
                     'redirect_url' => route('payment.subscription.success', ['order' => $order->id])
                 ]);
             } else {
@@ -167,7 +179,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Enroll user in all paid courses
+     * Enroll user in all paid courses with subscription expiry date
      */
     private function enrollInAllPaidCourses($user, $subscription)
     {
@@ -185,14 +197,14 @@ class PaymentController extends Controller
                     'course_id' => $course->id,
                     'access_type' => 'subscription',
                     'enrollment_date' => now(),
-                    'expiry_date' => $subscription->end_date,
+                    'expiry_date' => $subscription->end_date, // set to 30 days from now
                     'status' => 'active',
                     'progress' => 0
                 ]);
 
                 $course->increment('total_students');
             } elseif ($existingEnrollment->access_type === 'subscription') {
-                // Update expiry date for existing subscription enrollment
+                // Refresh expiry date on re-subscription
                 $existingEnrollment->update([
                     'expiry_date' => $subscription->end_date,
                     'status' => 'active'
@@ -211,7 +223,7 @@ class PaymentController extends Controller
             ->where('order_type', 'subscription')
             ->findOrFail($request->order);
 
-        return view('subscription-success', compact('order'));
+        return view('all-access-success', compact('order'));
     }
 
     /**
