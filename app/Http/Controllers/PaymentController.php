@@ -25,7 +25,7 @@ class PaymentController extends Controller
         $plans = SubscriptionPlan::active()
             ->ordered()
             ->get();
-            
+
         return view('subscription-plans', compact('plans'));
     }
 
@@ -35,13 +35,13 @@ class PaymentController extends Controller
     public function subscriptionCheckout($planId)
     {
         $plan = SubscriptionPlan::active()->findOrFail($planId);
-        
+
         // Check if user already has active subscription
         if (Auth::user()->has_active_subscription) {
             return redirect()->route('dashboard')
                 ->with('info', 'You already have an active subscription.');
         }
-        
+
         return view('subscription-checkout', compact('plan'));
     }
 
@@ -172,7 +172,7 @@ class PaymentController extends Controller
     private function enrollInAllPaidCourses($user, $subscription)
     {
         $paidCourses = Course::where('is_free', false)->get();
-        
+
         foreach ($paidCourses as $course) {
             // Check if already enrolled
             $existingEnrollment = Enrollment::where('user_id', $user->id)
