@@ -542,19 +542,19 @@
                                 <button class="btn-purchase" id="purchaseBtn">
                                     <i class="fas fa-lock"></i> Get All-Access Now
                                 </button>
-                                <div class="guarantee-badge">
+                                <!-- <div class="guarantee-badge">
                                     <i class="fas fa-shield-alt"></i>
                                     30-Day Money-Back Guarantee
-                                </div>
+                                </div> -->
                             @endif
                         @else
                             <a href="{{ route('login') }}?redirect={{ url()->current() }}" class="btn-purchase">
                                 <i class="fas fa-sign-in-alt"></i> Login to Purchase
                             </a>
-                            <div class="guarantee-badge">
+                            <!-- <div class="guarantee-badge">
                                 <i class="fas fa-shield-alt"></i>
                                 30-Day Money-Back Guarantee
-                            </div>
+                            </div> -->
                         @endauth
                     </div>
                 </div>

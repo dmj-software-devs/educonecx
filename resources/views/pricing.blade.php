@@ -1006,7 +1006,7 @@
 </section>
 
 <!-- Money-Back Guarantee Section -->
-<section class="guarantee-section">
+<!-- <section class="guarantee-section">
     <div class="container">
         <div class="guarantee-content" data-aos="zoom-in">
             <div class="guarantee-icon">
@@ -1023,7 +1023,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 <!-- FAQ Section -->
 <section class="faq-pricing-section">

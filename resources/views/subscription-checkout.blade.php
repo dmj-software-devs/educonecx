@@ -121,13 +121,13 @@
                         </div>
                     </div>
                     
-                    <div class="guarantee-badge">
+                    <!-- <div class="guarantee-badge">
                         <i class="fas fa-shield-alt"></i>
                         <div>
                             <strong>30-Day Money-Back Guarantee</strong>
                             <span>Not satisfied? Get a full refund.</span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
