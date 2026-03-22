@@ -2117,7 +2117,7 @@
                     @endif
 
                     <div class="course-footer">
-                        <div class="course-price">
+                        <!-- <div class="course-price">
                             @if(isset($course->hasDiscount) && $course->hasDiscount)
                             ${{ number_format($course->sale_price ?? 19.99, 2) }}
                             <small>${{ number_format($course->price ?? 29.99, 2) }}</small>
@@ -2126,7 +2126,7 @@
                             @else
                             {{ App\Helpers\TranslationHelper::trans('home.course_free') }}
                             @endif
-                        </div>
+                        </div> -->
                         <a href="{{ route('courses.show', $course->slug ?? '#') }}" class="course-btn">
                             {{ isset($course->price) && $course->price > 0 ? App\Helpers\TranslationHelper::trans('home.course_enroll') : App\Helpers\TranslationHelper::trans('home.course_start') }}
                             <i class="fas fa-arrow-right"></i>
@@ -2223,9 +2223,9 @@
                     </div>
 
                     <div class="course-footer">
-                        <div class="course-price">
+                        <!-- <div class="course-price">
                             $44.99
-                        </div>
+                        </div> -->
                         <a href="#" class="course-btn">
                             {{ App\Helpers\TranslationHelper::trans('home.course_enroll') }} <i class="fas fa-arrow-right"></i>
                         </a>
