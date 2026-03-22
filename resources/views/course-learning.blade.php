@@ -45,6 +45,33 @@
                         </button>
                     </div>
 
+                    <!-- Lesson Navigation Controls -->
+                    <div class="lesson-nav-controls" id="lessonNavControls" style="display: none;">
+                        <button class="lesson-nav-btn" id="prevLessonBtn" onclick="navigateLesson('prev')" disabled title="Previous lesson (← key)">
+                            <i class="fas fa-step-backward"></i>
+                            <span class="lesson-nav-label">
+                                <small>Previous</small>
+                                <strong id="prevLessonName">Previous Lesson</strong>
+                            </span>
+                        </button>
+
+                        <div class="lesson-nav-center">
+                            <div class="current-lesson-indicator">
+                                <span id="lessonNavCurrent">1</span> / <span id="lessonNavTotal">1</span>
+                                <span class="lesson-elapsed-timer" id="lessonElapsedTime" title="Time on this lesson">00:00</span>
+                            </div>
+                            <div class="lesson-nav-title" id="currentLessonNavTitle">Lesson Title</div>
+                        </div>
+
+                        <button class="lesson-nav-btn lesson-nav-btn--next" id="nextLessonBtn" onclick="navigateLesson('next')" disabled title="Next lesson (→ key)">
+                            <span class="lesson-nav-label">
+                                <small>Next</small>
+                                <strong id="nextLessonName">Next Lesson</strong>
+                            </span>
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+
                     <div class="lesson-content-container" id="lessonContent">
                         <div class="lesson-content-placeholder">
                             <i class="fas fa-book-open"></i>
@@ -459,6 +486,129 @@
         width: 100vw;
         height: 100vh;
         object-fit: contain;
+    }
+
+    /* ========== LESSON NAVIGATION CONTROLS ========== */
+    .lesson-nav-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: var(--pure-white);
+        border-radius: var(--radius-lg);
+        padding: 14px 20px;
+        margin-bottom: 20px;
+        box-shadow: var(--shadow-md);
+        border: 1px solid rgba(251, 198, 12, 0.15);
+    }
+
+    .lesson-nav-btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        background: var(--ivory);
+        color: var(--text-primary);
+        border: 1.5px solid rgba(10, 29, 68, 0.1);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 0.9rem;
+        min-width: 160px;
+        flex-shrink: 0;
+    }
+
+    .lesson-nav-btn:hover:not(:disabled) {
+        background: var(--gradient-1);
+        color: var(--pure-white);
+        border-color: transparent;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .lesson-nav-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .lesson-nav-btn--next {
+        justify-content: flex-end;
+        text-align: right;
+    }
+
+    .lesson-nav-btn i {
+        font-size: 1rem;
+        flex-shrink: 0;
+        color: var(--bright-amber);
+        transition: var(--transition);
+    }
+
+    .lesson-nav-btn:hover:not(:disabled) i {
+        color: var(--pure-white);
+    }
+
+    .lesson-nav-label {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        overflow: hidden;
+    }
+
+    .lesson-nav-label small {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        opacity: 0.6;
+        font-weight: 600;
+    }
+
+    .lesson-nav-label strong {
+        font-size: 0.82rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 110px;
+        display: block;
+    }
+
+    .lesson-nav-center {
+        flex: 1;
+        text-align: center;
+        min-width: 0;
+    }
+
+    .current-lesson-indicator {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .lesson-elapsed-timer {
+        font-size: 0.75rem;
+        background: rgba(251, 198, 12, 0.15);
+        color: var(--text-secondary);
+        padding: 1px 8px;
+        border-radius: var(--radius-full);
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+        border: 1px solid rgba(251, 198, 12, 0.25);
+    }
+
+    .lesson-nav-title {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
     }
 
     /* Lesson Content */
@@ -1056,6 +1206,24 @@
         .lesson-content-container {
             padding: 20px;
         }
+
+        .lesson-nav-controls {
+            padding: 10px 12px;
+            gap: 8px;
+        }
+
+        .lesson-nav-btn {
+            min-width: 0;
+            padding: 8px 12px;
+        }
+
+        .lesson-nav-label strong {
+            max-width: 70px;
+        }
+
+        .lesson-nav-title {
+            font-size: 0.82rem;
+        }
     }
 
     @media (max-width: 576px) {
@@ -1127,6 +1295,22 @@
             left: 20px;
             right: 20px;
             max-width: none;
+        }
+
+        .lesson-nav-label small {
+            display: none;
+        }
+
+        .lesson-nav-center {
+            display: none;
+        }
+
+        .lesson-nav-btn {
+            flex: 1;
+        }
+
+        .lesson-nav-btn--next {
+            justify-content: flex-end;
         }
     }
 
@@ -1307,24 +1491,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error updating video progress:', error));
     }
 
-    function setupVideoTracking(videoElement) {
-        let lastUpdate = 0;
-
-        videoElement.addEventListener('timeupdate', function() {
-            const now = Date.now();
-            if (now - lastUpdate > 5000) {
-                lastUpdate = now;
-                updateVideoProgress(videoElement.currentTime);
-            }
-        });
-
-        videoElement.addEventListener('ended', function() {
-            if (!courseData.completedLessons.includes(parseInt(currentLessonId))) {
-                markLessonAsCompleted(currentLessonId);
-            }
-        });
-    }
-
     function updateLessonUI(lessonId, completed) {
         const lessonElement = document.querySelector(`[data-lesson-id="${lessonId}"]`);
         if (!lessonElement) return;
@@ -1373,6 +1539,91 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return null;
     }
+
+    function getPrevLesson(currentLessonId) {
+        const lessonElements = Array.from(document.querySelectorAll('.lesson-item'));
+        const currentIndex = lessonElements.findIndex(el => el.dataset.lessonId == currentLessonId);
+
+        if (currentIndex > 0) {
+            return lessonElements[currentIndex - 1];
+        }
+        return null;
+    }
+
+    function getAllLessons() {
+        return Array.from(document.querySelectorAll('.lesson-item'));
+    }
+
+    function getLessonIndex(lessonId) {
+        const lessonElements = getAllLessons();
+        return lessonElements.findIndex(el => el.dataset.lessonId == lessonId);
+    }
+
+    // ========== UPDATE NAV CONTROLS ==========
+    function updateNavControls(lessonId) {
+        const navControls = document.getElementById('lessonNavControls');
+        const prevBtn = document.getElementById('prevLessonBtn');
+        const nextBtn = document.getElementById('nextLessonBtn');
+        const prevName = document.getElementById('prevLessonName');
+        const nextName = document.getElementById('nextLessonName');
+        const navCurrent = document.getElementById('lessonNavCurrent');
+        const navTotal = document.getElementById('lessonNavTotal');
+        const navTitle = document.getElementById('currentLessonNavTitle');
+
+        if (!navControls) return;
+
+        const allLessons = getAllLessons();
+        const currentIndex = getLessonIndex(lessonId);
+        const currentEl = allLessons[currentIndex];
+
+        // Show the nav bar
+        navControls.style.display = 'flex';
+
+        // Update counter and title
+        if (navCurrent) navCurrent.textContent = currentIndex + 1;
+        if (navTotal) navTotal.textContent = allLessons.length;
+        if (navTitle && currentEl) navTitle.textContent = currentEl.dataset.lessonTitle || 'Lesson';
+
+        // Previous button
+        if (currentIndex > 0) {
+            const prevEl = allLessons[currentIndex - 1];
+            prevBtn.disabled = false;
+            if (prevName) prevName.textContent = prevEl.dataset.lessonTitle || 'Previous Lesson';
+        } else {
+            prevBtn.disabled = true;
+            if (prevName) prevName.textContent = 'Previous Lesson';
+        }
+
+        // Next button
+        if (currentIndex < allLessons.length - 1) {
+            const nextEl = allLessons[currentIndex + 1];
+            nextBtn.disabled = false;
+            if (nextName) nextName.textContent = nextEl.dataset.lessonTitle || 'Next Lesson';
+        } else {
+            nextBtn.disabled = true;
+            if (nextName) nextName.textContent = 'Next Lesson';
+        }
+    }
+
+    // ========== NAVIGATE LESSON (PREV / NEXT) ==========
+    window.navigateLesson = function(direction) {
+        const allLessons = getAllLessons();
+        const currentIndex = getLessonIndex(currentLessonId);
+        let targetIndex = -1;
+
+        if (direction === 'prev' && currentIndex > 0) {
+            targetIndex = currentIndex - 1;
+        } else if (direction === 'next' && currentIndex < allLessons.length - 1) {
+            targetIndex = currentIndex + 1;
+        }
+
+        if (targetIndex >= 0) {
+            const targetLesson = allLessons[targetIndex];
+            if (targetLesson && targetLesson.dataset.lessonId) {
+                window.loadLesson(targetLesson.dataset.lessonId);
+            }
+        }
+    };
 
     function loadLessonContent(title, content, attachment) {
         let attachmentHtml = '';
@@ -1634,6 +1885,17 @@ document.addEventListener('DOMContentLoaded', function() {
         lessonElement.classList.add('current');
         currentLessonId = parseInt(lessonId);
 
+        // Scroll the sidebar to show the current lesson
+        lessonElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // Expand the section containing this lesson
+        const sectionLessons = lessonElement.closest('.section-lessons');
+        if (sectionLessons && !sectionLessons.classList.contains('show')) {
+            sectionLessons.classList.add('show');
+            const sectionHeader = sectionLessons.previousElementSibling;
+            if (sectionHeader) sectionHeader.classList.add('active');
+        }
+
         fetch('/save-current-lesson', {
             method: 'POST',
             headers: {
@@ -1654,6 +1916,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         loadLessonContent(lessonTitle, content || description || '', attachment);
+
+        // Update navigation controls
+        updateNavControls(lessonId);
 
         const url = new URL(window.location);
         url.searchParams.set('lesson', lessonId);
@@ -1720,14 +1985,150 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Load initial lesson if exists
+    // ========== AUTO-LOAD FIRST / RESUME LESSON ==========
     if (currentLessonId) {
         window.loadLesson(currentLessonId);
     } else {
-        fullscreenBtn.style.display = 'none';
+        // Auto-load first lesson automatically
+        const firstLesson = document.querySelector('.lesson-item');
+        if (firstLesson && firstLesson.dataset.lessonId) {
+            window.loadLesson(firstLesson.dataset.lessonId);
+        } else {
+            fullscreenBtn.style.display = 'none';
+        }
     }
 
-    // Responsive Sidebar
+    // ========== KEYBOARD NAVIGATION ==========
+    document.addEventListener('keydown', function(e) {
+        // Only trigger if not focused on input/textarea
+        const tag = document.activeElement.tagName.toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            window.navigateLesson('next');
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            window.navigateLesson('prev');
+        }
+    });
+
+    // ========== AUTO-ADVANCE TO NEXT LESSON ==========
+    let autoAdvanceTimer = null;
+    let autoAdvanceCountdown = 5;
+
+    function startAutoAdvanceCountdown() {
+        const nextLesson = getNextLesson(currentLessonId);
+        if (!nextLesson) return;
+
+        if (autoAdvanceTimer) clearInterval(autoAdvanceTimer);
+        autoAdvanceCountdown = 5;
+
+        const banner = document.createElement('div');
+        banner.id = 'autoAdvanceBanner';
+        banner.style.cssText = `
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--gradient-1); color: var(--pure-white);
+            padding: 14px 28px; border-radius: var(--radius-full);
+            box-shadow: var(--shadow-lg); z-index: 9999;
+            display: flex; align-items: center; gap: 14px;
+            font-weight: 500; font-size: 0.95rem;
+            border: 2px solid var(--bright-amber);
+            animation: slideIn 0.3s ease;
+        `;
+        banner.innerHTML = `
+            <i class="fas fa-forward" style="color:var(--bright-amber);"></i>
+            <span>Next lesson in <strong id="autoAdvanceCount">5</strong>s — <em style="opacity:0.85;font-style:normal;">${nextLesson.dataset.lessonTitle || 'Next Lesson'}</em></span>
+            <button onclick="cancelAutoAdvance()" style="
+                background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+                color: var(--pure-white); padding: 4px 12px; border-radius: var(--radius-full);
+                cursor: pointer; font-size: 0.8rem;
+            ">Cancel</button>
+        `;
+        document.body.appendChild(banner);
+
+        autoAdvanceTimer = setInterval(function() {
+            autoAdvanceCountdown--;
+            const countEl = document.getElementById('autoAdvanceCount');
+            if (countEl) countEl.textContent = autoAdvanceCountdown;
+            if (autoAdvanceCountdown <= 0) {
+                cancelAutoAdvance();
+                window.loadLesson(nextLesson.dataset.lessonId);
+            }
+        }, 1000);
+    }
+
+    window.cancelAutoAdvance = function() {
+        if (autoAdvanceTimer) { clearInterval(autoAdvanceTimer); autoAdvanceTimer = null; }
+        const banner = document.getElementById('autoAdvanceBanner');
+        if (banner) banner.remove();
+    };
+
+    function setupVideoTracking(videoElement) {
+        let lastUpdate = 0;
+        videoElement.addEventListener('timeupdate', function() {
+            const now = Date.now();
+            if (now - lastUpdate > 5000) {
+                lastUpdate = now;
+                updateVideoProgress(videoElement.currentTime);
+            }
+        });
+        videoElement.addEventListener('ended', function() {
+            if (!courseData.completedLessons.includes(parseInt(currentLessonId))) {
+                markLessonAsCompleted(currentLessonId);
+            }
+            startAutoAdvanceCountdown();
+        });
+    }
+
+    // ========== LESSON TIMER ==========
+    let lessonStartTime = null;
+    let lessonTimerInterval = null;
+
+    function startLessonTimer() {
+        lessonStartTime = Date.now();
+        if (lessonTimerInterval) clearInterval(lessonTimerInterval);
+        lessonTimerInterval = setInterval(updateLessonTimer, 1000);
+    }
+
+    function updateLessonTimer() {
+        const elapsed = Math.floor((Date.now() - lessonStartTime) / 1000);
+        const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+        const secs = (elapsed % 60).toString().padStart(2, '0');
+        const timerEl = document.getElementById('lessonElapsedTime');
+        if (timerEl) timerEl.textContent = `${mins}:${secs}`;
+    }
+
+    // Patch loadLesson to start timer on each new lesson
+    const _originalLoadLesson = window.loadLesson;
+    window.loadLesson = function(lessonId) {
+        // Cancel any pending auto-advance
+        cancelAutoAdvance();
+        // Start the lesson timer
+        startLessonTimer();
+        // Call original
+        _originalLoadLesson(lessonId);
+    };
+
+    // ========== WELCOME TOAST ==========
+    setTimeout(function() {
+        const allLessons = getAllLessons();
+        const completedCount = courseData.completedLessons.length;
+        const totalCount = courseData.totalLessons;
+        let welcomeMsg = '';
+
+        if (completedCount === 0) {
+            welcomeMsg = '👋 Welcome! Your first lesson is ready to play.';
+        } else if (completedCount === totalCount) {
+            welcomeMsg = '🎉 You\'ve completed this course! Reviewing lessons.';
+        } else {
+            welcomeMsg = `▶️ Welcome back! Resuming where you left off (${completedCount}/${totalCount} completed).`;
+        }
+
+        showNotification(welcomeMsg, 'info');
+    }, 800);
+
+    // ========== RESPONSIVE SIDEBAR ==========
     function handleResize() {
         const sidebar = document.querySelector('.learning-sidebar');
         if (window.innerWidth <= 992) {
@@ -1747,12 +2148,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (lessonId) {
             window.loadLesson(lessonId);
         } else {
-            showVideoPlaceholder('Select a lesson to start learning');
-            fullscreenBtn.style.display = 'none';
+            // Fall back to first lesson instead of empty state
+            const firstLesson = document.querySelector('.lesson-item');
+            if (firstLesson && firstLesson.dataset.lessonId) {
+                window.loadLesson(firstLesson.dataset.lessonId);
+            } else {
+                showVideoPlaceholder('Select a lesson to start learning');
+                fullscreenBtn.style.display = 'none';
+            }
         }
     });
 
-    console.log('Learning page initialized with fullscreen button');
+    console.log('Learning page initialized');
 });
 </script>
 @endsection
