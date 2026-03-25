@@ -2095,18 +2095,18 @@
                 <h4 class="neo-footer-title">{{ App\Helpers\TranslationHelper::trans('neo.footer_contact_title') }}</h4>
                 <div class="neo-footer-contact">
                     <p><i class="fas fa-envelope"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_email') }}</p>
-                    <p><i class="fas fa-phone"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_phone') }}</p>
+                    <!-- <p><i class="fas fa-phone"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_phone') }}</p> -->
                     <p><i class="fas fa-map-marker-alt"></i> {{ App\Helpers\TranslationHelper::trans('neo.contact_address') }}</p>
                 </div>
 
                 <div class="neo-social-links">
-                    <a href="https://www.facebook.com/profile.php?id=61584601012851" class="neo-social-link" target="_blank">
+                    <!-- <a href="https://www.facebook.com/profile.php?id=61584601012851" class="neo-social-link" target="_blank">
                         <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.tiktok.com/@educonecx.officia" class="neo-social-link" target="_blank">
+                    </a> -->
+                    <a href="https://www.tiktok.com/@educonecx.official04?_r=1&_t=ZP-94pVYyt1sQI" class="neo-social-link" target="_blank">
                         <i class="fab fa-tiktok"></i>
                     </a>
-                    <a href="https://www.instagram.com/educonecx/" class="neo-social-link" target="_blank">
+                    <!-- <a href="https://www.instagram.com/educonecx/" class="neo-social-link" target="_blank">
                         <i class="fab fa-instagram"></i>
                     </a>
                     <a href="https://www.youtube.com/@EDUCONECX" class="neo-social-link" target="_blank">
@@ -2114,7 +2114,7 @@
                     </a>
                     <a href="https://wa.me/18335338228" class="neo-social-link" target="_blank">
                         <i class="fab fa-whatsapp"></i>
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
