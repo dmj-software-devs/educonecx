@@ -53,6 +53,16 @@
             color: #2E5C61;
             font-size: 16px;
         }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #FBC60C;
+            color: #0A1D44;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
         .message-box {
             background: #F9F7E9;
             padding: 20px;
@@ -86,22 +96,12 @@
         .footer a:hover {
             color: #FBC60C;
         }
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
-            background: #FBC60C;
-            color: #0A1D44;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📬 New Contact Form Submission</h1>
+            <h1>📬 {{ isset($data['form_type']) && $data['form_type'] === 'neo' ? 'New NEO ED-TECH Inquiry' : 'New Contact Form Submission' }}</h1>
             <div class="badge">EDUCONECX</div>
         </div>
         
@@ -125,9 +125,16 @@
             </div>
             @endif
             
+            @if(!empty($data['company']))
+            <div class="field">
+                <span class="field-label">🏢 Company:</span>
+                <span class="field-value">{{ $data['company'] }}</span>
+            </div>
+            @endif
+            
             @if(!empty($data['subject']) && $data['subject'] != '')
             <div class="field">
-                <span class="field-label">🏷️ Subject:</span>
+                <span class="field-label">🏷️ Subject/Service:</span>
                 <span class="field-value">{{ ucfirst(str_replace('-', ' ', $data['subject'])) }}</span>
             </div>
             @endif
@@ -139,7 +146,7 @@
         </div>
         
         <div class="footer">
-            <p>This message was sent from the EDUCANECX contact form.</p>
+            <p>This message was sent from the {{ isset($data['form_type']) && $data['form_type'] === 'neo' ? 'NEO ED-TECH' : 'EDUCANECX' }} contact form.</p>
             <p>
                 <a href="mailto:{{ $data['email'] }}?subject=Re: Your inquiry">✉️ Reply to {{ $data['first_name'] }}</a>
             </p>

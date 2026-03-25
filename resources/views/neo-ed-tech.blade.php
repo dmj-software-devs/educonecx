@@ -2002,52 +2002,55 @@
                 <h3 class="neo-form-title">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_title') }}</h3>
                 
                 <form id="contactForm" method="POST" action="{{ route('contact.submit') }}">
-                    @csrf
-                    
-                    <div class="neo-form-group">
-                        <label for="first_name">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_first_name') }}</label>
-                        <input type="text" id="first_name" name="first_name" class="neo-form-control" placeholder="John" required>
-                    </div>
+    @csrf
+    
+    <!-- Add this hidden field to identify the form type -->
+    <input type="hidden" name="form_type" value="neo">
+    
+    <div class="neo-form-group">
+        <label for="first_name">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_first_name') }}</label>
+        <input type="text" id="first_name" name="first_name" class="neo-form-control" placeholder="John" required>
+    </div>
 
-                    <div class="neo-form-group">
-                        <label for="last_name">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_last_name') }}</label>
-                        <input type="text" id="last_name" name="last_name" class="neo-form-control" placeholder="Doe">
-                    </div>
+    <div class="neo-form-group">
+        <label for="last_name">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_last_name') }}</label>
+        <input type="text" id="last_name" name="last_name" class="neo-form-control" placeholder="Doe">
+    </div>
 
-                    <div class="neo-form-group">
-                        <label for="email">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_email') }}</label>
-                        <input type="email" id="email" name="email" class="neo-form-control" placeholder="john@company.com" required>
-                    </div>
+    <div class="neo-form-group">
+        <label for="email">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_email') }}</label>
+        <input type="email" id="email" name="email" class="neo-form-control" placeholder="john@company.com" required>
+    </div>
 
-                    <div class="neo-form-group">
-                        <label for="company">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_company') }}</label>
-                        <input type="text" id="company" name="company" class="neo-form-control" placeholder="Your Company Name">
-                    </div>
+    <div class="neo-form-group">
+        <label for="company">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_company') }}</label>
+        <input type="text" id="company" name="company" class="neo-form-control" placeholder="Your Company Name">
+    </div>
 
-                    <div class="neo-form-group">
-                        <label for="service">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_service') }}</label>
-                        <select id="service" name="service" class="neo-form-control" required>
-                            <option value="">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_service_select') }}</option>
-                            <option value="Social Media Management">{{ App\Helpers\TranslationHelper::trans('neo.service_1_title') }}</option>
-                            <option value="Content Studio">{{ App\Helpers\TranslationHelper::trans('neo.service_2_title') }}</option>
-                            <option value="Paid Growth">{{ App\Helpers\TranslationHelper::trans('neo.service_3_title') }}</option>
-                            <option value="Website & Funnels">{{ App\Helpers\TranslationHelper::trans('neo.service_4_title') }}</option>
-                            <option value="SEO & Local Presence">{{ App\Helpers\TranslationHelper::trans('neo.service_5_title') }}</option>
-                            <option value="AI & Automation">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</option>
-                            <option value="Analytics & Reporting">{{ App\Helpers\TranslationHelper::trans('neo.service_7_title') }}</option>
-                            <option value="Branding & Design">{{ App\Helpers\TranslationHelper::trans('neo.service_8_title') }}</option>
-                            <option value="Influencer & Partnerships">{{ App\Helpers\TranslationHelper::trans('neo.service_9_title') }}</option>
-                            <option value="Training & Playbooks">{{ App\Helpers\TranslationHelper::trans('neo.service_10_title') }}</option>
-                        </select>
-                    </div>
+    <div class="neo-form-group">
+        <label for="service">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_service') }}</label>
+        <select id="service" name="service" class="neo-form-control">
+            <option value="">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_service_select') }}</option>
+            <option value="Social Media Management">{{ App\Helpers\TranslationHelper::trans('neo.service_1_title') }}</option>
+            <option value="Content Studio">{{ App\Helpers\TranslationHelper::trans('neo.service_2_title') }}</option>
+            <option value="Paid Growth">{{ App\Helpers\TranslationHelper::trans('neo.service_3_title') }}</option>
+            <option value="Website & Funnels">{{ App\Helpers\TranslationHelper::trans('neo.service_4_title') }}</option>
+            <option value="SEO & Local Presence">{{ App\Helpers\TranslationHelper::trans('neo.service_5_title') }}</option>
+            <option value="AI & Automation">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</option>
+            <option value="Analytics & Reporting">{{ App\Helpers\TranslationHelper::trans('neo.service_7_title') }}</option>
+            <option value="Branding & Design">{{ App\Helpers\TranslationHelper::trans('neo.service_8_title') }}</option>
+            <option value="Influencer & Partnerships">{{ App\Helpers\TranslationHelper::trans('neo.service_9_title') }}</option>
+            <option value="Training & Playbooks">{{ App\Helpers\TranslationHelper::trans('neo.service_10_title') }}</option>
+        </select>
+    </div>
 
-                    <div class="neo-form-group">
-                        <label for="message">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_message') }}</label>
-                        <textarea id="message" name="message" class="neo-form-control" placeholder="Tell us about your project and goals..." required></textarea>
-                    </div>
+    <div class="neo-form-group">
+        <label for="message">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_message') }}</label>
+        <textarea id="message" name="message" class="neo-form-control" placeholder="Tell us about your project and goals..." required></textarea>
+    </div>
 
-                    <button type="submit" class="neo-form-submit">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_submit') }}</button>
-                </form>
+    <button type="submit" class="neo-form-submit">{{ App\Helpers\TranslationHelper::trans('neo.contact_form_submit') }}</button>
+</form>
             </div>
         </div>
     </div>
