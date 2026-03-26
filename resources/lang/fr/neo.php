@@ -11,12 +11,12 @@ return [
     'nav_about' => 'À Propos',
     'nav_testimonials' => 'Témoignages',
     'nav_contact' => 'Contact',
-    'nav_btn' => 'Obtenir une Consultation Gratuite',
+    'nav_btn' => 'Obtenir une Consultation',
 
     // Hero Section
     'hero_title' => 'Autonomisez votre<br>Entreprise avec<br><span>des Solutions Numériques<br>Intelligentes</span>',
     'hero_subtitle' => 'Sites Web, Marketing, Commerce Électronique — Tout ce dont vous avez besoin pour développer votre entreprise en ligne',
-    'hero_btn_consultation' => 'Obtenir une Consultation Gratuite',
+    'hero_btn_consultation' => 'Obtenir une Consultation',
     'hero_btn_services' => 'Voir Nos Services',
     'hero_counter' => '+ entreprises',
     'hero_counter_label' => '+ entreprises',
@@ -170,11 +170,11 @@ return [
 
     // Contact Section
     'contact_title' => 'Prêt à Transformer Votre<br><span>Présence Numérique ?</span>',
-    'contact_text' => 'Discutons de votre projet et créons une solution personnalisée qui stimule la croissance réelle de votre entreprise. Obtenez votre consultation gratuite maintenant.',
+    'contact_text' => 'Discutons de votre projet et créons une solution personnalisée qui stimule la croissance réelle de votre entreprise. Obtenez votre consultation maintenant.',
     'contact_email_label' => 'Envoyez-nous un email',
     'contact_phone_label' => 'Appelez-nous',
     'contact_address_label' => 'Visitez-nous',
-    'contact_email' => 'neoedtech22@gmail.com',
+    'contact_email' => 'neo@educonecx.com',
     'contact_phone' => '+1 (833) 533-8228',
     'contact_address' => '1200 Brickell Ave, Miami, FL 33131, USA',
     'contact_form_title' => 'Envoyez-nous un message',

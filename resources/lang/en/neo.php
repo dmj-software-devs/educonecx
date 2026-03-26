@@ -11,12 +11,12 @@ return [
     'nav_about' => 'About',
     'nav_testimonials' => 'Testimonials',
     'nav_contact' => 'Contact',
-    'nav_btn' => 'Get Free Consultation',
+    'nav_btn' => 'Get Consultation',
 
     // Hero Section
     'hero_title' => 'Empowering Your<br>Business with<br><span>Smart Digital<br>Solutions</span>',
     'hero_subtitle' => 'Websites, Marketing, E-commerce — Everything You Need to Grow Your Business Online',
-    'hero_btn_consultation' => 'Get a Free Consultation',
+    'hero_btn_consultation' => 'Get a Consultation',
     'hero_btn_services' => 'See Our Services',
     'hero_counter' => '+ businesses',
     'hero_counter_label' => '+ businesses',
@@ -170,11 +170,11 @@ return [
 
     // Contact Section
     'contact_title' => 'Ready to Transform Your<br><span>Digital Presence?</span>',
-    'contact_text' => 'Let\'s discuss your project and create a custom solution that drives real business growth. Get your free consultation now.',
+    'contact_text' => 'Let\'s discuss your project and create a custom solution that drives real business growth. Get your consultation now.',
     'contact_email_label' => 'Email Us',
     'contact_phone_label' => 'Call Us',
     'contact_address_label' => 'Visit Us',
-    'contact_email' => 'neoedtech22@gmail.com',
+    'contact_email' => 'neo@educonecx.com',
     'contact_phone' => '+1 (833) 533-8228',
     'contact_address' => '7520 NW 104th AveSte A103 Doral, FL 33178 United States',
     'contact_form_title' => 'Send us a message',

@@ -1976,7 +1976,7 @@
                         </div>
                     </div>
 
-                    <div class="neo-contact-item">
+                    <!-- <div class="neo-contact-item">
                         <div class="neo-contact-icon">
                             <i class="fas fa-phone-alt"></i>
                         </div>
@@ -1984,7 +1984,7 @@
                             <h3>{{ App\Helpers\TranslationHelper::trans('neo.contact_phone_label') }}</h3>
                             <p>{{ App\Helpers\TranslationHelper::trans('neo.contact_phone') }}</p>
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="neo-contact-item">
                         <div class="neo-contact-icon">
