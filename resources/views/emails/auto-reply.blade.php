@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>EDUCONECX | Thank You for Contacting Us</title>
+    <title>EDUCONECX TEAM | Thank You for Contacting Us</title>
     <style>
         /* Reset & Base Styles for Email Clients */
         * {
@@ -38,7 +38,7 @@
             margin-bottom: 8px;
         }
         .logo {
-            max-width: 200px;
+            max-width: 220px;
             height: auto;
             display: inline-block;
             width: 100%;
@@ -257,35 +257,33 @@
 </head>
 <body>
     <div class="email-wrapper">
-        <!-- HEADER with Official Logo (Brand consistency: EDUCONECX) -->
+        <!-- HEADER with Official Logo: Official URL https://educonecx.com/images/logo.jpg -->
         <div class="email-header">
             <div class="logo-container">
-                <!-- Placeholder for official EDUCONECX Logo - high resolution, centered, responsive -->
-                <!-- Replace src with actual logo URL. For demonstration, we use an inline SVG placeholder representing a premium brand identity, 
-                     but final version will point to your official logo asset. I'm embedding a data-URL vector logo concept that says "EDUCONECX" in corporate style -->
-                <img class="logo" src="https://placehold.co/600x120/0A2540/FFFFFF?text=EDUCONECX+ACADEMY" 
-                     alt="EDUCONECX ACADEMY" 
-                     style="display: block; margin: 0 auto; max-width: 240px; width: 100%; height: auto;">
-                <!-- IMPORTANT: Replace placeholder with actual official logo URL (e.g., https://www.educonecx.com/logo.png) 
-                     Ensures high-DPI and retina ready -->
+                <!-- Official EDUCONECX logo from the provided live URL - high resolution, centered, responsive -->
+                <img class="logo" src="https://educonecx.com/images/logo.jpg" 
+                     alt="EDUCONECX - Learn.Connect.Grow" 
+                     style="display: block; margin: 0 auto; max-width: 220px; width: 100%; height: auto;"
+                     onerror="this.onerror=null; this.src='https://placehold.co/600x120/0A2540/FFFFFF?text=EDUCONECX+TEAM'; this.alt='EDUCONECX TEAM Logo';">
+                <!-- Fallback: if the official logo fails to load (rare), a branded placeholder maintains professional appearance -->
             </div>
         </div>
 
         <!-- Hero (No excessive emojis, premium corporate look) -->
         <div class="hero-section">
             <h1 class="hero-title">Thank You for Reaching Out</h1>
-            <div class="hero-subtitle">We appreciate your interest in EDUCONECX</div>
+            <div class="hero-subtitle">We appreciate your interest in EDUCONECX TEAM</div>
         </div>
 
         <!-- Main Message Content -->
         <div class="main-content">
-            <!-- Greeting with dynamic name -->
+            <!-- Greeting with dynamic name - safe handling for missing fields -->
             <div class="greeting">
-                Dear {{ $data['first_name'] }} {{ $data['last_name'] }},
+                Dear {{ $data['first_name'] ?? 'Valued' }} {{ $data['last_name'] ?? 'Client' }},
             </div>
             
             <div class="message-text">
-                <p style="margin-bottom: 16px;">Thank you for contacting EDUCONECX. We have received your inquiry and our team will carefully review your request. We are committed to providing a prompt and thorough response.</p>
+                <p style="margin-bottom: 16px;">Thank you for contacting EDUCONECX TEAM. We have received your inquiry and our team will carefully review your request. We are committed to providing a prompt and thorough response.</p>
                 <p>One of our specialists will get back to you within <strong>24–48 business hours</strong>. Should your matter require immediate attention, please use the contact details below.</p>
             </div>
 
@@ -302,7 +300,7 @@
                     <div class="summary-label">Message</div>
                     <div class="summary-value">
                         <div class="message-content">
-                            {{ $data['message'] }}
+                            {{ $data['message'] ?? 'No message details provided. Our team will follow up with you shortly.' }}
                         </div>
                     </div>
                 </div>
@@ -335,13 +333,13 @@
         <!-- Footer with consistent brand name, address, copyright -->
         <div class="email-footer">
             <div class="footer-text">
-                <strong>EDUCONECX ACADEMY</strong> — Empowering Global Education
+                <strong>EDUCONECX TEAM</strong> — Empowering Global Education
             </div>
             <div class="footer-address">
                 1200 Brickell Ave, Suite 1950, Miami, FL 33131, USA
             </div>
             <div class="copyright">
-                © {{ date('Y') }} EDUCONECX. All rights reserved.
+                © {{ date('Y') }} EDUCONECX TEAM. All rights reserved.
             </div>
         </div>
     </div>

@@ -16,10 +16,10 @@ class ContactController extends Controller
     {
         // Get the form type to handle different form structures
         $formType = $request->input('form_type', 'default');
-        
+
         // Prepare data array
         $data = [];
-        
+
         if ($formType === 'neo') {
             // NEO ED-TECH form validation
             $validated = $request->validate([
@@ -30,7 +30,7 @@ class ContactController extends Controller
                 'service' => 'nullable|string|max:255',
                 'message' => 'required|string',
             ]);
-            
+
             // Map NEO form fields to standard format
             $data = [
                 'first_name' => $validated['first_name'],
@@ -52,7 +52,7 @@ class ContactController extends Controller
                 'subject' => 'nullable|string|max:255',
                 'message' => 'required|string',
             ]);
-            
+
             $data = [
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
@@ -67,21 +67,28 @@ class ContactController extends Controller
         try {
             // Send email to the company
             Mail::send('emails.contact', ['data' => $data], function ($message) use ($data) {
-                $subject = $data['form_type'] === 'neo' 
+                $subject = $data['form_type'] === 'neo'
                     ? 'NEO ED-TECH Inquiry: ' . $data['first_name'] . ' ' . $data['last_name']
                     : 'New Contact Form Submission: ' . $data['first_name'] . ' ' . $data['last_name'];
-                
-                $message->to('contact@educonecx.com')
+
+
+                // Set different recipient based on form type
+                $recipientEmail = $data['form_type'] === 'neo'
+                    ? 'neo@educonecx.com'  // NEO-specific email
+                    : 'support@educonecx.com';  // Default email
+
+                $message->to($recipientEmail)
                     ->subject($subject)
-                    ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
+                    ->from(env('MAIL_FROM_ADDRESS'), 'EDUCONECX TEAM')
                     ->replyTo($data['email'], $data['first_name'] . ' ' . $data['last_name']);
             });
 
             // Send auto-reply to the user
             Mail::send('emails.auto-reply', ['data' => $data], function ($message) use ($data) {
                 $message->to($data['email'], $data['first_name'] . ' ' . $data['last_name'])
-                    ->subject('Thank you for contacting EDUCANECX')
-                    ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                    ->subject('Thank you for contacting EDUCONECX TEAM')
+                    ->from(env('MAIL_FROM_ADDRESS'), 'EDUCONECX TEAM')  // Hardcoded sender name
+                    ->replyTo(env('MAIL_FROM_ADDRESS'), 'EDUCONECX TEAM');
             });
 
             // Check if it's an AJAX request (from NEO page)
@@ -94,7 +101,6 @@ class ContactController extends Controller
 
             // Redirect back with success message for standard form
             return redirect()->route('contact')->with('success', 'Thank you for your message. We will get back to you soon!');
-            
         } catch (\Exception $e) {
             // Log the error
             Log::error('Contact form email failed: ' . $e->getMessage());
