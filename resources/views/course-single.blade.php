@@ -1740,7 +1740,7 @@
                         </div>
 
                         <!-- Accordion for Course Details -->
-                        <div class="course-page-info-accordion">
+                        <!-- <div class="course-page-info-accordion">
                             <div class="course-page-accordion-item">
                                 <div class="course-page-accordion-header active" data-accordion="includes">
                                     <span>What's Included</span>
@@ -1806,7 +1806,7 @@
                                     <p class="text-muted mb-0">{{ $course->target_audience ?? 'Anyone interested in learning this subject' }}</p>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
