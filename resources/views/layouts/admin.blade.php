@@ -279,6 +279,11 @@
                     <i class="fas fa-shopping-cart"></i> Orders
                 </a>
             </div>
+             <div class="nav-item">
+                <a href="{{ route('admin.subscriptions.index') }}" class="nav-link {{ request()->routeIs('admin.subscriptions.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-check"></i> Subscriptions
+                </a>
+            </div>
             <div class="nav-item">
                 <a href="{{ route('admin.coupons.index') }}" class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
                     <i class="fas fa-ticket-alt"></i> Coupons

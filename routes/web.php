@@ -384,7 +384,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // User Subscriptions Management
     Route::get('subscriptions', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'index'])->name('subscriptions.index');
+     Route::get('subscriptions/create', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'create'])->name('subscriptions.create');
+    Route::post('subscriptions', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'store'])->name('subscriptions.store');
+    Route::get('subscriptions/export', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'export'])->name('subscriptions.export');
     Route::get('subscriptions/{subscription}', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'show'])->name('subscriptions.show');
+
+    Route::get('subscriptions/{subscription}/edit', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'edit'])->name('subscriptions.edit');
+    Route::put('subscriptions/{subscription}', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'update'])->name('subscriptions.update');
+    Route::delete('subscriptions/{subscription}', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'destroy'])->name('subscriptions.destroy');
     Route::post('subscriptions/{subscription}/cancel', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'cancel'])->name('subscriptions.cancel');
     Route::post('subscriptions/{subscription}/renew', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'renew'])->name('subscriptions.renew');
 
