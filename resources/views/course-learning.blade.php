@@ -71,6 +71,12 @@
                             <i class="fas fa-step-forward"></i>
                         </button>
                     </div>
+                    <div class="autoplay-toggle-container">
+                        <label class="autoplay-toggle" for="autoplayNextLesson">
+                            <input type="checkbox" id="autoplayNextLesson">
+                            <span>Autoplay next lesson</span>
+                        </label>
+                    </div>
 
                     <div class="lesson-content-container" id="lessonContent">
                         <div class="lesson-content-placeholder">
@@ -1032,6 +1038,34 @@
         z-index: 10;
     }
 
+    .autoplay-toggle-container {
+        margin-top: 14px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .autoplay-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--pure-white);
+        border: 1px solid rgba(10, 29, 68, 0.12);
+        border-radius: var(--radius-full);
+        padding: 8px 14px;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+    }
+
+    .autoplay-toggle input {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--bright-amber);
+        cursor: pointer;
+    }
+
     .mark-complete-btn {
         background: var(--bright-amber);
         color: var(--prussian-blue);
@@ -1354,6 +1388,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let videoPlayer = document.getElementById('videoPlayer');
     let lessonContent = document.getElementById('lessonContent');
     let currentModalLessonId = null;
+    const autoplayToggle = document.getElementById('autoplayNextLesson');
+    const AUTOPLAY_STORAGE_KEY = 'courseLearningAutoplayNextLesson';
+    let autoplayNextLesson = true;
 
     // Fullscreen functionality
     const videoContainer = document.querySelector('.video-player-container');
@@ -1464,6 +1501,19 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => notification.remove(), 300);
         }, 3000);
+    }
+
+    function loadAutoplayPreference() {
+        const stored = localStorage.getItem(AUTOPLAY_STORAGE_KEY);
+        autoplayNextLesson = stored === null ? true : stored === 'true';
+        if (autoplayToggle) {
+            autoplayToggle.checked = autoplayNextLesson;
+        }
+    }
+
+    function saveAutoplayPreference(value) {
+        autoplayNextLesson = !!value;
+        localStorage.setItem(AUTOPLAY_STORAGE_KEY, autoplayNextLesson ? 'true' : 'false');
     }
 
     function showVideoPlaceholder(message) {
@@ -1688,7 +1738,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             videoHtml = `
-                <video src="${url}" controls autoplay style="width:100%; height:100%;" id="localVideo">
+                <video src="${url}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" autoplay style="width:100%; height:100%;" id="localVideo">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -1938,7 +1988,17 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // ========== SETUP EVENT LISTENERS ==========
-    
+    loadAutoplayPreference();
+
+    if (autoplayToggle) {
+        autoplayToggle.addEventListener('change', function() {
+            saveAutoplayPreference(this.checked);
+            if (!this.checked) {
+                cancelAutoAdvance();
+            }
+        });
+    }
+
     // Curriculum Accordion
     const sectionHeaders = document.querySelectorAll('.section-header');
 
@@ -2018,6 +2078,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let autoAdvanceCountdown = 5;
 
     function startAutoAdvanceCountdown() {
+        if (!autoplayNextLesson) return;
+
         const nextLesson = getNextLesson(currentLessonId);
         if (!nextLesson) return;
 
@@ -2077,7 +2139,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!courseData.completedLessons.includes(parseInt(currentLessonId))) {
                 markLessonAsCompleted(currentLessonId);
             }
-            startAutoAdvanceCountdown();
+            if (autoplayNextLesson) {
+                startAutoAdvanceCountdown();
+            } else {
+                showNotification('Lesson completed. Autoplay is off.', 'info');
+            }
         });
     }
 
