@@ -1033,9 +1033,15 @@
 
     .video-controls {
         position: absolute;
-        bottom: 20px;
-        right: 20px;
+        left: 0;
+        right: 0;
+        bottom: 0;
         z-index: 10;
+        padding: 10px 12px;
+        background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.75) 100%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     video::-internal-media-controls-download-button {
@@ -1048,6 +1054,31 @@
 
     video::-webkit-media-controls-panel {
         width: calc(100% + 36px);
+    }
+
+    .video-controls .control-btn {
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        border-radius: 999px;
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .video-controls .time-label {
+        color: #fff;
+        font-size: 0.85rem;
+        min-width: 90px;
+    }
+
+    .video-controls .progress-range {
+        flex: 1;
+        accent-color: var(--bright-amber);
+        cursor: pointer;
     }
 
     .autoplay-toggle-container {
@@ -1750,7 +1781,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             videoHtml = `
-                <video src="${url}" controls controlsList="nodownload noplaybackrate noremoteplayback nofullscreen" disablePictureInPicture disableRemotePlayback oncontextmenu="return false;" autoplay style="width:100%; height:100%;" id="localVideo">
+                <video src="${url}" controlsList="nodownload noplaybackrate noremoteplayback nofullscreen" disablePictureInPicture disableRemotePlayback oncontextmenu="return false;" autoplay playsinline style="width:100%; height:100%;" id="localVideo">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -1760,7 +1791,10 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 videoPlayer.innerHTML = videoHtml + `
                     <div class="video-controls">
-                        
+                        <button class="control-btn" id="playPauseBtn" aria-label="Play/Pause"><i class="fas fa-pause"></i></button>
+                        <input type="range" id="videoProgressBar" class="progress-range" min="0" max="100" value="0">
+                        <span class="time-label" id="videoTimeLabel">00:00 / 00:00</span>
+                        <button class="control-btn" id="muteBtn" aria-label="Mute/Unmute"><i class="fas fa-volume-up"></i></button>
                     </div>
                 `;
                 // <button class="mark-complete-btn ${isCompleted ? 'completed' : ''}" onclick="toggleLessonComplete(${currentLessonId})" id="markCompleteBtn">
@@ -1774,6 +1808,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     localVideo.setAttribute('controlsList', 'nodownload noplaybackrate noremoteplayback nofullscreen');
                     localVideo.disablePictureInPicture = true;
                     localVideo.disableRemotePlayback = true;
+                    setupCustomVideoControls(localVideo);
                     setupVideoTracking(localVideo);
                 }
             }, 500);
@@ -2155,12 +2190,73 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!courseData.completedLessons.includes(parseInt(currentLessonId))) {
                 markLessonAsCompleted(currentLessonId);
             }
-            if (autoplayNextLesson) {
-                startAutoAdvanceCountdown();
-            } else {
-                showNotification('Lesson completed. Autoplay is off.', 'info');
+            const nextLesson = getNextLesson(currentLessonId);
+            if (nextLesson) {
+                setTimeout(() => {
+                    modal.hide();
+                    window.loadLesson(nextLesson.dataset.lessonId);
+                }, 400);
             }
         });
+    }
+
+    function setupCustomVideoControls(videoElement) {
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const videoProgressBar = document.getElementById('videoProgressBar');
+        const videoTimeLabel = document.getElementById('videoTimeLabel');
+        const muteBtn = document.getElementById('muteBtn');
+
+        if (!playPauseBtn || !videoProgressBar || !videoTimeLabel || !muteBtn) return;
+
+        const formatTime = (seconds) => {
+            if (!Number.isFinite(seconds)) return '00:00';
+            const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+            return `${mins}:${secs}`;
+        };
+
+        const syncPlayIcon = () => {
+            playPauseBtn.innerHTML = videoElement.paused
+                ? '<i class="fas fa-play"></i>'
+                : '<i class="fas fa-pause"></i>';
+        };
+
+        const syncMuteIcon = () => {
+            muteBtn.innerHTML = videoElement.muted
+                ? '<i class="fas fa-volume-mute"></i>'
+                : '<i class="fas fa-volume-up"></i>';
+        };
+
+        playPauseBtn.onclick = () => {
+            if (videoElement.paused) {
+                videoElement.play();
+            } else {
+                videoElement.pause();
+            }
+            syncPlayIcon();
+        };
+
+        muteBtn.onclick = () => {
+            videoElement.muted = !videoElement.muted;
+            syncMuteIcon();
+        };
+
+        videoProgressBar.oninput = function() {
+            if (!videoElement.duration) return;
+            videoElement.currentTime = (this.value / 100) * videoElement.duration;
+        };
+
+        videoElement.addEventListener('timeupdate', () => {
+            if (videoElement.duration) {
+                videoProgressBar.value = Math.round((videoElement.currentTime / videoElement.duration) * 100);
+            }
+            videoTimeLabel.textContent = `${formatTime(videoElement.currentTime)} / ${formatTime(videoElement.duration)}`;
+        });
+
+        videoElement.addEventListener('play', syncPlayIcon);
+        videoElement.addEventListener('pause', syncPlayIcon);
+        syncPlayIcon();
+        syncMuteIcon();
     }
 
     // ========== LESSON TIMER ==========
