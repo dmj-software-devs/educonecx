@@ -1038,6 +1038,18 @@
         z-index: 10;
     }
 
+    video::-internal-media-controls-download-button {
+        display: none !important;
+    }
+
+    video::-webkit-media-controls-enclosure {
+        overflow: hidden;
+    }
+
+    video::-webkit-media-controls-panel {
+        width: calc(100% + 36px);
+    }
+
     .autoplay-toggle-container {
         margin-top: 14px;
         display: flex;
@@ -1738,7 +1750,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             videoHtml = `
-                <video src="${url}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false;" autoplay style="width:100%; height:100%;" id="localVideo">
+                <video src="${url}" controls controlsList="nodownload noplaybackrate noremoteplayback nofullscreen" disablePictureInPicture disableRemotePlayback oncontextmenu="return false;" autoplay style="width:100%; height:100%;" id="localVideo">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -1759,6 +1771,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const localVideo = document.getElementById('localVideo');
                 if (localVideo) {
+                    localVideo.setAttribute('controlsList', 'nodownload noplaybackrate noremoteplayback nofullscreen');
+                    localVideo.disablePictureInPicture = true;
+                    localVideo.disableRemotePlayback = true;
                     setupVideoTracking(localVideo);
                 }
             }, 500);
@@ -2115,6 +2130,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (countEl) countEl.textContent = autoAdvanceCountdown;
             if (autoAdvanceCountdown <= 0) {
                 cancelAutoAdvance();
+                modal.hide();
                 window.loadLesson(nextLesson.dataset.lessonId);
             }
         }, 1000);
