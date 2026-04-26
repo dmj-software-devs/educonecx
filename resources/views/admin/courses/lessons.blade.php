@@ -1066,21 +1066,43 @@
         return div.innerHTML;
     }
 
+    function syncVideoSourceFields(videoTypeSelect, urlField, fileField) {
+        if (!videoTypeSelect || !urlField || !fileField) return;
+
+        const urlInput = urlField.querySelector('input[name="video_url"]');
+        const fileInput = fileField.querySelector('input[name="video_file"]');
+        const isLocal = videoTypeSelect.value === 'local';
+
+        if (isLocal) {
+            urlField.style.display = 'none';
+            fileField.style.display = 'block';
+            if (urlInput) {
+                urlInput.disabled = true;
+                urlInput.type = 'text';
+            }
+            if (fileInput) fileInput.disabled = false;
+        } else {
+            urlField.style.display = 'block';
+            fileField.style.display = 'none';
+            if (urlInput) {
+                urlInput.disabled = false;
+                urlInput.type = 'url';
+            }
+            if (fileInput) fileInput.disabled = true;
+        }
+    }
+
     // Initialize video type toggle for edit modal
     function initializeVideoTypeToggle() {
         const videoTypeSelect = document.getElementById('editVideoType');
+        const urlField = document.getElementById('editVideoUrlField');
+        const fileField = document.getElementById('editVideoFileField');
+
+        syncVideoSourceFields(videoTypeSelect, urlField, fileField);
+
         if (videoTypeSelect) {
             videoTypeSelect.addEventListener('change', function() {
-                const urlField = document.getElementById('editVideoUrlField');
-                const fileField = document.getElementById('editVideoFileField');
-                
-                if (this.value === 'local') {
-                    urlField.style.display = 'none';
-                    fileField.style.display = 'block';
-                } else {
-                    urlField.style.display = 'block';
-                    fileField.style.display = 'none';
-                }
+                syncVideoSourceFields(this, urlField, fileField);
             });
         }
     }
@@ -1124,18 +1146,14 @@
     // Toggle video fields based on selection for add modal
     document.addEventListener('DOMContentLoaded', function() {
         const videoTypeSelect = document.getElementById('videoType');
+        const urlField = document.getElementById('videoUrlField');
+        const fileField = document.getElementById('videoFileField');
+
+        syncVideoSourceFields(videoTypeSelect, urlField, fileField);
+
         if (videoTypeSelect) {
             videoTypeSelect.addEventListener('change', function() {
-                const urlField = document.getElementById('videoUrlField');
-                const fileField = document.getElementById('videoFileField');
-                
-                if (this.value === 'local') {
-                    urlField.style.display = 'none';
-                    fileField.style.display = 'block';
-                } else {
-                    urlField.style.display = 'block';
-                    fileField.style.display = 'none';
-                }
+                syncVideoSourceFields(this, urlField, fileField);
             });
         }
     });

@@ -1043,8 +1043,38 @@ document.addEventListener('DOMContentLoaded', function () {
        HELPERS
     ==================================================== */
     function ytId(url) {
-        const m = url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]{11})/);
+        try {
+            const parsed = new URL(url, window.location.origin);
+            const host = parsed.hostname.replace('www.', '');
+
+            if (host === 'youtu.be') {
+                const id = parsed.pathname.replace('/', '').trim();
+                return id || null;
+            }
+
+            if (host.endsWith('youtube.com')) {
+                const idFromQuery = parsed.searchParams.get('v');
+                if (idFromQuery) return idFromQuery;
+
+                const pathParts = parsed.pathname.split('/').filter(Boolean);
+                const markerIndex = pathParts.findIndex(part => ['embed', 'shorts', 'live', 'v'].includes(part));
+                if (markerIndex !== -1 && pathParts[markerIndex + 1]) {
+                    return pathParts[markerIndex + 1];
+                }
+            }
+        } catch (_) {}
+
+        const m = url.match(/^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|live\/|watch\?v=|&v=)([^#&?]{11})/);
         return m ? m[2] : null;
+    }
+
+    function resolveVideoUrl(url, type = 'youtube') {
+        if (!url) return '';
+        if (type !== 'local') return url;
+        if (/^(https?:)?\/\//i.test(url) || url.startsWith('/')) return url;
+
+        const clean = url.replace(/^storage\//, '');
+        return `/storage/${clean}`;
     }
     function vimId(url) { const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/); return m ? m[1] : null; }
     function esc(t)  { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
@@ -1326,6 +1356,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cancelAutoAdvance();
         videoContainer.classList.remove('vp-paused', 'vp-show');
         videoPlayer.innerHTML = '';
+        url = resolveVideoUrl(url, type);
 
         const isYT  = type==='youtube' || url.includes('youtube.com') || url.includes('youtu.be');
         const isVim = type==='vimeo'   || url.includes('vimeo.com');
