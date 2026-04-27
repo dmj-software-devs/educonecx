@@ -1079,12 +1079,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function isDirectMediaUrl(url = '') {
         return /\.(mp4|webm|ogg|m3u8|mov)(\?.*)?$/i.test(url);
     }
-    function toEmbedUrl(url = '') {
-        if (!url) return '';
-        // Bunny Stream "play" URL -> iframe embed URL
-        const bunny = url.match(/^https?:\/\/player\.mediadelivery\.net\/play\/(\d+)\/([a-z0-9-]+)/i);
-        if (bunny) return `https://iframe.mediadelivery.net/embed/${bunny[1]}/${bunny[2]}?autoplay=true`;
-        return url;
+    function buildEmbedCandidates(url = '') {
+        if (!url) return [];
+
+        // Always force HTTPS for embeds to avoid mixed-content/network resets on strict browsers
+        const normalized = url.replace(/^http:\/\//i, 'https://');
+        const out = [normalized];
+
+        // Bunny Stream "play" URL -> add iframe embed candidate as fallback
+        const bunny = normalized.match(/^https?:\/\/player\.mediadelivery\.net\/play\/(\d+)\/([a-z0-9-]+)/i);
+        if (bunny) {
+            out.unshift(`https://iframe.mediadelivery.net/embed/${bunny[1]}/${bunny[2]}?autoplay=true`);
+        }
+
+        return [...new Set(out)];
     }
     function vimId(url) { const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/); return m ? m[1] : null; }
     function esc(t)  { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
@@ -1465,10 +1473,13 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (isEmbed || (type === 'external' && !isDirectMediaUrl(url))) {
             const mw  = document.createElement('div'); mw.className = 'vp-media-wrap';
             const ifr = document.createElement('iframe');
-            ifr.src = toEmbedUrl(url);
+            const candidates = buildEmbedCandidates(url);
+            let sourceIdx = 0;
+            ifr.src = candidates[sourceIdx] || url;
             ifr.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
             ifr.allowFullscreen = true;
             ifr.referrerPolicy = 'strict-origin-when-cross-origin';
+            ifr.loading = 'eager';
             mw.appendChild(ifr); videoPlayer.appendChild(mw);
 
             videoPlayer.appendChild(makeTitleBar(lessonTitle));
@@ -1478,6 +1489,14 @@ document.addEventListener('DOMContentLoaded', function () {
             eb.innerHTML = `<button class="vp-btn vp-fs" data-tip="Fullscreen"><i class="fas fa-expand"></i></button>`;
             eb.querySelector('.vp-fs').onclick = toggleFullscreen;
             videoPlayer.appendChild(eb);
+
+            // If one endpoint is blocked/reset, automatically fall back to the next candidate.
+            const tryNextSource = () => {
+                sourceIdx++;
+                if (sourceIdx >= candidates.length) return;
+                ifr.src = candidates[sourceIdx];
+            };
+            ifr.addEventListener('error', tryNextSource);
 
         /* ---- LOCAL / DIRECT MEDIA URL ---- */
         } else {
