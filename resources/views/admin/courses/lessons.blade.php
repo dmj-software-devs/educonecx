@@ -279,6 +279,7 @@
                                         <option value="vimeo">Vimeo</option>
                                         <option value="local">Upload Video</option>
                                         <option value="external">External URL</option>
+                                        <option value="embed">Embed URL (Iframe)</option>
                                     </select>
                                 </div>
                                 
@@ -989,6 +990,7 @@
                                 <option value="vimeo" ${data.video_type == 'vimeo' ? 'selected' : ''}>Vimeo</option>
                                 <option value="local" ${data.video_type == 'local' ? 'selected' : ''}>Upload Video</option>
                                 <option value="external" ${data.video_type == 'external' ? 'selected' : ''}>External URL</option>
+                                <option value="embed" ${data.video_type == 'embed' ? 'selected' : ''}>Embed URL (Iframe)</option>
                             </select>
                         </div>
                         
