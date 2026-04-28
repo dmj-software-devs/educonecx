@@ -971,6 +971,7 @@
 
 {{-- YouTube IFrame API --}}
 <script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://player.vimeo.com/api/player.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -1239,10 +1240,11 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ====================================================
        YT MANAGEMENT
     ==================================================== */
-    let _ytPlayer = null, _ytInterval = null;
+    let _ytPlayer = null, _ytInterval = null, _vmPlayer = null;
     function destroyYT() {
         if (_ytInterval) { clearInterval(_ytInterval); _ytInterval = null; }
         if (_ytPlayer)   { try { _ytPlayer.destroy(); } catch(_) {} _ytPlayer = null; }
+        if (_vmPlayer)   { try { _vmPlayer.destroy(); } catch(_) {} _vmPlayer = null; }
     }
 
     /* ====================================================
@@ -1471,22 +1473,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const mw  = document.createElement('div'); mw.className = 'vp-media-wrap';
             const ifr = document.createElement('iframe');
-            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&controls=1&byline=0&portrait=0&title=0`;
+            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&controls=1&playsinline=1&api=1&byline=0&portrait=0&title=0`;
             ifr.allow = 'autoplay; fullscreen; picture-in-picture'; ifr.allowFullscreen = true;
             mw.appendChild(ifr); videoPlayer.appendChild(mw);
 
-            let vmHandler;
-            window.addEventListener('message', vmHandler = function (e) {
-                try {
-                    const d = typeof e.data==='string' ? JSON.parse(e.data) : e.data;
-                    if (d.event==='finish') { window.removeEventListener('message', vmHandler); onVideoEnded(); }
-                    if (d.method==='getCurrentTime'&&d.value>0) updateVideoProgress(d.value);
-                } catch (_) {}
-            });
-            ifr.onload = () => {
-                ifr.contentWindow.postMessage(JSON.stringify({method:'addEventListener',value:'finish'}), '*');
-                setInterval(() => ifr.contentWindow.postMessage(JSON.stringify({method:'getCurrentTime'}), '*'), 5000);
-            };
+            if (window.Vimeo && window.Vimeo.Player) {
+                _vmPlayer = new Vimeo.Player(ifr);
+                _vmPlayer.on('ended', onVideoEnded);
+                _vmPlayer.on('timeupdate', (data) => {
+                    if (data?.seconds > 0) updateVideoProgress(data.seconds);
+                });
+            }
 
         /* ---- LOCAL / SELF-HOSTED (custom player) ---- */
         } else if (type === 'local') {
