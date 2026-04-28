@@ -1085,6 +1085,8 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             const parsed = new URL(url, window.location.origin);
             if (!parsed.searchParams.has('autoplay')) parsed.searchParams.set('autoplay', '1');
+            if (!parsed.searchParams.has('muted')) parsed.searchParams.set('muted', '1');
+            if (!parsed.searchParams.has('playsinline')) parsed.searchParams.set('playsinline', '1');
             return parsed.toString();
         } catch (_) {
             return url;
@@ -1100,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Bunny Stream "play" URL -> add iframe embed candidate as fallback
         const bunny = normalized.match(/^https?:\/\/player\.mediadelivery\.net\/play\/(\d+)\/([a-z0-9-]+)/i);
         if (bunny) {
-            out.unshift(`https://iframe.mediadelivery.net/embed/${bunny[1]}/${bunny[2]}?autoplay=true`);
+            out.unshift(`https://iframe.mediadelivery.net/embed/${bunny[1]}/${bunny[2]}?autoplay=true&muted=true`);
         }
 
         return [...new Set(out)];
