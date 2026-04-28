@@ -1111,6 +1111,25 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(f._t); f._t = setTimeout(() => f.classList.remove('show'), 750);
     }
 
+    async function tryStartPlayback(videoEl) {
+        if (!videoEl) return false;
+        try {
+            await videoEl.play();
+            return true;
+        } catch (_) {}
+
+        const oldMuted = videoEl.muted;
+        videoEl.muted = true;
+        try {
+            await videoEl.play();
+            flashMsg('🔇 Autoplay started muted');
+            return true;
+        } catch (_) {
+            videoEl.muted = oldMuted;
+            return false;
+        }
+    }
+
     /* ====================================================
        LESSON LIST HELPERS
     ==================================================== */
@@ -1525,7 +1544,7 @@ document.addEventListener('DOMContentLoaded', function () {
             /* Big centre play */
             const bp = document.createElement('button'); bp.className = 'vp-centre-btn';
             bp.innerHTML = '<i class="fas fa-play"></i>';
-            bp.onclick = () => vid.play();
+            bp.onclick = () => { vid.paused ? vid.play() : vid.pause(); };
             videoPlayer.appendChild(bp);
 
             /* Flash */
@@ -1541,6 +1560,12 @@ document.addEventListener('DOMContentLoaded', function () {
             /* Initially paused because autoplay may be blocked */
             vid.addEventListener('loadedmetadata', () => {
                 if (vid.paused) { bp.classList.add('visible'); videoContainer.classList.add('vp-paused'); }
+                tryStartPlayback(vid).then(started => {
+                    if (!started) {
+                        bp.classList.add('visible');
+                        videoContainer.classList.add('vp-paused');
+                    }
+                });
             });
 
             /* Auto-hide controls after 3s */
@@ -1552,6 +1577,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             videoContainer.addEventListener('mousemove', resetHideTimer);
             videoContainer.addEventListener('click',     resetHideTimer);
+            vid.addEventListener('click', (e) => {
+                e.preventDefault();
+                vid.paused ? vid.play() : vid.pause();
+                resetHideTimer();
+            });
             vid.addEventListener('play', () => { resetHideTimer(); });
 
             /* Progress tracking */
