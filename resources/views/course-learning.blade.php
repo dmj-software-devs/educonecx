@@ -365,6 +365,7 @@
     transition: opacity .3s ease;
 }
 .video-player-container:hover::after { opacity: 1; }
+.video-player-container.vp-provider-mode::after { display: none; }
 
 /* --- Loading spinner --- */
 .vp-spinner {
@@ -1401,7 +1402,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadVideo(url, type = 'youtube', lessonTitle = '') {
         destroyYT();
         cancelAutoAdvance();
-        videoContainer.classList.remove('vp-paused', 'vp-show');
+        videoContainer.classList.remove('vp-paused', 'vp-show', 'vp-provider-mode');
         videoPlayer.innerHTML = '';
         url = resolveVideoUrl(url, type);
 
@@ -1427,28 +1428,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         /* ---- YOUTUBE ---- */
         if (isYT) {
+            videoContainer.classList.add('vp-provider-mode');
             const vid = ytId(url);
             if (!vid) { showVideoPlaceholder('Invalid YouTube URL'); return; }
 
             const spinner = document.createElement('div'); spinner.className = 'vp-spinner';
             videoPlayer.appendChild(spinner);
-            videoPlayer.appendChild(makeTitleBar(lessonTitle));
-            videoPlayer.appendChild(makeFlash());
 
             const wrap = document.createElement('div'); wrap.className = 'vp-media-wrap'; wrap.id = 'yt-' + Date.now();
             videoPlayer.appendChild(wrap);
-
-            const eb = document.createElement('div'); eb.className = 'vp-embed-bar';
-            eb.innerHTML = `<button class="vp-btn vp-fs" data-tip="Fullscreen (F)"><i class="fas fa-expand"></i></button>`;
-            eb.querySelector('.vp-fs').onclick = toggleFullscreen;
-            videoPlayer.appendChild(eb);
 
             function initYT() {
                 if (typeof YT==='undefined'||!YT.Player) { setTimeout(initYT, 200); return; }
                 spinner.remove();
                 _ytPlayer = new YT.Player(wrap.id, {
                     videoId: vid,
-                    playerVars: { autoplay:1, mute:1, rel:0, modestbranding:1, iv_load_policy:3, fs:1 },
+                    playerVars: { autoplay:1, mute:1, controls:1, rel:0, modestbranding:1, iv_load_policy:3, fs:1 },
                     events: {
                         onReady(e) {
                             e.target.playVideo();
@@ -1468,22 +1463,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         /* ---- VIMEO ---- */
         } else if (isVim) {
+            videoContainer.classList.add('vp-provider-mode');
             const vid = vimId(url);
             if (!vid) { showVideoPlaceholder('Invalid Vimeo URL'); return; }
 
             const mw  = document.createElement('div'); mw.className = 'vp-media-wrap';
             const ifr = document.createElement('iframe');
-            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&byline=0&portrait=0&title=0`;
+            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&controls=1&byline=0&portrait=0&title=0`;
             ifr.allow = 'autoplay; fullscreen; picture-in-picture'; ifr.allowFullscreen = true;
             mw.appendChild(ifr); videoPlayer.appendChild(mw);
-
-            videoPlayer.appendChild(makeTitleBar(lessonTitle));
-            videoPlayer.appendChild(makeFlash());
-
-            const eb = document.createElement('div'); eb.className = 'vp-embed-bar';
-            eb.innerHTML = `<button class="vp-btn vp-fs" data-tip="Fullscreen"><i class="fas fa-expand"></i></button>`;
-            eb.querySelector('.vp-fs').onclick = toggleFullscreen;
-            videoPlayer.appendChild(eb);
 
             let vmHandler;
             window.addEventListener('message', vmHandler = function (e) {
@@ -1587,6 +1575,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         /* ---- EXTERNAL / EMBED LINKS (provider/native player only) ---- */
         } else {
+            videoContainer.classList.add('vp-provider-mode');
             const mw = document.createElement('div'); mw.className = 'vp-media-wrap';
             const directMedia = isDirectMediaUrl(url);
 
@@ -1600,8 +1589,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;';
                 mw.appendChild(vid);
                 videoPlayer.appendChild(mw);
-                videoPlayer.appendChild(makeTitleBar(lessonTitle));
-                videoPlayer.appendChild(makeFlash());
 
                 vid.addEventListener('loadedmetadata', () => {
                     tryStartPlayback(vid);
@@ -1626,13 +1613,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 ifr.loading = 'eager';
                 mw.appendChild(ifr);
                 videoPlayer.appendChild(mw);
-                videoPlayer.appendChild(makeTitleBar(lessonTitle));
-                videoPlayer.appendChild(makeFlash());
-
-                const eb = document.createElement('div'); eb.className = 'vp-embed-bar';
-                eb.innerHTML = `<button class="vp-btn vp-fs" data-tip="Fullscreen"><i class="fas fa-expand"></i></button>`;
-                eb.querySelector('.vp-fs').onclick = toggleFullscreen;
-                videoPlayer.appendChild(eb);
 
                 const tryNextSource = () => {
                     sourceIdx++;
