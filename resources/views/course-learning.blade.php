@@ -1079,12 +1079,22 @@ document.addEventListener('DOMContentLoaded', function () {
     function isDirectMediaUrl(url = '') {
         return /\.(mp4|webm|ogg|m3u8|mov)(\?.*)?$/i.test(url);
     }
+    function withAutoplayParam(url = '') {
+        if (!url) return url;
+        try {
+            const parsed = new URL(url, window.location.origin);
+            if (!parsed.searchParams.has('autoplay')) parsed.searchParams.set('autoplay', '1');
+            return parsed.toString();
+        } catch (_) {
+            return url;
+        }
+    }
     function buildEmbedCandidates(url = '') {
         if (!url) return [];
 
         // Always force HTTPS for embeds to avoid mixed-content/network resets on strict browsers
         const normalized = url.replace(/^http:\/\//i, 'https://');
-        const out = [normalized];
+        const out = [withAutoplayParam(normalized)];
 
         // Bunny Stream "play" URL -> add iframe embed candidate as fallback
         const bunny = normalized.match(/^https?:\/\/player\.mediadelivery\.net\/play\/(\d+)\/([a-z0-9-]+)/i);
@@ -1438,7 +1448,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 spinner.remove();
                 _ytPlayer = new YT.Player(wrap.id, {
                     videoId: vid,
-                    playerVars: { autoplay:1, rel:0, modestbranding:1, iv_load_policy:3, fs:1 },
+                    playerVars: { autoplay:1, mute:1, rel:0, modestbranding:1, iv_load_policy:3, fs:1 },
                     events: {
                         onReady(e) {
                             e.target.playVideo();
@@ -1463,7 +1473,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const mw  = document.createElement('div'); mw.className = 'vp-media-wrap';
             const ifr = document.createElement('iframe');
-            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&byline=0&portrait=0&title=0`;
+            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&byline=0&portrait=0&title=0`;
             ifr.allow = 'autoplay; fullscreen; picture-in-picture'; ifr.allowFullscreen = true;
             mw.appendChild(ifr); videoPlayer.appendChild(mw);
 
@@ -1488,37 +1498,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 setInterval(() => ifr.contentWindow.postMessage(JSON.stringify({method:'getCurrentTime'}), '*'), 5000);
             };
 
-        /* ---- LOCAL / SELF-HOSTED ---- */
-        } else if (isEmbed || (type === 'external' && !isDirectMediaUrl(url))) {
-            const mw  = document.createElement('div'); mw.className = 'vp-media-wrap';
-            const ifr = document.createElement('iframe');
-            const candidates = buildEmbedCandidates(url);
-            let sourceIdx = 0;
-            ifr.src = candidates[sourceIdx] || url;
-            ifr.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
-            ifr.allowFullscreen = true;
-            ifr.referrerPolicy = 'strict-origin-when-cross-origin';
-            ifr.loading = 'eager';
-            mw.appendChild(ifr); videoPlayer.appendChild(mw);
-
-            videoPlayer.appendChild(makeTitleBar(lessonTitle));
-            videoPlayer.appendChild(makeFlash());
-
-            const eb = document.createElement('div'); eb.className = 'vp-embed-bar';
-            eb.innerHTML = `<button class="vp-btn vp-fs" data-tip="Fullscreen"><i class="fas fa-expand"></i></button>`;
-            eb.querySelector('.vp-fs').onclick = toggleFullscreen;
-            videoPlayer.appendChild(eb);
-
-            // If one endpoint is blocked/reset, automatically fall back to the next candidate.
-            const tryNextSource = () => {
-                sourceIdx++;
-                if (sourceIdx >= candidates.length) return;
-                ifr.src = candidates[sourceIdx];
-            };
-            ifr.addEventListener('error', tryNextSource);
-
-        /* ---- LOCAL / DIRECT MEDIA URL ---- */
-        } else {
+        /* ---- LOCAL / SELF-HOSTED (custom player) ---- */
+        } else if (type === 'local') {
             const mw = document.createElement('div'); mw.className = 'vp-media-wrap';
 
             const vid = document.createElement('video');
@@ -1603,6 +1584,63 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (e.code==='ArrowUp'    && !e.shiftKey)      { e.preventDefault(); /* handled by lesson nav */ }
                 if (e.code==='ArrowDown'  && !e.shiftKey)      { e.preventDefault(); /* handled by lesson nav */ }
             });
+
+        /* ---- EXTERNAL / EMBED LINKS (provider/native player only) ---- */
+        } else {
+            const mw = document.createElement('div'); mw.className = 'vp-media-wrap';
+            const directMedia = isDirectMediaUrl(url);
+
+            if (directMedia && !isEmbed) {
+                const vid = document.createElement('video');
+                vid.src = url;
+                vid.controls = true;
+                vid.autoplay = true;
+                vid.playsInline = true;
+                vid.preload = 'metadata';
+                vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;';
+                mw.appendChild(vid);
+                videoPlayer.appendChild(mw);
+                videoPlayer.appendChild(makeTitleBar(lessonTitle));
+                videoPlayer.appendChild(makeFlash());
+
+                vid.addEventListener('loadedmetadata', () => {
+                    tryStartPlayback(vid);
+                });
+                let lastProg = 0;
+                vid.addEventListener('timeupdate', () => {
+                    const now = Date.now();
+                    if (now - lastProg > 5000) {
+                        lastProg = now;
+                        updateVideoProgress(vid.currentTime);
+                    }
+                });
+                vid.addEventListener('ended', onVideoEnded);
+            } else {
+                const ifr = document.createElement('iframe');
+                const candidates = buildEmbedCandidates(url);
+                let sourceIdx = 0;
+                ifr.src = candidates[sourceIdx] || url;
+                ifr.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media';
+                ifr.allowFullscreen = true;
+                ifr.referrerPolicy = 'strict-origin-when-cross-origin';
+                ifr.loading = 'eager';
+                mw.appendChild(ifr);
+                videoPlayer.appendChild(mw);
+                videoPlayer.appendChild(makeTitleBar(lessonTitle));
+                videoPlayer.appendChild(makeFlash());
+
+                const eb = document.createElement('div'); eb.className = 'vp-embed-bar';
+                eb.innerHTML = `<button class="vp-btn vp-fs" data-tip="Fullscreen"><i class="fas fa-expand"></i></button>`;
+                eb.querySelector('.vp-fs').onclick = toggleFullscreen;
+                videoPlayer.appendChild(eb);
+
+                const tryNextSource = () => {
+                    sourceIdx++;
+                    if (sourceIdx >= candidates.length) return;
+                    ifr.src = candidates[sourceIdx];
+                };
+                ifr.addEventListener('error', tryNextSource);
+            }
         }
     }
 
