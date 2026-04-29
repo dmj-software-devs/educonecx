@@ -1120,6 +1120,25 @@ document.addEventListener('DOMContentLoaded', function () {
     function vimId(url) { const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/); return m ? m[1] : null; }
     function esc(t)  { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     function fmt(s)  { if (!isFinite(s)||isNaN(s)) return '0:00'; return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`; }
+    function parseDurationToSeconds(durationText = '') {
+        if (!durationText) return 0;
+        const t = String(durationText).trim().toLowerCase();
+
+        if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(t)) {
+            const parts = t.split(':').map(Number);
+            if (parts.length === 2) return parts[0] * 60 + parts[1];
+            if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        }
+
+        let total = 0;
+        const h = t.match(/(\d+)\s*h/);
+        const m = t.match(/(\d+)\s*m/);
+        const sec = t.match(/(\d+)\s*s/);
+        if (h) total += parseInt(h[1], 10) * 3600;
+        if (m) total += parseInt(m[1], 10) * 60;
+        if (sec) total += parseInt(sec[1], 10);
+        return total;
+    }
     function notify(msg, type = 'success') {
         document.querySelectorAll('.learning-notification').forEach(n => n.remove());
         const n = document.createElement('div'); n.className = `learning-notification ${type}`;
@@ -1412,9 +1431,15 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ====================================================
        LOAD VIDEO
     ==================================================== */
-    function loadVideo(url, type = 'youtube', lessonTitle = '') {
+    let _embedEndedFallbackTimer = null;
+    function clearEmbedEndedFallback() {
+        if (_embedEndedFallbackTimer) { clearTimeout(_embedEndedFallbackTimer); _embedEndedFallbackTimer = null; }
+    }
+
+    function loadVideo(url, type = 'youtube', lessonTitle = '', lessonDurationSecs = 0) {
         destroyYT();
         cancelAutoAdvance();
+        clearEmbedEndedFallback();
         videoContainer.classList.remove('vp-paused', 'vp-show', 'vp-provider-mode');
         videoPlayer.innerHTML = '';
         url = resolveVideoUrl(url, type);
@@ -1628,6 +1653,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     ifr.src = candidates[sourceIdx];
                 };
                 ifr.addEventListener('error', tryNextSource);
+
+                // Fallback for external embeds where ended events are not available cross-origin.
+                // Uses lesson duration metadata to auto-advance when autoplay is enabled.
+                if (lessonDurationSecs > 0) {
+                    const graceMs = 3000;
+                    _embedEndedFallbackTimer = setTimeout(() => {
+                        if (autoplayOn) onVideoEnded();
+                    }, (lessonDurationSecs * 1000) + graceMs);
+                }
             }
         }
     }
@@ -1810,7 +1844,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const url   = el.dataset.videoUrl;
         const title = el.dataset.lessonTitle || 'Lesson';
-        if (url?.trim()) loadVideo(url, el.dataset.videoType, title);
+        const durationSecs = parseDurationToSeconds(el.dataset.lessonDuration || '');
+        if (url?.trim()) loadVideo(url, el.dataset.videoType, title, durationSecs);
         else showVideoPlaceholder('No video available for this lesson');
 
         loadLessonContent(title, el.dataset.content || el.dataset.description || '', el.dataset.attachment);
