@@ -1012,12 +1012,21 @@ document.addEventListener('DOMContentLoaded', function () {
         syncAutoplayUI();
         if (!autoplayOn) cancelAutoAdvance();
     }
-    autoplayWrap.addEventListener('click', function (e) {
-        e.stopPropagation();
+    function toggleAutoplay(e) {
+        e?.stopPropagation();
         setAutoplay(!autoplayOn);
         notify(autoplayOn ? '▶️ Autoplay on' : '⏸ Autoplay off', 'info');
+    }
+
+    autoplayWrap.addEventListener('click', toggleAutoplay);
+    autoplaySwitch.addEventListener('click', toggleAutoplay);
+    autoplaySwitch.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleAutoplay(e);
+        }
     });
-    autoplaySwitch.addEventListener('click', e => e.stopPropagation());
+
     syncAutoplayUI();
 
     /* ====================================================
