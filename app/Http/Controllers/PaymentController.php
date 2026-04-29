@@ -218,12 +218,12 @@ class PaymentController extends Controller
      */
     public function subscriptionSuccess(Request $request)
     {
-        $order = Order::with(['items', 'subscription', 'userSubscription'])
+        Order::with(['items', 'subscription', 'userSubscription'])
             ->where('user_id', Auth::id())
             ->where('order_type', 'subscription')
             ->findOrFail($request->order);
 
-        return view('all-access-success', compact('order'));
+        return redirect()->route('courses')->with('success', 'Welcome! Thank you for your subscription. Your payment was successful.');
     }
 
     /**
