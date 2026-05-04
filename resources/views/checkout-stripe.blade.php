@@ -33,8 +33,8 @@
                         
                         <div id="stripe-errors" class="stripe-errors" role="alert"></div>
                         
-                        <button id="stripe-pay-button" class="btn-pay" data-course-id="{{ $course->id }}">
-                            Pay ${{ number_format($course->current_price, 2) }}
+                        <button id="stripe-pay-button" class="btn-pay checkout-attention" data-course-id="{{ $course->id }}">
+                            Go to Checkout • Pay ${{ number_format($course->current_price, 2) }}
                         </button>
 
                         <div class="payment-loader" style="display: none;">
@@ -162,6 +162,24 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+
+.checkout-attention {
+    animation: checkoutPulse 1.1s ease-in-out infinite;
+    box-shadow: 0 0 0 rgba(37, 99, 235, 0.65);
+}
+
+@keyframes checkoutPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.55);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 0 12px rgba(37, 99, 235, 0);
+        filter: brightness(1.08);
+    }
+}
 .checkout-container {
     padding: 60px 0;
     background: #f8f9fa;

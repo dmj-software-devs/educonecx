@@ -226,6 +226,19 @@ class PaymentController extends Controller
         return redirect()->route('courses')->with('success', 'Welcome! Thank you for your subscription. Your payment was successful.');
     }
 
+
+    /**
+     * Show course checkout page (Stripe)
+     */
+    public function checkout(Course $course)
+    {
+        if ($course->is_free) {
+            return redirect()->route('courses.enroll', $course);
+        }
+
+        return view('checkout-stripe', compact('course'));
+    }
+
     /**
      * Payment cancel page
      */

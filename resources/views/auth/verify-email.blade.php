@@ -19,7 +19,7 @@
         @endif
 
         <div class="verify-email-content">
-            <p>Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.</p>
+            <p>Thanks for signing up! Please verify your email by clicking the link we just sent. If you don't see the verification email in your inbox within 2-3 minutes, check your spam/junk folder and mark it as "Not Spam" so future emails arrive correctly. If it still hasn't arrived, we can send another one below.</p>
 
             <form method="POST" action="{{ route('verification.resend') }}">
                 @csrf

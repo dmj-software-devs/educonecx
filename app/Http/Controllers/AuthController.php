@@ -124,7 +124,7 @@ class AuthController extends Controller
         event(new Registered($user));
 
         // Redirect to login page with verification message
-        return redirect()->route('login')->with('success', 'Registration successful! Please check your email to verify your account before logging in.');
+        return redirect()->route('login')->with('success', 'Registration successful! Please check your inbox for a verification email. If you do not see it within 2-3 minutes, please check your spam or junk folder and mark it as "Not Spam".');
     }
 
     /**
