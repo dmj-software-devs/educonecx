@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class HeyGenLiveAvatarService
 {
+    protected array $createSessionEndpoints = [
+        '/v1/live-avatar/session',
+        '/v1/streaming.new',
+    ];
+
+    protected array $startSessionEndpoints = [
+        '/v1/live-avatar/session/start',
+        '/v1/streaming.start',
+    ];
+
     public function getMissingConfigurationKeys(): array
     {
         $required = ['api_key'];
@@ -107,20 +117,20 @@ class HeyGenLiveAvatarService
         $instructions = $this->buildDynamicInstructions($scenario, $user);
         $payload = $this->buildHeyGenPayload($resolved, $instructions);
 
-        $response = Http::baseUrl(config('services.heygen.base_url'))
-            ->withToken(config('services.heygen.api_key'))
-            ->acceptJson()
-            ->post('/v1/live-avatar/session', $payload); // TODO: verify final endpoint path.
+        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload);
 
         if ($response->failed()) {
+            $errorMessage = $this->extractProviderError($response);
+
             Log::error('HeyGen create session failed', [
                 'status' => $response->status(),
                 'body' => $response->json() ?? $response->body(),
                 'scenario_slug' => $scenario->slug,
                 'config_source' => $resolved['source'],
+                'endpoint' => $endpoint,
             ]);
 
-            throw new \RuntimeException('Unable to create live avatar session right now. Please try again later.');
+            throw new \RuntimeException('Unable to create live avatar session right now. ' . $errorMessage);
         }
 
         return [
@@ -130,6 +140,7 @@ class HeyGenLiveAvatarService
                 'voice_id' => $resolved['voice_id'],
                 'context_id' => $resolved['context_id'],
                 'source' => $resolved['source'],
+                'endpoint' => $endpoint,
             ],
             'dynamic_instructions' => $instructions,
         ];
@@ -157,21 +168,19 @@ class HeyGenLiveAvatarService
     {
         $this->assertApiConfiguration();
 
-        $response = Http::baseUrl(config('services.heygen.base_url'))
-            ->withToken(config('services.heygen.api_key'))
-            ->acceptJson()
-            ->post('/v1/live-avatar/session/start', [
-                'session_id' => $sessionId,
-            ]);
+        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->startSessionEndpoints, [
+            'session_id' => $sessionId,
+        ]);
 
         if ($response->failed()) {
             Log::error('HeyGen start session failed', [
                 'status' => $response->status(),
                 'body' => $response->json() ?? $response->body(),
                 'session_id' => $sessionId,
+                'endpoint' => $endpoint,
             ]);
 
-            throw new \RuntimeException('Unable to start live avatar session right now. Please try again later.');
+            throw new \RuntimeException('Unable to start live avatar session right now. ' . $this->extractProviderError($response));
         }
 
         return $response->json() ?? [];
@@ -182,5 +191,59 @@ class HeyGenLiveAvatarService
         if (blank(config('services.heygen.api_key'))) {
             throw new \RuntimeException('HeyGen configuration missing: api_key');
         }
+    }
+
+    protected function heygenHttp()
+    {
+        return Http::baseUrl(config('services.heygen.base_url'))
+            ->withHeaders([
+                'X-Api-Key' => config('services.heygen.api_key'),
+            ])
+            ->withToken(config('services.heygen.api_key'))
+            ->acceptJson();
+    }
+
+    protected function postWithFallbackEndpoints(array $endpoints, array $payload): array
+    {
+        $lastResponse = null;
+        $lastEndpoint = end($endpoints);
+
+        foreach ($endpoints as $endpoint) {
+            $response = $this->heygenHttp()->post($endpoint, $payload);
+            $lastResponse = $response;
+            $lastEndpoint = $endpoint;
+
+            if ($response->successful()) {
+                return [$response, $endpoint];
+            }
+
+            // If endpoint is clearly not found / not supported, try next fallback.
+            if (!in_array($response->status(), [404, 405], true)) {
+                return [$response, $endpoint];
+            }
+        }
+
+        return [$lastResponse, $lastEndpoint];
+    }
+
+    protected function extractProviderError($response): string
+    {
+        $json = $response->json();
+        $message = data_get($json, 'message')
+            ?? data_get($json, 'error.message')
+            ?? data_get($json, 'error')
+            ?? data_get($json, 'detail')
+            ?? null;
+
+        if ($message) {
+            return (string) $message;
+        }
+
+        $body = trim((string) $response->body());
+        if ($body !== '') {
+            return mb_substr($body, 0, 220);
+        }
+
+        return 'Please verify your HeyGen endpoint/payload and credentials.';
     }
 }
