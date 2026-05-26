@@ -14,16 +14,22 @@ class AcademySession extends Model
         'academy_category_id',
         'academy_scenario_id',
         'heygen_session_id',
+        'heygen_avatar_id',
+        'heygen_voice_id',
+        'heygen_context_id',
         'status',
         'score',
         'feedback',
         'transcript',
+        'dynamic_instructions',
+        'config_source',
         'raw_response',
         'started_at',
         'ended_at',
     ];
 
     protected $casts = [
+        'config_source' => 'array',
         'raw_response' => 'array',
         'started_at' => 'datetime',
         'ended_at' => 'datetime',

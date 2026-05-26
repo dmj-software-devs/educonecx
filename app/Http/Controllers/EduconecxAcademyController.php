@@ -34,10 +34,11 @@ class EduconecxAcademyController extends Controller
         $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
 
         try {
-            $createResponse = $heyGenService->createSession($scenario);
-            $heygenSessionId = data_get($createResponse, 'data.session_id')
-                ?? data_get($createResponse, 'session_id')
-                ?? data_get($createResponse, 'data.id');
+            $user = auth()->user();
+            $createResponse = $heyGenService->createSession($scenario, $user);
+            $heygenSessionId = data_get($createResponse, 'response.data.session_id')
+                ?? data_get($createResponse, 'response.session_id')
+                ?? data_get($createResponse, 'response.data.id');
 
             if ($heygenSessionId) {
                 $heyGenService->startSession($heygenSessionId);
@@ -48,8 +49,13 @@ class EduconecxAcademyController extends Controller
                 'academy_category_id' => $scenario->academy_category_id,
                 'academy_scenario_id' => $scenario->id,
                 'heygen_session_id' => $heygenSessionId,
+                'heygen_avatar_id' => data_get($createResponse, 'resolved.avatar_id'),
+                'heygen_voice_id' => data_get($createResponse, 'resolved.voice_id'),
+                'heygen_context_id' => data_get($createResponse, 'resolved.context_id'),
+                'dynamic_instructions' => data_get($createResponse, 'dynamic_instructions'),
+                'config_source' => data_get($createResponse, 'resolved.source'),
                 'status' => 'started',
-                'raw_response' => $createResponse,
+                'raw_response' => data_get($createResponse, 'response', $createResponse),
                 'started_at' => now(),
             ]);
 
@@ -59,14 +65,14 @@ class EduconecxAcademyController extends Controller
                 'heygen_session_id' => $session->heygen_session_id,
                 'message' => 'Session created successfully.',
                 'data' => [
-                    'session' => $createResponse,
+                    'session' => data_get($createResponse, 'response', []),
                 ],
             ]);
         } catch (\Throwable $exception) {
             $message = $exception->getMessage();
 
             if (str_contains($message, 'HeyGen configuration missing:')) {
-                $message .= '. Please update your .env with HEYGEN_API_KEY, HEYGEN_AVATAR_ID, HEYGEN_VOICE_ID, and HEYGEN_CONTEXT_ID and clear config cache.';
+                $message .= '. Please update your .env with HEYGEN_API_KEY, HEYGEN_DEFAULT_AVATAR_ID and HEYGEN_DEFAULT_VOICE_ID and clear config cache.';
             }
 
             return response()->json([

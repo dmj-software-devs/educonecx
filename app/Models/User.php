@@ -193,6 +193,12 @@ class User extends Authenticatable implements MustVerifyEmail
         }
     }
 
+
+    public function academyAvatarSetting()
+    {
+        return $this->hasOne(AcademyUserAvatarSetting::class);
+    }
+
     // Helper methods
     public function isAdmin()
     {

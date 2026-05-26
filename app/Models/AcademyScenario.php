@@ -20,6 +20,9 @@ class AcademyScenario extends Model
         'sample_questions',
         'video_url',
         'audio_url',
+        'heygen_avatar_id',
+        'heygen_voice_id',
+        'heygen_context_id',
         'status',
         'sort_order',
     ];
