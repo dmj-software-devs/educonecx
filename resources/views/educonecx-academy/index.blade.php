@@ -4,6 +4,19 @@
 
 @push('styles')
 <style>
+    .academy-rect.hero-section,
+    .academy-rect .hero-section,
+    .academy-rect .hero-section::before,
+    .academy-rect .hero-section::after {
+        border-radius: 0 !important;
+    }
+
+    .academy-rect.hero-section::before,
+    .academy-rect.hero-section::after {
+        border-radius: 0 !important;
+        clip-path: none !important;
+    }
+
     .academy-rect,
     .academy-rect .btn,
     .academy-rect .card,
@@ -80,6 +93,29 @@
     let selectedScenario = null;
     let academySessionId = null;
 
+    const updateScenarioPreview = (scenario) => {
+        selectedScenario = scenario;
+        startBtn.disabled = !selectedScenario;
+
+        if (!selectedScenario) {
+            scenarioPreview.innerHTML = `
+                <h4 class="card-title">Select a scenario to preview</h4>
+                <p class="text-muted mb-0">Category, level, practice text, and sample questions will appear here.</p>
+            `;
+            return;
+        }
+
+        scenarioPreview.innerHTML = `
+            <h4 class="card-title">${selectedScenario.title}</h4>
+            <p class="mb-1"><strong>Category:</strong> ${selectedScenario.category.title}</p>
+            <p class="mb-1"><strong>Level:</strong> ${selectedScenario.level ?? 'General'}</p>
+            <p class="mb-1"><strong>Description:</strong> ${selectedScenario.description ?? '-'}</p>
+            <p class="mb-2"><strong>Practice Text:</strong> ${selectedScenario.practice_text}</p>
+            <p class="mb-1"><strong>Sample Questions:</strong></p>
+            <ul>${(selectedScenario.sample_questions || []).map(question => `<li>${question}</li>`).join('')}</ul>
+        `;
+    };
+
     const allScenarios = categories.flatMap(category =>
         (category.scenarios || []).map(scenario => ({ ...scenario, category }))
     );
@@ -103,22 +139,15 @@
         document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
         button.classList.add('active');
 
-        selectedScenario = allScenarios.find(item => item.slug === button.dataset.slug);
-        startBtn.disabled = !selectedScenario;
-
-        scenarioPreview.innerHTML = `
-            <h4 class="card-title">${selectedScenario.title}</h4>
-            <p class="mb-1"><strong>Category:</strong> ${selectedScenario.category.title}</p>
-            <p class="mb-1"><strong>Level:</strong> ${selectedScenario.level ?? 'General'}</p>
-            <p class="mb-1"><strong>Description:</strong> ${selectedScenario.description ?? '-'}</p>
-            <p class="mb-2"><strong>Practice Text:</strong> ${selectedScenario.practice_text}</p>
-            <p class="mb-1"><strong>Sample Questions:</strong></p>
-            <ul>${(selectedScenario.sample_questions || []).map(question => `<li>${question}</li>`).join('')}</ul>
-        `;
+        const scenario = allScenarios.find(item => item.slug === button.dataset.slug);
+        updateScenarioPreview(scenario);
     });
 
     startBtn.addEventListener('click', async function () {
-        if (!selectedScenario) return;
+        if (!selectedScenario) {
+            statusMessage.textContent = 'Please select a scenario first.';
+            return;
+        }
 
         statusMessage.textContent = 'Creating live avatar session...';
         startBtn.disabled = true;
@@ -161,6 +190,13 @@
     if (!allScenarios.length) {
         scenarioCards.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">No practice scenarios are available yet. Please run database seeding.</div></div>';
         statusMessage.textContent = 'No scenarios found. Ask admin to run migrations and seeders.';
+    } else {
+        const firstScenario = allScenarios[0];
+        const firstButton = scenarioCards.querySelector('.scenario-btn');
+        if (firstButton) {
+            firstButton.classList.add('active');
+        }
+        updateScenarioPreview(firstScenario);
     }
 </script>
 @endsection
