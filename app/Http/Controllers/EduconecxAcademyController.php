@@ -20,7 +20,9 @@ class EduconecxAcademyController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return view('educonecx-academy.index', compact('categories'));
+        $missingHeyGenConfig = app(HeyGenLiveAvatarService::class)->getMissingConfigurationKeys();
+
+        return view('educonecx-academy.index', compact('categories', 'missingHeyGenConfig'));
     }
 
     public function startSession(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
@@ -61,9 +63,15 @@ class EduconecxAcademyController extends Controller
                 ],
             ]);
         } catch (\Throwable $exception) {
+            $message = $exception->getMessage();
+
+            if (str_contains($message, 'HeyGen configuration missing:')) {
+                $message .= '. Please update your .env with HEYGEN_API_KEY, HEYGEN_AVATAR_ID, HEYGEN_VOICE_ID, and HEYGEN_CONTEXT_ID and clear config cache.';
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage(),
+                'message' => $message,
             ], 422);
         }
     }

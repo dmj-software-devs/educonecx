@@ -58,6 +58,14 @@
                 <button type="button" id="startPracticeBtn" class="btn btn-primary btn-lg" disabled>Practice with AI Avatar</button>
                 <p id="statusMessage" class="mt-3 mb-0"></p>
 
+                @if(!empty($missingHeyGenConfig))
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <strong>HeyGen setup required:</strong>
+                        Missing {{ implode(', ', $missingHeyGenConfig) }}.
+                        Add HEYGEN_API_KEY, HEYGEN_AVATAR_ID, HEYGEN_VOICE_ID, HEYGEN_CONTEXT_ID to <code>.env</code>, then run <code>php artisan config:clear</code>.
+                    </div>
+                @endif
+
                 <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none">
                     <div class="card-body">
                         <h4 class="card-title">Live Avatar Session</h4>
@@ -81,6 +89,7 @@
 
 <script>
     const categories = @json($categories);
+    const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     const scenarioCards = document.getElementById('scenarioCards');
@@ -187,7 +196,10 @@
         }
     });
 
-    if (!allScenarios.length) {
+    if (missingHeyGenConfig.length) {
+        startBtn.disabled = true;
+        statusMessage.textContent = `HeyGen is not configured yet (${missingHeyGenConfig.join(', ')} missing).`;
+    } else if (!allScenarios.length) {
         scenarioCards.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">No practice scenarios are available yet. Please run database seeding.</div></div>';
         statusMessage.textContent = 'No scenarios found. Ask admin to run migrations and seeders.';
     } else {

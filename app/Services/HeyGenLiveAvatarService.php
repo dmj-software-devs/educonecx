@@ -8,6 +8,20 @@ use Illuminate\Support\Facades\Log;
 
 class HeyGenLiveAvatarService
 {
+    public function getMissingConfigurationKeys(): array
+    {
+        $required = ['api_key', 'avatar_id', 'voice_id', 'context_id'];
+        $missing = [];
+
+        foreach ($required as $key) {
+            if (blank(config("services.heygen.{$key}"))) {
+                $missing[] = $key;
+            }
+        }
+
+        return $missing;
+    }
+
     public function createSession(AcademyScenario $scenario): array
     {
         $this->assertConfiguration();
@@ -83,10 +97,10 @@ class HeyGenLiveAvatarService
 
     protected function assertConfiguration(): void
     {
-        foreach (['api_key', 'avatar_id', 'voice_id', 'context_id'] as $key) {
-            if (blank(config("services.heygen.{$key}"))) {
-                throw new \RuntimeException("HeyGen configuration missing: {$key}");
-            }
+        $missing = $this->getMissingConfigurationKeys();
+
+        if (!empty($missing)) {
+            throw new \RuntimeException('HeyGen configuration missing: ' . implode(', ', $missing));
         }
     }
 }
