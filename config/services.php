@@ -42,4 +42,13 @@ return [
     'redirect' => env('GOOGLE_REDIRECT_URL'),
 ],
 
+
+
+    'heygen' => [
+        'api_key' => env('HEYGEN_API_KEY'),
+        'base_url' => env('HEYGEN_BASE_URL', 'https://api.heygen.com'),
+        'avatar_id' => env('HEYGEN_AVATAR_ID'),
+        'voice_id' => env('HEYGEN_VOICE_ID'),
+        'context_id' => env('HEYGEN_CONTEXT_ID'),
+    ],
 ];

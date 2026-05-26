@@ -1,0 +1,143 @@
+@extends('layouts.main')
+
+@section('title', 'EDUCONECX Academy - Practice English with AI Avatar')
+
+@section('content')
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="hero-title">EDUCONECX Academy</h1>
+            <p class="hero-text">Practice English in real time with an AI avatar.</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h3 class="section-title mb-3">Choose Practice Scenario</h3>
+                        <div class="row g-3" id="scenarioCards"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body" id="scenarioPreview">
+                        <h4 class="card-title">Select a scenario to preview</h4>
+                        <p class="text-muted mb-0">Category, level, practice text, and sample questions will appear here.</p>
+                    </div>
+                </div>
+
+                <button id="startPracticeBtn" class="btn btn-primary btn-lg" disabled>Practice with AI Avatar</button>
+                <p id="statusMessage" class="mt-3 mb-0"></p>
+
+                <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none">
+                    <div class="card-body">
+                        <h4 class="card-title">Live Avatar Session</h4>
+                        <p class="text-muted" id="avatarSessionStatus">Initializing...</p>
+                        <div id="avatarMount" class="border rounded p-3" style="min-height: 280px; background:#f8f9fa;">
+                            {{-- TODO: Mount HeyGen LiveAvatar SDK here once final SDK integration details are confirmed. --}}
+                        </div>
+                    </div>
+                </div>
+
+                <div id="feedbackArea" class="card shadow-sm border-0 mt-4 d-none">
+                    <div class="card-body">
+                        <h4 class="card-title">Session Feedback</h4>
+                        <p class="mb-0" id="feedbackText">Feedback and score will appear here after session completion.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const categories = @json($categories);
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const scenarioCards = document.getElementById('scenarioCards');
+    const scenarioPreview = document.getElementById('scenarioPreview');
+    const startBtn = document.getElementById('startPracticeBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const avatarSessionArea = document.getElementById('avatarSessionArea');
+    const avatarSessionStatus = document.getElementById('avatarSessionStatus');
+
+    let selectedScenario = null;
+    let academySessionId = null;
+
+    const allScenarios = categories.flatMap(category =>
+        (category.scenarios || []).map(scenario => ({ ...scenario, category }))
+    );
+
+    allScenarios.forEach((scenario) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'col-12';
+        wrapper.innerHTML = `
+            <button class="btn btn-outline-primary w-100 text-start scenario-btn" data-slug="${scenario.slug}">
+                <strong>${scenario.title}</strong><br>
+                <small>${scenario.category.title} • ${scenario.level ?? 'General'}</small>
+            </button>
+        `;
+        scenarioCards.appendChild(wrapper);
+    });
+
+    scenarioCards.addEventListener('click', function (event) {
+        const button = event.target.closest('.scenario-btn');
+        if (!button) return;
+
+        document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        selectedScenario = allScenarios.find(item => item.slug === button.dataset.slug);
+        startBtn.disabled = !selectedScenario;
+
+        scenarioPreview.innerHTML = `
+            <h4 class="card-title">${selectedScenario.title}</h4>
+            <p class="mb-1"><strong>Category:</strong> ${selectedScenario.category.title}</p>
+            <p class="mb-1"><strong>Level:</strong> ${selectedScenario.level ?? 'General'}</p>
+            <p class="mb-1"><strong>Description:</strong> ${selectedScenario.description ?? '-'}</p>
+            <p class="mb-2"><strong>Practice Text:</strong> ${selectedScenario.practice_text}</p>
+            <p class="mb-1"><strong>Sample Questions:</strong></p>
+            <ul>${(selectedScenario.sample_questions || []).map(question => `<li>${question}</li>`).join('')}</ul>
+        `;
+    });
+
+    startBtn.addEventListener('click', async function () {
+        if (!selectedScenario) return;
+
+        statusMessage.textContent = 'Creating live avatar session...';
+        startBtn.disabled = true;
+
+        try {
+            const response = await fetch("{{ route('educonecx.academy.session.start') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ scenario_slug: selectedScenario.slug }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Unable to start practice session.');
+            }
+
+            academySessionId = data.academy_session_id;
+            statusMessage.textContent = data.message;
+            avatarSessionArea.classList.remove('d-none');
+            avatarSessionStatus.textContent = 'Session ready. Connect HeyGen SDK to begin speaking.';
+        } catch (error) {
+            statusMessage.textContent = error.message;
+        } finally {
+            startBtn.disabled = false;
+        }
+    });
+</script>
+@endsection
