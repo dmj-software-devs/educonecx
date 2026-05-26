@@ -11,18 +11,18 @@ use Illuminate\Support\Facades\Log;
 class HeyGenLiveAvatarService
 {
     protected array $createTokenEndpoints = [
+        '/v1/sessions/token',
         '/v1/session/token',
-        '/v1/streaming.create_token',
     ];
 
     protected array $createSessionEndpoints = [
+        '/v1/sessions/start',
         '/v1/session/start',
-        '/v1/streaming.start',
     ];
 
     protected array $startSessionEndpoints = [
+        '/v1/sessions/start',
         '/v1/session/start',
-        '/v1/streaming.start',
     ];
 
     public function getMissingConfigurationKeys(): array
@@ -123,7 +123,7 @@ class HeyGenLiveAvatarService
         $payload = $this->buildHeyGenPayload($resolved, $instructions);
 
         // LiveAvatar migration flow: token -> start session (replaces deprecated HeyGen new-session flow).
-        [$tokenResponse, $tokenEndpoint] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, []);
+        [$tokenResponse, $tokenEndpoint] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, [], null, false);
 
         if ($tokenResponse->failed()) {
             throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse));
@@ -140,7 +140,7 @@ class HeyGenLiveAvatarService
 
         $payload['session_token'] = $sessionToken;
 
-        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload);
+        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload, $sessionToken, true);
 
         if ($response->failed()) {
             $errorMessage = $this->extractProviderError($response);
@@ -196,7 +196,7 @@ class HeyGenLiveAvatarService
 
         [$response, $endpoint] = $this->postWithFallbackEndpoints($this->startSessionEndpoints, [
             'session_id' => $sessionId,
-        ]);
+        ], null, true);
 
         if ($response->failed()) {
             Log::error('HeyGen start session failed', [
@@ -219,23 +219,29 @@ class HeyGenLiveAvatarService
         }
     }
 
-    protected function heygenHttp()
+    protected function heygenHttp(?string $sessionToken = null, bool $preferSessionToken = false)
     {
-        return Http::baseUrl(config('services.heygen.base_url'))
+        $request = Http::baseUrl(config('services.heygen.base_url'))
+            ->acceptJson()
             ->withHeaders([
+                'X-API-KEY' => config('services.heygen.api_key'),
                 'X-Api-Key' => config('services.heygen.api_key'),
-            ])
-            ->withToken(config('services.heygen.api_key'))
-            ->acceptJson();
+            ]);
+
+        if ($preferSessionToken && !blank($sessionToken)) {
+            return $request->withToken($sessionToken);
+        }
+
+        return $request->withToken(config('services.heygen.api_key'));
     }
 
-    protected function postWithFallbackEndpoints(array $endpoints, array $payload): array
+    protected function postWithFallbackEndpoints(array $endpoints, array $payload, ?string $sessionToken = null, bool $preferSessionToken = false): array
     {
         $lastResponse = null;
         $lastEndpoint = end($endpoints);
 
         foreach ($endpoints as $endpoint) {
-            $response = $this->heygenHttp()->post($endpoint, $payload);
+            $response = $this->heygenHttp($sessionToken, $preferSessionToken)->post($endpoint, $payload);
             $lastResponse = $response;
             $lastEndpoint = $endpoint;
 
@@ -262,6 +268,9 @@ class HeyGenLiveAvatarService
             ?? null;
 
         if ($message) {
+            if (str_contains(strtolower($message), 'sunset')) {
+                return $message . ' Please set HEYGEN_BASE_URL=https://api.liveavatar.com and use LiveAvatar IDs.';
+            }
             return (string) $message;
         }
 
