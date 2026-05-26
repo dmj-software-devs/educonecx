@@ -40,10 +40,6 @@ class EduconecxAcademyController extends Controller
                 ?? data_get($createResponse, 'response.session_id')
                 ?? data_get($createResponse, 'response.data.id');
 
-            if ($heygenSessionId) {
-                $heyGenService->startSession($heygenSessionId);
-            }
-
             $session = AcademySession::create([
                 'user_id' => Auth::id(),
                 'academy_category_id' => $scenario->academy_category_id,

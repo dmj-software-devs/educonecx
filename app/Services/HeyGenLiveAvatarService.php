@@ -10,13 +10,18 @@ use Illuminate\Support\Facades\Log;
 
 class HeyGenLiveAvatarService
 {
+    protected array $createTokenEndpoints = [
+        '/v1/session/token',
+        '/v1/streaming.create_token',
+    ];
+
     protected array $createSessionEndpoints = [
-        '/v1/live-avatar/session',
-        '/v1/streaming.new',
+        '/v1/session/start',
+        '/v1/streaming.start',
     ];
 
     protected array $startSessionEndpoints = [
-        '/v1/live-avatar/session/start',
+        '/v1/session/start',
         '/v1/streaming.start',
     ];
 
@@ -117,6 +122,24 @@ class HeyGenLiveAvatarService
         $instructions = $this->buildDynamicInstructions($scenario, $user);
         $payload = $this->buildHeyGenPayload($resolved, $instructions);
 
+        // LiveAvatar migration flow: token -> start session (replaces deprecated HeyGen new-session flow).
+        [$tokenResponse, $tokenEndpoint] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, []);
+
+        if ($tokenResponse->failed()) {
+            throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse));
+        }
+
+        $tokenData = $tokenResponse->json() ?? [];
+        $sessionToken = data_get($tokenData, 'data.token')
+            ?? data_get($tokenData, 'token')
+            ?? data_get($tokenData, 'data.session_token');
+
+        if (blank($sessionToken)) {
+            throw new \RuntimeException('Unable to create live avatar session token. Token missing in provider response.');
+        }
+
+        $payload['session_token'] = $sessionToken;
+
         [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload);
 
         if ($response->failed()) {
@@ -128,6 +151,7 @@ class HeyGenLiveAvatarService
                 'scenario_slug' => $scenario->slug,
                 'config_source' => $resolved['source'],
                 'endpoint' => $endpoint,
+                'token_endpoint' => $tokenEndpoint,
             ]);
 
             throw new \RuntimeException('Unable to create live avatar session right now. ' . $errorMessage);
@@ -141,6 +165,8 @@ class HeyGenLiveAvatarService
                 'context_id' => $resolved['context_id'],
                 'source' => $resolved['source'],
                 'endpoint' => $endpoint,
+                'token_endpoint' => $tokenEndpoint,
+                'session_token' => $sessionToken,
             ],
             'dynamic_instructions' => $instructions,
         ];
@@ -149,7 +175,7 @@ class HeyGenLiveAvatarService
     public function buildHeyGenPayload(array $resolvedConfig, string $instructions): array
     {
         $payload = [
-            // TODO: Confirm official HeyGen LiveAvatar Full Mode payload keys for dynamic instructions/context.
+            // TODO: Confirm official LiveAvatar Full Mode payload keys for dynamic instructions/context.
             'avatar_id' => $resolvedConfig['avatar_id'],
             'voice_id' => $resolvedConfig['voice_id'],
             'mode' => 'full',
