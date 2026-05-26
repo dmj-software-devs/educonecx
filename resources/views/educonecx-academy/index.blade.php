@@ -2,8 +2,19 @@
 
 @section('title', 'EDUCONECX Academy - Practice English with AI Avatar')
 
+@push('styles')
+<style>
+    .academy-rect,
+    .academy-rect .btn,
+    .academy-rect .card,
+    .academy-rect .form-control {
+        border-radius: 6px !important;
+    }
+</style>
+@endpush
+
 @section('content')
-<section class="hero-section py-5">
+<section class="hero-section py-5 academy-rect">
     <div class="container">
         <div class="text-center">
             <h1 class="hero-title">EDUCONECX Academy</h1>
@@ -12,7 +23,7 @@
     </div>
 </section>
 
-<section class="py-5">
+<section class="py-5 academy-rect">
     <div class="container">
         <div class="row g-4">
             <div class="col-lg-5">
@@ -31,7 +42,7 @@
                     </div>
                 </div>
 
-                <button id="startPracticeBtn" class="btn btn-primary btn-lg" disabled>Practice with AI Avatar</button>
+                <button type="button" id="startPracticeBtn" class="btn btn-primary btn-lg" disabled>Practice with AI Avatar</button>
                 <p id="statusMessage" class="mt-3 mb-0"></p>
 
                 <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none">
@@ -123,7 +134,14 @@
                 body: JSON.stringify({ scenario_slug: selectedScenario.slug }),
             });
 
-            const data = await response.json();
+            const responseText = await response.text();
+            let data = {};
+
+            try {
+                data = responseText ? JSON.parse(responseText) : {};
+            } catch (e) {
+                throw new Error('Server returned an unexpected response. Please refresh and try again.');
+            }
 
             if (!response.ok || !data.success) {
                 throw new Error(data.message || 'Unable to start practice session.');
@@ -134,10 +152,15 @@
             avatarSessionArea.classList.remove('d-none');
             avatarSessionStatus.textContent = 'Session ready. Connect HeyGen SDK to begin speaking.';
         } catch (error) {
-            statusMessage.textContent = error.message;
+            statusMessage.textContent = error.message || 'Unable to start practice session.';
         } finally {
             startBtn.disabled = false;
         }
     });
+
+    if (!allScenarios.length) {
+        scenarioCards.innerHTML = '<div class="col-12"><div class="alert alert-warning mb-0">No practice scenarios are available yet. Please run database seeding.</div></div>';
+        statusMessage.textContent = 'No scenarios found. Ask admin to run migrations and seeders.';
+    }
 </script>
 @endsection
