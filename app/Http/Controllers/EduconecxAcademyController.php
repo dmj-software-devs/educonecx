@@ -71,6 +71,10 @@ class EduconecxAcademyController extends Controller
                 $message .= '. Please update your .env with HEYGEN_API_KEY, HEYGEN_DEFAULT_AVATAR_ID and HEYGEN_DEFAULT_VOICE_ID and clear config cache.';
             }
 
+            if (str_contains(strtolower($message), 'invalid api key')) {
+                $message .= ' Please verify the key in .env, then run php artisan config:clear and php artisan cache:clear. Also confirm the key works with GET https://api.heygen.com/v1/user/me using X-Api-Key.';
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => $message,

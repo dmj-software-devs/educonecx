@@ -216,9 +216,14 @@ class HeyGenLiveAvatarService
 
     protected function assertApiConfiguration(): void
     {
-        if (blank(config('services.heygen.api_key'))) {
+        if (blank($this->apiKey())) {
             throw new \RuntimeException('HeyGen configuration missing: api_key');
         }
+    }
+
+    protected function apiKey(): string
+    {
+        return trim((string) config('services.heygen.api_key'));
     }
 
     protected function heygenHttp(string $baseUrl, ?string $sessionToken = null, bool $preferSessionToken = false)
@@ -226,7 +231,8 @@ class HeyGenLiveAvatarService
         $request = Http::baseUrl($baseUrl)
             ->acceptJson()
             ->withHeaders([
-                'X-Api-Key' => config('services.heygen.api_key'),
+                'X-Api-Key' => $this->apiKey(),
+                'Content-Type' => 'application/json',
             ]);
 
         if ($preferSessionToken && !blank($sessionToken)) {
