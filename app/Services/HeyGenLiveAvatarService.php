@@ -15,14 +15,12 @@ class HeyGenLiveAvatarService
         '/v1/streaming/token',
         '/v1/streaming.create-token',
         '/v1/sessions/token',
-        '/v1/session/token',
     ];
 
     protected array $createSessionEndpoints = [
         '/v1/streaming.start',
         '/v1/streaming/start',
         '/v1/sessions/start',
-        '/v1/session/start',
     ];
 
     protected array $startSessionEndpoints = [
@@ -303,6 +301,10 @@ class HeyGenLiveAvatarService
             $candidates[] = 'https://api.heygen.com';
         }
 
+        if (!str_contains($candidates[0], 'api.liveavatar.com')) {
+            $candidates[] = 'https://api.liveavatar.com';
+        }
+
         $candidates = array_values(array_unique(array_filter($candidates)));
 
         return $candidates;
@@ -316,7 +318,8 @@ class HeyGenLiveAvatarService
             array_unshift($endpoints, $configured);
         }
 
-        return array_values(array_unique($endpoints));
+        // Keep modern endpoints only; legacy singular paths frequently 404 and cause noisy failures.
+        return array_values(array_unique(array_filter($endpoints, fn($e) => !in_array($e, ['/v1/session/token'], true))));
     }
 
     protected function startEndpoints(): array
@@ -327,7 +330,7 @@ class HeyGenLiveAvatarService
             array_unshift($endpoints, $configured);
         }
 
-        return array_values(array_unique($endpoints));
+        return array_values(array_unique(array_filter($endpoints, fn($e) => !in_array($e, ['/v1/session/start'], true))));
     }
 
     protected function verifyApiKeyWorks(): void
