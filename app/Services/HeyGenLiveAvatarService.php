@@ -130,7 +130,7 @@ class HeyGenLiveAvatarService
         $this->verifyApiKeyWorks();
 
         // Streaming migration flow: token -> start session.
-        [$tokenResponse, $tokenEndpoint, $usedBaseUrl] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, [], null, false);
+        [$tokenResponse, $tokenEndpoint, $usedBaseUrl] = $this->postWithFallbackEndpoints($this->tokenEndpoints(), [], null, false);
 
         if ($tokenResponse->failed()) {
             throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse) . " (base_url={$usedBaseUrl}, endpoint={$tokenEndpoint})");
@@ -147,7 +147,7 @@ class HeyGenLiveAvatarService
 
         $payload['session_token'] = $sessionToken;
 
-        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload, $sessionToken, true, [$usedBaseUrl]);
+        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->startEndpoints(), $payload, $sessionToken, true, [$usedBaseUrl]);
 
         if ($response->failed()) {
             $errorMessage = $this->extractProviderError($response);
@@ -306,6 +306,28 @@ class HeyGenLiveAvatarService
         $candidates = array_values(array_unique(array_filter($candidates)));
 
         return $candidates;
+    }
+
+    protected function tokenEndpoints(): array
+    {
+        $configured = trim((string) config('services.heygen.streaming_token_endpoint'));
+        $endpoints = $this->createTokenEndpoints;
+        if ($configured !== '' && !in_array($configured, $endpoints, true)) {
+            array_unshift($endpoints, $configured);
+        }
+
+        return array_values(array_unique($endpoints));
+    }
+
+    protected function startEndpoints(): array
+    {
+        $configured = trim((string) config('services.heygen.streaming_start_endpoint'));
+        $endpoints = $this->createSessionEndpoints;
+        if ($configured !== '' && !in_array($configured, $endpoints, true)) {
+            array_unshift($endpoints, $configured);
+        }
+
+        return array_values(array_unique($endpoints));
     }
 
     protected function verifyApiKeyWorks(): void
