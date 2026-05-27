@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\Log;
 class HeyGenLiveAvatarService
 {
     protected array $createTokenEndpoints = [
+        '/v1/streaming.create_token',
         '/v1/sessions/token',
-        '/v1/session/token',
     ];
 
     protected array $createSessionEndpoints = [
+        '/v1/streaming.start',
         '/v1/sessions/start',
-        '/v1/session/start',
     ];
 
     protected array $startSessionEndpoints = [
@@ -122,8 +122,8 @@ class HeyGenLiveAvatarService
         $instructions = $this->buildDynamicInstructions($scenario, $user);
         $payload = $this->buildHeyGenPayload($resolved, $instructions);
 
-        // LiveAvatar migration flow: token -> start session (replaces deprecated HeyGen new-session flow).
-        [$tokenResponse, $tokenEndpoint] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, [], null, false);
+        // Streaming migration flow: token -> start session.
+        [$tokenResponse, $tokenEndpoint, $usedBaseUrl] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, [], null, false);
 
         if ($tokenResponse->failed()) {
             throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse));
@@ -140,7 +140,7 @@ class HeyGenLiveAvatarService
 
         $payload['session_token'] = $sessionToken;
 
-        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload, $sessionToken, true);
+        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->createSessionEndpoints, $payload, $sessionToken, true, [$usedBaseUrl]);
 
         if ($response->failed()) {
             $errorMessage = $this->extractProviderError($response);
@@ -152,6 +152,7 @@ class HeyGenLiveAvatarService
                 'config_source' => $resolved['source'],
                 'endpoint' => $endpoint,
                 'token_endpoint' => $tokenEndpoint,
+                'base_url' => $usedBaseUrl,
             ]);
 
             throw new \RuntimeException('Unable to create live avatar session right now. ' . $errorMessage);
@@ -167,6 +168,7 @@ class HeyGenLiveAvatarService
                 'endpoint' => $endpoint,
                 'token_endpoint' => $tokenEndpoint,
                 'session_token' => $sessionToken,
+                'base_url' => $usedBaseUrl,
             ],
             'dynamic_instructions' => $instructions,
         ];
@@ -219,12 +221,11 @@ class HeyGenLiveAvatarService
         }
     }
 
-    protected function heygenHttp(?string $sessionToken = null, bool $preferSessionToken = false)
+    protected function heygenHttp(string $baseUrl, ?string $sessionToken = null, bool $preferSessionToken = false)
     {
-        $request = Http::baseUrl(config('services.heygen.base_url'))
+        $request = Http::baseUrl($baseUrl)
             ->acceptJson()
             ->withHeaders([
-                'X-API-KEY' => config('services.heygen.api_key'),
                 'X-Api-Key' => config('services.heygen.api_key'),
             ]);
 
@@ -232,30 +233,53 @@ class HeyGenLiveAvatarService
             return $request->withToken($sessionToken);
         }
 
-        return $request->withToken(config('services.heygen.api_key'));
+        return $request;
     }
 
-    protected function postWithFallbackEndpoints(array $endpoints, array $payload, ?string $sessionToken = null, bool $preferSessionToken = false): array
+    protected function postWithFallbackEndpoints(array $endpoints, array $payload, ?string $sessionToken = null, bool $preferSessionToken = false, ?array $baseUrls = null): array
     {
         $lastResponse = null;
         $lastEndpoint = end($endpoints);
+        $lastBaseUrl = config('services.heygen.base_url');
 
-        foreach ($endpoints as $endpoint) {
-            $response = $this->heygenHttp($sessionToken, $preferSessionToken)->post($endpoint, $payload);
-            $lastResponse = $response;
-            $lastEndpoint = $endpoint;
+        $baseUrls = $baseUrls ?: $this->candidateBaseUrls();
 
-            if ($response->successful()) {
-                return [$response, $endpoint];
-            }
+        foreach ($baseUrls as $baseUrl) {
+            foreach ($endpoints as $endpoint) {
+                $response = $this->heygenHttp($baseUrl, $sessionToken, $preferSessionToken)->post($endpoint, $payload);
+                $lastResponse = $response;
+                $lastEndpoint = $endpoint;
+                $lastBaseUrl = $baseUrl;
 
-            // If endpoint is clearly not found / not supported, try next fallback.
-            if (!in_array($response->status(), [404, 405], true)) {
-                return [$response, $endpoint];
+                if ($response->successful()) {
+                    return [$response, $endpoint, $baseUrl];
+                }
+
+                $error = strtolower($this->extractProviderError($response));
+                if (str_contains($error, 'sunset')) {
+                    continue;
+                }
+
+                // If endpoint is clearly not found / not supported, try next fallback.
+                if (!in_array($response->status(), [404, 405], true)) {
+                    return [$response, $endpoint, $baseUrl];
+                }
             }
         }
 
-        return [$lastResponse, $lastEndpoint];
+        return [$lastResponse, $lastEndpoint, $lastBaseUrl];
+    }
+
+    protected function candidateBaseUrls(): array
+    {
+        $configured = rtrim((string) config('services.heygen.base_url'), '/');
+        $candidates = array_values(array_unique(array_filter([
+            $configured,
+            'https://api.heygen.com',
+            'https://api.liveavatar.com',
+        ])));
+
+        return $candidates;
     }
 
     protected function extractProviderError($response): string
@@ -269,7 +293,7 @@ class HeyGenLiveAvatarService
 
         if ($message) {
             if (str_contains(strtolower($message), 'sunset')) {
-                return $message . ' Please set HEYGEN_BASE_URL=https://api.liveavatar.com and use LiveAvatar IDs.';
+                return $message . ' Try HEYGEN_BASE_URL=https://api.heygen.com with HeyGen streaming endpoints.';
             }
             return (string) $message;
         }
