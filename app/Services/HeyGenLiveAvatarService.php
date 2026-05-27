@@ -12,12 +12,17 @@ class HeyGenLiveAvatarService
 {
     protected array $createTokenEndpoints = [
         '/v1/streaming.create_token',
+        '/v1/streaming/token',
+        '/v1/streaming.create-token',
         '/v1/sessions/token',
+        '/v1/session/token',
     ];
 
     protected array $createSessionEndpoints = [
         '/v1/streaming.start',
+        '/v1/streaming/start',
         '/v1/sessions/start',
+        '/v1/session/start',
     ];
 
     protected array $startSessionEndpoints = [
@@ -122,11 +127,13 @@ class HeyGenLiveAvatarService
         $instructions = $this->buildDynamicInstructions($scenario, $user);
         $payload = $this->buildHeyGenPayload($resolved, $instructions);
 
+        $this->verifyApiKeyWorks();
+
         // Streaming migration flow: token -> start session.
         [$tokenResponse, $tokenEndpoint, $usedBaseUrl] = $this->postWithFallbackEndpoints($this->createTokenEndpoints, [], null, false);
 
         if ($tokenResponse->failed()) {
-            throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse));
+            throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse) . " (base_url={$usedBaseUrl}, endpoint={$tokenEndpoint})");
         }
 
         $tokenData = $tokenResponse->json() ?? [];
@@ -299,6 +306,15 @@ class HeyGenLiveAvatarService
         $candidates = array_values(array_unique(array_filter($candidates)));
 
         return $candidates;
+    }
+
+    protected function verifyApiKeyWorks(): void
+    {
+        $response = $this->heygenHttp('https://api.heygen.com')->get('/v3/users/me');
+
+        if ($response->failed()) {
+            throw new \RuntimeException('HeyGen API key verification failed against /v3/users/me. ' . $this->extractProviderError($response));
+        }
     }
 
     protected function extractProviderError($response): string
