@@ -223,7 +223,12 @@ class HeyGenLiveAvatarService
 
     protected function apiKey(): string
     {
-        return trim((string) config('services.heygen.api_key'));
+        $configured = trim((string) config('services.heygen.api_key'));
+        if ($configured !== '') {
+            return $configured;
+        }
+
+        return trim((string) env('HEYGEN_API_KEY', ''));
     }
 
     protected function heygenHttp(string $baseUrl, ?string $sessionToken = null, bool $preferSessionToken = false)
@@ -257,6 +262,12 @@ class HeyGenLiveAvatarService
                 $lastEndpoint = $endpoint;
                 $lastBaseUrl = $baseUrl;
 
+                // HeyGen often returns HTTP 200 with non-success code in body.
+                $providerCode = data_get($response->json(), 'code');
+                if ($response->successful() && !is_null($providerCode) && (int) $providerCode !== 100) {
+                    return [$response, $endpoint, $baseUrl];
+                }
+
                 if ($response->successful()) {
                     return [$response, $endpoint, $baseUrl];
                 }
@@ -279,11 +290,13 @@ class HeyGenLiveAvatarService
     protected function candidateBaseUrls(): array
     {
         $configured = rtrim((string) config('services.heygen.base_url'), '/');
-        $candidates = array_values(array_unique(array_filter([
-            $configured,
-            'https://api.heygen.com',
-            'https://api.liveavatar.com',
-        ])));
+        $candidates = [$configured ?: 'https://api.heygen.com'];
+
+        if (!str_contains($candidates[0], 'api.heygen.com')) {
+            $candidates[] = 'https://api.heygen.com';
+        }
+
+        $candidates = array_values(array_unique(array_filter($candidates)));
 
         return $candidates;
     }
