@@ -10,36 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class HeyGenLiveAvatarService
 {
-    protected array $createTokenEndpoints = [
-        '/v1/streaming.create_token',
-        '/v1/streaming/token',
-        '/v1/streaming.create-token',
-        '/v1/sessions/token',
-    ];
-
-    protected array $createSessionEndpoints = [
-        '/v1/streaming.start',
-        '/v1/streaming/start',
-        '/v1/sessions/start',
-    ];
-
-    protected array $startSessionEndpoints = [
-        '/v1/sessions/start',
-        '/v1/session/start',
-    ];
-
     public function getMissingConfigurationKeys(): array
     {
-        $required = ['api_key'];
-        $missing = [];
+        $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
+        $heygenKey = $this->normalizeApiKey((string) config('services.heygen.api_key'));
 
-        foreach ($required as $key) {
-            if (blank(config("services.heygen.{$key}"))) {
-                $missing[] = $key;
-            }
+        if ($liveAvatarKey === '' && $heygenKey === '') {
+            return ['api_key'];
         }
 
-        return $missing;
+        return [];
     }
 
     public function resolveAvatarConfig(AcademyScenario $scenario, ?User $user = null): array
@@ -73,14 +53,20 @@ class HeyGenLiveAvatarService
                 'voice_id' => $scenario->heygen_voice_id ? 'scenario' : ($userSetting?->heygen_voice_id ? 'user' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
                 'context_id' => $scenario->heygen_context_id ? 'scenario' : ($userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
             ],
-            'user_setting' => $userSetting,
         ];
     }
 
     public function buildDynamicInstructions(AcademyScenario $scenario, ?User $user = null): string
     {
         $resolved = $this->resolveAvatarConfig($scenario, $user);
-        $userSetting = $resolved['user_setting'];
+
+        $userSetting = null;
+        if ($user) {
+            $userSetting = AcademyUserAvatarSetting::query()
+                ->where('user_id', $user->id)
+                ->where('status', 'active')
+                ->first();
+        }
 
         $speakingLevel = $userSetting?->speaking_level ?? $scenario->level ?? 'Beginner';
         $preferredLanguage = $userSetting?->preferred_language ?? 'English';
@@ -113,265 +99,217 @@ class HeyGenLiveAvatarService
             . "- at the end, provide short feedback and a score out of 10.";
     }
 
-    public function createSession(AcademyScenario $scenario, ?User $user = null): array
+    public function generateSessionToken(AcademyScenario $scenario, ?User $user = null): array
     {
-        $this->assertApiConfiguration();
+        $url = 'https://api.liveavatar.com/v1/sessions/token';
+        $apiKey = $this->apiKey();
 
         $resolved = $this->resolveAvatarConfig($scenario, $user);
-        if (blank($resolved['avatar_id']) || blank($resolved['voice_id'])) {
-            throw new \RuntimeException('HeyGen avatar or voice configuration is missing. Please set scenario, user, or default avatar/voice IDs.');
-        }
-
         $instructions = $this->buildDynamicInstructions($scenario, $user);
-        $payload = $this->buildHeyGenPayload($resolved, $instructions);
 
-        $this->verifyApiKeyWorks();
+        $tokenPayload = [
+            'mode' => 'FULL',
+            'avatar_id' => $resolved['avatar_id'],
+            'avatar_persona' => [
+                'name' => 'EDUCONECX Academy Tutor',
+                'role' => 'English speaking practice tutor',
+                'description' => $instructions,
+                'personality' => 'Friendly, patient, encouraging, and clear',
+                'instructions' => $instructions,
+            ],
+        ];
 
-        // Streaming migration flow: token -> start session.
-        [$tokenResponse, $tokenEndpoint, $usedBaseUrl] = $this->postWithFallbackEndpoints($this->tokenEndpoints(), [], null, false);
+        Log::debug('LiveAvatar token payload prepared', [
+            'mode' => $tokenPayload['mode'],
+            'avatar_id' => $tokenPayload['avatar_id'],
+            'avatar_persona_type' => gettype($tokenPayload['avatar_persona']),
+            'avatar_persona_keys' => array_keys($tokenPayload['avatar_persona']),
+        ]);
 
-        if ($tokenResponse->failed()) {
-            throw new \RuntimeException('Unable to create live avatar session token. ' . $this->extractProviderError($tokenResponse) . " (base_url={$usedBaseUrl}, endpoint={$tokenEndpoint})");
-        }
+        $primaryResponse = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])
+            ->post('https://api.liveavatar.com/v1/sessions/token', $tokenPayload);
 
-        $tokenData = $tokenResponse->json() ?? [];
-        $sessionToken = data_get($tokenData, 'data.token')
-            ?? data_get($tokenData, 'token')
-            ?? data_get($tokenData, 'data.session_token');
+        Log::debug('LiveAvatar token endpoint response', [
+            'endpoint_url' => $url,
+            'auth_strategy' => 'X-Api-Key',
+            'status' => $primaryResponse->status(),
+            'request_payload' => $tokenPayload,
+            'body' => $primaryResponse->json() ?? $primaryResponse->body(),
+        ]);
 
-        if (blank($sessionToken)) {
-            throw new \RuntimeException('Unable to create live avatar session token. Token missing in provider response.');
-        }
+        $response = $primaryResponse;
 
-        $payload['session_token'] = $sessionToken;
+        if (in_array($primaryResponse->status(), [401, 403], true)) {
+            $secondaryResponse = Http::withHeaders([
+                    'X-API-KEY' => $apiKey,
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])
+                ->post('https://api.liveavatar.com/v1/sessions/token', $tokenPayload);
 
-        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->startEndpoints(), $payload, $sessionToken, true, [$usedBaseUrl]);
-
-        if ($response->failed()) {
-            $errorMessage = $this->extractProviderError($response);
-
-            Log::error('HeyGen create session failed', [
-                'status' => $response->status(),
-                'body' => $response->json() ?? $response->body(),
-                'scenario_slug' => $scenario->slug,
-                'config_source' => $resolved['source'],
-                'endpoint' => $endpoint,
-                'token_endpoint' => $tokenEndpoint,
-                'base_url' => $usedBaseUrl,
+            Log::debug('LiveAvatar token endpoint response', [
+                'endpoint_url' => $url,
+                'auth_strategy' => 'X-Api-Key + Bearer',
+                'status' => $secondaryResponse->status(),
+                'request_payload' => $tokenPayload,
+                'body' => $secondaryResponse->json() ?? $secondaryResponse->body(),
             ]);
 
-            throw new \RuntimeException('Unable to create live avatar session right now. ' . $errorMessage);
+            if ($secondaryResponse->successful()) {
+                $response = $secondaryResponse;
+            }
+        }
+
+        if ($response->failed()) {
+            $message = $this->extractProviderError($response);
+            if (in_array($response->status(), [401, 403], true)) {
+                $message = 'Invalid API key';
+            }
+            throw new \RuntimeException($message);
+        }
+
+        $token = data_get($response->json(), 'data.token')
+            ?? data_get($response->json(), 'token')
+            ?? data_get($response->json(), 'data.session_token');
+
+        if (blank($token)) {
+            throw new \RuntimeException('LiveAvatar token endpoint did not return a token.');
         }
 
         return [
-            'response' => $response->json() ?? [],
-            'resolved' => [
-                'avatar_id' => $resolved['avatar_id'],
+            'token' => $token,
+            'status' => $response->status(),
+            'endpoint_url' => $url,
+            'body' => $response->json() ?? [],
+        ];
+    }
+
+
+    public function createLiveAvatarEmbed(AcademyScenario $scenario, ?User $user = null): array
+    {
+        $resolved = $this->resolveAvatarConfig($scenario, $user);
+
+        if (blank($resolved['avatar_id'])) {
+            throw new \RuntimeException('LiveAvatar embed requires avatar_id. Please set HEYGEN_DEFAULT_AVATAR_ID.');
+        }
+
+        if (blank($resolved['voice_id'])) {
+            throw new \RuntimeException('LiveAvatar embed requires voice_id. Please set HEYGEN_DEFAULT_VOICE_ID to a valid LiveAvatar voice ID.');
+        }
+
+        if (blank($resolved['context_id'])) {
+            throw new \RuntimeException('LiveAvatar embed requires context_id. Please set HEYGEN_DEFAULT_CONTEXT_ID to a valid LiveAvatar context ID.');
+        }
+
+        $url = 'https://api.liveavatar.com/v2/embeddings';
+        $payload = [
+            'mode' => 'FULL',
+            'avatar_id' => $resolved['avatar_id'],
+            'is_sandbox' => false,
+            'avatar_persona' => [
                 'voice_id' => $resolved['voice_id'],
                 'context_id' => $resolved['context_id'],
-                'source' => $resolved['source'],
-                'endpoint' => $endpoint,
-                'token_endpoint' => $tokenEndpoint,
-                'session_token' => $sessionToken,
-                'base_url' => $usedBaseUrl,
+                'language' => 'en',
             ],
-            'dynamic_instructions' => $instructions,
-        ];
-    }
-
-    public function buildHeyGenPayload(array $resolvedConfig, string $instructions): array
-    {
-        $payload = [
-            // TODO: Confirm official LiveAvatar Full Mode payload keys for dynamic instructions/context.
-            'avatar_id' => $resolvedConfig['avatar_id'],
-            'voice_id' => $resolvedConfig['voice_id'],
-            'mode' => 'full',
-            'instructions' => $instructions,
-            'prompt' => $instructions,
+            'interactivity_type' => 'CONVERSATIONAL',
         ];
 
-        if (!blank($resolvedConfig['context_id'])) {
-            $payload['context_id'] = $resolvedConfig['context_id'];
-        }
+        Log::debug('LiveAvatar embed payload', [
+            'mode' => $payload['mode'],
+            'avatar_id' => $payload['avatar_id'],
+            'voice_id' => $payload['avatar_persona']['voice_id'],
+            'context_id' => $payload['avatar_persona']['context_id'],
+            'is_sandbox' => $payload['is_sandbox'],
+            'interactivity_type' => $payload['interactivity_type'],
+        ]);
 
-        return $payload;
-    }
+        $response = Http::withHeaders([
+            'X-API-KEY' => $this->apiKey(),
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post($url, $payload);
 
-    public function startSession(string $sessionId): array
-    {
-        $this->assertApiConfiguration();
-
-        [$response, $endpoint] = $this->postWithFallbackEndpoints($this->startSessionEndpoints, [
-            'session_id' => $sessionId,
-        ], null, true);
+        Log::debug('LiveAvatar embed endpoint response', [
+            'endpoint_url' => $url,
+            'status' => $response->status(),
+            'body' => $response->json() ?? $response->body(),
+        ]);
 
         if ($response->failed()) {
-            Log::error('HeyGen start session failed', [
-                'status' => $response->status(),
-                'body' => $response->json() ?? $response->body(),
-                'session_id' => $sessionId,
-                'endpoint' => $endpoint,
-            ]);
-
-            throw new \RuntimeException('Unable to start live avatar session right now. ' . $this->extractProviderError($response));
+            throw new \RuntimeException($this->extractProviderError($response));
         }
 
-        return $response->json() ?? [];
-    }
-
-    protected function assertApiConfiguration(): void
-    {
-        if (blank($this->apiKey())) {
-            throw new \RuntimeException('HeyGen configuration missing: api_key');
-        }
+        return [
+            'embed_url' => data_get($response->json(), 'data.url'),
+            'embed_script' => data_get($response->json(), 'data.script'),
+            'status' => $response->status(),
+            'endpoint_url' => $url,
+            'response' => $response->json() ?? [],
+            'resolved' => $resolved,
+        ];
     }
 
     protected function apiKey(): string
     {
-        $baseUrl = rtrim((string) config('services.heygen.base_url'), '/');
-
-        if (str_contains($baseUrl, 'api.liveavatar.com')) {
-            $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
-            if ($liveAvatarKey !== '') {
-                return $liveAvatarKey;
-            }
+        $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
+        if ($liveAvatarKey !== '') {
+            return $liveAvatarKey;
         }
 
-        $configured = trim((string) config('services.heygen.api_key'));
+        $configured = $this->normalizeApiKey((string) config('services.heygen.api_key'));
         if ($configured !== '') {
             return $configured;
         }
 
-        return trim((string) env('HEYGEN_API_KEY', ''));
+        $envLiveAvatar = $this->normalizeApiKey((string) env('LIVEAVATAR_API_KEY', ''));
+        if ($envLiveAvatar !== '') {
+            return $envLiveAvatar;
+        }
+
+        return $this->normalizeApiKey((string) env('HEYGEN_API_KEY', ''));
     }
 
-    protected function heygenHttp(string $baseUrl, ?string $sessionToken = null, bool $preferSessionToken = false)
+    public function apiKeyDebugMeta(): array
     {
-        $request = Http::baseUrl($baseUrl)
-            ->acceptJson()
-            ->withHeaders([
-                'X-Api-Key' => $this->apiKey(),
-                'Content-Type' => 'application/json',
-            ]);
+        $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
+        $heygenKey = $this->normalizeApiKey((string) config('services.heygen.api_key'));
+        $selected = $this->apiKey();
 
-        if ($preferSessionToken && !blank($sessionToken)) {
-            return $request->withToken($sessionToken);
-        }
-
-        return $request;
+        return [
+            'selected_key_source' => $liveAvatarKey !== '' ? 'services.heygen.liveavatar_api_key' : ($heygenKey !== '' ? 'services.heygen.api_key' : 'env.HEYGEN_API_KEY'),
+            'selected_key_prefix' => $selected !== '' ? substr($selected, 0, 12) . '...' : null,
+            'selected_key_length' => $selected !== '' ? strlen($selected) : 0,
+        ];
     }
 
-    protected function postWithFallbackEndpoints(array $endpoints, array $payload, ?string $sessionToken = null, bool $preferSessionToken = false, ?array $baseUrls = null): array
+
+    protected function normalizeApiKey(string $value): string
     {
-        $lastResponse = null;
-        $lastEndpoint = end($endpoints);
-        $lastBaseUrl = config('services.heygen.base_url');
+        $normalized = trim($value);
 
-        $baseUrls = $baseUrls ?: $this->candidateBaseUrls();
-
-        foreach ($baseUrls as $baseUrl) {
-            foreach ($endpoints as $endpoint) {
-                $response = $this->heygenHttp($baseUrl, $sessionToken, $preferSessionToken)->post($endpoint, $payload);
-                $lastResponse = $response;
-                $lastEndpoint = $endpoint;
-                $lastBaseUrl = $baseUrl;
-
-                // HeyGen often returns HTTP 200 with non-success code in body.
-                $providerCode = data_get($response->json(), 'code');
-                if ($response->successful() && !is_null($providerCode) && (int) $providerCode !== 100) {
-                    return [$response, $endpoint, $baseUrl];
-                }
-
-                if ($response->successful()) {
-                    return [$response, $endpoint, $baseUrl];
-                }
-
-                $error = strtolower($this->extractProviderError($response));
-                if (str_contains($error, 'sunset')) {
-                    continue;
-                }
-
-                // If endpoint is clearly not found / not supported, try next fallback.
-                if (!in_array($response->status(), [404, 405], true)) {
-                    return [$response, $endpoint, $baseUrl];
-                }
-            }
+        if ($normalized === '') {
+            return '';
         }
 
-        return [$lastResponse, $lastEndpoint, $lastBaseUrl];
-    }
+        $normalized = trim($normalized, "\"'");
+        $normalized = preg_replace('/\s+/', '', $normalized) ?? '';
 
-    protected function candidateBaseUrls(): array
-    {
-        $configured = rtrim((string) config('services.heygen.base_url'), '/');
-        $candidates = [$configured ?: 'https://api.heygen.com'];
-
-        if (!str_contains($candidates[0], 'api.heygen.com')) {
-            $candidates[] = 'https://api.heygen.com';
-        }
-
-        if (!str_contains($candidates[0], 'api.liveavatar.com')) {
-            $candidates[] = 'https://api.liveavatar.com';
-        }
-
-        $candidates = array_values(array_unique(array_filter($candidates)));
-
-        return $candidates;
-    }
-
-    protected function tokenEndpoints(): array
-    {
-        $configured = trim((string) config('services.heygen.streaming_token_endpoint'));
-        $endpoints = $this->createTokenEndpoints;
-        if ($configured !== '' && !in_array($configured, $endpoints, true)) {
-            array_unshift($endpoints, $configured);
-        }
-
-        // Keep modern endpoints only; legacy singular paths frequently 404 and cause noisy failures.
-        return array_values(array_unique(array_filter($endpoints, fn($e) => !in_array($e, ['/v1/session/token'], true))));
-    }
-
-    protected function startEndpoints(): array
-    {
-        $configured = trim((string) config('services.heygen.streaming_start_endpoint'));
-        $endpoints = $this->createSessionEndpoints;
-        if ($configured !== '' && !in_array($configured, $endpoints, true)) {
-            array_unshift($endpoints, $configured);
-        }
-
-        return array_values(array_unique(array_filter($endpoints, fn($e) => !in_array($e, ['/v1/session/start'], true))));
-    }
-
-    protected function verifyApiKeyWorks(): void
-    {
-        $response = $this->heygenHttp('https://api.heygen.com')->get('/v3/users/me');
-
-        if ($response->failed()) {
-            throw new \RuntimeException('HeyGen API key verification failed against /v3/users/me. ' . $this->extractProviderError($response));
-        }
+        return trim($normalized);
     }
 
     protected function extractProviderError($response): string
     {
         $json = $response->json();
-        $message = data_get($json, 'message')
+
+        return data_get($json, 'message')
             ?? data_get($json, 'error.message')
             ?? data_get($json, 'error')
             ?? data_get($json, 'detail')
-            ?? null;
-
-        if ($message) {
-            if (str_contains(strtolower($message), 'sunset')) {
-                return $message . ' Try HEYGEN_BASE_URL=https://api.heygen.com with HeyGen streaming endpoints.';
-            }
-            return (string) $message;
-        }
-
-        $body = trim((string) $response->body());
-        if ($body !== '') {
-            return mb_substr($body, 0, 220);
-        }
-
-        return 'Please verify your HeyGen endpoint/payload and credentials.';
+            ?? (trim((string) $response->body()) ?: 'Unable to generate LiveAvatar token.');
     }
 }

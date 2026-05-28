@@ -39,7 +39,7 @@
 <section class="py-5 academy-rect">
     <div class="container">
         <div class="row g-4">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <h3 class="section-title mb-3">Choose Practice Scenario</h3>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7">
+            <div class="col-lg-8">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-body" id="scenarioPreview">
                         <h4 class="card-title">Select a scenario to preview</h4>
@@ -66,15 +66,6 @@
                     </div>
                 @endif
 
-                <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none">
-                    <div class="card-body">
-                        <h4 class="card-title">Live Avatar Session</h4>
-                        <p class="text-muted" id="avatarSessionStatus">Initializing...</p>
-                        <div id="avatarMount" class="border rounded p-3" style="min-height: 280px; background:#f8f9fa;">
-                            {{-- TODO: Mount HeyGen LiveAvatar SDK here once final SDK integration details are confirmed. --}}
-                        </div>
-                    </div>
-                </div>
 
                 <div id="feedbackArea" class="card shadow-sm border-0 mt-4 d-none">
                     <div class="card-body">
@@ -82,6 +73,28 @@
                         <p class="mb-0" id="feedbackText">Feedback and score will appear here after session completion.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="avatarSessionArea" class="academy-liveavatar-section mt-4 d-none">
+            <div class="academy-liveavatar-card">
+                <div class="academy-liveavatar-header">
+                    <div>
+                        <h4 class="academy-liveavatar-title">Live Avatar Session</h4>
+                        <p class="academy-liveavatar-status" id="avatarSessionStatus">Initializing...</p>
+                    </div>
+                    <a id="openLiveAvatarLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-primary d-none">
+                        Open in New Tab
+                    </a>
+                </div>
+
+                <div id="avatarMount" class="academy-liveavatar-frame-wrap">
+                    <div class="academy-liveavatar-placeholder">
+                        LiveAvatar will appear here.
+                    </div>
+                </div>
+
+                <div id="liveAvatarDebug" class="academy-liveavatar-debug"></div>
             </div>
         </div>
     </div>
@@ -98,9 +111,12 @@
     const statusMessage = document.getElementById('statusMessage');
     const avatarSessionArea = document.getElementById('avatarSessionArea');
     const avatarSessionStatus = document.getElementById('avatarSessionStatus');
+    const avatarMount = document.getElementById('avatarMount');
 
     let selectedScenario = null;
     let academySessionId = null;
+    let liveAvatarToken = null;
+    let liveAvatarClient = null;
 
     const updateScenarioPreview = (scenario) => {
         selectedScenario = scenario;
@@ -152,17 +168,22 @@
         updateScenarioPreview(scenario);
     });
 
+
+
+
+
     startBtn.addEventListener('click', async function () {
         if (!selectedScenario) {
             statusMessage.textContent = 'Please select a scenario first.';
             return;
         }
 
-        statusMessage.textContent = 'Creating live avatar session...';
+        statusMessage.classList.remove('text-danger');
+        statusMessage.textContent = 'Creating LiveAvatar embed...';
         startBtn.disabled = true;
 
         try {
-            const response = await fetch("{{ route('educonecx.academy.session.start') }}", {
+            const response = await fetch("{{ route('educonecx.academy.liveavatar.embed') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -177,20 +198,61 @@
 
             try {
                 data = responseText ? JSON.parse(responseText) : {};
+                console.log('LiveAvatar embed response:', data);
             } catch (e) {
                 throw new Error('Server returned an unexpected response. Please refresh and try again.');
             }
 
             if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Unable to start practice session.');
+                throw new Error(data.message || 'Unable to load LiveAvatar.');
             }
 
-            academySessionId = data.academy_session_id;
-            statusMessage.textContent = data.message;
+            academySessionId = null;
+
+            const avatarSessionArea = document.getElementById('avatarSessionArea');
+            const avatarMount = document.getElementById('avatarMount');
+            const openLiveAvatarLink = document.getElementById('openLiveAvatarLink');
+            const liveAvatarDebug = document.getElementById('liveAvatarDebug');
+
+            if (!data.embed_url) {
+                throw new Error('LiveAvatar embed URL missing.');
+            }
+
             avatarSessionArea.classList.remove('d-none');
-            avatarSessionStatus.textContent = 'Session ready. Connect HeyGen SDK to begin speaking.';
+
+            avatarMount.innerHTML = `
+    <iframe
+        src="${data.embed_url}"
+        title="LiveAvatar Embed"
+        allow="microphone; camera; autoplay; fullscreen; clipboard-read; clipboard-write"
+        allowfullscreen
+        loading="eager"
+    ></iframe>
+`;
+
+            openLiveAvatarLink.href = data.embed_url;
+            openLiveAvatarLink.classList.remove('d-none');
+
+            statusMessage.textContent = 'LiveAvatar embed created successfully.';
+            avatarSessionStatus.textContent = 'LiveAvatar loaded. Click Chat now and allow microphone access.';
+
+            liveAvatarDebug.innerHTML = `
+    <strong>Embed URL:</strong> <a href="${data.embed_url}" target="_blank" rel="noopener">${data.embed_url}</a><br>
+    <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
+    <strong>Voice ID:</strong> ${data.voice_id || '-'}<br>
+    <strong>Context ID:</strong> ${data.context_id || '-'}<br>
+    <strong>Note:</strong> If Chat now fails, check LiveAvatar avatar/context/voice compatibility and billing.
+`;
+
+            setTimeout(() => {
+                avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+
+            console.log('LiveAvatar iframe inserted:', data.embed_url);
         } catch (error) {
-            statusMessage.textContent = error.message || 'Unable to start practice session.';
+            console.error('LiveAvatar embed error:', error);
+            statusMessage.textContent = error.message || 'Unable to load LiveAvatar.';
+            statusMessage.classList.add('text-danger');
         } finally {
             startBtn.disabled = false;
         }
@@ -211,4 +273,93 @@
         updateScenarioPreview(firstScenario);
     }
 </script>
+<style>
+    .academy-liveavatar-section {
+        width: 100%;
+        margin-top: 32px;
+        margin-bottom: 48px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .academy-liveavatar-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .academy-liveavatar-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .academy-liveavatar-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .academy-liveavatar-status {
+        margin: 4px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .academy-liveavatar-frame-wrap {
+        width: 100%;
+        height: 680px;
+        min-height: 680px;
+        background: #000;
+        overflow: hidden;
+    }
+
+    .academy-liveavatar-frame-wrap iframe {
+        width: 100% !important;
+        height: 680px !important;
+        border: 0 !important;
+        display: block !important;
+        background: #000;
+    }
+
+    .academy-liveavatar-debug {
+        padding: 12px 20px;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        font-size: 13px;
+        color: #6b7280;
+        word-break: break-all;
+    }
+
+    .academy-liveavatar-placeholder {
+        color: #fff;
+        min-height: 680px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #111;
+    }
+
+    @media (max-width: 768px) {
+        .academy-liveavatar-frame-wrap {
+            height: 520px;
+            min-height: 520px;
+        }
+
+        .academy-liveavatar-frame-wrap iframe {
+            height: 520px !important;
+        }
+
+        .academy-liveavatar-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
 @endsection

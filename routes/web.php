@@ -553,6 +553,282 @@ Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::
 //     return view('errors.404');
 // });
 
+
+Route::get('/dev/liveavatar/check', function () {
+    abort_unless(app()->environment('local'), 404);
+
+    $apiKey = trim((string) (config('services.heygen.liveavatar_api_key') ?: config('services.heygen.api_key')));
+    $avatarId = trim((string) config('services.heygen.default_avatar_id'));
+
+    $headers = [
+        'X-API-KEY' => $apiKey,
+        'Accept' => 'application/json',
+    ];
+
+    $publicResponse = Http::withHeaders($headers)->get('https://api.liveavatar.com/v1/avatars/public');
+    $customResponse = Http::withHeaders($headers)->get('https://api.liveavatar.com/v1/avatars/custom');
+
+    $findAvatar = function ($payload) use ($avatarId) {
+        if ($avatarId === '') {
+            return false;
+        }
+
+        $stack = [$payload];
+        while ($stack) {
+            $current = array_pop($stack);
+            if (!is_array($current)) {
+                continue;
+            }
+
+            if (($current['avatar_id'] ?? null) === $avatarId || ($current['id'] ?? null) === $avatarId) {
+                return true;
+            }
+
+            foreach ($current as $value) {
+                if (is_array($value)) {
+                    $stack[] = $value;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    $publicJson = $publicResponse->json() ?? [];
+    $customJson = $customResponse->json() ?? [];
+
+    return response()->json([
+        'success' => $publicResponse->successful() && $customResponse->successful(),
+        'configured_avatar_id' => $avatarId,
+        'avatar_exists_in_public' => $findAvatar($publicJson),
+        'avatar_exists_in_custom' => $findAvatar($customJson),
+        'checks' => [
+            'avatar_id_exists_in_liveavatar' => $findAvatar($publicJson) || $findAvatar($customJson),
+            'verify_context_is_active_published' => 'Check LiveAvatar dashboard context status.',
+            'verify_voice_attached_to_context' => 'Check LiveAvatar dashboard voice/context setup.',
+            'verify_account_credits' => 'Check LiveAvatar billing/credits/trial.',
+            'verify_sandbox_and_concurrency' => 'Check sandbox mode and concurrency limits.',
+        ],
+        'public_avatars' => [
+            'status' => $publicResponse->status(),
+            'body' => $publicJson ?: $publicResponse->body(),
+        ],
+        'custom_avatars' => [
+            'status' => $customResponse->status(),
+            'body' => $customJson ?: $customResponse->body(),
+        ],
+    ]);
+});
+
+Route::get('/dev/liveavatar/config-check', function () {
+    abort_unless(app()->environment('local'), 404);
+
+    $apiKey = trim((string) (config('services.heygen.liveavatar_api_key') ?: config('services.heygen.api_key')));
+    $avatarId = trim((string) config('services.heygen.default_avatar_id'));
+    $voiceId = trim((string) config('services.heygen.default_voice_id'));
+    $contextId = trim((string) config('services.heygen.default_context_id'));
+    $baseUrl = rtrim((string) config('services.heygen.base_url', 'https://api.liveavatar.com'), '/');
+
+    $embedPayloadPreview = [
+        'mode' => 'FULL',
+        'avatar_id' => $avatarId,
+        'is_sandbox' => false,
+        'avatar_persona' => [
+            'voice_id' => $voiceId,
+            'context_id' => $contextId,
+            'language' => 'en',
+        ],
+        'interactivity_type' => 'CONVERSATIONAL',
+    ];
+
+    $headers = [
+        'X-API-KEY' => $apiKey,
+        'Accept' => 'application/json',
+    ];
+
+    $avatarResponse = $avatarId !== '' ? Http::withHeaders($headers)->get("{$baseUrl}/v1/avatars/{$avatarId}") : null;
+    $voiceResponse = $voiceId !== '' ? Http::withHeaders($headers)->get("{$baseUrl}/v1/voices/{$voiceId}") : null;
+    $contextResponse = $contextId !== '' ? Http::withHeaders($headers)->get("{$baseUrl}/v1/contexts/{$contextId}") : null;
+
+    $avatarsResponse = Http::withHeaders($headers)->get("{$baseUrl}/v1/avatars");
+    $voicesResponse = Http::withHeaders($headers)->get("{$baseUrl}/v1/voices");
+    $contextsResponse = Http::withHeaders($headers)->get("{$baseUrl}/v1/contexts");
+
+    $findId = function ($payload, string $id): bool {
+        if ($id === '') {
+            return false;
+        }
+
+        $stack = [$payload];
+        while ($stack) {
+            $current = array_pop($stack);
+            if (!is_array($current)) {
+                continue;
+            }
+
+            if (($current['id'] ?? null) === $id || ($current['avatar_id'] ?? null) === $id || ($current['voice_id'] ?? null) === $id || ($current['context_id'] ?? null) === $id) {
+                return true;
+            }
+
+            foreach ($current as $value) {
+                if (is_array($value)) {
+                    $stack[] = $value;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    $avatarsJson = $avatarsResponse->json() ?? [];
+    $voicesJson = $voicesResponse->json() ?? [];
+    $contextsJson = $contextsResponse->json() ?? [];
+
+    $avatarFound = ($avatarResponse?->successful() ?? false) || $findId($avatarsJson, $avatarId);
+    $voiceFound = ($voiceResponse?->successful() ?? false) || $findId($voicesJson, $voiceId);
+    $contextFound = ($contextResponse?->successful() ?? false) || $findId($contextsJson, $contextId);
+
+    return response()->json([
+        'success' => $avatarFound && $voiceFound && $contextFound,
+        'api_base_url' => $baseUrl,
+        'liveavatar_api_key_exists' => trim((string) config('services.heygen.liveavatar_api_key')) !== '',
+        'resolved' => [
+            'avatar_id' => $avatarId,
+            'voice_id' => $voiceId,
+            'context_id' => $contextId,
+        ],
+        'embed_payload_preview' => $embedPayloadPreview,
+        'avatar_found' => $avatarFound,
+        'voice_found' => $voiceFound,
+        'context_found' => $contextFound,
+        'detail_responses' => [
+            'avatar' => [
+                'status' => $avatarResponse?->status(),
+                'body' => $avatarResponse ? ($avatarResponse->json() ?? $avatarResponse->body()) : 'Missing HEYGEN_DEFAULT_AVATAR_ID.',
+            ],
+            'voice' => [
+                'status' => $voiceResponse?->status(),
+                'body' => $voiceResponse ? ($voiceResponse->json() ?? $voiceResponse->body()) : 'Missing HEYGEN_DEFAULT_VOICE_ID.',
+            ],
+            'context' => [
+                'status' => $contextResponse?->status(),
+                'body' => $contextResponse ? ($contextResponse->json() ?? $contextResponse->body()) : 'Missing HEYGEN_DEFAULT_CONTEXT_ID.',
+            ],
+        ],
+        'list_responses' => [
+            'avatars' => ['status' => $avatarsResponse->status(), 'body' => $avatarsJson ?: $avatarsResponse->body()],
+            'voices' => ['status' => $voicesResponse->status(), 'body' => $voicesJson ?: $voicesResponse->body()],
+            'contexts' => ['status' => $contextsResponse->status(), 'body' => $contextsJson ?: $contextsResponse->body()],
+        ],
+    ]);
+});
+
+Route::get('/dev/liveavatar/validate-config', function () {
+    abort_unless(app()->environment('local'), 404);
+
+    $apiKey = trim((string) (config('services.heygen.liveavatar_api_key') ?: config('services.heygen.api_key')));
+    $avatarId = trim((string) config('services.heygen.default_avatar_id'));
+    $voiceId = trim((string) config('services.heygen.default_voice_id'));
+    $contextId = trim((string) config('services.heygen.default_context_id'));
+
+    $headers = [
+        'X-API-KEY' => $apiKey,
+        'Accept' => 'application/json',
+    ];
+
+    $avatarResponse = $avatarId !== ''
+        ? Http::withHeaders($headers)->get("https://api.liveavatar.com/v1/avatars/{$avatarId}")
+        : null;
+    $voiceResponse = $voiceId !== ''
+        ? Http::withHeaders($headers)->get("https://api.liveavatar.com/v1/voices/{$voiceId}")
+        : null;
+    $contextResponse = $contextId !== ''
+        ? Http::withHeaders($headers)->get("https://api.liveavatar.com/v1/contexts/{$contextId}")
+        : null;
+
+    $avatarExists = $avatarResponse?->successful() ?? false;
+    $voiceExists = $voiceResponse?->successful() ?? false;
+    $contextExists = $contextResponse?->successful() ?? false;
+    $allValid = $avatarExists && $voiceExists && $contextExists;
+
+    return response()->json([
+        'success' => $allValid,
+        'message' => $allValid ? 'LiveAvatar config is valid.' : 'Invalid LiveAvatar config: avatar/voice/context not found.',
+        'configured' => [
+            'avatar_id' => $avatarId,
+            'voice_id' => $voiceId,
+            'context_id' => $contextId,
+        ],
+        'exists' => [
+            'avatar' => $avatarExists,
+            'voice' => $voiceExists,
+            'context' => $contextExists,
+        ],
+        'responses' => [
+            'avatar' => [
+                'status' => $avatarResponse?->status(),
+                'body' => $avatarResponse ? ($avatarResponse->json() ?? $avatarResponse->body()) : 'Missing HEYGEN_DEFAULT_AVATAR_ID.',
+            ],
+            'voice' => [
+                'status' => $voiceResponse?->status(),
+                'body' => $voiceResponse ? ($voiceResponse->json() ?? $voiceResponse->body()) : 'Missing HEYGEN_DEFAULT_VOICE_ID.',
+            ],
+            'context' => [
+                'status' => $contextResponse?->status(),
+                'body' => $contextResponse ? ($contextResponse->json() ?? $contextResponse->body()) : 'Missing HEYGEN_DEFAULT_CONTEXT_ID.',
+            ],
+        ],
+    ], $allValid ? 200 : 422);
+});
+
+Route::post('/dev/liveavatar/test-embed', function () {
+    abort_unless(app()->environment('local'), 404);
+
+    $apiKey = trim((string) (config('services.heygen.liveavatar_api_key') ?: config('services.heygen.api_key')));
+    $avatarId = trim((string) config('services.heygen.default_avatar_id'));
+    $voiceId = trim((string) config('services.heygen.default_voice_id'));
+    $contextId = trim((string) config('services.heygen.default_context_id'));
+
+    if ($avatarId === '' || $voiceId === '' || $contextId === '') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Test embed requires HEYGEN_DEFAULT_AVATAR_ID, HEYGEN_DEFAULT_VOICE_ID, and HEYGEN_DEFAULT_CONTEXT_ID.',
+            'avatar_id_present' => $avatarId !== '',
+            'voice_id_present' => $voiceId !== '',
+            'context_id_present' => $contextId !== '',
+        ], 422);
+    }
+
+    $payload = [
+        'mode' => 'FULL',
+        'avatar_id' => $avatarId,
+        'is_sandbox' => false,
+        'avatar_persona' => [
+            'voice_id' => $voiceId,
+            'context_id' => $contextId,
+            'language' => 'en',
+        ],
+        'interactivity_type' => 'CONVERSATIONAL',
+    ];
+
+    $response = Http::withHeaders([
+        'X-API-KEY' => $apiKey,
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json',
+    ])->post('https://api.liveavatar.com/v2/embeddings', $payload);
+
+    return response()->json([
+        'success' => $response->successful(),
+        'endpoint_url' => 'https://api.liveavatar.com/v2/embeddings',
+        'payload' => $payload,
+        'status' => $response->status(),
+        'body' => $response->json() ?? $response->body(),
+        'embed_url' => data_get($response->json(), 'data.url'),
+        'embed_script' => data_get($response->json(), 'data.script'),
+    ], $response->successful() ? 200 : 422);
+});
+
 Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
-Route::post('/educonecx-academy/session', [EduconecxAcademyController::class, 'startSession'])->name('educonecx.academy.session.start');
+Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
+Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');
 Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');
