@@ -87,8 +87,6 @@
     </div>
 </section>
 
-<script src="https://cdn.liveavatar.com/web-sdk/latest/liveavatar.min.js" defer></script>
-
 <script>
     const categories = @json($categories);
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
@@ -159,57 +157,16 @@
 
 
 
-    const updateSdkState = ({ token = false, sdk = false, mount = false, mic = false }) => {
+
+    const updateEmbedState = ({ token = false, sdk = false, mount = false, mic = false }) => {
         avatarMount.innerHTML = `
             <div class="small text-muted">
-                <p class="mb-1"><strong>Token generated:</strong> ${token ? '✅' : '⏳'}</p>
-                <p class="mb-1"><strong>SDK initialized:</strong> ${sdk ? '✅' : '⏳'}</p>
+                <p class="mb-1"><strong>Token generated:</strong> ${token ? '✅' : '—'}</p>
+                <p class="mb-1"><strong>SDK initialized:</strong> ${sdk ? '✅' : '—'}</p>
                 <p class="mb-1"><strong>Avatar mounted:</strong> ${mount ? '✅' : '⏳'}</p>
-                <p class="mb-0"><strong>Microphone connected:</strong> ${mic ? '✅' : '⏳'}</p>
+                <p class="mb-0"><strong>Microphone connected:</strong> ${mic ? '✅' : '⏳ (handled inside embed)'}</p>
             </div>
         `;
-    };
-
-    const ensureMicrophoneAccess = async () => {
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            throw new Error('Browser unsupported: microphone APIs are not available.');
-        }
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        return stream;
-    };
-
-    const initializeLiveAvatarSdk = async (tokenResponse) => {
-        if (!window.LiveAvatarClient) {
-            throw new Error('If the SDK is not installed yet, token generation is working but LiveAvatar frontend SDK integration is still pending.');
-        }
-
-        updateSdkState({ token: true, sdk: false, mount: false, mic: false });
-
-        liveAvatarClient = new window.LiveAvatarClient({
-            token: tokenResponse.token,
-            container: avatarMount,
-        });
-
-        updateSdkState({ token: true, sdk: true, mount: false, mic: false });
-
-        await liveAvatarClient.start({
-            avatarId: tokenResponse.avatar_id,
-            voiceId: tokenResponse.voice_id || undefined,
-            contextId: tokenResponse.context_id || undefined,
-            instructions: tokenResponse.instructions,
-        });
-
-        updateSdkState({ token: true, sdk: true, mount: true, mic: false });
-
-        try {
-            const micStream = await ensureMicrophoneAccess();
-            if (liveAvatarClient.connectMicrophone) {
-                await liveAvatarClient.connectMicrophone(micStream);
-            }
-            updateSdkState({ token: true, sdk: true, mount: true, mic: true });
-        } catch (micError) {
-            throw new Error('Microphone permission denied or unavailable. Please allow microphone access and retry.');
-        }
     };
 
     startBtn.addEventListener('click', async function () {
@@ -218,11 +175,11 @@
             return;
         }
 
-        statusMessage.textContent = 'Requesting LiveAvatar session token...';
+        statusMessage.textContent = 'Creating LiveAvatar embed...';
         startBtn.disabled = true;
 
         try {
-            const response = await fetch("{{ route('educonecx.academy.liveavatar.token') }}", {
+            const response = await fetch("{{ route('educonecx.academy.liveavatar.embed') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -245,19 +202,21 @@
                 throw new Error(data.message || 'Unable to generate LiveAvatar token.');
             }
 
-            liveAvatarToken = data.token;
             academySessionId = null;
             avatarSessionArea.classList.remove('d-none');
 
-            statusMessage.textContent = 'Token generation success. Ready to initialize LiveAvatar SDK.';
-            avatarSessionStatus.textContent = 'SDK initialization pending...';
+            statusMessage.textContent = 'LiveAvatar embed created successfully.';
+            avatarSessionStatus.textContent = 'Embedding avatar session...';
 
-            updateSdkState({ token: true, sdk: false, mount: false, mic: false });
-            avatarSessionStatus.textContent = 'Token generated ✅ Initializing LiveAvatar SDK...';
+            updateEmbedState({ token: false, sdk: false, mount: false, mic: false });
 
-            await initializeLiveAvatarSdk(data);
+            if (!data.embed_url) {
+                throw new Error('LiveAvatar embed URL missing from backend response.');
+            }
 
-            avatarSessionStatus.textContent = 'LiveAvatar session started ✅ Avatar mounted and microphone connected.';
+            avatarMount.innerHTML = `<iframe src="${data.embed_url}" allow="microphone; camera; autoplay" style="width:100%; aspect-ratio:16/9; border:0;"></iframe>`;
+
+            avatarSessionStatus.textContent = 'LiveAvatar embed mounted ✅';
         } catch (error) {
             statusMessage.textContent = error.message || 'Unable to generate LiveAvatar token.';
         } finally {

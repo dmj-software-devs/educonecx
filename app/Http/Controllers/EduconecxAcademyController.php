@@ -60,6 +60,36 @@ class EduconecxAcademyController extends Controller
         }
     }
 
+
+    public function createLiveAvatarEmbed(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
+    {
+        $validated = $request->validate([
+            'scenario_slug' => ['required', 'string', 'exists:academy_scenarios,slug'],
+        ]);
+
+        $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
+
+        try {
+            $user = auth()->user();
+            $embed = $heyGenService->createLiveAvatarEmbed($scenario, $user);
+
+            return response()->json([
+                'success' => true,
+                'embed_url' => $embed['embed_url'],
+                'embed_script' => $embed['embed_script'],
+                'avatar_id' => data_get($embed, 'resolved.avatar_id'),
+                'context_id' => data_get($embed, 'resolved.context_id'),
+            ]);
+        } catch (\Throwable $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+                'endpoint_url' => 'https://api.liveavatar.com/v2/embeddings',
+                'debug' => $heyGenService->apiKeyDebugMeta(),
+            ], 422);
+        }
+    }
+
     public function endSession(Request $request): JsonResponse
     {
         $validated = $request->validate([

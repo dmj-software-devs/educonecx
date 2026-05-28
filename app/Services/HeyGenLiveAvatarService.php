@@ -189,6 +189,54 @@ class HeyGenLiveAvatarService
         ];
     }
 
+
+    public function createLiveAvatarEmbed(AcademyScenario $scenario, ?User $user = null): array
+    {
+        $resolved = $this->resolveAvatarConfig($scenario, $user);
+
+        if (blank($resolved['context_id'])) {
+            throw new \RuntimeException('LiveAvatar embed requires context_id. Please set HEYGEN_DEFAULT_CONTEXT_ID.');
+        }
+
+        $url = 'https://api.liveavatar.com/v2/embeddings';
+        $payload = [
+            'avatar_id' => $resolved['avatar_id'],
+            'context_id' => $resolved['context_id'],
+            'is_sandbox' => true,
+        ];
+
+        Log::debug('LiveAvatar embed payload prepared', [
+            'avatar_id' => $payload['avatar_id'],
+            'context_id' => $payload['context_id'],
+            'is_sandbox' => $payload['is_sandbox'],
+        ]);
+
+        $response = Http::withHeaders([
+            'X-API-KEY' => $this->apiKey(),
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post($url, $payload);
+
+        Log::debug('LiveAvatar embed endpoint response', [
+            'endpoint_url' => $url,
+            'status' => $response->status(),
+            'body' => $response->json() ?? $response->body(),
+        ]);
+
+        if ($response->failed()) {
+            throw new \RuntimeException($this->extractProviderError($response));
+        }
+
+        return [
+            'embed_url' => data_get($response->json(), 'data.url'),
+            'embed_script' => data_get($response->json(), 'data.script'),
+            'status' => $response->status(),
+            'endpoint_url' => $url,
+            'response' => $response->json() ?? [],
+            'resolved' => $resolved,
+        ];
+    }
+
     protected function apiKey(): string
     {
         $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));

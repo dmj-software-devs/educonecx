@@ -555,4 +555,5 @@ Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::
 
 Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
 Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
+Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');
 Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');
