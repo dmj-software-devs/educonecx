@@ -71,7 +71,7 @@
                         <h4 class="card-title">Live Avatar Session</h4>
                         <p class="text-muted" id="avatarSessionStatus">Initializing...</p>
                         <div id="avatarMount" class="border rounded p-3" style="min-height: 280px; background:#f8f9fa;">
-                            {{-- TODO: Mount HeyGen LiveAvatar SDK here once final SDK integration details are confirmed. --}}
+                            {{-- TODO(LiveAvatar SDK): Replace this placeholder with official LiveAvatar Web SDK renderer mount call. --}}
                         </div>
                     </div>
                 </div>
@@ -101,6 +101,7 @@
 
     let selectedScenario = null;
     let academySessionId = null;
+    let liveAvatarToken = null;
 
     const updateScenarioPreview = (scenario) => {
         selectedScenario = scenario;
@@ -158,11 +159,11 @@
             return;
         }
 
-        statusMessage.textContent = 'Creating live avatar session...';
+        statusMessage.textContent = 'Requesting LiveAvatar session token...';
         startBtn.disabled = true;
 
         try {
-            const response = await fetch("{{ route('educonecx.academy.session.start') }}", {
+            const response = await fetch("{{ route('educonecx.academy.liveavatar.token') }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,15 +183,40 @@
             }
 
             if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Unable to start practice session.');
+                throw new Error(data.message || 'Unable to generate LiveAvatar token.');
             }
 
-            academySessionId = data.academy_session_id;
-            statusMessage.textContent = data.message;
+            liveAvatarToken = data.token;
+            academySessionId = null;
             avatarSessionArea.classList.remove('d-none');
-            avatarSessionStatus.textContent = 'Session ready. Connect HeyGen SDK to begin speaking.';
+
+            statusMessage.textContent = 'Token generation success. Ready to initialize LiveAvatar SDK.';
+            avatarSessionStatus.textContent = 'SDK initialization pending...';
+
+            const avatarMount = document.getElementById('avatarMount');
+            avatarMount.innerHTML = `
+                <div class="small text-muted">
+                    <p class="mb-1"><strong>Token:</strong> Generated ✅</p>
+                    <p class="mb-1"><strong>Endpoint:</strong> ${data.endpoint_url || 'https://api.liveavatar.com/v1/sessions/token'}</p>
+                    <p class="mb-1"><strong>Avatar:</strong> ${data.avatar_id || '-'}</p>
+                    <p class="mb-1"><strong>Voice:</strong> ${data.voice_id || '-'}</p>
+                    <p class="mb-0"><strong>Context:</strong> ${data.context_id || '-'}</p>
+                </div>
+                <hr>
+                <p class="mb-1"><strong>SDK init status:</strong> TODO</p>
+                <p class="mb-1"><strong>Avatar mount status:</strong> Placeholder rendered ✅</p>
+                <p class="mb-0"><strong>Microphone/audio:</strong> TODO (connect via official LiveAvatar Web SDK)</p>
+            `;
+
+            // TODO(LiveAvatar SDK): Initialize official Web SDK with server token/config response.
+            // Example placeholder flow:
+            // 1) create SDK client with token/config from backend
+            // 2) mount avatar into #avatarMount
+            // 3) request/connect microphone/audio
+            // 4) start realtime interaction from frontend
+            avatarSessionStatus.textContent = 'SDK placeholder ready. Implement official LiveAvatar Web SDK initialization here.';
         } catch (error) {
-            statusMessage.textContent = error.message || 'Unable to start practice session.';
+            statusMessage.textContent = error.message || 'Unable to generate LiveAvatar token.';
         } finally {
             startBtn.disabled = false;
         }
