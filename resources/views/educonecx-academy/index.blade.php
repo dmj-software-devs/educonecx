@@ -66,12 +66,27 @@
                     </div>
                 @endif
 
-                <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none" style="display:none;">
-                    <div class="card-body">
-                        <h4 class="card-title">Live Avatar Session</h4>
-                        <p class="text-muted" id="avatarSessionStatus">Initializing...</p>
-                        <div id="avatarMount" class="border rounded p-0 overflow-hidden" style="width:100%; min-height:560px; background:#000;"></div>
-                        <div id="liveAvatarDebug" class="small text-muted mt-2"></div>
+                <div id="avatarSessionArea" class="academy-liveavatar-section mt-4 d-none">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h4 class="card-title mb-1">Live Avatar Session</h4>
+                                    <p class="text-muted mb-0" id="avatarSessionStatus">Initializing...</p>
+                                </div>
+                                <a id="openLiveAvatarLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-primary d-none">
+                                    Open in New Tab
+                                </a>
+                            </div>
+
+                            <div id="avatarMount" class="academy-liveavatar-frame-wrap">
+                                <div class="academy-liveavatar-placeholder">
+                                    LiveAvatar will appear here.
+                                </div>
+                            </div>
+
+                            <div id="liveAvatarDebug" class="small text-muted mt-2"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -197,79 +212,42 @@
 
             const avatarSessionArea = document.getElementById('avatarSessionArea');
             const avatarMount = document.getElementById('avatarMount');
+            const openLiveAvatarLink = document.getElementById('openLiveAvatarLink');
+            const liveAvatarDebug = document.getElementById('liveAvatarDebug');
 
             if (!data.embed_url) {
-                throw new Error('LiveAvatar embed URL missing from response.');
+                throw new Error('LiveAvatar embed URL missing.');
             }
 
             avatarSessionArea.classList.remove('d-none');
-            avatarSessionArea.style.display = 'block';
-            avatarSessionArea.style.visibility = 'visible';
-            avatarSessionArea.style.opacity = '1';
 
-            avatarMount.classList.remove('d-none');
-            avatarMount.style.display = 'block';
-            avatarMount.style.visibility = 'visible';
-            avatarMount.style.opacity = '1';
-            avatarMount.style.width = '100%';
-            avatarMount.style.minHeight = '560px';
-            avatarMount.style.background = '#000';
-            avatarMount.style.padding = '0';
-            avatarMount.style.overflow = 'hidden';
+            openLiveAvatarLink.href = data.embed_url;
+            openLiveAvatarLink.classList.remove('d-none');
 
-            avatarMount.innerHTML = '';
-
-            const iframe = document.createElement('iframe');
-            iframe.src = data.embed_url;
-            iframe.title = 'LiveAvatar Embed';
-            iframe.allow = 'microphone; camera; autoplay; fullscreen; clipboard-read; clipboard-write';
-            iframe.allowFullscreen = true;
-            iframe.style.width = '100%';
-            iframe.style.height = '560px';
-            iframe.style.minHeight = '560px';
-            iframe.style.border = '0';
-            iframe.style.display = 'block';
-            iframe.style.background = '#000';
-
-            iframe.onload = function () {
-                console.log('LiveAvatar iframe loaded successfully:', data.embed_url);
-                avatarSessionStatus.textContent = 'LiveAvatar loaded. Please allow microphone access.';
-            };
-
-            iframe.onerror = function () {
-                console.error('LiveAvatar iframe failed to load:', data.embed_url);
-                avatarSessionStatus.textContent = 'LiveAvatar iframe failed to load. Use the fallback link below.';
-            };
-
-            avatarMount.appendChild(iframe);
-
-            const fallback = document.createElement('div');
-            fallback.className = 'p-3 bg-light border-top';
-            fallback.innerHTML = `
-                <p class="mb-2">If the avatar does not appear, open it directly:</p>
-                <a href="${data.embed_url}" target="_blank" rel="noopener" class="btn btn-primary">
-                    Open LiveAvatar Session
-                </a>
-            `;
-            avatarMount.appendChild(fallback);
+            avatarMount.innerHTML = `
+    <iframe
+        src="${data.embed_url}"
+        title="LiveAvatar Embed"
+        allow="microphone; camera; autoplay; fullscreen"
+        allowfullscreen
+        loading="eager"
+    ></iframe>
+`;
 
             statusMessage.textContent = 'LiveAvatar embed created successfully.';
-            avatarSessionStatus.textContent = 'Loading LiveAvatar iframe...';
+            avatarSessionStatus.textContent = 'LiveAvatar loaded. Please allow microphone access.';
 
-            document.getElementById('liveAvatarDebug').innerHTML = `
-                <strong>Embed URL:</strong> ${data.embed_url}<br>
-                <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
-                <strong>Context ID:</strong> ${data.context_id || '-'}
-            `;
-
-            console.log('LiveAvatar embed response:', data);
-            console.log('avatarSessionArea display:', window.getComputedStyle(avatarSessionArea).display);
-            console.log('avatarMount display:', window.getComputedStyle(avatarMount).display);
-            console.log('iframe src:', iframe.src);
+            liveAvatarDebug.innerHTML = `
+    <strong>Embed URL:</strong> <a href="${data.embed_url}" target="_blank" rel="noopener">${data.embed_url}</a><br>
+    <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
+    <strong>Context ID:</strong> ${data.context_id || '-'}
+`;
 
             setTimeout(() => {
                 avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 300);
+
+            console.log('LiveAvatar iframe inserted:', data.embed_url);
         } catch (error) {
             console.error('LiveAvatar embed error:', error);
             statusMessage.textContent = error.message || 'Unable to load LiveAvatar.';
@@ -294,4 +272,46 @@
         updateScenarioPreview(firstScenario);
     }
 </script>
+<style>
+    .academy-liveavatar-section {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        clear: both;
+        position: relative;
+        z-index: 10;
+        margin-bottom: 40px;
+    }
+
+    .academy-liveavatar-frame-wrap {
+        width: 100%;
+        height: 640px;
+        min-height: 640px;
+        background: #000;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        display: block;
+        position: relative;
+    }
+
+    .academy-liveavatar-frame-wrap iframe {
+        width: 100% !important;
+        height: 640px !important;
+        min-height: 640px !important;
+        display: block !important;
+        border: 0 !important;
+        background: #000;
+    }
+
+    .academy-liveavatar-placeholder {
+        color: #fff;
+        min-height: 640px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #111;
+    }
+</style>
+
 @endsection
