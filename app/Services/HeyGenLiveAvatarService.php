@@ -194,21 +194,37 @@ class HeyGenLiveAvatarService
     {
         $resolved = $this->resolveAvatarConfig($scenario, $user);
 
+        if (blank($resolved['avatar_id'])) {
+            throw new \RuntimeException('LiveAvatar embed requires avatar_id. Please set HEYGEN_DEFAULT_AVATAR_ID.');
+        }
+
+        if (blank($resolved['voice_id'])) {
+            throw new \RuntimeException('LiveAvatar embed requires voice_id. Please set HEYGEN_DEFAULT_VOICE_ID to a valid LiveAvatar voice ID.');
+        }
+
         if (blank($resolved['context_id'])) {
-            throw new \RuntimeException('LiveAvatar embed requires context_id. Please set HEYGEN_DEFAULT_CONTEXT_ID.');
+            throw new \RuntimeException('LiveAvatar embed requires context_id. Please set HEYGEN_DEFAULT_CONTEXT_ID to a valid LiveAvatar context ID.');
         }
 
         $url = 'https://api.liveavatar.com/v2/embeddings';
         $payload = [
+            'mode' => 'FULL',
             'avatar_id' => $resolved['avatar_id'],
-            'context_id' => $resolved['context_id'],
             'is_sandbox' => true,
+            'avatar_persona' => [
+                'voice_id' => $resolved['voice_id'],
+                'context_id' => $resolved['context_id'],
+                'language' => 'en',
+            ],
+            'interactivity_type' => 'CONVERSATIONAL',
         ];
 
         Log::debug('LiveAvatar embed payload prepared', [
             'avatar_id' => $payload['avatar_id'],
-            'context_id' => $payload['context_id'],
+            'voice_id' => $payload['avatar_persona']['voice_id'],
+            'context_id' => $payload['avatar_persona']['context_id'],
             'is_sandbox' => $payload['is_sandbox'],
+            'interactivity_type' => $payload['interactivity_type'],
         ]);
 
         $response = Http::withHeaders([

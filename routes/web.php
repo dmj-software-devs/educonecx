@@ -620,26 +620,92 @@ Route::get('/dev/liveavatar/check', function () {
     ]);
 });
 
+Route::get('/dev/liveavatar/validate-config', function () {
+    abort_unless(app()->environment('local'), 404);
+
+    $apiKey = trim((string) (config('services.heygen.liveavatar_api_key') ?: config('services.heygen.api_key')));
+    $avatarId = trim((string) config('services.heygen.default_avatar_id'));
+    $voiceId = trim((string) config('services.heygen.default_voice_id'));
+    $contextId = trim((string) config('services.heygen.default_context_id'));
+
+    $headers = [
+        'X-API-KEY' => $apiKey,
+        'Accept' => 'application/json',
+    ];
+
+    $avatarResponse = $avatarId !== ''
+        ? Http::withHeaders($headers)->get("https://api.liveavatar.com/v1/avatars/{$avatarId}")
+        : null;
+    $voiceResponse = $voiceId !== ''
+        ? Http::withHeaders($headers)->get("https://api.liveavatar.com/v1/voices/{$voiceId}")
+        : null;
+    $contextResponse = $contextId !== ''
+        ? Http::withHeaders($headers)->get("https://api.liveavatar.com/v1/contexts/{$contextId}")
+        : null;
+
+    $avatarExists = $avatarResponse?->successful() ?? false;
+    $voiceExists = $voiceResponse?->successful() ?? false;
+    $contextExists = $contextResponse?->successful() ?? false;
+    $allValid = $avatarExists && $voiceExists && $contextExists;
+
+    return response()->json([
+        'success' => $allValid,
+        'message' => $allValid ? 'LiveAvatar config is valid.' : 'Invalid LiveAvatar config: avatar/voice/context not found.',
+        'configured' => [
+            'avatar_id' => $avatarId,
+            'voice_id' => $voiceId,
+            'context_id' => $contextId,
+        ],
+        'exists' => [
+            'avatar' => $avatarExists,
+            'voice' => $voiceExists,
+            'context' => $contextExists,
+        ],
+        'responses' => [
+            'avatar' => [
+                'status' => $avatarResponse?->status(),
+                'body' => $avatarResponse ? ($avatarResponse->json() ?? $avatarResponse->body()) : 'Missing HEYGEN_DEFAULT_AVATAR_ID.',
+            ],
+            'voice' => [
+                'status' => $voiceResponse?->status(),
+                'body' => $voiceResponse ? ($voiceResponse->json() ?? $voiceResponse->body()) : 'Missing HEYGEN_DEFAULT_VOICE_ID.',
+            ],
+            'context' => [
+                'status' => $contextResponse?->status(),
+                'body' => $contextResponse ? ($contextResponse->json() ?? $contextResponse->body()) : 'Missing HEYGEN_DEFAULT_CONTEXT_ID.',
+            ],
+        ],
+    ], $allValid ? 200 : 422);
+});
+
 Route::post('/dev/liveavatar/test-embed', function () {
     abort_unless(app()->environment('local'), 404);
 
     $apiKey = trim((string) (config('services.heygen.liveavatar_api_key') ?: config('services.heygen.api_key')));
     $avatarId = trim((string) config('services.heygen.default_avatar_id'));
+    $voiceId = trim((string) config('services.heygen.default_voice_id'));
     $contextId = trim((string) config('services.heygen.default_context_id'));
 
-    if ($avatarId === '' || $contextId === '') {
+    if ($avatarId === '' || $voiceId === '' || $contextId === '') {
         return response()->json([
             'success' => false,
-            'message' => 'Test embed requires HEYGEN_DEFAULT_AVATAR_ID and HEYGEN_DEFAULT_CONTEXT_ID.',
+            'message' => 'Test embed requires HEYGEN_DEFAULT_AVATAR_ID, HEYGEN_DEFAULT_VOICE_ID, and HEYGEN_DEFAULT_CONTEXT_ID.',
             'avatar_id_present' => $avatarId !== '',
+            'voice_id_present' => $voiceId !== '',
             'context_id_present' => $contextId !== '',
         ], 422);
     }
 
     $payload = [
+        'mode' => 'FULL',
         'avatar_id' => $avatarId,
-        'context_id' => $contextId,
         'is_sandbox' => true,
+        'avatar_persona' => [
+            'voice_id' => $voiceId,
+            'context_id' => $contextId,
+            'language' => 'en',
+        ],
+        'interactivity_type' => 'CONVERSATIONAL',
     ];
 
     $response = Http::withHeaders([
