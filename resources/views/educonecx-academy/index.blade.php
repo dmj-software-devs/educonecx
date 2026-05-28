@@ -228,7 +228,7 @@
     <iframe
         src="${data.embed_url}"
         title="LiveAvatar Embed"
-        allow="microphone; camera; autoplay; fullscreen"
+        allow="microphone; camera; autoplay; fullscreen; clipboard-read; clipboard-write"
         allowfullscreen
         loading="eager"
     ></iframe>
@@ -240,7 +240,8 @@
             liveAvatarDebug.innerHTML = `
     <strong>Embed URL:</strong> <a href="${data.embed_url}" target="_blank" rel="noopener">${data.embed_url}</a><br>
     <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
-    <strong>Context ID:</strong> ${data.context_id || '-'}
+    <strong>Context ID:</strong> ${data.context_id || '-'}<br>
+    <strong>Note:</strong> If the embed opens but says Something went wrong, check LiveAvatar dashboard avatar/context/voice setup.
 `;
 
             setTimeout(() => {
