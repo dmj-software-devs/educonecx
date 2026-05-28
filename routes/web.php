@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\TranslationController;
 use App\Services\DeepLService;
+use App\Http\Controllers\EduconecxAcademyController;
 use Illuminate\Support\Facades\Http;
 
 // Add these imports for password reset
@@ -551,3 +552,7 @@ Route::get('/courses/{slug}/learn', [App\Http\Controllers\EnrollmentController::
 // Route::fallback(function () {
 //     return view('errors.404');
 // });
+
+Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
+Route::post('/educonecx-academy/session', [EduconecxAcademyController::class, 'startSession'])->name('educonecx.academy.session.start');
+Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');
