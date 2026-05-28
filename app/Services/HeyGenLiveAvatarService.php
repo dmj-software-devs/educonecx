@@ -99,19 +99,32 @@ class HeyGenLiveAvatarService
             . "- at the end, provide short feedback and a score out of 10.";
     }
 
-    public function generateSessionToken(): array
+    public function generateSessionToken(AcademyScenario $scenario, ?User $user = null): array
     {
         $url = 'https://api.liveavatar.com/v1/sessions/token';
         $apiKey = $this->apiKey();
 
-        $tokenPayload = ['mode' => 'FULL'];
+        $resolved = $this->resolveAvatarConfig($scenario, $user);
+        $instructions = $this->buildDynamicInstructions($scenario, $user);
+
+        $tokenPayload = [
+            'mode' => 'FULL',
+            'avatar_id' => $resolved['avatar_id'],
+            'avatar_persona' => $instructions,
+        ];
+
+        Log::debug('LiveAvatar token payload prepared', [
+            'mode' => $tokenPayload['mode'],
+            'avatar_id' => $tokenPayload['avatar_id'],
+            'has_avatar_persona' => !empty($tokenPayload['avatar_persona']),
+        ]);
 
         $primaryResponse = Http::withHeaders([
                 'X-API-KEY' => $apiKey,
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])
-            ->post($url, $tokenPayload);
+            ->post('https://api.liveavatar.com/v1/sessions/token', $tokenPayload);
 
         Log::debug('LiveAvatar token endpoint response', [
             'endpoint_url' => $url,
@@ -130,7 +143,7 @@ class HeyGenLiveAvatarService
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                 ])
-                ->post($url, $tokenPayload);
+                ->post('https://api.liveavatar.com/v1/sessions/token', $tokenPayload);
 
             Log::debug('LiveAvatar token endpoint response', [
                 'endpoint_url' => $url,

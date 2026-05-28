@@ -34,7 +34,7 @@ class EduconecxAcademyController extends Controller
 
         try {
             $user = auth()->user();
-            $tokenData = $heyGenService->generateSessionToken();
+            $tokenData = $heyGenService->generateSessionToken($scenario, $user);
             $resolved = $heyGenService->resolveAvatarConfig($scenario, $user);
             $instructions = $heyGenService->buildDynamicInstructions($scenario, $user);
 
