@@ -699,6 +699,7 @@ Route::post('/dev/liveavatar/test-embed', function () {
     $payload = [
         'mode' => 'FULL',
         'avatar_id' => $avatarId,
+        'context_id' => $contextId,
         'is_sandbox' => true,
         'avatar_persona' => [
             'voice_id' => $voiceId,

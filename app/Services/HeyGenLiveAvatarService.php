@@ -210,6 +210,7 @@ class HeyGenLiveAvatarService
         $payload = [
             'mode' => 'FULL',
             'avatar_id' => $resolved['avatar_id'],
+            'context_id' => $resolved['context_id'],
             'is_sandbox' => true,
             'avatar_persona' => [
                 'voice_id' => $resolved['voice_id'],
@@ -222,7 +223,8 @@ class HeyGenLiveAvatarService
         Log::debug('LiveAvatar embed payload prepared', [
             'avatar_id' => $payload['avatar_id'],
             'voice_id' => $payload['avatar_persona']['voice_id'],
-            'context_id' => $payload['avatar_persona']['context_id'],
+            'context_id' => $payload['context_id'],
+            'avatar_persona_context_id' => $payload['avatar_persona']['context_id'],
             'is_sandbox' => $payload['is_sandbox'],
             'interactivity_type' => $payload['interactivity_type'],
         ]);
