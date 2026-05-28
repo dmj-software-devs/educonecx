@@ -110,13 +110,20 @@ class HeyGenLiveAvatarService
         $tokenPayload = [
             'mode' => 'FULL',
             'avatar_id' => $resolved['avatar_id'],
-            'avatar_persona' => $instructions,
+            'avatar_persona' => [
+                'name' => 'EDUCONECX Academy Tutor',
+                'role' => 'English speaking practice tutor',
+                'description' => $instructions,
+                'personality' => 'Friendly, patient, encouraging, and clear',
+                'instructions' => $instructions,
+            ],
         ];
 
         Log::debug('LiveAvatar token payload prepared', [
             'mode' => $tokenPayload['mode'],
             'avatar_id' => $tokenPayload['avatar_id'],
-            'has_avatar_persona' => !empty($tokenPayload['avatar_persona']),
+            'avatar_persona_type' => gettype($tokenPayload['avatar_persona']),
+            'avatar_persona_keys' => array_keys($tokenPayload['avatar_persona']),
         ]);
 
         $primaryResponse = Http::withHeaders([
