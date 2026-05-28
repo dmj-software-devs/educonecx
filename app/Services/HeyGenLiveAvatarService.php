@@ -119,7 +119,11 @@ class HeyGenLiveAvatarService
         ]);
 
         if ($response->failed()) {
-            throw new \RuntimeException($this->extractProviderError($response));
+            $message = $this->extractProviderError($response);
+            if (in_array($response->status(), [401, 403], true)) {
+                $message = 'Invalid API key';
+            }
+            throw new \RuntimeException($message);
         }
 
         $token = data_get($response->json(), 'data.token')
@@ -140,12 +144,30 @@ class HeyGenLiveAvatarService
 
     protected function apiKey(): string
     {
+        $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
+        if ($liveAvatarKey !== '') {
+            return $liveAvatarKey;
+        }
+
         $configured = trim((string) config('services.heygen.api_key'));
         if ($configured !== '') {
             return $configured;
         }
 
         return trim((string) env('HEYGEN_API_KEY', ''));
+    }
+
+    public function apiKeyDebugMeta(): array
+    {
+        $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
+        $heygenKey = trim((string) config('services.heygen.api_key'));
+        $selected = $this->apiKey();
+
+        return [
+            'selected_key_source' => $liveAvatarKey !== '' ? 'services.heygen.liveavatar_api_key' : ($heygenKey !== '' ? 'services.heygen.api_key' : 'env.HEYGEN_API_KEY'),
+            'selected_key_prefix' => $selected !== '' ? substr($selected, 0, 12) . '...' : null,
+            'selected_key_length' => $selected !== '' ? strlen($selected) : 0,
+        ];
     }
 
     protected function extractProviderError($response): string

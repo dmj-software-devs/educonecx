@@ -47,6 +47,7 @@ class EduconecxAcademyController extends Controller
                 'instructions' => $instructions,
                 'endpoint_url' => $tokenData['endpoint_url'],
                 'endpoint_status' => $tokenData['status'],
+                'debug' => $heyGenService->apiKeyDebugMeta(),
             ]);
         } catch (\Throwable $exception) {
             return response()->json([

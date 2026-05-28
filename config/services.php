@@ -47,10 +47,8 @@ return [
     'heygen' => [
         'api_key' => env('HEYGEN_API_KEY'),
         'liveavatar_api_key' => env('LIVEAVATAR_API_KEY'),
-        'base_url' => env('HEYGEN_BASE_URL', 'https://api.heygen.com'),
-        'streaming_token_endpoint' => env('HEYGEN_STREAMING_TOKEN_ENDPOINT', '/v1/streaming.create_token'),
-        'streaming_start_endpoint' => env('HEYGEN_STREAMING_START_ENDPOINT', '/v1/streaming.start'),
-        'default_avatar_id' => env('HEYGEN_DEFAULT_AVATAR_ID', env('HEYGEN_AVATAR_ID')),
+        'base_url' => env('HEYGEN_BASE_URL', 'https://api.liveavatar.com'),
+                'default_avatar_id' => env('HEYGEN_DEFAULT_AVATAR_ID', env('HEYGEN_AVATAR_ID')),
         'default_voice_id' => env('HEYGEN_DEFAULT_VOICE_ID', env('HEYGEN_VOICE_ID')),
         'default_context_id' => env('HEYGEN_DEFAULT_CONTEXT_ID', env('HEYGEN_CONTEXT_ID')),
     ],
