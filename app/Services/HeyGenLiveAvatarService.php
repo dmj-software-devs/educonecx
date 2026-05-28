@@ -12,8 +12,8 @@ class HeyGenLiveAvatarService
 {
     public function getMissingConfigurationKeys(): array
     {
-        $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
-        $heygenKey = trim((string) config('services.heygen.api_key'));
+        $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
+        $heygenKey = $this->normalizeApiKey((string) config('services.heygen.api_key'));
 
         if ($liveAvatarKey === '' && $heygenKey === '') {
             return ['api_key'];
@@ -167,23 +167,28 @@ class HeyGenLiveAvatarService
 
     protected function apiKey(): string
     {
-        $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
+        $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
         if ($liveAvatarKey !== '') {
             return $liveAvatarKey;
         }
 
-        $configured = trim((string) config('services.heygen.api_key'));
+        $configured = $this->normalizeApiKey((string) config('services.heygen.api_key'));
         if ($configured !== '') {
             return $configured;
         }
 
-        return trim((string) env('HEYGEN_API_KEY', ''));
+        $envLiveAvatar = $this->normalizeApiKey((string) env('LIVEAVATAR_API_KEY', ''));
+        if ($envLiveAvatar !== '') {
+            return $envLiveAvatar;
+        }
+
+        return $this->normalizeApiKey((string) env('HEYGEN_API_KEY', ''));
     }
 
     public function apiKeyDebugMeta(): array
     {
-        $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
-        $heygenKey = trim((string) config('services.heygen.api_key'));
+        $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
+        $heygenKey = $this->normalizeApiKey((string) config('services.heygen.api_key'));
         $selected = $this->apiKey();
 
         return [
@@ -191,6 +196,21 @@ class HeyGenLiveAvatarService
             'selected_key_prefix' => $selected !== '' ? substr($selected, 0, 12) . '...' : null,
             'selected_key_length' => $selected !== '' ? strlen($selected) : 0,
         ];
+    }
+
+
+    protected function normalizeApiKey(string $value): string
+    {
+        $normalized = trim($value);
+
+        if ($normalized === '') {
+            return '';
+        }
+
+        $normalized = trim($normalized, "\"'");
+        $normalized = preg_replace('/\s+/', '', $normalized) ?? '';
+
+        return trim($normalized);
     }
 
     protected function extractProviderError($response): string

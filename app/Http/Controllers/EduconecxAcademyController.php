@@ -54,6 +54,7 @@ class EduconecxAcademyController extends Controller
                 'success' => false,
                 'message' => $exception->getMessage(),
                 'endpoint_url' => 'https://api.liveavatar.com/v1/sessions/token',
+                'hint' => 'If auth fails, set LIVEAVATAR_API_KEY explicitly (preferred for LiveAvatar) and run php artisan optimize:clear.',
                 'debug' => $heyGenService->apiKeyDebugMeta(),
             ], 422);
         }
