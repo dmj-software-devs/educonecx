@@ -80,6 +80,8 @@ class EduconecxAcademyController extends Controller
                 'avatar_id' => data_get($embed, 'resolved.avatar_id'),
                 'voice_id' => data_get($embed, 'resolved.voice_id'),
                 'context_id' => data_get($embed, 'resolved.context_id'),
+                'endpoint_url' => $embed['endpoint_url'],
+                'endpoint_status' => $embed['status'],
             ]);
         } catch (\Throwable $exception) {
             return response()->json([
