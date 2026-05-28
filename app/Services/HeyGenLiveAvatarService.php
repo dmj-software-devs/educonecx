@@ -12,16 +12,14 @@ class HeyGenLiveAvatarService
 {
     public function getMissingConfigurationKeys(): array
     {
-        $required = ['api_key'];
-        $missing = [];
+        $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
+        $heygenKey = trim((string) config('services.heygen.api_key'));
 
-        foreach ($required as $key) {
-            if (blank(config("services.heygen.{$key}"))) {
-                $missing[] = $key;
-            }
+        if ($liveAvatarKey === '' && $heygenKey === '') {
+            return ['api_key'];
         }
 
-        return $missing;
+        return [];
     }
 
     public function resolveAvatarConfig(AcademyScenario $scenario, ?User $user = null): array
@@ -104,19 +102,44 @@ class HeyGenLiveAvatarService
     public function generateSessionToken(): array
     {
         $url = 'https://api.liveavatar.com/v1/sessions/token';
+        $apiKey = $this->apiKey();
 
-        $response = Http::acceptJson()
+        $primaryResponse = Http::acceptJson()
             ->withHeaders([
-                'X-Api-Key' => $this->apiKey(),
+                'X-Api-Key' => $apiKey,
                 'Content-Type' => 'application/json',
             ])
             ->post($url, []);
 
         Log::debug('LiveAvatar token endpoint response', [
             'endpoint_url' => $url,
-            'status' => $response->status(),
-            'body' => $response->json() ?? $response->body(),
+            'auth_strategy' => 'X-Api-Key',
+            'status' => $primaryResponse->status(),
+            'body' => $primaryResponse->json() ?? $primaryResponse->body(),
         ]);
+
+        $response = $primaryResponse;
+
+        if (in_array($primaryResponse->status(), [401, 403], true)) {
+            $secondaryResponse = Http::acceptJson()
+                ->withHeaders([
+                    'X-Api-Key' => $apiKey,
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                ])
+                ->post($url, []);
+
+            Log::debug('LiveAvatar token endpoint response', [
+                'endpoint_url' => $url,
+                'auth_strategy' => 'X-Api-Key + Bearer',
+                'status' => $secondaryResponse->status(),
+                'body' => $secondaryResponse->json() ?? $secondaryResponse->body(),
+            ]);
+
+            if ($secondaryResponse->successful()) {
+                $response = $secondaryResponse;
+            }
+        }
 
         if ($response->failed()) {
             $message = $this->extractProviderError($response);

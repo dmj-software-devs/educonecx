@@ -53,6 +53,8 @@ class EduconecxAcademyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage(),
+                'endpoint_url' => 'https://api.liveavatar.com/v1/sessions/token',
+                'debug' => $heyGenService->apiKeyDebugMeta(),
             ], 422);
         }
     }
