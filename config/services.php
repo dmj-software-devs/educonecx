@@ -46,6 +46,7 @@ return [
 
     'heygen' => [
         'api_key' => env('HEYGEN_API_KEY'),
+        'liveavatar_api_key' => env('LIVEAVATAR_API_KEY'),
         'base_url' => env('HEYGEN_BASE_URL', 'https://api.heygen.com'),
         'streaming_token_endpoint' => env('HEYGEN_STREAMING_TOKEN_ENDPOINT', '/v1/streaming.create_token'),
         'streaming_start_endpoint' => env('HEYGEN_STREAMING_START_ENDPOINT', '/v1/streaming.start'),

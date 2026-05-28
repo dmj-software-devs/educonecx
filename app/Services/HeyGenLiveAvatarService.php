@@ -228,6 +228,15 @@ class HeyGenLiveAvatarService
 
     protected function apiKey(): string
     {
+        $baseUrl = rtrim((string) config('services.heygen.base_url'), '/');
+
+        if (str_contains($baseUrl, 'api.liveavatar.com')) {
+            $liveAvatarKey = trim((string) config('services.heygen.liveavatar_api_key'));
+            if ($liveAvatarKey !== '') {
+                return $liveAvatarKey;
+            }
+        }
+
         $configured = trim((string) config('services.heygen.api_key'));
         if ($configured !== '') {
             return $configured;

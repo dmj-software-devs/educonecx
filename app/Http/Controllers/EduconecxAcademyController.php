@@ -72,7 +72,7 @@ class EduconecxAcademyController extends Controller
             }
 
             if (str_contains(strtolower($message), 'invalid api key')) {
-                $message .= ' Please verify the key in .env, then run php artisan config:clear and php artisan cache:clear. Also confirm the key works with GET https://api.heygen.com/v1/user/me using X-Api-Key.';
+                $message .= ' Please verify the key in .env, then run php artisan config:clear and php artisan cache:clear. Also confirm the key works with GET https://api.heygen.com/v1/user/me using X-Api-Key. If HEYGEN_BASE_URL uses api.liveavatar.com, set LIVEAVATAR_API_KEY in .env (LiveAvatar key is separate from HeyGen key).';
             }
 
             return response()->json([
