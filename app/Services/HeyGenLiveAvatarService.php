@@ -104,35 +104,39 @@ class HeyGenLiveAvatarService
         $url = 'https://api.liveavatar.com/v1/sessions/token';
         $apiKey = $this->apiKey();
 
-        $primaryResponse = Http::acceptJson()
-            ->withHeaders([
-                'X-Api-Key' => $apiKey,
+        $tokenPayload = ['mode' => 'FULL'];
+
+        $primaryResponse = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+                'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])
-            ->post($url, []);
+            ->post($url, $tokenPayload);
 
         Log::debug('LiveAvatar token endpoint response', [
             'endpoint_url' => $url,
             'auth_strategy' => 'X-Api-Key',
             'status' => $primaryResponse->status(),
+            'request_payload' => $tokenPayload,
             'body' => $primaryResponse->json() ?? $primaryResponse->body(),
         ]);
 
         $response = $primaryResponse;
 
         if (in_array($primaryResponse->status(), [401, 403], true)) {
-            $secondaryResponse = Http::acceptJson()
-                ->withHeaders([
-                    'X-Api-Key' => $apiKey,
+            $secondaryResponse = Http::withHeaders([
+                    'X-API-KEY' => $apiKey,
                     'Authorization' => 'Bearer ' . $apiKey,
+                    'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
                 ])
-                ->post($url, []);
+                ->post($url, $tokenPayload);
 
             Log::debug('LiveAvatar token endpoint response', [
                 'endpoint_url' => $url,
                 'auth_strategy' => 'X-Api-Key + Bearer',
                 'status' => $secondaryResponse->status(),
+                'request_payload' => $tokenPayload,
                 'body' => $secondaryResponse->json() ?? $secondaryResponse->body(),
             ]);
 
