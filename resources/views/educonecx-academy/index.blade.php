@@ -66,13 +66,12 @@
                     </div>
                 @endif
 
-                <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none">
+                <div id="avatarSessionArea" class="card shadow-sm border-0 mt-4 d-none" style="display:none;">
                     <div class="card-body">
                         <h4 class="card-title">Live Avatar Session</h4>
                         <p class="text-muted" id="avatarSessionStatus">Initializing...</p>
-                        <div id="avatarMount" class="border rounded p-0 overflow-hidden" style="min-height:520px; background:#000;">
-                            {{-- TODO(LiveAvatar SDK): Replace this placeholder with official LiveAvatar Web SDK renderer mount call. --}}
-                        </div>
+                        <div id="avatarMount" class="border rounded p-0 overflow-hidden" style="width:100%; min-height:560px; background:#000;"></div>
+                        <div id="liveAvatarDebug" class="small text-muted mt-2"></div>
                     </div>
                 </div>
 
@@ -165,6 +164,7 @@
             return;
         }
 
+        statusMessage.classList.remove('text-danger');
         statusMessage.textContent = 'Creating LiveAvatar embed...';
         startBtn.disabled = true;
 
@@ -194,32 +194,86 @@
             }
 
             academySessionId = null;
-            avatarSessionArea.classList.remove('d-none');
 
-            statusMessage.textContent = 'LiveAvatar embed loaded successfully.';
-            avatarSessionStatus.textContent = 'Please allow microphone access when prompted.';
-
-            updateEmbedState({ token: false, sdk: false, mount: false, mic: false });
+            const avatarSessionArea = document.getElementById('avatarSessionArea');
+            const avatarMount = document.getElementById('avatarMount');
 
             if (!data.embed_url) {
-                throw new Error('LiveAvatar embed URL was not returned.');
+                throw new Error('LiveAvatar embed URL missing from response.');
             }
 
-            console.log('Mounting LiveAvatar iframe:', data.embed_url);
-            avatarMount.innerHTML = `
-    <iframe
-        src="${data.embed_url}"
-        allow="microphone; camera; autoplay; fullscreen"
-        title="LiveAvatar Embed"
-        style="width:100%; min-height:520px; border:0; border-radius:8px; background:#000;"
-    ></iframe>
-`;
-            avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            avatarSessionArea.classList.remove('d-none');
+            avatarSessionArea.style.display = 'block';
+            avatarSessionArea.style.visibility = 'visible';
+            avatarSessionArea.style.opacity = '1';
 
-            avatarSessionStatus.textContent = 'LiveAvatar embed mounted ✅';
+            avatarMount.classList.remove('d-none');
+            avatarMount.style.display = 'block';
+            avatarMount.style.visibility = 'visible';
+            avatarMount.style.opacity = '1';
+            avatarMount.style.width = '100%';
+            avatarMount.style.minHeight = '560px';
+            avatarMount.style.background = '#000';
+            avatarMount.style.padding = '0';
+            avatarMount.style.overflow = 'hidden';
+
+            avatarMount.innerHTML = '';
+
+            const iframe = document.createElement('iframe');
+            iframe.src = data.embed_url;
+            iframe.title = 'LiveAvatar Embed';
+            iframe.allow = 'microphone; camera; autoplay; fullscreen; clipboard-read; clipboard-write';
+            iframe.allowFullscreen = true;
+            iframe.style.width = '100%';
+            iframe.style.height = '560px';
+            iframe.style.minHeight = '560px';
+            iframe.style.border = '0';
+            iframe.style.display = 'block';
+            iframe.style.background = '#000';
+
+            iframe.onload = function () {
+                console.log('LiveAvatar iframe loaded successfully:', data.embed_url);
+                avatarSessionStatus.textContent = 'LiveAvatar loaded. Please allow microphone access.';
+            };
+
+            iframe.onerror = function () {
+                console.error('LiveAvatar iframe failed to load:', data.embed_url);
+                avatarSessionStatus.textContent = 'LiveAvatar iframe failed to load. Use the fallback link below.';
+            };
+
+            avatarMount.appendChild(iframe);
+
+            const fallback = document.createElement('div');
+            fallback.className = 'p-3 bg-light border-top';
+            fallback.innerHTML = `
+                <p class="mb-2">If the avatar does not appear, open it directly:</p>
+                <a href="${data.embed_url}" target="_blank" rel="noopener" class="btn btn-primary">
+                    Open LiveAvatar Session
+                </a>
+            `;
+            avatarMount.appendChild(fallback);
+
+            statusMessage.textContent = 'LiveAvatar embed created successfully.';
+            avatarSessionStatus.textContent = 'Loading LiveAvatar iframe...';
+
+            document.getElementById('liveAvatarDebug').innerHTML = `
+                <strong>Embed URL:</strong> ${data.embed_url}<br>
+                <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
+                <strong>Context ID:</strong> ${data.context_id || '-'}
+            `;
+
+            console.log('LiveAvatar embed response:', data);
+            console.log('avatarSessionArea display:', window.getComputedStyle(avatarSessionArea).display);
+            console.log('avatarMount display:', window.getComputedStyle(avatarMount).display);
+            console.log('iframe src:', iframe.src);
+
+            setTimeout(() => {
+                avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
         } catch (error) {
             console.error('LiveAvatar embed error:', error);
             statusMessage.textContent = error.message || 'Unable to load LiveAvatar.';
+            statusMessage.classList.add('text-danger');
         } finally {
             startBtn.disabled = false;
         }
