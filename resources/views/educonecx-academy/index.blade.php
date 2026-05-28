@@ -70,7 +70,7 @@
                     <div class="card-body">
                         <h4 class="card-title">Live Avatar Session</h4>
                         <p class="text-muted" id="avatarSessionStatus">Initializing...</p>
-                        <div id="avatarMount" class="border rounded p-3" style="min-height: 280px; background:#f8f9fa;">
+                        <div id="avatarMount" class="border rounded p-0 overflow-hidden" style="min-height:520px; background:#000;">
                             {{-- TODO(LiveAvatar SDK): Replace this placeholder with official LiveAvatar Web SDK renderer mount call. --}}
                         </div>
                     </div>
@@ -158,16 +158,6 @@
 
 
 
-    const updateEmbedState = ({ token = false, sdk = false, mount = false, mic = false }) => {
-        avatarMount.innerHTML = `
-            <div class="small text-muted">
-                <p class="mb-1"><strong>Token generated:</strong> ${token ? '✅' : '—'}</p>
-                <p class="mb-1"><strong>SDK initialized:</strong> ${sdk ? '✅' : '—'}</p>
-                <p class="mb-1"><strong>Avatar mounted:</strong> ${mount ? '✅' : '⏳'}</p>
-                <p class="mb-0"><strong>Microphone connected:</strong> ${mic ? '✅' : '⏳ (handled inside embed)'}</p>
-            </div>
-        `;
-    };
 
     startBtn.addEventListener('click', async function () {
         if (!selectedScenario) {
@@ -194,31 +184,42 @@
 
             try {
                 data = responseText ? JSON.parse(responseText) : {};
+                console.log('LiveAvatar embed response:', data);
             } catch (e) {
                 throw new Error('Server returned an unexpected response. Please refresh and try again.');
             }
 
             if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Unable to generate LiveAvatar token.');
+                throw new Error(data.message || 'Unable to load LiveAvatar.');
             }
 
             academySessionId = null;
             avatarSessionArea.classList.remove('d-none');
 
-            statusMessage.textContent = 'LiveAvatar embed created successfully.';
-            avatarSessionStatus.textContent = 'Embedding avatar session...';
+            statusMessage.textContent = 'LiveAvatar embed loaded successfully.';
+            avatarSessionStatus.textContent = 'Please allow microphone access when prompted.';
 
             updateEmbedState({ token: false, sdk: false, mount: false, mic: false });
 
             if (!data.embed_url) {
-                throw new Error('LiveAvatar embed URL missing from backend response.');
+                throw new Error('LiveAvatar embed URL was not returned.');
             }
 
-            avatarMount.innerHTML = `<iframe src="${data.embed_url}" allow="microphone; camera; autoplay" style="width:100%; aspect-ratio:16/9; border:0;"></iframe>`;
+            console.log('Mounting LiveAvatar iframe:', data.embed_url);
+            avatarMount.innerHTML = `
+    <iframe
+        src="${data.embed_url}"
+        allow="microphone; camera; autoplay; fullscreen"
+        title="LiveAvatar Embed"
+        style="width:100%; min-height:520px; border:0; border-radius:8px; background:#000;"
+    ></iframe>
+`;
+            avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             avatarSessionStatus.textContent = 'LiveAvatar embed mounted ✅';
         } catch (error) {
-            statusMessage.textContent = error.message || 'Unable to generate LiveAvatar token.';
+            console.error('LiveAvatar embed error:', error);
+            statusMessage.textContent = error.message || 'Unable to load LiveAvatar.';
         } finally {
             startBtn.disabled = false;
         }
