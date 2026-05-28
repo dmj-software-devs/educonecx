@@ -39,7 +39,7 @@
 <section class="py-5 academy-rect">
     <div class="container">
         <div class="row g-4">
-            <div class="col-lg-5">
+            <div class="col-lg-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <h3 class="section-title mb-3">Choose Practice Scenario</h3>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7">
+            <div class="col-lg-8">
                 <div class="card shadow-sm border-0 mb-4">
                     <div class="card-body" id="scenarioPreview">
                         <h4 class="card-title">Select a scenario to preview</h4>
@@ -66,29 +66,6 @@
                     </div>
                 @endif
 
-                <div id="avatarSessionArea" class="academy-liveavatar-section mt-4 d-none">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <h4 class="card-title mb-1">Live Avatar Session</h4>
-                                    <p class="text-muted mb-0" id="avatarSessionStatus">Initializing...</p>
-                                </div>
-                                <a id="openLiveAvatarLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-primary d-none">
-                                    Open in New Tab
-                                </a>
-                            </div>
-
-                            <div id="avatarMount" class="academy-liveavatar-frame-wrap">
-                                <div class="academy-liveavatar-placeholder">
-                                    LiveAvatar will appear here.
-                                </div>
-                            </div>
-
-                            <div id="liveAvatarDebug" class="small text-muted mt-2"></div>
-                        </div>
-                    </div>
-                </div>
 
                 <div id="feedbackArea" class="card shadow-sm border-0 mt-4 d-none">
                     <div class="card-body">
@@ -96,6 +73,28 @@
                         <p class="mb-0" id="feedbackText">Feedback and score will appear here after session completion.</p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="avatarSessionArea" class="academy-liveavatar-section mt-4 d-none">
+            <div class="academy-liveavatar-card">
+                <div class="academy-liveavatar-header">
+                    <div>
+                        <h4 class="academy-liveavatar-title">Live Avatar Session</h4>
+                        <p class="academy-liveavatar-status" id="avatarSessionStatus">Initializing...</p>
+                    </div>
+                    <a id="openLiveAvatarLink" href="#" target="_blank" rel="noopener" class="btn btn-outline-primary d-none">
+                        Open in New Tab
+                    </a>
+                </div>
+
+                <div id="avatarMount" class="academy-liveavatar-frame-wrap">
+                    <div class="academy-liveavatar-placeholder">
+                        LiveAvatar will appear here.
+                    </div>
+                </div>
+
+                <div id="liveAvatarDebug" class="academy-liveavatar-debug"></div>
             </div>
         </div>
     </div>
@@ -221,9 +220,6 @@
 
             avatarSessionArea.classList.remove('d-none');
 
-            openLiveAvatarLink.href = data.embed_url;
-            openLiveAvatarLink.classList.remove('d-none');
-
             avatarMount.innerHTML = `
     <iframe
         src="${data.embed_url}"
@@ -234,18 +230,22 @@
     ></iframe>
 `;
 
+            openLiveAvatarLink.href = data.embed_url;
+            openLiveAvatarLink.classList.remove('d-none');
+
             statusMessage.textContent = 'LiveAvatar embed created successfully.';
-            avatarSessionStatus.textContent = 'LiveAvatar loaded. Please allow microphone access.';
+            avatarSessionStatus.textContent = 'LiveAvatar loaded. Click Chat now and allow microphone access.';
 
             liveAvatarDebug.innerHTML = `
     <strong>Embed URL:</strong> <a href="${data.embed_url}" target="_blank" rel="noopener">${data.embed_url}</a><br>
     <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
+    <strong>Voice ID:</strong> ${data.voice_id || '-'}<br>
     <strong>Context ID:</strong> ${data.context_id || '-'}<br>
-    <strong>Note:</strong> If the embed opens but says Something went wrong, check LiveAvatar dashboard avatar/context/voice setup.
+    <strong>Note:</strong> If Chat now fails, check LiveAvatar avatar/context/voice compatibility and billing.
 `;
 
             setTimeout(() => {
-                avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }, 300);
 
             console.log('LiveAvatar iframe inserted:', data.embed_url);
@@ -275,43 +275,90 @@
 </script>
 <style>
     .academy-liveavatar-section {
-        display: block;
         width: 100%;
-        max-width: 100%;
-        clear: both;
+        margin-top: 32px;
+        margin-bottom: 48px;
         position: relative;
-        z-index: 10;
-        margin-bottom: 40px;
+        z-index: 2;
+    }
+
+    .academy-liveavatar-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .academy-liveavatar-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .academy-liveavatar-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .academy-liveavatar-status {
+        margin: 4px 0 0;
+        color: #6b7280;
+        font-size: 14px;
     }
 
     .academy-liveavatar-frame-wrap {
         width: 100%;
-        height: 640px;
-        min-height: 640px;
+        height: 680px;
+        min-height: 680px;
         background: #000;
-        border: 1px solid #ddd;
-        border-radius: 8px;
         overflow: hidden;
-        display: block;
-        position: relative;
     }
 
     .academy-liveavatar-frame-wrap iframe {
         width: 100% !important;
-        height: 640px !important;
-        min-height: 640px !important;
-        display: block !important;
+        height: 680px !important;
         border: 0 !important;
+        display: block !important;
         background: #000;
+    }
+
+    .academy-liveavatar-debug {
+        padding: 12px 20px;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        font-size: 13px;
+        color: #6b7280;
+        word-break: break-all;
     }
 
     .academy-liveavatar-placeholder {
         color: #fff;
-        min-height: 640px;
+        min-height: 680px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: #111;
+    }
+
+    @media (max-width: 768px) {
+        .academy-liveavatar-frame-wrap {
+            height: 520px;
+            min-height: 520px;
+        }
+
+        .academy-liveavatar-frame-wrap iframe {
+            height: 520px !important;
+        }
+
+        .academy-liveavatar-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
     }
 </style>
 
