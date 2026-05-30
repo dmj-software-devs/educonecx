@@ -21,6 +21,7 @@ class AcademySession extends Model
         'score',
         'feedback',
         'transcript',
+        'audio_path',
         'grammar_score',
         'fluency_score',
         'vocabulary_score',

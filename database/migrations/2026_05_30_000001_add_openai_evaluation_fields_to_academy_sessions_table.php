@@ -12,6 +12,10 @@ return new class extends Migration {
                 $table->longText('transcript')->nullable()->after('feedback');
             }
 
+            if (! Schema::hasColumn('academy_sessions', 'audio_path')) {
+                $table->string('audio_path')->nullable()->after('transcript');
+            }
+
             if (! Schema::hasColumn('academy_sessions', 'grammar_score')) {
                 $table->decimal('grammar_score', 5, 2)->nullable()->after('transcript');
             }
@@ -58,6 +62,7 @@ return new class extends Migration {
     {
         Schema::table('academy_sessions', function (Blueprint $table) {
             $columns = [
+                'audio_path',
                 'grammar_score',
                 'fluency_score',
                 'vocabulary_score',

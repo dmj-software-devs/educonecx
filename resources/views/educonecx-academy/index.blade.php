@@ -102,20 +102,28 @@
             <div class="academy-evaluation-card">
                 <div class="academy-evaluation-header">
                     <div>
-                        <h4 class="academy-liveavatar-title">Evaluate My Practice</h4>
-                        <p class="academy-liveavatar-status mb-0">Paste or write what you said during the LiveAvatar session to get post-session AI feedback.</p>
+                        <h4 class="academy-liveavatar-title">Evaluate My Speaking</h4>
+                        <p class="academy-liveavatar-status mb-0">Record your voice for pronunciation evaluation after or during your LiveAvatar practice.</p>
                     </div>
                 </div>
                 <div class="academy-evaluation-body">
                     <div class="alert alert-info mb-3">
-                        HeyGen/LiveAvatar remains the live avatar, voice, real-time conversation, and roleplay system. OpenAI is used only after your practice for written evaluation and progress tracking.
+                        HeyGen/LiveAvatar remains the live avatar, voice, real-time conversation, and roleplay system. OpenAI is used only after your recording for transcription, evaluation, scoring, and progress tracking.
                     </div>
                     {{-- TODO: If LiveAvatar provides native scoring/evaluation APIs, replace or reduce OpenAI evaluation to avoid duplicate cost. --}}
-                    <label for="practiceTranscript" class="form-label fw-semibold">Transcript or manual notes</label>
-                    <textarea id="practiceTranscript" class="form-control" rows="6" placeholder="After your LiveAvatar practice, type or paste what you said here..."></textarea>
+                    <div class="academy-recording-controls">
+                        <button type="button" id="startRecordingBtn" class="btn btn-primary" disabled>Start Recording</button>
+                        <button type="button" id="stopRecordingBtn" class="btn btn-outline-danger" disabled>Stop Recording</button>
+                        <button type="button" id="evaluateSpeakingBtn" class="btn btn-success" disabled>Evaluate My Speaking</button>
+                    </div>
+                    <audio id="audioPreview" class="academy-audio-preview mt-3 d-none" controls></audio>
+                    <p id="recordingHelp" class="small text-muted mt-2 mb-0">If your browser blocks simultaneous microphone access, please finish the avatar practice first, then record your answer for evaluation.</p>
+
+                    <label for="practiceTranscript" class="form-label fw-semibold mt-4">Optional: edit transcript before evaluation</label>
+                    <textarea id="practiceTranscript" class="form-control" rows="5" placeholder="Optional fallback: type or paste what you said if you cannot record audio."></textarea>
                     <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
-                        <button type="button" id="evaluatePracticeBtn" class="btn btn-primary" disabled>Get AI Feedback</button>
-                        <span id="evaluationStatus" class="small text-muted">Select a scenario, complete your avatar practice, then add your transcript.</span>
+                        <button type="button" id="evaluatePracticeBtn" class="btn btn-outline-primary" disabled>Evaluate Text Only</button>
+                        <span id="evaluationStatus" class="small text-muted">Select a scenario, then record your voice for pronunciation evaluation.</span>
                     </div>
                     <div id="evaluationResult" class="academy-evaluation-result mt-4 d-none"></div>
                 </div>
@@ -138,6 +146,10 @@
     const avatarMount = document.getElementById('avatarMount');
     const practiceTranscript = document.getElementById('practiceTranscript');
     const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
+    const startRecordingBtn = document.getElementById('startRecordingBtn');
+    const stopRecordingBtn = document.getElementById('stopRecordingBtn');
+    const evaluateSpeakingBtn = document.getElementById('evaluateSpeakingBtn');
+    const audioPreview = document.getElementById('audioPreview');
     const evaluationStatus = document.getElementById('evaluationStatus');
     const evaluationResult = document.getElementById('evaluationResult');
 
@@ -145,14 +157,31 @@
     let academySessionId = null;
     let liveAvatarToken = null;
     let liveAvatarClient = null;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordedBlob = null;
+    let activeStream = null;
+
+    const setEvaluationStatus = (message, className = 'small text-muted') => {
+        evaluationStatus.textContent = message;
+        evaluationStatus.className = className;
+    };
+
+    const updateEvaluationButtons = () => {
+        const hasScenario = Boolean(selectedScenario);
+        startRecordingBtn.disabled = !hasScenario || Boolean(mediaRecorder && mediaRecorder.state === 'recording');
+        stopRecordingBtn.disabled = !(mediaRecorder && mediaRecorder.state === 'recording');
+        evaluateSpeakingBtn.disabled = !hasScenario || !recordedBlob;
+        evaluatePracticeBtn.disabled = !hasScenario;
+    };
 
     const updateScenarioPreview = (scenario) => {
         selectedScenario = scenario;
         startBtn.disabled = !selectedScenario;
-        evaluatePracticeBtn.disabled = !selectedScenario;
+        updateEvaluationButtons();
 
         if (!selectedScenario) {
-            evaluationStatus.textContent = 'Select a scenario, complete your avatar practice, then add your transcript.';
+            setEvaluationStatus('Select a scenario, then record your voice for pronunciation evaluation.');
             scenarioPreview.innerHTML = `
                 <h4 class="card-title">Select a scenario to preview</h4>
                 <p class="text-muted mb-0">Category, level, practice text, and sample questions will appear here.</p>
@@ -160,8 +189,7 @@
             return;
         }
 
-        evaluationStatus.textContent = 'After your LiveAvatar session, paste your transcript here for post-session scoring.';
-        evaluationStatus.className = 'small text-muted';
+        setEvaluationStatus('Ready to record your voice for pronunciation evaluation.');
 
         scenarioPreview.innerHTML = `
             <h4 class="card-title">${selectedScenario.title}</h4>
@@ -201,11 +229,6 @@
         updateScenarioPreview(scenario);
     });
 
-
-
-
-
-
     const escapeHtml = (value) => String(value ?? '')
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -244,17 +267,30 @@
     };
 
     const renderEvaluation = (evaluation) => {
+        if (evaluation.transcript) {
+            practiceTranscript.value = evaluation.transcript;
+        }
+
         evaluationResult.classList.remove('d-none');
         evaluationResult.innerHTML = `
+            ${evaluation.transcript ? `
+                <div class="academy-evaluation-panel mb-3">
+                    <h5>Transcript</h5>
+                    <p class="mb-0">${escapeHtml(evaluation.transcript)}</p>
+                </div>
+            ` : ''}
             <div class="academy-score-grid">
+                ${renderScore('Pronunciation', evaluation.pronunciation_score)}
                 ${renderScore('Grammar', evaluation.grammar_score)}
                 ${renderScore('Fluency', evaluation.fluency_score)}
                 ${renderScore('Vocabulary', evaluation.vocabulary_score)}
-                ${renderScore('Pronunciation', evaluation.pronunciation_score)}
                 ${renderScore('Overall', evaluation.overall_score)}
             </div>
-            ${evaluation.pronunciation_score === null || evaluation.pronunciation_score === undefined
-                ? `<div class="alert alert-warning mt-3 mb-0">${escapeHtml(evaluation.pronunciation_note || 'Pronunciation score requires audio recording or LiveAvatar speech metrics.')}</div>`
+            ${evaluation.pronunciation_feedback
+                ? `<div class="academy-evaluation-panel mt-3"><h5>Pronunciation Feedback</h5><p class="mb-0">${escapeHtml(evaluation.pronunciation_feedback)}</p></div>`
+                : ''}
+            ${evaluation.pronunciation_note
+                ? `<div class="alert alert-warning mt-3 mb-0">${escapeHtml(evaluation.pronunciation_note)}</div>`
                 : ''}
             <div class="academy-evaluation-panel mt-3">
                 <h5>Corrections</h5>
@@ -272,22 +308,125 @@
         `;
     };
 
+    startRecordingBtn.addEventListener('click', async function () {
+        if (!selectedScenario) {
+            setEvaluationStatus('Please select a scenario first.', 'small text-danger');
+            return;
+        }
+
+        if (!navigator.mediaDevices || !window.MediaRecorder) {
+            setEvaluationStatus('Audio recording is not supported in this browser.', 'small text-danger');
+            return;
+        }
+
+        try {
+            activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            audioChunks = [];
+            recordedBlob = null;
+            audioPreview.classList.add('d-none');
+            audioPreview.removeAttribute('src');
+
+            const options = MediaRecorder.isTypeSupported('audio/webm') ? { mimeType: 'audio/webm' } : undefined;
+            mediaRecorder = new MediaRecorder(activeStream, options);
+
+            mediaRecorder.addEventListener('dataavailable', (event) => {
+                if (event.data && event.data.size > 0) {
+                    audioChunks.push(event.data);
+                }
+            });
+
+            mediaRecorder.addEventListener('stop', () => {
+                recordedBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+                audioPreview.src = URL.createObjectURL(recordedBlob);
+                audioPreview.classList.remove('d-none');
+                activeStream.getTracks().forEach(track => track.stop());
+                activeStream = null;
+                setEvaluationStatus('Recording stopped', 'small text-success');
+                updateEvaluationButtons();
+            });
+
+            mediaRecorder.start();
+            setEvaluationStatus('Recording...', 'small text-danger');
+            updateEvaluationButtons();
+        } catch (error) {
+            console.error('Audio recording error:', error);
+            setEvaluationStatus('Please finish the avatar practice first, then record your answer for evaluation.', 'small text-danger');
+            if (activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+                activeStream = null;
+            }
+            updateEvaluationButtons();
+        }
+    });
+
+    stopRecordingBtn.addEventListener('click', function () {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+        }
+    });
+
+    evaluateSpeakingBtn.addEventListener('click', async function () {
+        if (!selectedScenario) {
+            setEvaluationStatus('Please select a scenario first.', 'small text-danger');
+            return;
+        }
+
+        if (!recordedBlob) {
+            setEvaluationStatus('Please record your voice before requesting pronunciation evaluation.', 'small text-danger');
+            return;
+        }
+
+        setEvaluationStatus('Uploading audio...', 'small text-muted');
+        evaluateSpeakingBtn.disabled = true;
+        startRecordingBtn.disabled = true;
+
+        try {
+            const formData = new FormData();
+            formData.append('audio', recordedBlob, 'practice.webm');
+            formData.append('scenario_slug', selectedScenario.slug);
+            formData.append('academy_session_id', academySessionId || '');
+
+            setEvaluationStatus('Evaluating with OpenAI...', 'small text-muted');
+
+            const response = await fetch("{{ route('educonecx.academy.session.evaluate.audio') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                const validationMessage = data.errors ? Object.values(data.errors).flat().join(' ') : null;
+                throw new Error(validationMessage || data.message || 'Unable to evaluate this recording right now.');
+            }
+
+            renderEvaluation(data.evaluation);
+            setEvaluationStatus('Evaluation complete', 'small text-success');
+        } catch (error) {
+            console.error('OpenAI audio evaluation error:', error);
+            setEvaluationStatus(error.message || 'Unable to evaluate this recording right now.', 'small text-danger');
+        } finally {
+            updateEvaluationButtons();
+        }
+    });
+
     evaluatePracticeBtn.addEventListener('click', async function () {
         if (!selectedScenario) {
-            evaluationStatus.textContent = 'Please select a scenario first.';
-            evaluationStatus.className = 'small text-danger';
+            setEvaluationStatus('Please select a scenario first.', 'small text-danger');
             return;
         }
 
         const transcript = practiceTranscript.value.trim();
         if (transcript.length < 10) {
-            evaluationStatus.textContent = 'Please enter at least 10 characters from your practice.';
-            evaluationStatus.className = 'small text-danger';
+            setEvaluationStatus('Please enter at least 10 characters from your practice.', 'small text-danger');
             return;
         }
 
-        evaluationStatus.textContent = 'Requesting AI feedback...';
-        evaluationStatus.className = 'small text-muted';
+        setEvaluationStatus('Evaluating with OpenAI...', 'small text-muted');
         evaluatePracticeBtn.disabled = true;
 
         try {
@@ -313,14 +452,12 @@
             }
 
             renderEvaluation(data.evaluation);
-            evaluationStatus.textContent = 'AI feedback saved to your session progress.';
-            evaluationStatus.className = 'small text-success';
+            setEvaluationStatus('Evaluation complete', 'small text-success');
         } catch (error) {
-            console.error('OpenAI evaluation error:', error);
-            evaluationStatus.textContent = error.message || 'Unable to get AI feedback right now.';
-            evaluationStatus.className = 'small text-danger';
+            console.error('OpenAI text evaluation error:', error);
+            setEvaluationStatus(error.message || 'Unable to get AI feedback right now.', 'small text-danger');
         } finally {
-            evaluatePracticeBtn.disabled = !selectedScenario;
+            updateEvaluationButtons();
         }
     });
 
@@ -361,12 +498,6 @@
 
             academySessionId = null;
 
-            const avatarSessionArea = document.getElementById('avatarSessionArea');
-            const avatarMount = document.getElementById('avatarMount');
-    const practiceTranscript = document.getElementById('practiceTranscript');
-    const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
-    const evaluationStatus = document.getElementById('evaluationStatus');
-    const evaluationResult = document.getElementById('evaluationResult');
             const openLiveAvatarLink = document.getElementById('openLiveAvatarLink');
             const liveAvatarDebug = document.getElementById('liveAvatarDebug');
 
@@ -522,6 +653,19 @@
 
     .academy-evaluation-header {
         border-bottom: 1px solid #e5e7eb;
+    }
+
+
+    .academy-recording-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .academy-audio-preview {
+        width: 100%;
+        display: block;
     }
 
     .academy-score-grid {

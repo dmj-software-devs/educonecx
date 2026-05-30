@@ -9,6 +9,8 @@ use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class EduconecxAcademyController extends Controller
@@ -104,26 +106,7 @@ class EduconecxAcademyController extends Controller
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
         ]);
 
-        $session = null;
-
-        if (! empty($validated['academy_session_id'])) {
-            $session = AcademySession::with(['scenario.category'])->findOrFail($validated['academy_session_id']);
-        } elseif (! empty($validated['scenario_slug'])) {
-            $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
-            $session = AcademySession::create([
-                'user_id' => auth()->id(),
-                'academy_category_id' => $scenario->academy_category_id,
-                'academy_scenario_id' => $scenario->id,
-                'status' => 'evaluating',
-                'started_at' => now(),
-            ])->load(['scenario.category']);
-        }
-
-        if (! $session) {
-            throw ValidationException::withMessages([
-                'scenario_slug' => 'Please select a scenario before requesting AI feedback.',
-            ]);
-        }
+        $session = $this->resolveEvaluationSession($validated);
 
         $session->update([
             'transcript' => $validated['transcript'],
@@ -139,7 +122,86 @@ class EduconecxAcademyController extends Controller
             ], $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 422 : 500);
         }
 
-        $session->update([
+        $this->saveEvaluationToSession($session, $evaluation);
+
+        return response()->json([
+            'success' => true,
+            'evaluation' => $evaluation,
+        ]);
+    }
+
+    public function evaluateAudioSession(Request $request, OpenAIEvaluationService $service): JsonResponse
+    {
+        $validated = $request->validate([
+            'audio' => ['required', 'file', 'max:20480', 'mimes:webm,mp3,mp4,mpeg,mpga,m4a,wav,ogg'],
+            'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
+            'academy_session_id' => ['nullable', 'integer', 'exists:academy_sessions,id'],
+        ]);
+
+        $session = $this->resolveEvaluationSession($validated);
+        $audioPath = $request->file('audio')->store('academy-audio');
+        $absoluteAudioPath = Storage::path($audioPath);
+        $shouldKeepAudio = Schema::hasColumn('academy_sessions', 'audio_path');
+
+        $session->update(array_filter([
+            'audio_path' => $shouldKeepAudio ? $audioPath : null,
+            'status' => 'evaluating',
+        ], fn($value) => $value !== null));
+
+        try {
+            $evaluation = $service->evaluateAudioSession($session, $absoluteAudioPath);
+        } catch (\Throwable $exception) {
+            if (! $shouldKeepAudio) {
+                Storage::delete($audioPath);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 422 : 500);
+        }
+
+        $this->saveEvaluationToSession($session, $evaluation, [
+            'transcript' => $evaluation['transcript'] ?? null,
+            'audio_path' => $shouldKeepAudio ? $audioPath : null,
+        ]);
+
+        if (! $shouldKeepAudio) {
+            Storage::delete($audioPath);
+        }
+
+        return response()->json([
+            'success' => true,
+            'evaluation' => $evaluation,
+        ]);
+    }
+
+    private function resolveEvaluationSession(array $validated): AcademySession
+    {
+        if (! empty($validated['academy_session_id'])) {
+            return AcademySession::with(['scenario.category'])->findOrFail($validated['academy_session_id']);
+        }
+
+        if (! empty($validated['scenario_slug'])) {
+            $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
+
+            return AcademySession::create([
+                'user_id' => auth()->id(),
+                'academy_category_id' => $scenario->academy_category_id,
+                'academy_scenario_id' => $scenario->id,
+                'status' => 'evaluating',
+                'started_at' => now(),
+            ])->load(['scenario.category']);
+        }
+
+        throw ValidationException::withMessages([
+            'scenario_slug' => 'Please select a scenario before requesting AI feedback.',
+        ]);
+    }
+
+    private function saveEvaluationToSession(AcademySession $session, array $evaluation, array $extra = []): void
+    {
+        $session->update(array_merge([
             'grammar_score' => $evaluation['grammar_score'] ?? null,
             'fluency_score' => $evaluation['fluency_score'] ?? null,
             'vocabulary_score' => $evaluation['vocabulary_score'] ?? null,
@@ -152,12 +214,7 @@ class EduconecxAcademyController extends Controller
             'ai_evaluation' => $evaluation,
             'evaluated_at' => now(),
             'status' => 'evaluated',
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'evaluation' => $evaluation,
-        ]);
+        ], array_filter($extra, fn($value) => $value !== null)));
     }
 
     public function endSession(Request $request): JsonResponse

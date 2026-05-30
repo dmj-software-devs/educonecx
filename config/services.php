@@ -47,6 +47,7 @@ return [
     'openai' => [
         'api_key' => env('OPENAI_API_KEY'),
         'evaluation_model' => env('OPENAI_EVALUATION_MODEL', 'gpt-5.4'),
+        'transcription_model' => env('OPENAI_TRANSCRIPTION_MODEL', 'gpt-4o-transcribe'),
     ],
 
     'heygen' => [
