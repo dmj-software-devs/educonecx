@@ -97,6 +97,30 @@
                 <div id="liveAvatarDebug" class="academy-liveavatar-debug"></div>
             </div>
         </div>
+
+        <div id="practiceEvaluationArea" class="academy-evaluation-section mt-4">
+            <div class="academy-evaluation-card">
+                <div class="academy-evaluation-header">
+                    <div>
+                        <h4 class="academy-liveavatar-title">Evaluate My Practice</h4>
+                        <p class="academy-liveavatar-status mb-0">Paste or write what you said during the LiveAvatar session to get post-session AI feedback.</p>
+                    </div>
+                </div>
+                <div class="academy-evaluation-body">
+                    <div class="alert alert-info mb-3">
+                        HeyGen/LiveAvatar remains the live avatar, voice, real-time conversation, and roleplay system. OpenAI is used only after your practice for written evaluation and progress tracking.
+                    </div>
+                    {{-- TODO: If LiveAvatar provides native scoring/evaluation APIs, replace or reduce OpenAI evaluation to avoid duplicate cost. --}}
+                    <label for="practiceTranscript" class="form-label fw-semibold">Transcript or manual notes</label>
+                    <textarea id="practiceTranscript" class="form-control" rows="6" placeholder="After your LiveAvatar practice, type or paste what you said here..."></textarea>
+                    <div class="d-flex align-items-center gap-3 mt-3 flex-wrap">
+                        <button type="button" id="evaluatePracticeBtn" class="btn btn-primary" disabled>Get AI Feedback</button>
+                        <span id="evaluationStatus" class="small text-muted">Select a scenario, complete your avatar practice, then add your transcript.</span>
+                    </div>
+                    <div id="evaluationResult" class="academy-evaluation-result mt-4 d-none"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -112,6 +136,10 @@
     const avatarSessionArea = document.getElementById('avatarSessionArea');
     const avatarSessionStatus = document.getElementById('avatarSessionStatus');
     const avatarMount = document.getElementById('avatarMount');
+    const practiceTranscript = document.getElementById('practiceTranscript');
+    const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
+    const evaluationStatus = document.getElementById('evaluationStatus');
+    const evaluationResult = document.getElementById('evaluationResult');
 
     let selectedScenario = null;
     let academySessionId = null;
@@ -121,14 +149,19 @@
     const updateScenarioPreview = (scenario) => {
         selectedScenario = scenario;
         startBtn.disabled = !selectedScenario;
+        evaluatePracticeBtn.disabled = !selectedScenario;
 
         if (!selectedScenario) {
+            evaluationStatus.textContent = 'Select a scenario, complete your avatar practice, then add your transcript.';
             scenarioPreview.innerHTML = `
                 <h4 class="card-title">Select a scenario to preview</h4>
                 <p class="text-muted mb-0">Category, level, practice text, and sample questions will appear here.</p>
             `;
             return;
         }
+
+        evaluationStatus.textContent = 'After your LiveAvatar session, paste your transcript here for post-session scoring.';
+        evaluationStatus.className = 'small text-muted';
 
         scenarioPreview.innerHTML = `
             <h4 class="card-title">${selectedScenario.title}</h4>
@@ -172,6 +205,125 @@
 
 
 
+
+    const escapeHtml = (value) => String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    const renderScore = (label, value) => `
+        <div class="academy-score-pill">
+            <span>${label}</span>
+            <strong>${value === null || value === undefined ? 'N/A' : `${Number(value).toFixed(1)}/10`}</strong>
+        </div>
+    `;
+
+    const renderList = (title, items) => `
+        <div class="academy-evaluation-list">
+            <h5>${title}</h5>
+            ${(items || []).length
+                ? `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`
+                : '<p class="text-muted mb-0">No items provided.</p>'}
+        </div>
+    `;
+
+    const renderCorrections = (corrections) => {
+        if (!corrections || !corrections.length) {
+            return '<p class="text-muted mb-0">No grammar corrections needed. Great work!</p>';
+        }
+
+        return `<div class="academy-corrections">${corrections.map(item => `
+            <div class="academy-correction-item">
+                <p class="mb-1"><strong>Original:</strong> ${escapeHtml(item.original)}</p>
+                <p class="mb-1"><strong>Corrected:</strong> ${escapeHtml(item.corrected)}</p>
+                <p class="mb-0 text-muted">${escapeHtml(item.explanation)}</p>
+            </div>
+        `).join('')}</div>`;
+    };
+
+    const renderEvaluation = (evaluation) => {
+        evaluationResult.classList.remove('d-none');
+        evaluationResult.innerHTML = `
+            <div class="academy-score-grid">
+                ${renderScore('Grammar', evaluation.grammar_score)}
+                ${renderScore('Fluency', evaluation.fluency_score)}
+                ${renderScore('Vocabulary', evaluation.vocabulary_score)}
+                ${renderScore('Pronunciation', evaluation.pronunciation_score)}
+                ${renderScore('Overall', evaluation.overall_score)}
+            </div>
+            ${evaluation.pronunciation_score === null || evaluation.pronunciation_score === undefined
+                ? `<div class="alert alert-warning mt-3 mb-0">${escapeHtml(evaluation.pronunciation_note || 'Pronunciation score requires audio recording or LiveAvatar speech metrics.')}</div>`
+                : ''}
+            <div class="academy-evaluation-panel mt-3">
+                <h5>Corrections</h5>
+                ${renderCorrections(evaluation.corrections)}
+            </div>
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">${renderList('Strengths', evaluation.strengths)}</div>
+                <div class="col-md-6">${renderList('Weaknesses', evaluation.weaknesses)}</div>
+            </div>
+            <div class="academy-evaluation-panel mt-3">
+                <h5>Feedback</h5>
+                <p class="mb-0">${escapeHtml(evaluation.feedback)}</p>
+            </div>
+            <div class="mt-3">${renderList('Next Steps', evaluation.next_steps)}</div>
+        `;
+    };
+
+    evaluatePracticeBtn.addEventListener('click', async function () {
+        if (!selectedScenario) {
+            evaluationStatus.textContent = 'Please select a scenario first.';
+            evaluationStatus.className = 'small text-danger';
+            return;
+        }
+
+        const transcript = practiceTranscript.value.trim();
+        if (transcript.length < 10) {
+            evaluationStatus.textContent = 'Please enter at least 10 characters from your practice.';
+            evaluationStatus.className = 'small text-danger';
+            return;
+        }
+
+        evaluationStatus.textContent = 'Requesting AI feedback...';
+        evaluationStatus.className = 'small text-muted';
+        evaluatePracticeBtn.disabled = true;
+
+        try {
+            const response = await fetch("{{ route('educonecx.academy.session.evaluate') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    academy_session_id: academySessionId,
+                    scenario_slug: selectedScenario.slug,
+                    transcript,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                const validationMessage = data.errors ? Object.values(data.errors).flat().join(' ') : null;
+                throw new Error(validationMessage || data.message || 'Unable to get AI feedback right now.');
+            }
+
+            renderEvaluation(data.evaluation);
+            evaluationStatus.textContent = 'AI feedback saved to your session progress.';
+            evaluationStatus.className = 'small text-success';
+        } catch (error) {
+            console.error('OpenAI evaluation error:', error);
+            evaluationStatus.textContent = error.message || 'Unable to get AI feedback right now.';
+            evaluationStatus.className = 'small text-danger';
+        } finally {
+            evaluatePracticeBtn.disabled = !selectedScenario;
+        }
+    });
+
     startBtn.addEventListener('click', async function () {
         if (!selectedScenario) {
             statusMessage.textContent = 'Please select a scenario first.';
@@ -211,6 +363,10 @@
 
             const avatarSessionArea = document.getElementById('avatarSessionArea');
             const avatarMount = document.getElementById('avatarMount');
+    const practiceTranscript = document.getElementById('practiceTranscript');
+    const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
+    const evaluationStatus = document.getElementById('evaluationStatus');
+    const evaluationResult = document.getElementById('evaluationResult');
             const openLiveAvatarLink = document.getElementById('openLiveAvatarLink');
             const liveAvatarDebug = document.getElementById('liveAvatarDebug');
 
@@ -343,6 +499,69 @@
         align-items: center;
         justify-content: center;
         background: #111;
+    }
+
+
+    .academy-evaluation-section {
+        width: 100%;
+        margin-bottom: 48px;
+    }
+
+    .academy-evaluation-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .academy-evaluation-header,
+    .academy-evaluation-body {
+        padding: 20px;
+    }
+
+    .academy-evaluation-header {
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .academy-score-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+    }
+
+    .academy-score-pill,
+    .academy-evaluation-panel,
+    .academy-evaluation-list,
+    .academy-correction-item {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 14px;
+    }
+
+    .academy-score-pill span {
+        display: block;
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .academy-score-pill strong {
+        color: #111827;
+        font-size: 22px;
+    }
+
+    .academy-evaluation-list h5,
+    .academy-evaluation-panel h5 {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .academy-corrections {
+        display: grid;
+        gap: 12px;
     }
 
     @media (max-width: 768px) {

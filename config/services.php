@@ -44,6 +44,11 @@ return [
 
 
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'evaluation_model' => env('OPENAI_EVALUATION_MODEL', 'gpt-5.4'),
+    ],
+
     'heygen' => [
         'api_key' => env('HEYGEN_API_KEY'),
         'liveavatar_api_key' => env('LIVEAVATAR_API_KEY'),
