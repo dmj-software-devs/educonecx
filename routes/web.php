@@ -630,15 +630,10 @@ Route::get('/dev/liveavatar/config-check', function () {
     $baseUrl = rtrim((string) config('services.heygen.base_url', 'https://api.liveavatar.com'), '/');
 
     $embedPayloadPreview = [
-        'mode' => 'FULL',
         'avatar_id' => $avatarId,
+        'context_id' => $contextId,
         'is_sandbox' => false,
-        'avatar_persona' => [
-            'voice_id' => $voiceId,
-            'context_id' => $contextId,
-            'language' => 'en',
-        ],
-        'interactivity_type' => 'CONVERSATIONAL',
+        'orientation' => 'horizontal',
     ];
 
     $headers = [
@@ -789,26 +784,21 @@ Route::post('/dev/liveavatar/test-embed', function () {
     $voiceId = trim((string) config('services.heygen.default_voice_id'));
     $contextId = trim((string) config('services.heygen.default_context_id'));
 
-    if ($avatarId === '' || $voiceId === '' || $contextId === '') {
+    if ($avatarId === '' || $contextId === '') {
         return response()->json([
             'success' => false,
-            'message' => 'Test embed requires HEYGEN_DEFAULT_AVATAR_ID, HEYGEN_DEFAULT_VOICE_ID, and HEYGEN_DEFAULT_CONTEXT_ID.',
+            'message' => 'Test embed requires HEYGEN_DEFAULT_AVATAR_ID and HEYGEN_DEFAULT_CONTEXT_ID.',
             'avatar_id_present' => $avatarId !== '',
-            'voice_id_present' => $voiceId !== '',
             'context_id_present' => $contextId !== '',
+            'voice_id_present' => $voiceId !== '',
         ], 422);
     }
 
     $payload = [
-        'mode' => 'FULL',
         'avatar_id' => $avatarId,
+        'context_id' => $contextId,
         'is_sandbox' => false,
-        'avatar_persona' => [
-            'voice_id' => $voiceId,
-            'context_id' => $contextId,
-            'language' => 'en',
-        ],
-        'interactivity_type' => 'CONVERSATIONAL',
+        'orientation' => 'horizontal',
     ];
 
     $response = Http::withHeaders([
