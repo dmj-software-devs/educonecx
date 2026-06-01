@@ -431,6 +431,99 @@
         letter-spacing: 0.3px;
     }
 
+
+    .academy-history-list {
+        padding: 20px;
+        display: grid;
+        gap: 16px;
+    }
+
+    .academy-history-item {
+        border: 1px solid rgba(251, 198, 12, 0.18);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        background: linear-gradient(145deg, var(--pure-white), rgba(249, 247, 233, 0.45));
+    }
+
+    .academy-history-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+
+    .academy-history-title {
+        margin: 0 0 6px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .academy-history-meta {
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .academy-score-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px;
+        margin: 12px 0;
+    }
+
+    .academy-score-chip {
+        background: var(--ivory);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        border: 1px solid rgba(10, 29, 68, 0.06);
+    }
+
+    .academy-score-chip span {
+        display: block;
+        color: var(--text-muted);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .academy-score-chip strong {
+        color: var(--text-primary);
+        font-size: 1rem;
+    }
+
+    .academy-history-notes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+        color: var(--text-secondary);
+        font-size: 0.86rem;
+    }
+
+    .academy-history-notes h5 {
+        color: var(--text-primary);
+        font-size: 0.82rem;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .academy-status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 10px;
+        border-radius: var(--radius-full);
+        background: rgba(90, 209, 228, 0.18);
+        color: var(--text-primary);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: capitalize;
+    }
+
     /* Content Cards */
     .content-card {
         background: var(--pure-white);
@@ -1304,6 +1397,81 @@
                     <div class="stat-label">{{ App\Helpers\TranslationHelper::trans('dashboard.stat_certificates') }}</div>
                 </div>
             </div>
+        </div>
+
+        <!-- EDUCONECX Academy Practice History -->
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-microphone-alt"></i>
+                    EDUCONECX Academy Practice History
+                </h2>
+                <a href="{{ route('educonecx.academy.index') }}" class="view-link">
+                    Practice now <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            @if(($academySessions ?? collect())->count() > 0)
+                <div class="academy-history-list">
+                    @foreach($academySessions as $academySession)
+                        <div class="academy-history-item">
+                            <div class="academy-history-top">
+                                <div>
+                                    <h3 class="academy-history-title">{{ $academySession->scenario->title ?? 'Academy Practice Session' }}</h3>
+                                    <div class="academy-history-meta">
+                                        <span><i class="fas fa-layer-group"></i> {{ $academySession->category->title ?? 'No category' }}</span>
+                                        <span><i class="far fa-calendar-alt"></i> {{ optional($academySession->created_at)->format('M d, Y g:i A') }}</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start gap-2 flex-wrap">
+                                    <span class="academy-status-badge">{{ $academySession->status ?? 'pending' }}</span>
+                                    <a href="{{ route('dashboard.academy.sessions.show', $academySession) }}" class="empty-btn">
+                                        View Details <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="academy-score-row">
+                                <div class="academy-score-chip"><span>Overall</span><strong>{{ is_null($academySession->overall_score) ? 'N/A' : number_format($academySession->overall_score, 1) . '/10' }}</strong></div>
+                                <div class="academy-score-chip"><span>Pronunciation</span><strong>{{ is_null($academySession->pronunciation_score) ? 'N/A' : number_format($academySession->pronunciation_score, 1) . '/10' }}</strong></div>
+                                <div class="academy-score-chip"><span>Grammar</span><strong>{{ is_null($academySession->grammar_score) ? 'N/A' : number_format($academySession->grammar_score, 1) . '/10' }}</strong></div>
+                                <div class="academy-score-chip"><span>Fluency</span><strong>{{ is_null($academySession->fluency_score) ? 'N/A' : number_format($academySession->fluency_score, 1) . '/10' }}</strong></div>
+                                <div class="academy-score-chip"><span>Vocabulary</span><strong>{{ is_null($academySession->vocabulary_score) ? 'N/A' : number_format($academySession->vocabulary_score, 1) . '/10' }}</strong></div>
+                            </div>
+
+                            <div class="academy-history-notes">
+                                <div>
+                                    <h5>Transcript</h5>
+                                    <p>{{ Str::limit($academySession->transcript ?? 'No transcript saved yet.', 160) }}</p>
+                                </div>
+                                <div>
+                                    <h5>Feedback</h5>
+                                    <p>{{ Str::limit($academySession->feedback ?? 'No feedback saved yet.', 160) }}</p>
+                                </div>
+                                <div>
+                                    <h5>Corrections / Strengths</h5>
+                                    <p>{{ count($academySession->corrections ?? []) }} corrections • {{ count($academySession->strengths ?? []) }} strengths • {{ count($academySession->weaknesses ?? []) }} weaknesses</p>
+                                </div>
+                                <div>
+                                    <h5>Next Steps</h5>
+                                    <p>{{ Str::limit(implode('; ', $academySession->next_steps ?? []), 160) ?: 'No next steps saved yet.' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-microphone-alt"></i>
+                    </div>
+                    <h3 class="empty-title">No Academy practice history yet</h3>
+                    <p class="empty-text">Start an EDUCONECX Academy session, record your voice, and your transcript, scores, feedback, corrections, strengths, weaknesses, and next steps will appear here.</p>
+                    <a href="{{ route('educonecx.academy.index') }}" class="empty-btn">
+                        Start Academy Practice <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            @endif
         </div>
 
         <!-- Recent Courses -->
