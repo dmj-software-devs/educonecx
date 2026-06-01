@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 
 class HeyGenLiveAvatarService
 {
+    private array $lastListingDebug = [];
+
     public function getMissingConfigurationKeys(): array
     {
         $liveAvatarKey = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
@@ -22,7 +24,7 @@ class HeyGenLiveAvatarService
         return [];
     }
 
-    public function resolveAvatarConfig(AcademyScenario $scenario, ?User $user = null): array
+    public function resolveAvatarConfig(?AcademyScenario $scenario = null, ?User $user = null): array
     {
         $userSetting = null;
         if ($user) {
@@ -32,16 +34,15 @@ class HeyGenLiveAvatarService
                 ->first();
         }
 
-        $avatarId = $scenario->heygen_avatar_id
-            ?? $userSetting?->heygen_avatar_id
+        $avatarId = $userSetting?->heygen_avatar_id
+            ?? $scenario?->heygen_avatar_id
             ?? config('services.heygen.default_avatar_id');
 
-        $voiceId = $scenario->heygen_voice_id
-            ?? $userSetting?->heygen_voice_id
+        $voiceId = $userSetting?->heygen_voice_id
+            ?? $scenario?->heygen_voice_id
             ?? config('services.heygen.default_voice_id');
 
-        $contextId = $scenario->heygen_context_id
-            ?? $userSetting?->heygen_context_id
+        $contextId = $userSetting?->heygen_context_id
             ?? config('services.heygen.default_context_id');
 
         return [
@@ -49,17 +50,15 @@ class HeyGenLiveAvatarService
             'voice_id' => $voiceId,
             'context_id' => $contextId,
             'source' => [
-                'avatar_id' => $scenario->heygen_avatar_id ? 'scenario' : ($userSetting?->heygen_avatar_id ? 'user' : (config('services.heygen.default_avatar_id') ? 'env' : 'none')),
-                'voice_id' => $scenario->heygen_voice_id ? 'scenario' : ($userSetting?->heygen_voice_id ? 'user' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
-                'context_id' => $scenario->heygen_context_id ? 'scenario' : ($userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
+                'avatar_id' => $userSetting?->heygen_avatar_id ? 'user' : ($scenario?->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none')),
+                'voice_id' => $userSetting?->heygen_voice_id ? 'user' : ($scenario?->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
+                'context_id' => $userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none'),
             ],
         ];
     }
 
-    public function buildDynamicInstructions(AcademyScenario $scenario, ?User $user = null): string
+    public function buildDynamicInstructions(?AcademyScenario $scenario = null, ?User $user = null): string
     {
-        $resolved = $this->resolveAvatarConfig($scenario, $user);
-
         $userSetting = null;
         if ($user) {
             $userSetting = AcademyUserAvatarSetting::query()
@@ -68,10 +67,15 @@ class HeyGenLiveAvatarService
                 ->first();
         }
 
-        $speakingLevel = $userSetting?->speaking_level ?? $scenario->level ?? 'Beginner';
+        $speakingLevel = $userSetting?->speaking_level ?? $scenario?->level ?? 'Beginner';
         $preferredLanguage = $userSetting?->preferred_language ?? 'English';
         $tutorStyle = $userSetting?->tutor_style ?? 'friendly and encouraging';
-        $sampleQuestions = is_array($scenario->sample_questions) ? implode('; ', $scenario->sample_questions) : 'N/A';
+        $sampleQuestions = is_array($scenario?->sample_questions) ? implode('; ', $scenario->sample_questions) : 'Use the selected LiveAvatar context to ask natural follow-up questions.';
+        $categoryTitle = $scenario?->category?->title ?? 'LiveAvatar English Practice';
+        $scenarioTitle = $scenario?->title ?? ($userSetting?->context_name ?: 'LiveAvatar speaking practice');
+        $scenarioLevel = $scenario?->level ?? $speakingLevel;
+        $scenarioDescription = $scenario?->description ?? 'Practice a natural English conversation using the selected LiveAvatar context.';
+        $practiceText = $scenario?->practice_text ?? 'Use the selected LiveAvatar context to guide a realistic English conversation.';
 
         return "You are an English speaking practice tutor inside EDUCONECX Academy.\n\n"
             . "Learner information:\n"
@@ -79,11 +83,11 @@ class HeyGenLiveAvatarService
             . "- Preferred language: {$preferredLanguage}\n"
             . "- Tutor style: {$tutorStyle}\n\n"
             . "Selected practice:\n"
-            . "- Category: {$scenario->category->title}\n"
-            . "- Scenario: {$scenario->title}\n"
-            . "- Level: " . ($scenario->level ?? 'General') . "\n"
-            . "- Description: " . ($scenario->description ?? 'N/A') . "\n"
-            . "- Practice text: {$scenario->practice_text}\n"
+            . "- Category: {$categoryTitle}\n"
+            . "- Scenario/context: {$scenarioTitle}\n"
+            . "- Level: {$scenarioLevel}\n"
+            . "- Description: {$scenarioDescription}\n"
+            . "- Practice text: {$practiceText}\n"
             . "- Sample questions: {$sampleQuestions}\n\n"
             . "Your behavior:\n"
             . "- greet the learner warmly\n"
@@ -99,7 +103,7 @@ class HeyGenLiveAvatarService
             . "- at the end, provide short feedback and a score out of 10.";
     }
 
-    public function generateSessionToken(AcademyScenario $scenario, ?User $user = null): array
+    public function generateSessionToken(?AcademyScenario $scenario = null, ?User $user = null): array
     {
         $url = 'https://api.liveavatar.com/v1/sessions/token';
         $apiKey = $this->apiKey();
@@ -190,7 +194,7 @@ class HeyGenLiveAvatarService
     }
 
 
-    public function createLiveAvatarEmbed(AcademyScenario $scenario, ?User $user = null): array
+    public function createLiveAvatarEmbed(?AcademyScenario $scenario = null, ?User $user = null): array
     {
         $resolved = $this->resolveAvatarConfig($scenario, $user);
 
@@ -199,7 +203,7 @@ class HeyGenLiveAvatarService
         }
 
         if (empty($resolved['context_id'])) {
-            throw new \RuntimeException('LiveAvatar context_id is missing. Please set HEYGEN_DEFAULT_CONTEXT_ID in .env or scenario/user context.');
+            throw new \RuntimeException('LiveAvatar context_id is missing. Please select a LiveAvatar context from your EDUCONECX Academy dashboard or set HEYGEN_DEFAULT_CONTEXT_ID in .env.');
         }
 
         $url = 'https://api.liveavatar.com/v2/embeddings';
@@ -241,6 +245,286 @@ class HeyGenLiveAvatarService
             'response' => $response->json() ?? [],
             'resolved' => $resolved,
         ];
+    }
+
+
+    public function getLiveAvatarListingDebug(): array
+    {
+        return $this->lastListingDebug;
+    }
+
+    public function listPublicAvatars(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/avatars/public',
+            type: 'avatars',
+            normalizer: fn (array $item) => $this->normalizeAvatarResource($item, 'public')
+        );
+    }
+
+    public function listCustomAvatars(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/avatars',
+            type: 'avatars',
+            normalizer: fn (array $item) => $this->normalizeAvatarResource($item, 'custom')
+        );
+    }
+
+    public function listContexts(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/contexts',
+            type: 'contexts',
+            normalizer: fn (array $item) => $this->normalizeContextResource($item)
+        );
+    }
+
+    public function listVoices(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/voices',
+            type: 'voices',
+            normalizer: fn (array $item) => $this->normalizeVoiceResource($item)
+        );
+    }
+
+    protected function listLiveAvatarResources(string $endpoint, string $type, callable $normalizer): array
+    {
+        $apiKey = $this->listingApiKey();
+
+        if ($apiKey === '') {
+            $this->recordListingDebug($endpoint, $type, null, [], 'Missing LIVEAVATAR_API_KEY.');
+
+            Log::error('LiveAvatar listing skipped because LIVEAVATAR_API_KEY is missing', [
+                'endpoint_url' => $endpoint,
+                'type' => $type,
+            ]);
+
+            return [];
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+                'Accept' => 'application/json',
+            ])->timeout(20)->get($endpoint);
+        } catch (\Throwable $exception) {
+            $this->recordListingDebug($endpoint, $type, null, [], $exception->getMessage());
+
+            Log::error('LiveAvatar listing request failed', [
+                'endpoint_url' => $endpoint,
+                'type' => $type,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return [];
+        }
+
+        $rawJson = $response->json();
+        $rawBody = $rawJson ?? $response->body();
+
+        $this->recordListingDebug($endpoint, $type, $response->status(), $response->headers(), null, $rawBody);
+
+        Log::info('LiveAvatar listing response received', [
+            'endpoint_url' => $endpoint,
+            'type' => $type,
+            'status' => $response->status(),
+            'headers' => $response->headers(),
+            'body' => $rawBody,
+        ]);
+
+        if ($response->failed()) {
+            Log::error('LiveAvatar listing returned an error', [
+                'endpoint_url' => $endpoint,
+                'type' => $type,
+                'status' => $response->status(),
+                'headers' => $response->headers(),
+                'body' => $rawBody,
+                'provider_message' => $this->extractProviderError($response),
+            ]);
+
+            return [];
+        }
+
+        $items = $this->extractLiveAvatarItems(is_array($rawJson) ? $rawJson : [], $type);
+
+        $normalized = collect($items)
+            ->filter(fn ($item) => is_array($item))
+            ->map(fn ($item) => $normalizer($item))
+            ->filter(fn ($item) => filled($item['id'] ?? null))
+            ->unique('id')
+            ->values()
+            ->all();
+
+        $this->lastListingDebug[$endpoint]['count'] = count($normalized);
+        $this->lastListingDebug[$endpoint]['first_raw_item'] = $items[0] ?? null;
+        $this->lastListingDebug[$endpoint]['first_raw_item_keys'] = isset($items[0]) && is_array($items[0]) ? array_keys($items[0]) : [];
+
+        return $normalized;
+    }
+
+    protected function extractLiveAvatarItems(array $response, string $type): array
+    {
+        $candidatePaths = [
+            'data',
+            $type,
+            'items',
+            'results',
+            'records',
+            'data.items',
+            'data.results',
+            'data.records',
+            'data.' . $type,
+            'data.avatars',
+            'data.contexts',
+            'data.voices',
+            'avatars',
+            'contexts',
+            'voices',
+        ];
+
+        foreach ($candidatePaths as $path) {
+            $candidate = data_get($response, $path);
+            if (is_array($candidate) && $this->isListOfArrays($candidate)) {
+                return $candidate;
+            }
+        }
+
+        if ($this->isListOfArrays($response)) {
+            return $response;
+        }
+
+        return $this->firstListOfArrays($response) ?? [];
+    }
+
+    protected function isListOfArrays(array $value): bool
+    {
+        return array_is_list($value) && $value !== [] && collect($value)->every(fn ($item) => is_array($item));
+    }
+
+    protected function firstListOfArrays(array $value): ?array
+    {
+        foreach ($value as $item) {
+            if (is_array($item)) {
+                if ($this->isListOfArrays($item)) {
+                    return $item;
+                }
+
+                $nested = $this->firstListOfArrays($item);
+                if ($nested !== null) {
+                    return $nested;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function recordListingDebug(string $endpoint, string $type, ?int $status, array $headers = [], ?string $error = null, mixed $raw = null): void
+    {
+        $this->lastListingDebug[$endpoint] = [
+            'endpoint_url' => $endpoint,
+            'type' => $type,
+            'status' => $status,
+            'headers' => $headers,
+            'error' => $error,
+            'raw' => $raw,
+            'count' => 0,
+        ];
+    }
+
+    protected function normalizeAvatarResource(array $item, string $type): array
+    {
+        return [
+            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'avatar_id') ?? data_get($item, 'avatarId') ?? ''),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar'),
+            'image_url' => $this->resolveAvatarImageUrl($item),
+            'type' => $type,
+        ];
+    }
+
+    protected function resolveAvatarImageUrl(array $avatar): ?string
+    {
+        $candidates = [
+            data_get($avatar, 'image_url'),
+            data_get($avatar, 'thumbnail_url'),
+            data_get($avatar, 'preview_image_url'),
+            data_get($avatar, 'preview_url'),
+            data_get($avatar, 'avatar_image_url'),
+            data_get($avatar, 'portrait_url'),
+            data_get($avatar, 'photo_url'),
+            data_get($avatar, 'cover_url'),
+            data_get($avatar, 'image'),
+            data_get($avatar, 'thumbnail'),
+            data_get($avatar, 'preview'),
+            data_get($avatar, 'media.url'),
+            data_get($avatar, 'preview_image.url'),
+            data_get($avatar, 'asset.url'),
+        ];
+
+        foreach ($candidates as $candidate) {
+            $url = $this->extractUrlFromValue($candidate);
+
+            if ($url !== null) {
+                return $url;
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractUrlFromValue(mixed $value): ?string
+    {
+        if (is_string($value) && trim($value) !== '') {
+            return trim($value);
+        }
+
+        if (! is_array($value)) {
+            return null;
+        }
+
+        foreach (['url', 'src', 'href'] as $key) {
+            $candidate = data_get($value, $key);
+            if (is_string($candidate) && trim($candidate) !== '') {
+                return trim($candidate);
+            }
+        }
+
+        foreach ($value as $nestedValue) {
+            $candidate = $this->extractUrlFromValue($nestedValue);
+            if ($candidate !== null) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    protected function normalizeContextResource(array $item): array
+    {
+        return [
+            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'context_id') ?? data_get($item, 'contextId') ?? ''),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'context_name') ?? data_get($item, 'title') ?? 'LiveAvatar Context'),
+        ];
+    }
+
+    protected function normalizeVoiceResource(array $item): array
+    {
+        return [
+            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'voice_id') ?? data_get($item, 'voiceId') ?? ''),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'voice_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar Voice'),
+        ];
+    }
+
+    protected function listingApiKey(): string
+    {
+        $configured = $this->normalizeApiKey((string) config('services.heygen.liveavatar_api_key'));
+        if ($configured !== '') {
+            return $configured;
+        }
+
+        return $this->normalizeApiKey((string) env('LIVEAVATAR_API_KEY', ''));
     }
 
     protected function apiKey(): string

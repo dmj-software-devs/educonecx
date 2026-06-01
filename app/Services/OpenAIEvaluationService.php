@@ -175,6 +175,8 @@ class OpenAIEvaluationService
     {
         $scenario = $session->scenario;
         $category = $scenario?->category;
+        $contextName = $session->context_name ?: ($session->heygen_context_id ? 'LiveAvatar context ' . $session->heygen_context_id : 'Not provided');
+        $avatarName = $session->avatar_name ?: ($session->heygen_avatar_id ? 'LiveAvatar avatar ' . $session->heygen_avatar_id : 'Not provided');
         $pronunciationInstruction = $audioBased
             ? 'The learner uploaded a microphone recording that OpenAI transcribed before this evaluation. Provide pronunciation_feedback and a pronunciation_score from 0 to 10 based on speech-to-text clarity, likely unclear words, fluency, and the transcript. If exact acoustic pronunciation details are not available from the transcription output, say the score is approximate and explain the limitation briefly.'
             : 'No audio recording or LiveAvatar speech metrics are provided in this request, so pronunciation_score must be null and pronunciation_note must match the required note.';
@@ -182,9 +184,11 @@ class OpenAIEvaluationService
         return implode("\n", [
             "Evaluate this learner's speaking practice for EDUCONECX Academy Social Practice.",
             'HeyGen/LiveAvatar handled the live avatar, voice interaction, real-time conversation, and roleplay session. OpenAI is only providing post-session evaluation and scoring.',
-            'Selected category: ' . ($category?->title ?? 'Not provided'),
-            'Scenario title: ' . ($scenario?->title ?? 'Not provided'),
-            'Practice text: ' . ($scenario?->practice_text ?? 'Not provided'),
+            'Selected category: ' . ($category?->title ?? 'LiveAvatar English Practice'),
+            'LiveAvatar avatar: ' . $avatarName,
+            'LiveAvatar context: ' . $contextName,
+            'Scenario title: ' . ($scenario?->title ?? $contextName),
+            'Practice text: ' . ($scenario?->practice_text ?? 'Evaluate the learner against the selected LiveAvatar context and natural English speaking practice.'),
             'Transcript: ' . $transcript,
             'Score grammar_score, fluency_score, vocabulary_score, and overall_score from 0 to 10.',
             $audioBased ? 'Also score pronunciation_score from 0 to 10 and include practical pronunciation_feedback.' : 'Set pronunciation_note exactly to: ' . self::PRONUNCIATION_NOTE,

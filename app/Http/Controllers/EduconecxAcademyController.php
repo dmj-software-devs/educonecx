@@ -2,39 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AcademyCategory;
 use App\Models\AcademyScenario;
 use App\Models\AcademySession;
+use App\Models\AcademyUserAvatarSetting;
 use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class EduconecxAcademyController extends Controller
 {
-    public function index()
+    public function index(HeyGenLiveAvatarService $heyGenService)
     {
-        $categories = AcademyCategory::query()
+        $missingHeyGenConfig = $heyGenService->getMissingConfigurationKeys();
+        $avatarSetting = AcademyUserAvatarSetting::query()
+            ->where('user_id', auth()->id())
             ->where('status', 'active')
-            ->with(['scenarios' => fn($q) => $q->where('status', 'active')->orderBy('sort_order')])
-            ->orderBy('sort_order')
-            ->get();
+            ->first();
+        $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting);
 
-        $missingHeyGenConfig = app(HeyGenLiveAvatarService::class)->getMissingConfigurationKeys();
-
-        return view('educonecx-academy.index', compact('categories', 'missingHeyGenConfig'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
     {
         $validated = $request->validate([
-            'scenario_slug' => ['required', 'string', 'exists:academy_scenarios,slug'],
+            'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
         ]);
 
-        $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
+        $scenario = ! empty($validated['scenario_slug'])
+            ? AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail()
+            : null;
 
         try {
             $user = auth()->user();
@@ -68,22 +68,50 @@ class EduconecxAcademyController extends Controller
     public function createLiveAvatarEmbed(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
     {
         $validated = $request->validate([
-            'scenario_slug' => ['required', 'string', 'exists:academy_scenarios,slug'],
+            'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
         ]);
 
-        $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
+        $scenario = ! empty($validated['scenario_slug'])
+            ? AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail()
+            : null;
 
         try {
-            $user = auth()->user();
+            $user = $request->user();
+            abort_unless($user, 401);
+
+            $avatarSetting = $this->activeAvatarSetting($user->id);
+            $currentConfig = $this->currentAvatarConfig($avatarSetting);
             $embed = $heyGenService->createLiveAvatarEmbed($scenario, $user);
+            $embedUrl = $embed['embed_url'];
+            $resolved = data_get($embed, 'resolved', []);
+
+            $session = AcademySession::create([
+                'user_id' => $user->id,
+                'academy_category_id' => $scenario?->academy_category_id,
+                'academy_scenario_id' => $scenario?->id,
+                'liveavatar_embed_id' => $this->extractLiveAvatarEmbedId($embedUrl, $embed['response'] ?? []),
+                'liveavatar_embed_url' => $embedUrl,
+                'heygen_avatar_id' => data_get($resolved, 'avatar_id'),
+                'heygen_voice_id' => data_get($resolved, 'voice_id'),
+                'heygen_context_id' => data_get($resolved, 'context_id'),
+                'avatar_name' => $currentConfig['avatar_name'],
+                'avatar_image_url' => $currentConfig['avatar_image_url'],
+                'context_name' => $currentConfig['context_name'],
+                'dynamic_instructions' => $heyGenService->buildDynamicInstructions($scenario, $user),
+                'config_source' => data_get($resolved, 'source'),
+                'status' => 'started',
+                'started_at' => now(),
+                'raw_response' => $embed['response'] ?? [],
+            ]);
 
             return response()->json([
                 'success' => true,
-                'embed_url' => $embed['embed_url'],
+                'academy_session_id' => $session->id,
+                'embed_url' => $embedUrl,
                 'embed_script' => $embed['embed_script'],
-                'avatar_id' => data_get($embed, 'resolved.avatar_id'),
-                'voice_id' => data_get($embed, 'resolved.voice_id'),
-                'context_id' => data_get($embed, 'resolved.context_id'),
+                'avatar_id' => data_get($resolved, 'avatar_id'),
+                'voice_id' => data_get($resolved, 'voice_id'),
+                'context_id' => data_get($resolved, 'context_id'),
                 'endpoint_url' => $embed['endpoint_url'],
                 'endpoint_status' => $embed['status'],
             ]);
@@ -103,10 +131,9 @@ class EduconecxAcademyController extends Controller
         $validated = $request->validate([
             'academy_session_id' => ['nullable', 'integer', 'exists:academy_sessions,id'],
             'transcript' => ['required', 'string', 'min:10'],
-            'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
         ]);
 
-        $session = $this->resolveEvaluationSession($validated);
+        $session = $this->resolveEvaluationSession($validated, $request);
 
         $session->update([
             'transcript' => $validated['transcript'],
@@ -134,27 +161,21 @@ class EduconecxAcademyController extends Controller
     {
         $validated = $request->validate([
             'audio' => ['required', 'file', 'max:20480', 'mimes:webm,mp3,mp4,mpeg,mpga,m4a,wav,ogg'],
-            'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
             'academy_session_id' => ['nullable', 'integer', 'exists:academy_sessions,id'],
         ]);
 
-        $session = $this->resolveEvaluationSession($validated);
-        $audioPath = $request->file('audio')->store('academy-audio');
-        $absoluteAudioPath = Storage::path($audioPath);
-        $shouldKeepAudio = Schema::hasColumn('academy_sessions', 'audio_path');
+        $session = $this->resolveEvaluationSession($validated, $request);
+        $audioPath = $request->file('audio')->store('academy-audio', 'public');
+        $absoluteAudioPath = Storage::disk('public')->path($audioPath);
 
-        $session->update(array_filter([
-            'audio_path' => $shouldKeepAudio ? $audioPath : null,
+        $session->update([
+            'audio_path' => $audioPath,
             'status' => 'evaluating',
-        ], fn($value) => $value !== null));
+        ]);
 
         try {
             $evaluation = $service->evaluateAudioSession($session, $absoluteAudioPath);
         } catch (\Throwable $exception) {
-            if (! $shouldKeepAudio) {
-                Storage::delete($audioPath);
-            }
-
             return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage(),
@@ -163,12 +184,8 @@ class EduconecxAcademyController extends Controller
 
         $this->saveEvaluationToSession($session, $evaluation, [
             'transcript' => $evaluation['transcript'] ?? null,
-            'audio_path' => $shouldKeepAudio ? $audioPath : null,
+            'audio_path' => $audioPath,
         ]);
-
-        if (! $shouldKeepAudio) {
-            Storage::delete($audioPath);
-        }
 
         return response()->json([
             'success' => true,
@@ -176,27 +193,38 @@ class EduconecxAcademyController extends Controller
         ]);
     }
 
-    private function resolveEvaluationSession(array $validated): AcademySession
+    private function resolveEvaluationSession(array $validated, Request $request): AcademySession
     {
+        $user = $request->user();
+        abort_unless($user, 401);
+
         if (! empty($validated['academy_session_id'])) {
-            return AcademySession::with(['scenario.category'])->findOrFail($validated['academy_session_id']);
+            $session = AcademySession::with(['scenario.category'])->findOrFail($validated['academy_session_id']);
+            abort_unless((int) $session->user_id === (int) $user->id, 403);
+
+            return $session;
         }
 
-        if (! empty($validated['scenario_slug'])) {
-            $scenario = AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail();
+        $avatarSetting = $this->activeAvatarSetting($user->id);
+        $currentConfig = $this->currentAvatarConfig($avatarSetting);
 
-            return AcademySession::create([
-                'user_id' => auth()->id(),
-                'academy_category_id' => $scenario->academy_category_id,
-                'academy_scenario_id' => $scenario->id,
-                'status' => 'evaluating',
-                'started_at' => now(),
-            ])->load(['scenario.category']);
+        if (blank($currentConfig['avatar_id']) || blank($currentConfig['context_id'])) {
+            throw ValidationException::withMessages([
+                'academy_session_id' => 'Please select an avatar and context from your EDUCONECX Academy dashboard before requesting AI feedback.',
+            ]);
         }
 
-        throw ValidationException::withMessages([
-            'scenario_slug' => 'Please select a scenario before requesting AI feedback.',
-        ]);
+        return AcademySession::create([
+            'user_id' => $user->id,
+            'heygen_avatar_id' => $currentConfig['avatar_id'],
+            'heygen_voice_id' => $currentConfig['voice_id'],
+            'heygen_context_id' => $currentConfig['context_id'],
+            'avatar_name' => $currentConfig['avatar_name'],
+            'avatar_image_url' => $currentConfig['avatar_image_url'],
+            'context_name' => $currentConfig['context_name'],
+            'status' => 'evaluating',
+            'started_at' => now(),
+        ])->load(['scenario.category']);
     }
 
     private function saveEvaluationToSession(AcademySession $session, array $evaluation, array $extra = []): void
@@ -210,11 +238,61 @@ class EduconecxAcademyController extends Controller
             'corrections' => $evaluation['corrections'] ?? [],
             'strengths' => $evaluation['strengths'] ?? [],
             'weaknesses' => $evaluation['weaknesses'] ?? [],
+            'next_steps' => $evaluation['next_steps'] ?? [],
             'feedback' => $evaluation['feedback'] ?? null,
             'ai_evaluation' => $evaluation,
             'evaluated_at' => now(),
             'status' => 'evaluated',
         ], array_filter($extra, fn($value) => $value !== null)));
+    }
+
+
+    private function activeAvatarSetting(int $userId): ?AcademyUserAvatarSetting
+    {
+        return AcademyUserAvatarSetting::query()
+            ->where('user_id', $userId)
+            ->where('status', 'active')
+            ->first();
+    }
+
+    private function currentAvatarConfig(?AcademyUserAvatarSetting $avatarSetting): array
+    {
+        return [
+            'avatar_id' => $avatarSetting?->heygen_avatar_id ?: config('services.heygen.default_avatar_id'),
+            'voice_id' => $avatarSetting?->heygen_voice_id ?: config('services.heygen.default_voice_id'),
+            'context_id' => $avatarSetting?->heygen_context_id ?: config('services.heygen.default_context_id'),
+            'avatar_name' => $avatarSetting?->avatar_name ?: (config('services.heygen.default_avatar_id') ? 'Env Avatar Fallback' : null),
+            'avatar_image_url' => $avatarSetting?->avatar_image_url,
+            'context_name' => $avatarSetting?->context_name ?: (config('services.heygen.default_context_id') ? 'Env Context Fallback' : null),
+            'preferred_language' => $avatarSetting?->preferred_language ?: 'English',
+            'speaking_level' => $avatarSetting?->speaking_level,
+            'tutor_style' => $avatarSetting?->tutor_style,
+            'source' => [
+                'avatar_id' => $avatarSetting?->heygen_avatar_id ? 'user' : (config('services.heygen.default_avatar_id') ? 'env' : 'none'),
+                'voice_id' => $avatarSetting?->heygen_voice_id ? 'user' : (config('services.heygen.default_voice_id') ? 'env' : 'none'),
+                'context_id' => $avatarSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none'),
+            ],
+        ];
+    }
+
+    private function extractLiveAvatarEmbedId(?string $embedUrl, array $response = []): ?string
+    {
+        $providerId = data_get($response, 'data.id')
+            ?? data_get($response, 'id')
+            ?? data_get($response, 'data.embed_id');
+
+        if (filled($providerId)) {
+            return (string) $providerId;
+        }
+
+        if (blank($embedUrl)) {
+            return null;
+        }
+
+        $path = parse_url($embedUrl, PHP_URL_PATH);
+        $candidate = $path ? basename($path) : null;
+
+        return $candidate && $candidate !== '/' ? $candidate : null;
     }
 
     public function endSession(Request $request): JsonResponse
@@ -228,6 +306,8 @@ class EduconecxAcademyController extends Controller
         ]);
 
         $session = AcademySession::findOrFail($validated['academy_session_id']);
+        abort_unless((int) $session->user_id === (int) $request->user()->id, 403);
+
         $session->update([
             'score' => $validated['score'] ?? $session->score,
             'feedback' => $validated['feedback'] ?? $session->feedback,
