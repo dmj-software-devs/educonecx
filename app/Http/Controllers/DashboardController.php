@@ -10,6 +10,7 @@ use App\Models\Enrollment;
 use App\Models\QuizAttempt;
 use App\Models\Certificate;
 use App\Models\Course;
+use App\Models\AcademySession;
 use App\Models\User;
 use App\Models\Wishlist;
 use Carbon\Carbon;
@@ -70,6 +71,12 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
+        $academySessions = AcademySession::with(['category', 'scenario'])
+            ->where('user_id', $user->id)
+            ->latest('created_at')
+            ->limit(10)
+            ->get();
+
         return view('dashboard.index', compact(
             'user',
             'stats',
@@ -78,7 +85,8 @@ class DashboardController extends Controller
             'recommendedCourses',
             'averageQuizScore',
             'passedQuizzes',
-            'streak'
+            'streak',
+            'academySessions'
         ));
     }
 
