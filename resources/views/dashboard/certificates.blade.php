@@ -1155,6 +1155,10 @@
                 <i class="fas fa-home"></i>
                 <span>{{ App\Helpers\TranslationHelper::trans('certificates.nav_dashboard') }}</span>
             </a>
+            <a href="{{ route('dashboard.educonecx-academy.index') }}" class="nav-item {{ request()->routeIs('dashboard.educonecx-academy.*') || request()->routeIs('educonecx.academy.*') ? 'active' : '' }}">
+                <i class="fas fa-graduation-cap"></i>
+                <span>EDUCONECX Academy</span>
+            </a>
             <a href="{{ route('my-courses') }}" class="nav-item">
                 <i class="fas fa-book"></i>
                 <span>{{ App\Helpers\TranslationHelper::trans('certificates.nav_my_courses') }}</span>

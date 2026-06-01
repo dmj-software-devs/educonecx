@@ -32,16 +32,16 @@ class HeyGenLiveAvatarService
                 ->first();
         }
 
-        $avatarId = $scenario->heygen_avatar_id
-            ?? $userSetting?->heygen_avatar_id
+        $avatarId = $userSetting?->heygen_avatar_id
+            ?? $scenario->heygen_avatar_id
             ?? config('services.heygen.default_avatar_id');
 
-        $voiceId = $scenario->heygen_voice_id
-            ?? $userSetting?->heygen_voice_id
+        $voiceId = $userSetting?->heygen_voice_id
+            ?? $scenario->heygen_voice_id
             ?? config('services.heygen.default_voice_id');
 
-        $contextId = $scenario->heygen_context_id
-            ?? $userSetting?->heygen_context_id
+        $contextId = $userSetting?->heygen_context_id
+            ?? $scenario->heygen_context_id
             ?? config('services.heygen.default_context_id');
 
         return [
@@ -49,9 +49,9 @@ class HeyGenLiveAvatarService
             'voice_id' => $voiceId,
             'context_id' => $contextId,
             'source' => [
-                'avatar_id' => $scenario->heygen_avatar_id ? 'scenario' : ($userSetting?->heygen_avatar_id ? 'user' : (config('services.heygen.default_avatar_id') ? 'env' : 'none')),
-                'voice_id' => $scenario->heygen_voice_id ? 'scenario' : ($userSetting?->heygen_voice_id ? 'user' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
-                'context_id' => $scenario->heygen_context_id ? 'scenario' : ($userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
+                'avatar_id' => $userSetting?->heygen_avatar_id ? 'user' : ($scenario->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none')),
+                'voice_id' => $userSetting?->heygen_voice_id ? 'user' : ($scenario->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
+                'context_id' => $userSetting?->heygen_context_id ? 'user' : ($scenario->heygen_context_id ? 'scenario' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
             ],
         ];
     }
@@ -240,6 +240,130 @@ class HeyGenLiveAvatarService
             'endpoint_url' => $url,
             'response' => $response->json() ?? [],
             'resolved' => $resolved,
+        ];
+    }
+
+
+
+    public function listPublicAvatars(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/avatars/public',
+            type: 'avatars',
+            normalizer: fn (array $item) => $this->normalizeAvatarResource($item, 'public')
+        );
+    }
+
+    public function listCustomAvatars(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/avatars',
+            type: 'avatars',
+            normalizer: fn (array $item) => $this->normalizeAvatarResource($item, 'custom')
+        );
+    }
+
+    public function listContexts(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/contexts',
+            type: 'contexts',
+            normalizer: fn (array $item) => $this->normalizeContextResource($item)
+        );
+    }
+
+    public function listVoices(): array
+    {
+        return $this->listLiveAvatarResources(
+            endpoint: 'https://api.liveavatar.com/v1/voices',
+            type: 'voices',
+            normalizer: fn (array $item) => $this->normalizeVoiceResource($item)
+        );
+    }
+
+    protected function listLiveAvatarResources(string $endpoint, string $type, callable $normalizer): array
+    {
+        $apiKey = $this->apiKey();
+
+        if ($apiKey === '') {
+            return [];
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'X-API-KEY' => $apiKey,
+                'Accept' => 'application/json',
+            ])->timeout(20)->get($endpoint);
+        } catch (\Throwable $exception) {
+            Log::warning('LiveAvatar listing request failed', [
+                'endpoint_url' => $endpoint,
+                'type' => $type,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            return [];
+        }
+
+        if ($response->failed()) {
+            Log::warning('LiveAvatar listing returned an error', [
+                'endpoint_url' => $endpoint,
+                'type' => $type,
+                'status' => $response->status(),
+                'provider_message' => $this->extractProviderError($response),
+            ]);
+
+            return [];
+        }
+
+        $items = data_get($response->json(), 'data')
+            ?? data_get($response->json(), $type)
+            ?? data_get($response->json(), 'items')
+            ?? $response->json();
+
+        if (! is_array($items)) {
+            return [];
+        }
+
+        if (isset($items['data']) && is_array($items['data'])) {
+            $items = $items['data'];
+        }
+
+        return collect($items)
+            ->filter(fn ($item) => is_array($item))
+            ->map(fn ($item) => $normalizer($item))
+            ->filter(fn ($item) => filled($item['id'] ?? null))
+            ->unique('id')
+            ->values()
+            ->all();
+    }
+
+    protected function normalizeAvatarResource(array $item, string $type): array
+    {
+        return [
+            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'avatar_id') ?? data_get($item, 'avatarId') ?? ''),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar'),
+            'image_url' => data_get($item, 'image_url')
+                ?? data_get($item, 'thumbnail_url')
+                ?? data_get($item, 'preview_image_url')
+                ?? data_get($item, 'avatar_image_url')
+                ?? data_get($item, 'image'),
+            'type' => $type,
+        ];
+    }
+
+    protected function normalizeContextResource(array $item): array
+    {
+        return [
+            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'context_id') ?? data_get($item, 'contextId') ?? ''),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'context_name') ?? data_get($item, 'title') ?? 'LiveAvatar Context'),
+        ];
+    }
+
+    protected function normalizeVoiceResource(array $item): array
+    {
+        return [
+            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'voice_id') ?? data_get($item, 'voiceId') ?? ''),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'voice_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar Voice'),
         ];
     }
 
