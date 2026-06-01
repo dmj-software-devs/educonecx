@@ -16,6 +16,7 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\TranslationController;
 use App\Services\DeepLService;
 use App\Http\Controllers\EduconecxAcademyController;
+use App\Http\Controllers\DashboardAcademySessionController;
 use Illuminate\Support\Facades\Http;
 
 // Add these imports for password reset
@@ -255,6 +256,7 @@ Route::middleware('auth')->group(function () {
 
     // Student Dashboard - Using DashboardController (student)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/academy-sessions/{session}', [DashboardAcademySessionController::class, 'show'])->name('dashboard.academy.sessions.show');
     Route::get('/my-courses', [DashboardController::class, 'courses'])->name('my-courses');
     Route::get('/my-quizzes', [DashboardController::class, 'quizzes'])->name('my-quizzes');
     Route::get('/certificates', [DashboardController::class, 'certificates'])->name('certificates');
@@ -818,9 +820,11 @@ Route::post('/dev/liveavatar/test-embed', function () {
     ], $response->successful() ? 200 : 422);
 });
 
-Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
-Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
-Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');
-Route::post('/educonecx-academy/session/evaluate', [EduconecxAcademyController::class, 'evaluateSession'])->name('educonecx.academy.session.evaluate');
-Route::post('/educonecx-academy/session/evaluate-audio', [EduconecxAcademyController::class, 'evaluateAudioSession'])->name('educonecx.academy.session.evaluate.audio');
-Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
+    Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
+    Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');
+    Route::post('/educonecx-academy/session/evaluate', [EduconecxAcademyController::class, 'evaluateSession'])->name('educonecx.academy.session.evaluate');
+    Route::post('/educonecx-academy/session/evaluate-audio', [EduconecxAcademyController::class, 'evaluateAudioSession'])->name('educonecx.academy.session.evaluate.audio');
+    Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');
+});

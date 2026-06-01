@@ -38,6 +38,10 @@
 
 <section class="py-5 academy-rect">
     <div class="container">
+        @guest
+            <div class="alert alert-warning">Please login to access EDUCONECX Academy.</div>
+        @endguest
+
         <div class="row g-4">
             <div class="col-lg-4">
                 <div class="card shadow-sm border-0 h-100">
@@ -496,7 +500,7 @@
                 throw new Error(data.message || 'Unable to load LiveAvatar.');
             }
 
-            academySessionId = null;
+            academySessionId = data.academy_session_id || null;
 
             const openLiveAvatarLink = document.getElementById('openLiveAvatarLink');
             const liveAvatarDebug = document.getElementById('liveAvatarDebug');
