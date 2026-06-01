@@ -85,6 +85,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Certificate::class);
     }
 
+
+    public function academySessions()
+    {
+        return $this->hasMany(AcademySession::class);
+    }
+
     public function notifications()
     {
         return $this->hasMany(Notification::class);
