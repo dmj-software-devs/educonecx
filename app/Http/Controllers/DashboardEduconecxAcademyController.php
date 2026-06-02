@@ -24,11 +24,44 @@ class DashboardEduconecxAcademyController extends Controller
             ->paginate(20);
 
         $sessionQuery = AcademySession::where('user_id', $user->id);
+        $allSessions = (clone $sessionQuery)->latest()->get();
+        $totalSpeakingSeconds = $allSessions->sum(function (AcademySession $session) {
+            if ($session->started_at && $session->ended_at) {
+                return $session->started_at->diffInSeconds($session->ended_at);
+            }
+
+            return 0;
+        });
         $stats = [
             'total_sessions' => (clone $sessionQuery)->count(),
             'average_overall_score' => round((float) ((clone $sessionQuery)->whereNotNull('overall_score')->avg('overall_score') ?? 0), 1),
+            'average_pronunciation_score' => round((float) ((clone $sessionQuery)->whereNotNull('pronunciation_score')->avg('pronunciation_score') ?? 0), 1),
+            'average_fluency_score' => round((float) ((clone $sessionQuery)->whereNotNull('fluency_score')->avg('fluency_score') ?? 0), 1),
+            'average_grammar_score' => round((float) ((clone $sessionQuery)->whereNotNull('grammar_score')->avg('grammar_score') ?? 0), 1),
+            'average_vocabulary_score' => round((float) ((clone $sessionQuery)->whereNotNull('vocabulary_score')->avg('vocabulary_score') ?? 0), 1),
             'best_score' => round((float) ((clone $sessionQuery)->whereNotNull('overall_score')->max('overall_score') ?? 0), 1),
             'last_practice_date' => optional((clone $sessionQuery)->latest()->first()?->created_at)->format('M d, Y g:i A'),
+            'total_speaking_time' => $totalSpeakingSeconds > 0 ? gmdate($totalSpeakingSeconds >= 3600 ? 'H\h i\m' : 'i\m s\s', $totalSpeakingSeconds) : '0m',
+            'practice_streak' => $this->practiceStreak($allSessions),
+            'current_level' => $this->currentLevel(round((float) ((clone $sessionQuery)->whereNotNull('overall_score')->avg('overall_score') ?? 0), 1)),
+            'improvement_percentage' => $this->improvementPercentage($allSessions),
+        ];
+
+        $chartData = [
+            'score_trend' => $allSessions->whereNotNull('overall_score')->take(8)->reverse()->values()->map(fn (AcademySession $session) => [
+                'label' => optional($session->created_at)->format('M d'),
+                'score' => round((float) $session->overall_score, 1),
+            ])->all(),
+            'monthly_progress' => $allSessions->whereNotNull('overall_score')->groupBy(fn (AcademySession $session) => optional($session->created_at)->format('M'))->map(fn ($sessions, $month) => [
+                'label' => $month,
+                'score' => round((float) $sessions->avg('overall_score'), 1),
+            ])->values()->take(6)->all(),
+            'recent_performance' => [
+                ['label' => 'Pronunciation', 'score' => $stats['average_pronunciation_score']],
+                ['label' => 'Fluency', 'score' => $stats['average_fluency_score']],
+                ['label' => 'Grammar', 'score' => $stats['average_grammar_score']],
+                ['label' => 'Vocabulary', 'score' => $stats['average_vocabulary_score']],
+            ],
         ];
 
         $publicAvatars = $liveAvatarService->listPublicAvatars();
@@ -112,7 +145,8 @@ class DashboardEduconecxAcademyController extends Controller
             'avatars',
             'contexts',
             'stats',
-            'liveAvatarDebug'
+            'liveAvatarDebug',
+            'chartData'
         ));
     }
 
@@ -134,7 +168,7 @@ class DashboardEduconecxAcademyController extends Controller
             'status' => 'active',
         ])->save();
 
-        return back()->with('success', 'Your Academy avatar preference has been saved.');
+        return back()->with('success', 'Your English Coach preference has been saved.');
     }
 
     public function updateContextPreference(Request $request): RedirectResponse
@@ -157,7 +191,7 @@ class DashboardEduconecxAcademyController extends Controller
             'status' => 'active',
         ])->save();
 
-        return back()->with('success', 'Your Academy context preference has been saved.');
+        return back()->with('success', 'Your conversation scenario preference has been saved.');
     }
 
     public function history(Request $request): JsonResponse
@@ -170,10 +204,10 @@ class DashboardEduconecxAcademyController extends Controller
         return response()->json([
             'data' => $sessions->getCollection()->map(fn (AcademySession $session) => [
                 'date' => optional($session->created_at)->format('M d, Y g:i A'),
-                'scenario' => $session->scenario->title ?? 'Academy Practice Session',
+                'scenario' => $session->scenario->title ?? 'Daily Conversation',
                 'category' => $session->category->title ?? 'No category',
-                'avatar' => config('app.debug') ? ($session->heygen_avatar_id ?: 'Default') : 'LiveAvatar',
-                'context' => config('app.debug') ? ($session->heygen_context_id ?: 'Default') : 'LiveAvatar',
+                'coach' => 'Victoria Clarke',
+                'coach_title' => 'English Coach',
                 'overall' => $this->formatScore($session->overall_score),
                 'pronunciation' => $this->formatScore($session->pronunciation_score),
                 'grammar' => $this->formatScore($session->grammar_score),
@@ -200,6 +234,51 @@ class DashboardEduconecxAcademyController extends Controller
         $audioUrl = $session->audio_path ? Storage::disk('public')->url($session->audio_path) : null;
 
         return view('dashboard.educonecx-academy.show', compact('session', 'audioUrl'));
+    }
+
+
+    private function practiceStreak($sessions): int
+    {
+        $dates = $sessions->pluck('created_at')
+            ->filter()
+            ->map(fn ($date) => $date->toDateString())
+            ->unique()
+            ->values();
+
+        $streak = 0;
+        $cursor = now()->toDateString();
+
+        while ($dates->contains($cursor)) {
+            $streak++;
+            $cursor = \Illuminate\Support\Carbon::parse($cursor)->subDay()->toDateString();
+        }
+
+        return $streak;
+    }
+
+    private function currentLevel(float $averageScore): string
+    {
+        return match (true) {
+            $averageScore >= 8.5 => 'Advanced',
+            $averageScore >= 7 => 'Upper Intermediate',
+            $averageScore >= 5 => 'Intermediate',
+            $averageScore > 0 => 'Foundation',
+            default => 'Not started',
+        };
+    }
+
+    private function improvementPercentage($sessions): int
+    {
+        $scored = $sessions->whereNotNull('overall_score')->sortBy('created_at')->values();
+
+        if ($scored->count() < 2) {
+            return 0;
+        }
+
+        $first = (float) $scored->first()->overall_score;
+        $latest = (float) $scored->last()->overall_score;
+
+        return $first > 0 ? (int) round((($latest - $first) / $first) * 100) : 0;
     }
 
     private function avatarSetting(int $userId): AcademyUserAvatarSetting

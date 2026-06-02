@@ -118,9 +118,8 @@ class EduconecxAcademyController extends Controller
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage(),
-                'endpoint_url' => 'https://api.liveavatar.com/v2/embeddings',
-                'debug' => $heyGenService->apiKeyDebugMeta(),
+                'message' => 'Unable to prepare your speaking session right now. Please try again later.',
+                'debug' => config('app.debug') ? $heyGenService->apiKeyDebugMeta() : null,
             ], 422);
         }
     }
@@ -145,7 +144,7 @@ class EduconecxAcademyController extends Controller
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage(),
+                'message' => $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 'Performance review service is not configured.' : $exception->getMessage(),
             ], $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 422 : 500);
         }
 
@@ -178,7 +177,7 @@ class EduconecxAcademyController extends Controller
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage(),
+                'message' => $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 'Performance review service is not configured.' : $exception->getMessage(),
             ], $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 422 : 500);
         }
 
@@ -210,7 +209,7 @@ class EduconecxAcademyController extends Controller
 
         if (blank($currentConfig['avatar_id']) || blank($currentConfig['context_id'])) {
             throw ValidationException::withMessages([
-                'academy_session_id' => 'Please select an avatar and context from your EDUCONECX Academy dashboard before requesting AI feedback.',
+                'academy_session_id' => 'Please complete your Coach Settings before requesting a performance review.',
             ]);
         }
 

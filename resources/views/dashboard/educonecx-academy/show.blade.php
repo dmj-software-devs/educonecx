@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Academy Session Details')
+@section('title', 'Speaking Session Report')
 
 @push('styles')
 <style>
@@ -32,23 +32,17 @@
 <div class="academy-show-page">
     <div class="academy-show-wrap">
         <div class="mb-3 d-flex gap-2 flex-wrap">
-            <a href="{{ route('dashboard.educonecx-academy.index') }}" class="academy-btn academy-btn-soft"><i class="fas fa-arrow-left"></i> Back to Academy Dashboard</a>
+            <a href="{{ route('dashboard.educonecx-academy.index') }}" class="academy-btn academy-btn-soft"><i class="fas fa-arrow-left"></i> Back to Practice Room</a>
             <a href="{{ route('educonecx.academy.index') }}" class="academy-btn academy-btn-yellow"><i class="fas fa-play"></i> Practice Again</a>
         </div>
 
         <section class="academy-show-card">
             <div class="academy-show-header">
                 <div>
-                    <h1>{{ $session->scenario->title ?? 'Academy Practice Session' }}</h1>
+                    <h1>{{ $session->scenario->title ?? 'Daily Conversation' }}</h1>
                     <p>{{ $session->category->title ?? 'No category' }} • {{ optional($session->created_at)->format('M d, Y g:i A') }} • {{ ucfirst($session->status ?? 'pending') }}</p>
-                    <p>Avatar: LiveAvatar • Context: {{ $session->scenario->title ?? 'Academy scenario' }}</p>
+                    <p>Coach: Victoria Clarke, English Coach • Scenario: {{ $session->scenario->title ?? 'Daily Conversation' }}</p>
                 </div>
-                @if(config('app.debug'))
-                    <details>
-                        <summary>Debug IDs</summary>
-                        <small>avatar_id: {{ $session->heygen_avatar_id ?: '-' }}<br>context_id: {{ $session->heygen_context_id ?: '-' }}<br>voice_id: {{ $session->heygen_voice_id ?: '-' }}</small>
-                    </details>
-                @endif
             </div>
             <div class="academy-show-body">
                 <div class="score-grid">
@@ -70,7 +64,7 @@
 
         <section class="content-grid">
             <div class="panel"><h2>Transcript</h2><p>{!! nl2br(e($session->transcript ?? 'No transcript saved yet.')) !!}</p></div>
-            <div class="panel"><h2>Feedback</h2><p>{!! nl2br(e($session->feedback ?? 'No feedback saved yet.')) !!}</p></div>
+            <div class="panel"><h2>Feedback Report</h2><p>{!! nl2br(e($session->feedback ?? 'No feedback saved yet.')) !!}</p></div>
             <div class="panel"><h2>Strengths</h2>@forelse(($session->strengths ?? []) as $item)<p><i class="fas fa-check text-success"></i> {{ $item }}</p>@empty<p>No strengths saved yet.</p>@endforelse</div>
             <div class="panel"><h2>Weaknesses</h2>@forelse(($session->weaknesses ?? []) as $item)<p><i class="fas fa-exclamation-triangle text-warning"></i> {{ $item }}</p>@empty<p>No weaknesses saved yet.</p>@endforelse</div>
             <div class="panel"><h2>Next Steps</h2>@forelse(($session->next_steps ?? []) as $item)<p><i class="fas fa-arrow-right"></i> {{ $item }}</p>@empty<p>No next steps saved yet.</p>@endforelse</div>

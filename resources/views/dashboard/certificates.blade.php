@@ -1157,7 +1157,7 @@
             </a>
             <a href="{{ route('dashboard.educonecx-academy.index') }}" class="nav-item {{ request()->routeIs('dashboard.educonecx-academy.*') || request()->routeIs('educonecx.academy.*') ? 'active' : '' }}">
                 <i class="fas fa-graduation-cap"></i>
-                <span>EDUCONECX Academy</span>
+                <span>Practice Room</span>
             </a>
             <a href="{{ route('my-courses') }}" class="nav-item">
                 <i class="fas fa-book"></i>

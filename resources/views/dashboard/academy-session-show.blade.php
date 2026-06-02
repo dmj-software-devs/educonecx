@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'EDUCONECX Academy Session Details')
+@section('title', 'Speaking Session Report')
 
 @push('styles')
 <style>
@@ -128,7 +128,7 @@
 
     <div class="academy-detail-card">
         <div class="academy-detail-header">
-            <h1>{{ $session->scenario->title ?? 'EDUCONECX Academy Practice Session' }}</h1>
+            <h1>{{ $session->scenario->title ?? 'EDUCONECX Daily Conversation' }}</h1>
             <div class="academy-detail-meta">
                 <span><i class="fas fa-layer-group"></i> {{ $session->category->title ?? 'No category' }}</span>
                 <span><i class="far fa-calendar-alt"></i> Created {{ optional($session->created_at)->format('M d, Y g:i A') }}</span>
@@ -168,7 +168,7 @@
             </div>
 
             <div class="academy-section">
-                <h2>Feedback</h2>
+                <h2>Feedback Report</h2>
                 <div class="academy-panel">
                     {!! nl2br(e($session->feedback ?? 'No feedback saved yet.')) !!}
                 </div>

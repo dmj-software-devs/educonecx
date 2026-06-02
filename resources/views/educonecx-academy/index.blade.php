@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'EDUCONECX Academy - Practice English with AI Avatar')
+@section('title', 'Practice Room')
 
 @push('styles')
 <style>
@@ -117,7 +117,7 @@
     }
 
     .academy-card,
-    .academy-liveavatar-card,
+    .academy-livecoach-card,
     .academy-evaluation-card {
         background: var(--academy-white);
         border: 1px solid var(--academy-border);
@@ -127,7 +127,7 @@
     }
 
     .academy-card-header,
-    .academy-liveavatar-header,
+    .academy-livecoach-header,
     .academy-evaluation-header {
         padding: 22px 24px;
         border-bottom: 1px solid var(--academy-border);
@@ -135,7 +135,7 @@
     }
 
     .academy-card-title,
-    .academy-liveavatar-title {
+    .academy-livecoach-title {
         margin: 0;
         color: var(--academy-navy);
         font-size: 1.2rem;
@@ -146,12 +146,12 @@
     }
 
     .academy-card-title i,
-    .academy-liveavatar-title i {
+    .academy-livecoach-title i {
         color: var(--academy-yellow);
     }
 
     .academy-card-subtitle,
-    .academy-liveavatar-status {
+    .academy-livecoach-status {
         color: var(--academy-muted);
         margin: 7px 0 0;
         font-size: 0.92rem;
@@ -170,7 +170,7 @@
         align-items: stretch;
     }
 
-    .academy-avatar-preview {
+    .academy-coach-preview {
         min-height: 230px;
         background: var(--academy-ivory);
         border: 1px solid rgba(251, 198, 12, 0.28);
@@ -181,7 +181,7 @@
         justify-content: center;
     }
 
-    .academy-avatar-preview img {
+    .academy-coach-preview img {
         width: 100%;
         height: 100%;
         min-height: 230px;
@@ -189,9 +189,78 @@
         display: block;
     }
 
-    .academy-avatar-preview i {
+    .academy-coach-preview i {
         color: var(--academy-navy);
         font-size: 4rem;
+    }
+
+
+    .academy-coach-card {
+        background: linear-gradient(180deg, #fff, var(--academy-ivory));
+        border: 1px solid rgba(251, 198, 12, 0.24);
+        border-radius: 22px;
+        padding: 18px;
+        box-shadow: var(--academy-soft-shadow);
+    }
+
+    .academy-coach-photo {
+        min-height: 300px;
+        border-radius: 20px;
+        margin-bottom: 18px;
+    }
+
+    .academy-coach-placeholder {
+        width: 100%;
+        min-height: 300px;
+        background: linear-gradient(135deg, rgba(10, 29, 68, 0.08), rgba(251, 198, 12, 0.18));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .academy-coach-info h3 {
+        color: var(--academy-navy);
+        font-size: 1.45rem;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .academy-coach-info p {
+        color: var(--academy-teal);
+        font-weight: 800;
+        margin: 2px 0 10px;
+    }
+
+    .academy-coach-focus {
+        margin-top: 18px;
+        border-top: 1px solid rgba(10, 29, 68, 0.08);
+        padding-top: 16px;
+    }
+
+    .academy-coach-focus span {
+        color: var(--academy-muted);
+        font-weight: 850;
+        font-size: 0.86rem;
+    }
+
+    .academy-coach-focus ul {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: grid;
+        gap: 8px;
+    }
+
+    .academy-coach-focus li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--academy-navy);
+        font-weight: 750;
+    }
+
+    .academy-coach-focus i {
+        color: var(--academy-teal);
     }
 
     .academy-config-list {
@@ -313,17 +382,17 @@
         font-weight: 700;
     }
 
-    .academy-liveavatar-section,
+    .academy-livecoach-section,
     .academy-evaluation-section {
         margin-top: 28px;
     }
 
-    .academy-liveavatar-card,
+    .academy-livecoach-card,
     .academy-evaluation-card {
         box-shadow: var(--academy-shadow);
     }
 
-    .academy-liveavatar-header {
+    .academy-livecoach-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -340,7 +409,7 @@
         margin-right: 8px;
     }
 
-    .academy-liveavatar-frame-wrap {
+    .academy-livecoach-frame-wrap {
         width: 100%;
         height: 680px;
         min-height: 680px;
@@ -349,7 +418,7 @@
         overflow: hidden;
     }
 
-    .academy-liveavatar-frame-wrap iframe {
+    .academy-livecoach-frame-wrap iframe {
         width: 100% !important;
         height: 680px !important;
         border: 0 !important;
@@ -357,7 +426,7 @@
         background: #050505;
     }
 
-    .academy-liveavatar-placeholder {
+    .academy-livecoach-placeholder {
         min-height: 680px;
         color: rgba(255, 255, 255, 0.78);
         background: radial-gradient(circle at center, #1f2937 0%, #050505 72%);
@@ -370,7 +439,7 @@
         padding: 28px;
     }
 
-    .academy-liveavatar-placeholder i {
+    .academy-livecoach-placeholder i {
         color: var(--academy-yellow);
         font-size: 2.5rem;
     }
@@ -534,31 +603,31 @@
         }
 
         .academy-card-header,
-        .academy-liveavatar-header,
+        .academy-livecoach-header,
         .academy-evaluation-header,
         .academy-card-body,
         .academy-evaluation-body {
             padding: 18px;
         }
 
-        .academy-liveavatar-header {
+        .academy-livecoach-header {
             align-items: stretch;
             flex-direction: column;
         }
 
-        .academy-liveavatar-frame-wrap,
-        .academy-liveavatar-placeholder {
+        .academy-livecoach-frame-wrap,
+        .academy-livecoach-placeholder {
             height: 520px;
             min-height: 520px;
         }
 
-        .academy-liveavatar-frame-wrap iframe {
+        .academy-livecoach-frame-wrap iframe {
             height: 520px !important;
         }
 
         .academy-action-row .btn,
         .academy-recording-controls .btn,
-        #openLiveAvatarLink {
+        #openSessionLink {
             width: 100%;
             justify-content: center;
         }
@@ -570,13 +639,13 @@
 <div class="academy-page">
     <section class="academy-hero">
         <div class="container academy-hero-content">
-            <div class="academy-kicker">AI-powered English practice</div>
-            <h1 class="academy-hero-title">EDUCONECX Academy</h1>
-            <p class="academy-hero-subtitle">Practice English in real time with an AI avatar, then record your answer for pronunciation, grammar, fluency, vocabulary, and overall feedback.</p>
+            <div class="academy-kicker">Interactive English Speaking Practice</div>
+            <h1 class="academy-hero-title">Practice Room</h1>
+            <p class="academy-hero-subtitle">Practice English in real time with your English Coach, Victoria Clarke, then receive guided feedback on pronunciation, grammar, fluency, vocabulary, and speaking confidence.</p>
             <div class="academy-badge-row">
-                <span class="academy-hero-badge"><i class="fas fa-user-astronaut"></i> Live Avatar</span>
+                <span class="academy-hero-badge"><i class="fas fa-chalkboard-teacher"></i> Victoria Clarke</span>
                 <span class="academy-hero-badge"><i class="fas fa-microphone-alt"></i> Speaking Practice</span>
-                <span class="academy-hero-badge"><i class="fas fa-chart-line"></i> AI Feedback</span>
+                <span class="academy-hero-badge"><i class="fas fa-chart-line"></i> Performance Feedback</span>
             </div>
         </div>
     </section>
@@ -584,78 +653,75 @@
     <main class="academy-main">
         <div class="container">
             @guest
-                <div class="alert alert-warning">Please login to access EDUCONECX Academy.</div>
+                <div class="alert alert-warning">Please login to access the Practice Room.</div>
             @endguest
 
             @php
-                $canStartLiveAvatar = ! empty($currentAvatarConfig['avatar_id'])
-                    && ! empty($currentAvatarConfig['context_id'])
+                $currentPracticeConfig = $currentAvatarConfig ?? [];
+                $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
+                    && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
             @endphp
 
             <section class="academy-card mb-4">
                 <div class="academy-card-header">
-                    <h2 class="academy-card-title"><i class="fas fa-user-cog"></i> Current LiveAvatar Setup</h2>
-                    <p class="academy-card-subtitle">Your live practice now uses the avatar and context selected in your EDUCONECX Academy dashboard, or env fallback values when available.</p>
+                    <h2 class="academy-card-title"><i class="fas fa-chalkboard-teacher"></i> Current Practice Setup</h2>
+                    <p class="academy-card-subtitle">Meet your English Coach and prepare for a focused speaking practice session.</p>
                 </div>
                 <div class="academy-card-body">
                     <div class="academy-setup-grid">
-                        <div class="academy-avatar-preview">
-                            @if(! empty($currentAvatarConfig['avatar_image_url']))
-                                <img src="{{ $currentAvatarConfig['avatar_image_url'] }}" alt="{{ $currentAvatarConfig['avatar_name'] ?: 'Selected LiveAvatar' }}" loading="lazy">
-                            @else
-                                <i class="fas fa-user-astronaut"></i>
-                            @endif
+                        <div class="academy-coach-card">
+                            <div class="academy-coach-preview academy-coach-photo">
+                                @if(! empty($currentPracticeConfig['avatar_image_url']))
+                                    <img src="{{ $currentPracticeConfig['avatar_image_url'] }}" alt="Victoria Clarke, English Coach" loading="lazy">
+                                @else
+                                    <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
+                                @endif
+                            </div>
+                            <div class="academy-coach-info">
+                                <h3>Victoria Clarke</h3>
+                                <p>English Coach</p>
+                                <strong>Speaking Practice Specialist</strong>
+                            </div>
+                            <div class="academy-coach-focus">
+                                <span>Helping learners improve:</span>
+                                <ul>
+                                    <li><i class="fas fa-check"></i> Pronunciation</li>
+                                    <li><i class="fas fa-check"></i> Fluency</li>
+                                    <li><i class="fas fa-check"></i> Vocabulary</li>
+                                    <li><i class="fas fa-check"></i> Confidence</li>
+                                    <li><i class="fas fa-check"></i> Conversation Skills</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="academy-config-list">
                             <div class="academy-config-item">
-                                <span>Avatar</span>
-                                <strong>{{ $currentAvatarConfig['avatar_name'] ?: 'Env avatar fallback' }}</strong>
+                                <span>Conversation Focus</span>
+                                <strong>{{ $currentPracticeConfig['context_name'] ?: 'Personalized English speaking practice' }}</strong>
                             </div>
                             <div class="academy-config-item">
-                                <span>Context</span>
-                                <strong>{{ $currentAvatarConfig['context_name'] ?: 'Env context fallback' }}</strong>
-                            </div>
-                            <div class="academy-config-item">
-                                <span>Voice</span>
-                                <strong>{{ $currentAvatarConfig['voice_id'] ? 'Configured' : 'No voice selected' }}</strong>
-                            </div>
-                            <div class="academy-config-item">
-                                <span>Language / Level / Tutor Style</span>
-                                <strong>{{ $currentAvatarConfig['preferred_language'] ?: 'English' }}{{ $currentAvatarConfig['speaking_level'] ? ' • ' . $currentAvatarConfig['speaking_level'] : '' }}{{ $currentAvatarConfig['tutor_style'] ? ' • ' . $currentAvatarConfig['tutor_style'] : '' }}</strong>
+                                <span>Coaching Style</span>
+                                <strong>{{ $currentPracticeConfig['preferred_language'] ?: 'English' }}{{ $currentPracticeConfig['speaking_level'] ? ' • ' . $currentPracticeConfig['speaking_level'] : '' }}{{ $currentPracticeConfig['tutor_style'] ? ' • ' . $currentPracticeConfig['tutor_style'] : '' }}</strong>
                             </div>
 
-                            @if(config('app.debug'))
-                                <details class="academy-debug">
-                                    <summary>Preference Debug Info</summary>
-                                    <div class="mt-2">
-                                        avatar_id: {{ $currentAvatarConfig['avatar_id'] ?: '-' }}<br>
-                                        context_id: {{ $currentAvatarConfig['context_id'] ?: '-' }}<br>
-                                        voice_id: {{ $currentAvatarConfig['voice_id'] ?: '-' }}<br>
-                                        source: {{ json_encode($currentAvatarConfig['source'] ?? []) }}
-                                    </div>
-                                </details>
-                            @endif
-
-                            @if(! $canStartLiveAvatar)
+                            @if(! $canStartPractice)
                                 <div class="alert alert-warning mb-0">
-                                    Please select an avatar and context from your EDUCONECX Academy dashboard before starting practice.
+                                    Please choose your English Coach and conversation focus from Coach Settings before starting practice.
                                 </div>
                             @endif
 
                             @if(!empty($missingHeyGenConfig))
                                 <div class="alert alert-warning mb-0">
-                                    <strong>LiveAvatar setup required:</strong> Missing {{ implode(', ', $missingHeyGenConfig) }}.
-                                    Add the missing values to <code>.env</code>, then run <code>php artisan config:clear</code>.
+                                    Your Practice Room is not ready yet. Please contact support to complete the setup.
                                 </div>
                             @endif
 
                             <div class="academy-action-row mt-2">
-                                <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartLiveAvatar ? 'disabled' : '' }}>
-                                    <i class="fas fa-play"></i> Practice with AI Avatar
+                                <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                                    <i class="fas fa-play"></i> Start Practice
                                 </button>
-                                <a href="{{ route('dashboard.educonecx-academy.index') }}" class="btn academy-btn-soft">
-                                    <i class="fas fa-sliders-h"></i> Manage Avatar &amp; Context
+                                <a href="{{ route('dashboard.educonecx-academy.index') }}#coach-settings" class="btn academy-btn-soft">
+                                    <i class="fas fa-sliders-h"></i> Coach Settings
                                 </a>
                                 <span id="statusMessage" class="academy-status-message"></span>
                             </div>
@@ -664,62 +730,61 @@
                 </div>
             </section>
 
-            <section id="avatarSessionArea" class="academy-liveavatar-section d-none">
-                <div class="academy-liveavatar-card">
-                    <div class="academy-liveavatar-header">
+            <section id="coachSessionArea" class="academy-livecoach-section d-none">
+                <div class="academy-livecoach-card">
+                    <div class="academy-livecoach-header">
                         <div>
-                            <h2 class="academy-liveavatar-title"><i class="fas fa-video"></i> Live Avatar Session</h2>
-                            <p class="academy-liveavatar-status" id="avatarSessionStatus"><span class="academy-status-dot"></span>Ready</p>
+                            <h2 class="academy-livecoach-title"><i class="fas fa-video"></i> Speaking Session</h2>
+                            <p class="academy-livecoach-status" id="coachSessionStatus"><span class="academy-status-dot"></span>Start a live speaking session with Victoria Clarke and practice real-world English conversations.</p>
                         </div>
-                        <a id="openLiveAvatarLink" href="#" target="_blank" rel="noopener" class="btn academy-btn-soft d-none">
-                            <i class="fas fa-external-link-alt"></i> Open in New Tab
+                        <a id="openSessionLink" href="#" target="_blank" rel="noopener" class="btn academy-btn-soft d-none">
+                            <i class="fas fa-external-link-alt"></i> Open Session
                         </a>
                     </div>
 
-                    <div id="avatarMount" class="academy-liveavatar-frame-wrap">
-                        <div class="academy-liveavatar-placeholder">
-                            <i class="fas fa-user-astronaut"></i>
-                            <strong>LiveAvatar will appear here.</strong>
-                            <span>Confirm your LiveAvatar setup and click “Practice with AI Avatar”.</span>
+                    <div id="coachMount" class="academy-livecoach-frame-wrap">
+                        <div class="academy-livecoach-placeholder">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <strong>Your Speaking Session will appear here.</strong>
+                            <span>Confirm your practice setup and click “Start Practice”.</span>
                         </div>
                     </div>
 
-                    <div id="liveAvatarDebug"></div>
+                    <div id="liveCoachDebug"></div>
                 </div>
             </section>
 
             <section id="practiceEvaluationArea" class="academy-evaluation-section">
                 <div class="academy-evaluation-card">
                     <div class="academy-evaluation-header">
-                        <h2 class="academy-liveavatar-title"><i class="fas fa-microphone-alt"></i> Evaluate My Speaking</h2>
-                        <p class="academy-liveavatar-status mb-0">Record your voice after practice and receive pronunciation, grammar, fluency, vocabulary, and overall scoring.</p>
+                        <h2 class="academy-livecoach-title"><i class="fas fa-microphone-alt"></i> Speaking Performance Review</h2>
+                        <p class="academy-livecoach-status mb-0">Receive detailed feedback on your pronunciation, fluency, grammar, vocabulary, and speaking confidence.</p>
                     </div>
                     <div class="academy-evaluation-body">
                         <div class="academy-step-row">
-                            <div class="academy-step"><span class="academy-step-number">1</span><div><strong>Practice with avatar</strong><br><span class="text-muted">Use the LiveAvatar roleplay prompt.</span></div></div>
+                            <div class="academy-step"><span class="academy-step-number">1</span><div><strong>Practice with your coach</strong><br><span class="text-muted">Use Victoria’s real-world conversation prompts.</span></div></div>
                             <div class="academy-step"><span class="academy-step-number">2</span><div><strong>Record your answer</strong><br><span class="text-muted">Capture your response in the browser.</span></div></div>
-                            <div class="academy-step"><span class="academy-step-number">3</span><div><strong>Get AI feedback</strong><br><span class="text-muted">Review scores and next steps.</span></div></div>
+                            <div class="academy-step"><span class="academy-step-number">3</span><div><strong>Get a feedback report</strong><br><span class="text-muted">Review scores, strengths, and next steps.</span></div></div>
                         </div>
 
                         <div class="academy-info-box">
                             <i class="fas fa-info-circle"></i>
-                            HeyGen/LiveAvatar powers the live avatar conversation. OpenAI is used only after recording for evaluation and progress tracking.
+                            Complete your conversation with Victoria Clarke, then record a short response to receive your performance review.
                         </div>
-                        {{-- TODO: If LiveAvatar provides native scoring/evaluation APIs, replace or reduce OpenAI evaluation to avoid duplicate cost. --}}
 
                         <div class="academy-recording-controls">
                             <button type="button" id="startRecordingBtn" class="btn academy-btn-primary" disabled><i class="fas fa-microphone-alt"></i> Start Recording</button>
                             <button type="button" id="stopRecordingBtn" class="btn academy-btn-danger" disabled><i class="fas fa-stop"></i> Stop Recording</button>
-                            <button type="button" id="evaluateSpeakingBtn" class="btn academy-btn-navy" disabled><i class="fas fa-magic"></i> Evaluate My Speaking</button>
+                            <button type="button" id="evaluateSpeakingBtn" class="btn academy-btn-navy" disabled><i class="fas fa-clipboard-check"></i> Get Performance Review</button>
                         </div>
                         <audio id="audioPreview" class="academy-audio-preview d-none" controls></audio>
-                        <p id="recordingHelp" class="small text-muted mt-2 mb-0">If your browser blocks simultaneous microphone access, please finish the avatar practice first, then record your answer for evaluation.</p>
+                        <p id="recordingHelp" class="small text-muted mt-2 mb-0">If your browser blocks simultaneous microphone access, please finish the speaking session first, then record your answer for evaluation.</p>
 
-                        <label for="practiceTranscript" class="form-label fw-semibold mt-4">Optional transcript for text-only evaluation</label>
+                        <label for="practiceTranscript" class="form-label fw-semibold mt-4">Optional transcript for a text-only review</label>
                         <textarea id="practiceTranscript" class="form-control academy-textarea" rows="5" placeholder="Optional fallback: type or paste what you said if you cannot record audio."></textarea>
                         <div class="academy-action-row mt-3">
-                            <button type="button" id="evaluatePracticeBtn" class="btn academy-btn-soft" disabled><i class="fas fa-keyboard"></i> Evaluate Text Only</button>
-                            <span id="evaluationStatus" class="small text-muted">Start a LiveAvatar practice session, then record your voice for pronunciation evaluation.</span>
+                            <button type="button" id="evaluatePracticeBtn" class="btn academy-btn-soft" disabled><i class="fas fa-keyboard"></i> Review Text Only</button>
+                            <span id="evaluationStatus" class="small text-muted">Start a speaking session, then record your voice for pronunciation feedback.</span>
                         </div>
                         <div id="evaluationResult" class="academy-evaluation-result mt-4 d-none"></div>
                     </div>
@@ -731,15 +796,15 @@
 
 <script>
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
-    const currentAvatarConfig = @json($currentAvatarConfig ?? []);
+    const currentPracticeConfig = @json($currentAvatarConfig ?? []);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const appDebug = @json(config('app.debug'));
 
     const startBtn = document.getElementById('startPracticeBtn');
     const statusMessage = document.getElementById('statusMessage');
-    const avatarSessionArea = document.getElementById('avatarSessionArea');
-    const avatarSessionStatus = document.getElementById('avatarSessionStatus');
-    const avatarMount = document.getElementById('avatarMount');
+    const coachSessionArea = document.getElementById('coachSessionArea');
+    const coachSessionStatus = document.getElementById('coachSessionStatus');
+    const coachMount = document.getElementById('coachMount');
     const practiceTranscript = document.getElementById('practiceTranscript');
     const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
     const startRecordingBtn = document.getElementById('startRecordingBtn');
@@ -748,7 +813,7 @@
     const audioPreview = document.getElementById('audioPreview');
     const evaluationStatus = document.getElementById('evaluationStatus');
     const evaluationResult = document.getElementById('evaluationResult');
-    const liveAvatarDebug = document.getElementById('liveAvatarDebug');
+    const liveCoachDebug = document.getElementById('liveCoachDebug');
 
     let academySessionId = null;
     let mediaRecorder = null;
@@ -756,7 +821,7 @@
     let recordedBlob = null;
     let activeStream = null;
 
-    const hasLiveAvatarConfig = Boolean(currentAvatarConfig.avatar_id && currentAvatarConfig.context_id && !missingHeyGenConfig.length);
+    const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
 
     const setEvaluationStatus = (message, className = 'small text-muted') => {
         evaluationStatus.textContent = message;
@@ -769,10 +834,10 @@
     };
 
     const updateEvaluationButtons = () => {
-        startRecordingBtn.disabled = !hasLiveAvatarConfig || Boolean(mediaRecorder && mediaRecorder.state === 'recording');
+        startRecordingBtn.disabled = !hasPracticeConfig || Boolean(mediaRecorder && mediaRecorder.state === 'recording');
         stopRecordingBtn.disabled = !(mediaRecorder && mediaRecorder.state === 'recording');
-        evaluateSpeakingBtn.disabled = !hasLiveAvatarConfig || !recordedBlob;
-        evaluatePracticeBtn.disabled = !hasLiveAvatarConfig;
+        evaluateSpeakingBtn.disabled = !hasPracticeConfig || !recordedBlob;
+        evaluatePracticeBtn.disabled = !hasPracticeConfig;
     };
 
     const escapeHtml = (value) => String(value ?? '')
@@ -855,8 +920,8 @@
     };
 
     startRecordingBtn.addEventListener('click', async function () {
-        if (!hasLiveAvatarConfig) {
-            setEvaluationStatus('Please select an avatar and context before recording.', 'small text-danger');
+        if (!hasPracticeConfig) {
+            setEvaluationStatus('Please complete your coach settings before recording.', 'small text-danger');
             return;
         }
 
@@ -886,7 +951,7 @@
                     activeStream.getTracks().forEach(track => track.stop());
                 }
                 activeStream = null;
-                setEvaluationStatus('Recording stopped. Ready for AI evaluation.', 'small text-success');
+                setEvaluationStatus('Recording stopped. Ready for your performance review.', 'small text-success');
                 updateEvaluationButtons();
             });
 
@@ -925,7 +990,7 @@
             formData.append('audio', recordedBlob, 'practice.webm');
             formData.append('academy_session_id', academySessionId || '');
 
-            setEvaluationStatus('Evaluating with OpenAI...', 'small text-muted');
+            setEvaluationStatus('Preparing your performance review...', 'small text-muted');
 
             const response = await fetch("{{ route('educonecx.academy.session.evaluate.audio') }}", {
                 method: 'POST',
@@ -946,7 +1011,7 @@
             renderEvaluation(data.evaluation);
             setEvaluationStatus('Evaluation complete', 'small text-success');
         } catch (error) {
-            console.error('OpenAI audio evaluation error:', error);
+            console.error('review service audio evaluation error:', error);
             setEvaluationStatus(error.message || 'Unable to evaluate this recording right now.', 'small text-danger');
         } finally {
             updateEvaluationButtons();
@@ -960,7 +1025,7 @@
             return;
         }
 
-        setEvaluationStatus('Evaluating with OpenAI...', 'small text-muted');
+        setEvaluationStatus('Preparing your performance review...', 'small text-muted');
         evaluatePracticeBtn.disabled = true;
 
         try {
@@ -981,27 +1046,27 @@
 
             if (!response.ok || !data.success) {
                 const validationMessage = data.errors ? Object.values(data.errors).flat().join(' ') : null;
-                throw new Error(validationMessage || data.message || 'Unable to get AI feedback right now.');
+                throw new Error(validationMessage || data.message || 'Unable to prepare your feedback report right now.');
             }
 
             renderEvaluation(data.evaluation);
             setEvaluationStatus('Evaluation complete', 'small text-success');
         } catch (error) {
-            console.error('OpenAI text evaluation error:', error);
-            setEvaluationStatus(error.message || 'Unable to get AI feedback right now.', 'small text-danger');
+            console.error('review service text evaluation error:', error);
+            setEvaluationStatus(error.message || 'Unable to prepare your feedback report right now.', 'small text-danger');
         } finally {
             updateEvaluationButtons();
         }
     });
 
     startBtn?.addEventListener('click', async function () {
-        if (!hasLiveAvatarConfig) {
-            setStatusMessage('Please select an avatar and context from your EDUCONECX Academy dashboard before starting practice.', true);
+        if (!hasPracticeConfig) {
+            setStatusMessage('Please complete your Coach Settings before starting practice.', true);
             return;
         }
 
-        setStatusMessage('Creating LiveAvatar embed...');
-        avatarSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Loading LiveAvatar...';
+        setStatusMessage('Preparing your Speaking Session...');
+        coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Preparing your coach...';
         startBtn.disabled = true;
 
         try {
@@ -1020,79 +1085,64 @@
 
             try {
                 data = responseText ? JSON.parse(responseText) : {};
-                console.log('LiveAvatar embed response:', data);
+
             } catch (e) {
                 throw new Error('Server returned an unexpected response. Please refresh and try again.');
             }
 
             if (!response.ok || !data.success) {
-                throw new Error(data.message || 'Unable to load LiveAvatar.');
+                throw new Error(data.message || 'Unable to load your speaking session.');
             }
 
             academySessionId = data.academy_session_id || null;
 
-            const openLiveAvatarLink = document.getElementById('openLiveAvatarLink');
+            const openSessionLink = document.getElementById('openSessionLink');
 
             if (!data.embed_url) {
-                throw new Error('LiveAvatar embed URL missing.');
+                throw new Error('Speaking session link missing.');
             }
 
-            avatarSessionArea.classList.remove('d-none');
+            coachSessionArea.classList.remove('d-none');
 
-            avatarMount.innerHTML = `
+            coachMount.innerHTML = `
                 <iframe
                     src="${data.embed_url}"
-                    title="LiveAvatar Embed"
+                    title="Speaking Session"
                     allow="microphone; camera; autoplay; fullscreen; clipboard-read; clipboard-write"
                     allowfullscreen
                     loading="eager"
                 ></iframe>
             `;
 
-            openLiveAvatarLink.href = data.embed_url;
-            openLiveAvatarLink.classList.remove('d-none');
+            openSessionLink.href = data.embed_url;
+            openSessionLink.classList.remove('d-none');
 
-            setStatusMessage('LiveAvatar embed created successfully.');
-            avatarSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Connected. Click Chat now and allow microphone access.';
-            setEvaluationStatus('Ready to record your voice for pronunciation evaluation.');
+            setStatusMessage('Speaking Session is ready.');
+            coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Your English Coach is ready. Click Chat Now and allow microphone access to begin your speaking session.';
+            setEvaluationStatus('Ready to record your voice for pronunciation feedback.');
             updateEvaluationButtons();
 
-            if (appDebug) {
-                liveAvatarDebug.innerHTML = `
-                    <details class="academy-debug">
-                        <summary>Developer Debug Info</summary>
-                        <div class="mt-2">
-                            <strong>Embed URL:</strong> <a href="${data.embed_url}" target="_blank" rel="noopener">${data.embed_url}</a><br>
-                            <strong>Avatar ID:</strong> ${data.avatar_id || '-'}<br>
-                            <strong>Voice ID:</strong> ${data.voice_id || '-'}<br>
-                            <strong>Context ID:</strong> ${data.context_id || '-'}<br>
-                            <strong>Note:</strong> If Chat now fails, check LiveAvatar avatar/context/voice compatibility and billing.
-                        </div>
-                    </details>
-                `;
-            } else {
-                liveAvatarDebug.innerHTML = '';
-            }
+            liveCoachDebug.innerHTML = '';
 
             setTimeout(() => {
-                avatarSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                coachSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 300);
         } catch (error) {
-            console.error('LiveAvatar embed error:', error);
-            setStatusMessage(error.message || 'Unable to load LiveAvatar.', true);
-            avatarSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
+            console.error('speaking session embed error:', error);
+            setStatusMessage(error.message || 'Unable to load your speaking session.', true);
+            coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
         } finally {
-            startBtn.disabled = !hasLiveAvatarConfig;
+            startBtn.disabled = !hasPracticeConfig;
         }
     });
 
     if (missingHeyGenConfig.length) {
-        setStatusMessage(`LiveAvatar is not configured yet (${missingHeyGenConfig.join(', ')} missing).`, true);
-    } else if (!hasLiveAvatarConfig) {
-        setStatusMessage('Please select an avatar and context from your EDUCONECX Academy dashboard before starting practice.', true);
+        setStatusMessage(`Practice Room is not ready yet (${missingHeyGenConfig.join(', ')} missing).`, true);
+    } else if (!hasPracticeConfig) {
+        setStatusMessage('Please complete your Coach Settings before starting practice.', true);
     } else {
-        setStatusMessage('Ready to start LiveAvatar practice.');
-        setEvaluationStatus('Start a LiveAvatar practice session, then record your voice for pronunciation evaluation.');
+        setStatusMessage('Ready to start your speaking session.');
+        setEvaluationStatus('Start a speaking session, then record your voice for pronunciation feedback.');
     }
 
     updateEvaluationButtons();

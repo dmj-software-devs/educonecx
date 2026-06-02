@@ -1366,7 +1366,7 @@
                 </a>
                 <a href="{{ route('dashboard.educonecx-academy.index') }}" class="nav-item {{ request()->routeIs('dashboard.educonecx-academy.*') || request()->routeIs('educonecx.academy.*') ? 'active' : '' }}">
                     <i class="fas fa-graduation-cap"></i>
-                    <span>EDUCONECX Academy</span>
+                    <span>Practice Room</span>
                 </a>
                 <a href="{{ route('my-courses') }}" class="nav-item">
                     <i class="fas fa-book"></i>
@@ -1482,12 +1482,12 @@
             </div>
         </div>
 
-        <!-- EDUCONECX Academy Practice History -->
+        <!-- Practice Room Session History -->
         <div class="content-card">
             <div class="card-header">
                 <h2 class="card-title">
                     <i class="fas fa-microphone-alt"></i>
-                    EDUCONECX Academy Practice History
+                    Practice Room Session History
                 </h2>
                 <a href="{{ route('educonecx.academy.index') }}" class="empty-btn">
                     Practice now <i class="fas fa-arrow-right"></i>
@@ -1503,7 +1503,7 @@
                         <div class="academy-history-item">
                             <div class="academy-history-top">
                                 <div>
-                                    <h3 class="academy-history-title">{{ $academySession->scenario->title ?? 'Academy Practice Session' }}</h3>
+                                    <h3 class="academy-history-title">{{ $academySession->scenario->title ?? 'Practice Room Session' }}</h3>
                                     <div class="academy-history-meta">
                                         <span><i class="fas fa-layer-group"></i> {{ $academySession->category->title ?? 'No category' }}</span>
                                         <span><i class="far fa-calendar-alt"></i> {{ optional($academySession->created_at)->format('M d, Y g:i A') }}</span>
@@ -1550,9 +1550,9 @@
                         <i class="fas fa-microphone-alt"></i>
                     </div>
                     <h3 class="empty-title">No speaking practice yet.</h3>
-                    <p class="empty-text">Start your first AI avatar practice.</p>
+                    <p class="empty-text">Start your first Practice Room session.</p>
                     <a href="{{ route('educonecx.academy.index') }}" class="empty-btn">
-                        Start Academy Practice <i class="fas fa-arrow-right"></i>
+                        Start Practice <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             @endif
