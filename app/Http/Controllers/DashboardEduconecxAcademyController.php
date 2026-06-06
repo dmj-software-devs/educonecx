@@ -64,79 +64,41 @@ class DashboardEduconecxAcademyController extends Controller
             ],
         ];
 
-        $publicAvatars = $liveAvatarService->listPublicAvatars();
-        $customAvatars = $liveAvatarService->listCustomAvatars();
-        $avatars = collect(array_merge($publicAvatars, $customAvatars))
-            ->unique('id')
-            ->values()
-            ->all();
+        $avatars = [];
+        $contexts = [];
+        $voices = [];
+        $liveAvatarDebug = [];
 
-        if ($avatars === [] && filled(config('services.heygen.default_avatar_id'))) {
-            $avatars[] = [
-                'id' => (string) config('services.heygen.default_avatar_id'),
-                'name' => 'Env Avatar Fallback',
-                'image_url' => null,
-                'type' => 'env fallback',
-            ];
+        if ($user->isAdmin()) {
+            $publicAvatars = $liveAvatarService->listPublicAvatars();
+            $customAvatars = $liveAvatarService->listCustomAvatars();
+            $avatars = collect(array_merge($publicAvatars, $customAvatars))
+                ->unique('id')
+                ->values()
+                ->all();
+
+            if ($avatars === [] && filled(config('services.heygen.default_avatar_id'))) {
+                $avatars[] = [
+                    'id' => (string) config('services.heygen.default_avatar_id'),
+                    'name' => 'Victoria Clarke',
+                    'image_url' => null,
+                    'type' => 'default',
+                ];
+            }
+
+            $contexts = $this->normalizeContexts($liveAvatarService->listContexts());
+            if ($contexts === [] && filled(config('services.heygen.default_context_id'))) {
+                $contexts[] = [
+                    'id' => (string) config('services.heygen.default_context_id'),
+                    'name' => 'English Speaking Practice',
+                ];
+            }
+
+            $voices = $liveAvatarService->listVoices();
+            $liveAvatarDebug = $liveAvatarService->getLiveAvatarListingDebug();
         }
 
-        $contexts = $this->normalizeContexts($liveAvatarService->listContexts());
-        if ($contexts === [] && filled(config('services.heygen.default_context_id'))) {
-            $contexts[] = [
-                'id' => (string) config('services.heygen.default_context_id'),
-                'name' => 'Env Context Fallback',
-            ];
-        }
 
-        $voices = $liveAvatarService->listVoices();
-        $liveAvatarDebug = $liveAvatarService->getLiveAvatarListingDebug();
-
-        if (app()->environment('local') && $request->boolean('liveavatar_debug')) {
-            return response()->json([
-                'avatars_raw' => collect($liveAvatarDebug)
-                    ->filter(fn ($debug) => ($debug['type'] ?? null) === 'avatars')
-                    ->map(fn ($debug) => [
-                        'endpoint_url' => $debug['endpoint_url'] ?? null,
-                        'status' => $debug['status'] ?? null,
-                        'headers' => $debug['headers'] ?? [],
-                        'body' => $debug['raw'] ?? null,
-                        'count' => $debug['count'] ?? 0,
-                        'error' => $debug['error'] ?? null,
-                        'first_raw_item_keys' => $debug['first_raw_item_keys'] ?? [],
-                        'first_raw_item' => $debug['first_raw_item'] ?? null,
-                    ])
-                    ->values(),
-                'contexts_raw' => collect($liveAvatarDebug)
-                    ->filter(fn ($debug) => ($debug['type'] ?? null) === 'contexts')
-                    ->map(fn ($debug) => [
-                        'endpoint_url' => $debug['endpoint_url'] ?? null,
-                        'status' => $debug['status'] ?? null,
-                        'headers' => $debug['headers'] ?? [],
-                        'body' => $debug['raw'] ?? null,
-                        'count' => $debug['count'] ?? 0,
-                        'error' => $debug['error'] ?? null,
-                        'first_raw_item_keys' => $debug['first_raw_item_keys'] ?? [],
-                        'first_raw_item' => $debug['first_raw_item'] ?? null,
-                    ])
-                    ->values(),
-                'voices_raw' => collect($liveAvatarDebug)
-                    ->filter(fn ($debug) => ($debug['type'] ?? null) === 'voices')
-                    ->map(fn ($debug) => [
-                        'endpoint_url' => $debug['endpoint_url'] ?? null,
-                        'status' => $debug['status'] ?? null,
-                        'headers' => $debug['headers'] ?? [],
-                        'body' => $debug['raw'] ?? null,
-                        'count' => $debug['count'] ?? 0,
-                        'error' => $debug['error'] ?? null,
-                        'first_raw_item_keys' => $debug['first_raw_item_keys'] ?? [],
-                        'first_raw_item' => $debug['first_raw_item'] ?? null,
-                    ])
-                    ->values(),
-                'avatar_count_loaded' => count($avatars),
-                'context_count_loaded' => count($contexts),
-                'voice_count_loaded' => count($voices),
-            ]);
-        }
 
 
         return view('dashboard.educonecx-academy.index', compact(
@@ -152,6 +114,8 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function updateAvatarPreference(Request $request): RedirectResponse
     {
+        abort_unless($request->user()?->isAdmin(), 403);
+
         $validated = $request->validate([
             'heygen_avatar_id' => ['required', 'string', 'max:255'],
             'avatar_name' => ['nullable', 'string', 'max:255'],
@@ -173,6 +137,8 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function updateContextPreference(Request $request): RedirectResponse
     {
+        abort_unless($request->user()?->isAdmin(), 403);
+
         $validated = $request->validate([
             'heygen_context_id' => ['required', 'string', 'max:255'],
             'context_name' => ['nullable', 'string', 'max:255'],
@@ -304,7 +270,7 @@ class DashboardEduconecxAcademyController extends Controller
             ->filter(fn ($context) => filled($context['id'] ?? null))
             ->map(fn ($context) => [
                 'id' => (string) $context['id'],
-                'name' => (string) ($context['name'] ?? 'LiveAvatar Context'),
+                'name' => (string) ($context['name'] ?? 'English Speaking Practice'),
             ]);
 
         return $contextCollection->unique('id')->values()->all();

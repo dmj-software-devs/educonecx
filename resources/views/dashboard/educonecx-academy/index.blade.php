@@ -117,8 +117,8 @@
     .academy-chart-row i { display: block; height: 100%; background: linear-gradient(135deg, var(--academy-yellow), var(--academy-navy-2)); border-radius: inherit; }
 
     @media (max-width: 1180px) { .coach-grid, .academy-chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 900px) { .academy-dashboard-layout { grid-template-columns: 1fr; } .academy-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 560px) { .academy-dashboard { padding: 12px; } .academy-stats-grid, .coach-grid, .context-grid, .academy-chart-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .academy-dashboard-layout { grid-template-columns: 1fr; } .academy-stats-grid, .academy-chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { .academy-dashboard { padding: 12px; } .coach-grid, .context-grid { grid-template-columns: 1fr; } .academy-card-body { padding: 14px; } }
 </style>
 @endpush
 
@@ -142,7 +142,9 @@
                 <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Session History</a>
                 <a href="#performance-reports" class="academy-nav-item"><i class="fas fa-chart-line"></i> Performance Reports</a>
                 <a href="#progress-tracking" class="academy-nav-item"><i class="fas fa-bullseye"></i> Progress Tracking</a>
-                <a href="#coach-settings" class="academy-nav-item"><i class="fas fa-user-cog"></i> Coach Settings</a>
+                @if(auth()->user()?->isAdmin())
+                    <a href="#coach-settings" class="academy-nav-item"><i class="fas fa-user-cog"></i> Coach Configuration</a>
+                @endif
             </nav>
         </aside>
 
@@ -195,11 +197,12 @@
                 </div></div>
             </section>
 
+            @if(auth()->user()?->isAdmin())
             <section id="coach-settings" class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Choose Your English Coach</h2>
-                        <p class="academy-card-subtitle">Select the coach profile learners see in the Practice Room.</p>
+                        <h2 class="academy-card-title">Configure English Coach</h2>
+                        <p class="academy-card-subtitle">Administrator-only coach profile controls for the Practice Room.</p>
                     </div>
                 </div>
                 <div class="academy-card-body">
@@ -235,8 +238,8 @@
             <section class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Choose Conversation Scenario</h2>
-                        <p class="academy-card-subtitle">Choose the real-world conversation scenario for your next coaching session.</p>
+                        <h2 class="academy-card-title">Configure Conversation Scenario</h2>
+                        <p class="academy-card-subtitle">Administrator-only conversation focus controls for learner sessions.</p>
                     </div>
                 </div>
                 <div class="academy-card-body">
@@ -265,6 +268,8 @@
                     @endif
                 </div>
             </section>
+
+            @endif
 
             <section id="session-history" class="academy-card">
                 <div class="academy-card-header">

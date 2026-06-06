@@ -565,6 +565,34 @@
         font-size: 1.9rem;
     }
 
+
+
+    .academy-mobile-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .academy-mini-card {
+        border: 1px solid var(--academy-border);
+        border-radius: 14px;
+        padding: 16px;
+        background: linear-gradient(180deg, #fff, var(--academy-ivory));
+    }
+
+    .academy-mini-card span {
+        display: block;
+        color: var(--academy-muted);
+        font-size: .78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .academy-mini-card strong {
+        color: var(--academy-navy);
+        font-size: 1.35rem;
+    }
+
     .academy-evaluation-result {
         background: #fff;
         border: 1px solid rgba(10, 29, 68, 0.08);
@@ -608,6 +636,22 @@
         .academy-card-body,
         .academy-evaluation-body {
             padding: 18px;
+        }
+
+        .academy-config-list,
+        .academy-step-row,
+        .academy-recording-controls,
+        .academy-coach-focus ul {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .academy-config-item,
+        .academy-step,
+        .academy-recording-controls .btn,
+        .academy-coach-focus li {
+            min-width: 0;
         }
 
         .academy-livecoach-header {
@@ -704,12 +748,6 @@
                                 <strong>{{ $currentPracticeConfig['preferred_language'] ?: 'English' }}{{ $currentPracticeConfig['speaking_level'] ? ' • ' . $currentPracticeConfig['speaking_level'] : '' }}{{ $currentPracticeConfig['tutor_style'] ? ' • ' . $currentPracticeConfig['tutor_style'] : '' }}</strong>
                             </div>
 
-                            @if(! $canStartPractice)
-                                <div class="alert alert-warning mb-0">
-                                    Please choose your English Coach and conversation focus from Coach Settings before starting practice.
-                                </div>
-                            @endif
-
                             @if(!empty($missingHeyGenConfig))
                                 <div class="alert alert-warning mb-0">
                                     Your Practice Room is not ready yet. Please contact support to complete the setup.
@@ -720,9 +758,6 @@
                                 <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
                                     <i class="fas fa-play"></i> Start Practice
                                 </button>
-                                <a href="{{ route('dashboard.educonecx-academy.index') }}#coach-settings" class="btn academy-btn-soft">
-                                    <i class="fas fa-sliders-h"></i> Coach Settings
-                                </a>
                                 <span id="statusMessage" class="academy-status-message"></span>
                             </div>
                         </div>
@@ -775,8 +810,10 @@
                         <div class="academy-recording-controls">
                             <button type="button" id="startRecordingBtn" class="btn academy-btn-primary" disabled><i class="fas fa-microphone-alt"></i> Start Recording</button>
                             <button type="button" id="stopRecordingBtn" class="btn academy-btn-danger" disabled><i class="fas fa-stop"></i> Stop Recording</button>
+                            <button type="button" id="retryRecordingBtn" class="btn academy-btn-soft" disabled><i class="fas fa-redo-alt"></i> Retry Recording</button>
                             <button type="button" id="evaluateSpeakingBtn" class="btn academy-btn-navy" disabled><i class="fas fa-clipboard-check"></i> Get Performance Review</button>
                         </div>
+                        <div id="recordingTimer" class="small fw-semibold text-muted mt-2">Recording time: 00:00</div>
                         <audio id="audioPreview" class="academy-audio-preview d-none" controls></audio>
                         <p id="recordingHelp" class="small text-muted mt-2 mb-0">If your browser blocks simultaneous microphone access, please finish the speaking session first, then record your answer for evaluation.</p>
 
@@ -784,21 +821,60 @@
                         <textarea id="practiceTranscript" class="form-control academy-textarea" rows="5" placeholder="Optional fallback: type or paste what you said if you cannot record audio."></textarea>
                         <div class="academy-action-row mt-3">
                             <button type="button" id="evaluatePracticeBtn" class="btn academy-btn-soft" disabled><i class="fas fa-keyboard"></i> Review Text Only</button>
-                            <span id="evaluationStatus" class="small text-muted">Start a speaking session, then record your voice for pronunciation feedback.</span>
+                            <span id="evaluationStatus" class="small text-muted">Start a speaking session, then record your voice for performance feedback.</span>
                         </div>
                         <div id="evaluationResult" class="academy-evaluation-result mt-4 d-none"></div>
                     </div>
                 </div>
             </section>
+
+            <section id="practiceHistoryArea" class="academy-card mb-4">
+                <div class="academy-card-header">
+                    <h2 class="academy-card-title"><i class="fas fa-history"></i> Practice History</h2>
+                    <p class="academy-card-subtitle">Quick access to your latest English speaking sessions.</p>
+                </div>
+                <div class="academy-card-body">
+                    <div class="academy-mobile-summary-grid">
+                        @forelse($recentPracticeSessions as $session)
+                            <div class="academy-mini-card">
+                                <span>{{ optional($session->created_at)->format('M d, Y') }}</span>
+                                <strong>{{ is_null($session->overall_score) ? 'In progress' : number_format($session->overall_score, 1) . '/10' }}</strong>
+                                <p class="mb-0 text-muted">{{ $session->context_name ?: 'English speaking practice' }}</p>
+                            </div>
+                        @empty
+                            <div class="academy-mini-card">
+                                <span>No sessions yet</span>
+                                <strong>Start today</strong>
+                                <p class="mb-0 text-muted">Your practice history will appear here.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </section>
+
+            <section id="learningProgressArea" class="academy-card mb-4">
+                <div class="academy-card-header">
+                    <h2 class="academy-card-title"><i class="fas fa-chart-line"></i> Learning Progress</h2>
+                    <p class="academy-card-subtitle">Track your speaking consistency and feedback review results.</p>
+                </div>
+                <div class="academy-card-body">
+                    <div class="academy-mobile-summary-grid">
+                        <div class="academy-mini-card"><span>Total Sessions</span><strong>{{ $practiceStats['total_sessions'] }}</strong></div>
+                        <div class="academy-mini-card"><span>Average Score</span><strong>{{ $practiceStats['average_overall_score'] ? $practiceStats['average_overall_score'] . '/10' : 'N/A' }}</strong></div>
+                        <div class="academy-mini-card"><span>Completed Reviews</span><strong>{{ $practiceStats['completed_reviews'] }}</strong></div>
+                        <div class="academy-mini-card"><span>Last Practice</span><strong style="font-size:1rem;">{{ $practiceStats['last_practice_date'] ?? 'No practice yet' }}</strong></div>
+                    </div>
+                </div>
+            </section>
+
         </div>
     </main>
 </div>
 
 <script>
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
-    const currentPracticeConfig = @json($currentAvatarConfig ?? []);
+    const hasServerPracticeConfig = @json($canStartPractice);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const appDebug = @json(config('app.debug'));
 
     const startBtn = document.getElementById('startPracticeBtn');
     const statusMessage = document.getElementById('statusMessage');
@@ -809,7 +885,9 @@
     const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
     const startRecordingBtn = document.getElementById('startRecordingBtn');
     const stopRecordingBtn = document.getElementById('stopRecordingBtn');
+    const retryRecordingBtn = document.getElementById('retryRecordingBtn');
     const evaluateSpeakingBtn = document.getElementById('evaluateSpeakingBtn');
+    const recordingTimer = document.getElementById('recordingTimer');
     const audioPreview = document.getElementById('audioPreview');
     const evaluationStatus = document.getElementById('evaluationStatus');
     const evaluationResult = document.getElementById('evaluationResult');
@@ -820,8 +898,11 @@
     let audioChunks = [];
     let recordedBlob = null;
     let activeStream = null;
+    let recordingStartedAt = null;
+    let recordingTimerInterval = null;
+    let audioPreviewObjectUrl = null;
 
-    const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
+    const hasPracticeConfig = Boolean(hasServerPracticeConfig && !missingHeyGenConfig.length);
 
     const setEvaluationStatus = (message, className = 'small text-muted') => {
         evaluationStatus.textContent = message;
@@ -833,11 +914,50 @@
         statusMessage.classList.toggle('text-danger', isError);
     };
 
+    const formatRecordingTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+        return `${minutes}:${secs}`;
+    };
+
+    const stopRecordingTimer = () => {
+        if (recordingTimerInterval) {
+            clearInterval(recordingTimerInterval);
+            recordingTimerInterval = null;
+        }
+    };
+
     const updateEvaluationButtons = () => {
-        startRecordingBtn.disabled = !hasPracticeConfig || Boolean(mediaRecorder && mediaRecorder.state === 'recording');
+        const recording = mediaRecorder && mediaRecorder.state === 'recording';
+        startRecordingBtn.disabled = !hasPracticeConfig || recording;
         stopRecordingBtn.disabled = !(mediaRecorder && mediaRecorder.state === 'recording');
+        retryRecordingBtn.disabled = !hasPracticeConfig || recording || !recordedBlob;
         evaluateSpeakingBtn.disabled = !hasPracticeConfig || !recordedBlob;
-        evaluatePracticeBtn.disabled = !hasPracticeConfig;
+        evaluatePracticeBtn.disabled = !hasPracticeConfig || practiceTranscript.value.trim().length < 10;
+    };
+
+    const resetRecordingState = (message = 'Ready to record your voice for performance feedback.') => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+        }
+        if (activeStream) {
+            activeStream.getTracks().forEach(track => track.stop());
+            activeStream = null;
+        }
+        stopRecordingTimer();
+        recordingStartedAt = null;
+        audioChunks = [];
+        recordedBlob = null;
+        if (audioPreviewObjectUrl) {
+            URL.revokeObjectURL(audioPreviewObjectUrl);
+            audioPreviewObjectUrl = null;
+        }
+        audioPreview.removeAttribute('src');
+        audioPreview.load();
+        audioPreview.classList.add('d-none');
+        recordingTimer.textContent = 'Recording time: 00:00';
+        setEvaluationStatus(message);
+        updateEvaluationButtons();
     };
 
     const escapeHtml = (value) => String(value ?? '')
@@ -919,9 +1039,11 @@
         `;
     };
 
+    practiceTranscript.addEventListener('input', updateEvaluationButtons);
+
     startRecordingBtn.addEventListener('click', async function () {
         if (!hasPracticeConfig) {
-            setEvaluationStatus('Please complete your coach settings before recording.', 'small text-danger');
+            setEvaluationStatus('The Practice Room is not ready yet. Please contact support before recording.', 'small text-danger');
             return;
         }
 
@@ -931,9 +1053,7 @@
         }
 
         try {
-            recordedBlob = null;
-            audioChunks = [];
-            audioPreview.classList.add('d-none');
+            resetRecordingState('Preparing recorder...');
             activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(activeStream);
 
@@ -944,8 +1064,10 @@
             });
 
             mediaRecorder.addEventListener('stop', () => {
+                stopRecordingTimer();
                 recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                audioPreview.src = URL.createObjectURL(recordedBlob);
+                audioPreviewObjectUrl = URL.createObjectURL(recordedBlob);
+                audioPreview.src = audioPreviewObjectUrl;
                 audioPreview.classList.remove('d-none');
                 if (activeStream) {
                     activeStream.getTracks().forEach(track => track.stop());
@@ -956,6 +1078,10 @@
             });
 
             mediaRecorder.start();
+            recordingStartedAt = Date.now();
+            recordingTimerInterval = setInterval(() => {
+                recordingTimer.textContent = `Recording time: ${formatRecordingTime((Date.now() - recordingStartedAt) / 1000)}`;
+            }, 250);
             setEvaluationStatus('Recording...', 'small text-danger');
             updateEvaluationButtons();
         } catch (error) {
@@ -975,9 +1101,13 @@
         }
     });
 
+    retryRecordingBtn.addEventListener('click', function () {
+        resetRecordingState('Previous recording cleared. You can record again now.');
+    });
+
     evaluateSpeakingBtn.addEventListener('click', async function () {
         if (!recordedBlob) {
-            setEvaluationStatus('Please record your voice before requesting pronunciation evaluation.', 'small text-danger');
+            setEvaluationStatus('Please record your voice before requesting a performance review.', 'small text-danger');
             return;
         }
 
@@ -1061,7 +1191,7 @@
 
     startBtn?.addEventListener('click', async function () {
         if (!hasPracticeConfig) {
-            setStatusMessage('Please complete your Coach Settings before starting practice.', true);
+            setStatusMessage('The Practice Room is not ready yet. Please contact support before starting practice.', true);
             return;
         }
 
@@ -1119,7 +1249,7 @@
 
             setStatusMessage('Speaking Session is ready.');
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Your English Coach is ready. Click Chat Now and allow microphone access to begin your speaking session.';
-            setEvaluationStatus('Ready to record your voice for pronunciation feedback.');
+            setEvaluationStatus('Ready to record your voice for performance feedback.');
             updateEvaluationButtons();
 
             liveCoachDebug.innerHTML = '';
@@ -1137,12 +1267,12 @@
     });
 
     if (missingHeyGenConfig.length) {
-        setStatusMessage(`Practice Room is not ready yet (${missingHeyGenConfig.join(', ')} missing).`, true);
+        setStatusMessage('Practice Room is not ready yet. Please contact support.', true);
     } else if (!hasPracticeConfig) {
-        setStatusMessage('Please complete your Coach Settings before starting practice.', true);
+        setStatusMessage('The Practice Room is not ready yet. Please contact support before starting practice.', true);
     } else {
         setStatusMessage('Ready to start your speaking session.');
-        setEvaluationStatus('Start a speaking session, then record your voice for pronunciation feedback.');
+        setEvaluationStatus('Start a speaking session, then record your voice for performance feedback.');
     }
 
     updateEvaluationButtons();

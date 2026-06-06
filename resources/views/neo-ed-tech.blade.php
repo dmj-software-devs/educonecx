@@ -1689,7 +1689,7 @@
                 </ul>
             </div>
 
-            <!-- AI & Automation -->
+            <!-- Digital Automation -->
             <div class="neo-service-card" data-aos="fade-up" data-aos-delay="600">
                 <div class="neo-service-icon">
                     <i class="fas fa-robot"></i>
@@ -1875,7 +1875,7 @@
                 </p>
                 <div class="neo-testimonial-author">
                     <div class="neo-author-image">
-<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop&auto=format" alt="User Avatar" loading="lazy">                    </div>
+<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&fit=crop&auto=format" alt="User Profile Photo" loading="lazy">                    </div>
                     <div class="neo-author-info">
                         <h4>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_name') }}</h4>
                         <p>{{ App\Helpers\TranslationHelper::trans('neo.testimonial_1_role') }}</p>
@@ -2036,7 +2036,7 @@
             <option value="Paid Growth">{{ App\Helpers\TranslationHelper::trans('neo.service_3_title') }}</option>
             <option value="Website & Funnels">{{ App\Helpers\TranslationHelper::trans('neo.service_4_title') }}</option>
             <option value="SEO & Local Presence">{{ App\Helpers\TranslationHelper::trans('neo.service_5_title') }}</option>
-            <option value="AI & Automation">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</option>
+            <option value="Digital Automation">{{ App\Helpers\TranslationHelper::trans('neo.service_6_title') }}</option>
             <option value="Analytics & Reporting">{{ App\Helpers\TranslationHelper::trans('neo.service_7_title') }}</option>
             <option value="Branding & Design">{{ App\Helpers\TranslationHelper::trans('neo.service_8_title') }}</option>
             <option value="Influencer & Partnerships">{{ App\Helpers\TranslationHelper::trans('neo.service_9_title') }}</option>

@@ -22,8 +22,19 @@ class EduconecxAcademyController extends Controller
             ->where('status', 'active')
             ->first();
         $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting);
+        $recentPracticeSessions = AcademySession::query()
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->take(4)
+            ->get();
+        $practiceStats = [
+            'total_sessions' => AcademySession::where('user_id', auth()->id())->count(),
+            'average_overall_score' => round((float) (AcademySession::where('user_id', auth()->id())->whereNotNull('overall_score')->avg('overall_score') ?? 0), 1),
+            'last_practice_date' => optional(AcademySession::where('user_id', auth()->id())->latest()->first()?->created_at)->format('M d, Y'),
+            'completed_reviews' => AcademySession::where('user_id', auth()->id())->whereNotNull('overall_score')->count(),
+        ];
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'recentPracticeSessions', 'practiceStats'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
@@ -109,17 +120,11 @@ class EduconecxAcademyController extends Controller
                 'academy_session_id' => $session->id,
                 'embed_url' => $embedUrl,
                 'embed_script' => $embed['embed_script'],
-                'avatar_id' => data_get($resolved, 'avatar_id'),
-                'voice_id' => data_get($resolved, 'voice_id'),
-                'context_id' => data_get($resolved, 'context_id'),
-                'endpoint_url' => $embed['endpoint_url'],
-                'endpoint_status' => $embed['status'],
             ]);
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unable to prepare your speaking session right now. Please try again later.',
-                'debug' => config('app.debug') ? $heyGenService->apiKeyDebugMeta() : null,
             ], 422);
         }
     }
@@ -144,8 +149,8 @@ class EduconecxAcademyController extends Controller
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 'Performance review service is not configured.' : $exception->getMessage(),
-            ], $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 422 : 500);
+                'message' => $exception->getMessage() === 'Performance review service is not configured.' ? 'Performance review service is not configured.' : $exception->getMessage(),
+            ], $exception->getMessage() === 'Performance review service is not configured.' ? 422 : 500);
         }
 
         $this->saveEvaluationToSession($session, $evaluation);
@@ -177,8 +182,8 @@ class EduconecxAcademyController extends Controller
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 'Performance review service is not configured.' : $exception->getMessage(),
-            ], $exception->getMessage() === 'OpenAI evaluation is not configured.' ? 422 : 500);
+                'message' => $exception->getMessage() === 'Performance review service is not configured.' ? 'Performance review service is not configured.' : $exception->getMessage(),
+            ], $exception->getMessage() === 'Performance review service is not configured.' ? 422 : 500);
         }
 
         $this->saveEvaluationToSession($session, $evaluation, [
@@ -209,7 +214,7 @@ class EduconecxAcademyController extends Controller
 
         if (blank($currentConfig['avatar_id']) || blank($currentConfig['context_id'])) {
             throw ValidationException::withMessages([
-                'academy_session_id' => 'Please complete your Coach Settings before requesting a performance review.',
+                'academy_session_id' => 'The Practice Room is not ready yet. Please contact support before requesting a performance review.',
             ]);
         }
 
@@ -260,9 +265,9 @@ class EduconecxAcademyController extends Controller
             'avatar_id' => $avatarSetting?->heygen_avatar_id ?: config('services.heygen.default_avatar_id'),
             'voice_id' => $avatarSetting?->heygen_voice_id ?: config('services.heygen.default_voice_id'),
             'context_id' => $avatarSetting?->heygen_context_id ?: config('services.heygen.default_context_id'),
-            'avatar_name' => $avatarSetting?->avatar_name ?: (config('services.heygen.default_avatar_id') ? 'Env Avatar Fallback' : null),
+            'avatar_name' => 'Victoria Clarke',
             'avatar_image_url' => $avatarSetting?->avatar_image_url,
-            'context_name' => $avatarSetting?->context_name ?: (config('services.heygen.default_context_id') ? 'Env Context Fallback' : null),
+            'context_name' => $avatarSetting?->context_name ?: 'Personalized English speaking practice',
             'preferred_language' => $avatarSetting?->preferred_language ?: 'English',
             'speaking_level' => $avatarSetting?->speaking_level,
             'tutor_style' => $avatarSetting?->tutor_style,

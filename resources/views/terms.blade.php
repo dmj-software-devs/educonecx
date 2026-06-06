@@ -532,7 +532,7 @@
                         <li><a href="#section5">5. Payment Terms and Subscriptions</a></li>
                         <li><a href="#section6">6. Refund Policy</a></li>
                         <li><a href="#section7">7. Intellectual Property Rights</a></li>
-                        <li><a href="#section8">8. AI Companion Disclaimer</a></li>
+                        <li><a href="#section8">8. Learning Companion Disclaimer</a></li>
                         <li><a href="#section9">9. User-Generated Content</a></li>
                         <li><a href="#section10">10. Privacy and Data Protection</a></li>
                         <li><a href="#section11">11. Disclaimer of Warranties</a></li>
@@ -576,7 +576,7 @@
                 <div id="section2" class="terms-article">
                     <span class="article-number">2.</span>
                     <h2 class="article-title">Description of Services</h2>
-                    <p class="article-content">EDUCONECX provides online educational content focused on digital skills, professional development, and personal growth. Our courses, tools, and learning resources are designed to help users progress academically, socially, and economically. Content is offered in multiple languages and may include videos, digital materials, progress tracking, and AI-powered learning assistance.</p>
+                    <p class="article-content">EDUCONECX provides online educational content focused on digital skills, professional development, and personal growth. Our courses, tools, and learning resources are designed to help users progress academically, socially, and economically. Content is offered in multiple languages and may include videos, digital materials, progress tracking, and interactive learning assistance.</p>
                 </div>
                 
                 <!-- Section 3 -->
@@ -648,8 +648,8 @@
                 <!-- Section 8 -->
                 <div id="section8" class="terms-article">
                     <span class="article-number">8.</span>
-                    <h2 class="article-title">AI Companion Disclaimer</h2>
-                    <p class="article-content">AI features on the platform provide general educational support only. AI guidance is not intended for:</p>
+                    <h2 class="article-title">Learning Companion Disclaimer</h2>
+                    <p class="article-content">Interactive learning features on the platform provide general educational support only. Learning guidance is not intended for:</p>
                     <ul class="article-list">
                         <li>Legal, medical, financial, or professional advice</li>
                         <li>Emergency assistance</li>

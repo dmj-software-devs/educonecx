@@ -17,7 +17,7 @@
             <form action="{{ route('admin.profile.avatar') }}" method="POST" enctype="multipart/form-data" class="mt-3">
                 @csrf
                 <input type="file" name="avatar" class="form-control mb-2" accept="image/*">
-                <button type="submit" class="btn btn-sm btn-primary">Update Avatar</button>
+                <button type="submit" class="btn btn-sm btn-primary">Update Profile Photo</button>
             </form>
         </div>
     </div>

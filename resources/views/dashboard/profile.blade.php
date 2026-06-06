@@ -308,7 +308,7 @@
         letter-spacing: 0.5px !important;
     }
 
-    /* Enhanced Avatar Upload */
+    /* Enhanced Profile Photo Upload */
     .profile-page-avatar-upload {
         background: var(--ivory);
         border-radius: var(--radius-lg);
@@ -1291,7 +1291,7 @@
                 </div>
             </div>
 
-            <!-- Avatar Upload Form - Enhanced -->
+            <!-- Profile Photo Upload Form - Enhanced -->
             <div class="profile-page-avatar-upload">
                 <form action="{{ route('profile.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
                     @csrf
@@ -1880,7 +1880,7 @@
             strengthText.textContent = '{{ App\Helpers\TranslationHelper::trans('profile.password_strength_empty') }}';
         }
 
-        // Avatar preview
+        // Profile photo preview
         window.previewAvatar = function(input) {
             const uploadBtn = document.getElementById('uploadBtn');
             if (input.files && input.files[0]) {

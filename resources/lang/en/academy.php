@@ -3,12 +3,12 @@
 return [
     // Meta
     'title' => 'EDUCONECX Academy - Practical Online Courses for Digital Success',
-    'meta_description' => 'Join EDUCONECX Academy for practical online courses in English, finance, business, and technology. Learn practical skills with AI-powered guidance and expert instruction.',
+    'meta_description' => 'Join EDUCONECX Academy for practical online courses in English, finance, business, and technology. Learn practical skills with interactive guidance and expert instruction.',
 
     // Hero Section
     'hero_badge' => 'EDUCONECX Academy',
     'hero_title' => 'Master <span>Practical Skills</span> for the Digital Economy',
-    'hero_description' => 'Practical online courses in English, finance, business, and technology. Learn with AI-powered guidance and expert instruction.',
+    'hero_description' => 'Practical online courses in English, finance, business, and technology. Learn with interactive guidance and expert instruction.',
     'hero_stat_1' => 'Expert-Led Courses',
     'hero_stat_2' => 'Active Students',
     'hero_stat_3' => 'Countries',
@@ -18,9 +18,9 @@ return [
     // Features Section
     'features_subtitle' => 'Why Choose Us',
     'features_title' => 'The <span>Academy Advantage</span>',
-    'features_description' => 'Experience a unique learning approach that combines AI technology with practical skills training',
+    'features_description' => 'Experience a unique learning approach that combines modern learning technology with practical skills training',
     
-    'feature_1_title' => 'AI-Powered Learning',
+    'feature_1_title' => 'Interactive Learning',
     'feature_1_text' => 'Personalized learning paths that adapt to your pace and style with intelligent recommendations.',
     
     'feature_2_title' => 'Learn at Your Pace',
@@ -60,7 +60,7 @@ return [
     
     'category_technology_name' => 'Technology',
     'category_technology_title' => 'Digital Skills for the Future',
-    'category_technology_description' => 'Learn web development, AI basics, and essential tech skills.',
+    'category_technology_description' => 'Learn web development, automation basics, and essential tech skills.',
 
     // Learning Paths Section
     'paths_subtitle' => 'Learning Paths',
@@ -98,7 +98,7 @@ return [
     'path_technology_title' => 'Tech Innovator',
     'path_technology_description' => 'Comprehensive technology and innovation training',
     'path_technology_feature_1' => 'Web Development',
-    'path_technology_feature_2' => 'AI & Machine Learning',
+    'path_technology_feature_2' => 'Automation & Machine Learning',
     'path_technology_feature_3' => 'Cloud Computing',
     'path_technology_feature_4' => 'Cybersecurity',
 

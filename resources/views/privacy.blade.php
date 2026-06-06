@@ -676,7 +676,7 @@
                         <a href="#section2" class="toc-item"><i class="fas fa-arrow-right"></i> 2. PERSONAL DATA WE COLLECT</a>
                         <a href="#section3" class="toc-item"><i class="fas fa-arrow-right"></i> 3. PURPOSES OF DATA PROCESSING</a>
                         <a href="#section4" class="toc-item"><i class="fas fa-arrow-right"></i> 4. DATA SHARING</a>
-                        <a href="#section5" class="toc-item"><i class="fas fa-arrow-right"></i> 5. AI COMPANION DATA</a>
+                        <a href="#section5" class="toc-item"><i class="fas fa-arrow-right"></i> 5. automation COMPANION DATA</a>
                         <a href="#section6" class="toc-item"><i class="fas fa-arrow-right"></i> 6. USER RIGHTS</a>
                         <a href="#section7" class="toc-item"><i class="fas fa-arrow-right"></i> 7. DATA SECURITY</a>
                         <a href="#section8" class="toc-item"><i class="fas fa-arrow-right"></i> 8. CONSENT</a>
@@ -722,7 +722,7 @@
                     </h3>
                     <ul class="policy-list">
                         <li><i class="fas fa-check"></i> Paid and free online English courses</li>
-                        <li><i class="fas fa-check"></i> AI Companion for self-learning</li>
+                        <li><i class="fas fa-check"></i> Learning Companion for self-learning</li>
                         <li><i class="fas fa-check"></i> Call center training programs</li>
                         <li><i class="fas fa-check"></i> Digital learning programs</li>
                         <li><i class="fas fa-check"></i> Educational content</li>
@@ -747,12 +747,12 @@
                         <li><strong>Profile Data:</strong> Preferred language, learning preferences</li>
                         <li><strong>Financial Data:</strong> Payment information (processed by Stripe — we never store full credit card details)</li>
                         <li><strong>Technical Data:</strong> IP address, browser type, device information</li>
-                        <li><strong>Usage Data:</strong> Pages visited, course progress, AI interactions</li>
+                        <li><strong>Usage Data:</strong> Pages visited, course progress, learning companion interactions</li>
                         <li><strong>Communication Data:</strong> Support tickets, feedback, messages</li>
                         <li><strong>Marketing Data:</strong> Preferences and consent records</li>
                         <li><strong>Learning Data:</strong> Course completion certificates, achievements</li>
                         <li><strong>Session Data:</strong> Session recordings (if applicable for training)</li>
-                        <li><strong>AI Interaction Data:</strong> Questions and content submitted via the AI Companion</li>
+                        <li><strong>Learning Companion Interaction Data:</strong> Questions and content submitted via the Learning Companion</li>
                     </div>
                     
                     <div class="highlight-box">
@@ -811,11 +811,11 @@
                 <div id="section5" class="policy-section" data-aos="fade-up">
                     <div class="section-header">
                         <span class="section-number">5</span>
-                        <h2 class="section-title">AI COMPANION DATA</h2>
+                        <h2 class="section-title">LEARNING COMPANION DATA</h2>
                     </div>
                     
                     <p class="policy-text">
-                        The AI Companion is an integral part of your learning experience. Here's how we handle AI-related data:
+                        The Learning Companion is an integral part of your learning experience. Here's how we handle learning-companion-related data:
                     </p>
                     
                     <h3 class="subsection-title">
@@ -825,22 +825,22 @@
                     <ul class="policy-list">
                         <li>User-submitted questions and prompts</li>
                         <li>User interactions and conversation history</li>
-                        <li>AI-generated responses and recommendations</li>
+                        <li>system-generated responses and recommendations</li>
                     </ul>
                     
                     <h3 class="subsection-title">
                         <i class="fas fa-chart-line"></i>
-                        How We Use AI Data
+                        How We Use Learning Companion Data
                     </h3>
                     <ul class="policy-list">
                         <li>Provide personalized responses and learning recommendations</li>
-                        <li>Improve the AI Companion service (using anonymized data)</li>
-                        <li>Evaluate AI performance and accuracy</li>
-                        <li>Train and enhance our AI models (anonymized and aggregated)</li>
+                        <li>Improve the Learning Companion service (using anonymized data)</li>
+                        <li>Evaluate learning companion performance and accuracy</li>
+                        <li>Train and enhance our learning systems (anonymized and aggregated)</li>
                     </ul>
                     
                     <div class="highlight-box">
-                        <p><strong>Your Rights:</strong> You have the right to opt out of AI-based profiling. AI interaction data is retained for 2 years. We use only anonymized data to improve our AI models — never identifiable personal data.</p>
+                        <p><strong>Your Rights:</strong> You have the right to opt out of automated profiling. automation interaction data is retained for 2 years. We use only anonymized data to improve our learning systems — never identifiable personal data.</p>
                     </div>
                 </div>
                 

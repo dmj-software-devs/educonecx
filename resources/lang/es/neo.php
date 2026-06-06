@@ -76,7 +76,7 @@ return [
     'service_5_feature_5' => 'Investigación y estrategia de palabras clave',
     'service_5_feature_6' => 'ASO básico (si es necesario)',
 
-    // Service 6: AI & Automation
+    // Service 6: Digital Automation
     'service_6_title' => 'IA y Automatización',
     'service_6_text' => 'Implementación inteligente de IA en su sitio web y WhatsApp para servicio al cliente 24/7.',
     'service_6_feature_1' => 'Asistente de IA en sitio web',

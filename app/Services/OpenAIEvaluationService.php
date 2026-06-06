@@ -9,7 +9,7 @@ use RuntimeException;
 
 class OpenAIEvaluationService
 {
-    private const PRONUNCIATION_NOTE = 'Pronunciation score requires audio recording or LiveAvatar speech metrics.';
+    private const PRONUNCIATION_NOTE = 'Pronunciation score requires an audio recording.';
 
     public function evaluateSession(AcademySession $session, string $transcript): array
     {
@@ -50,7 +50,7 @@ class OpenAIEvaluationService
     private function ensureConfigured(): void
     {
         if ($this->apiKey() === '') {
-            throw new RuntimeException('OpenAI evaluation is not configured.');
+            throw new RuntimeException('Performance review service is not configured.');
         }
     }
 
@@ -91,7 +91,7 @@ class OpenAIEvaluationService
         if ($response->failed()) {
             $providerMessage = data_get($response->json(), 'error.message')
                 ?? data_get($response->json(), 'message')
-                ?? 'OpenAI audio transcription request failed.';
+                ?? 'Audio transcription request failed.';
 
             Log::warning('OpenAI audio transcription returned an error', [
                 'academy_session_id' => $session->id,
@@ -105,7 +105,7 @@ class OpenAIEvaluationService
         $transcript = trim((string) data_get($response->json(), 'text'));
 
         if ($transcript === '') {
-            throw new RuntimeException('OpenAI did not return a transcript for this recording.');
+            throw new RuntimeException('The review service did not return a transcript for this recording.');
         }
 
         return $transcript;
@@ -156,7 +156,7 @@ class OpenAIEvaluationService
         if ($response->failed()) {
             $providerMessage = data_get($response->json(), 'error.message')
                 ?? data_get($response->json(), 'message')
-                ?? 'OpenAI Responses API request failed.';
+                ?? 'Performance review request failed.';
 
             Log::warning('OpenAI evaluation returned an error', [
                 'academy_session_id' => $session->id,
@@ -175,20 +175,20 @@ class OpenAIEvaluationService
     {
         $scenario = $session->scenario;
         $category = $scenario?->category;
-        $contextName = $session->context_name ?: ($session->heygen_context_id ? 'LiveAvatar context ' . $session->heygen_context_id : 'Not provided');
-        $avatarName = $session->avatar_name ?: ($session->heygen_avatar_id ? 'LiveAvatar avatar ' . $session->heygen_avatar_id : 'Not provided');
+        $contextName = $session->context_name ?: 'English Speaking Practice';
+        $avatarName = $session->avatar_name ?: 'Victoria Clarke';
         $pronunciationInstruction = $audioBased
-            ? 'The learner uploaded a microphone recording that OpenAI transcribed before this evaluation. Provide pronunciation_feedback and a pronunciation_score from 0 to 10 based on speech-to-text clarity, likely unclear words, fluency, and the transcript. If exact acoustic pronunciation details are not available from the transcription output, say the score is approximate and explain the limitation briefly.'
-            : 'No audio recording or LiveAvatar speech metrics are provided in this request, so pronunciation_score must be null and pronunciation_note must match the required note.';
+            ? 'The learner uploaded a microphone recording that was transcribed before this review. Provide pronunciation_feedback and a pronunciation_score from 0 to 10 based on speech-to-text clarity, likely unclear words, fluency, and the transcript. If exact acoustic pronunciation details are not available from the transcription output, say the score is approximate and explain the limitation briefly.'
+            : 'No audio recording or speech metrics are provided in this request, so pronunciation_score must be null and pronunciation_note must match the required note.';
 
         return implode("\n", [
-            "Evaluate this learner's speaking practice for EDUCONECX Academy Social Practice.",
-            'HeyGen/LiveAvatar handled the live avatar, voice interaction, real-time conversation, and roleplay session. OpenAI is only providing post-session evaluation and scoring.',
-            'Selected category: ' . ($category?->title ?? 'LiveAvatar English Practice'),
-            'LiveAvatar avatar: ' . $avatarName,
-            'LiveAvatar context: ' . $contextName,
+            "Evaluate this learner's English speaking practice for EDUCONECX Academy.",
+            'Victoria Clarke led the live coaching conversation. Provide only the post-session performance review and scoring.',
+            'Selected category: ' . ($category?->title ?? 'English Speaking Practice'),
+            'English Coach: ' . $avatarName,
+            'Conversation focus: ' . $contextName,
             'Scenario title: ' . ($scenario?->title ?? $contextName),
-            'Practice text: ' . ($scenario?->practice_text ?? 'Evaluate the learner against the selected LiveAvatar context and natural English speaking practice.'),
+            'Practice text: ' . ($scenario?->practice_text ?? 'Evaluate the learner against the selected English practice focus and natural English speaking practice.'),
             'Transcript: ' . $transcript,
             'Score grammar_score, fluency_score, vocabulary_score, and overall_score from 0 to 10.',
             $audioBased ? 'Also score pronunciation_score from 0 to 10 and include practical pronunciation_feedback.' : 'Set pronunciation_note exactly to: ' . self::PRONUNCIATION_NOTE,
@@ -297,7 +297,7 @@ class OpenAIEvaluationService
                 'audio_based' => $audioBased,
             ]);
 
-            throw new RuntimeException('Unable to parse OpenAI evaluation response.');
+            throw new RuntimeException('Unable to parse performance review response.');
         }
 
         $normalized = [

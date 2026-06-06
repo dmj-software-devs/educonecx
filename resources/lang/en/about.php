@@ -4,17 +4,17 @@ return [
     // Hero Section
     'hero_badge' => 'About EDUCONECX',
     'hero_title' => 'Empowering <span>Learners Worldwide</span>',
-    'hero_description' => 'We\'re on a mission to make quality education accessible to everyone, everywhere through AI-powered learning and practical skill development.',
+    'hero_description' => 'We\'re on a mission to make quality education accessible to everyone, everywhere through interactive learning and practical skill development.',
 
     // Mission Section
     'mission_subtitle' => 'Our Mission',
     'mission_title' => 'Breaking Barriers, <span>Building Futures</span>',
-    'mission_text_1' => 'EDUCONECX is an international, AI-powered educational platform dedicated to supporting learners worldwide with practical language and digital business skills. Our mission is to help individuals overcome language barriers, build real-world competencies, and succeed in today\'s global digital economy.',
-    'mission_text_2' => 'We believe that access to practical education is essential for personal and economic growth. By combining AI-powered learning tools with a practical, skill-focused approach, we help learners build capabilities that open opportunities in customer service, freelancing, online business, and global professional collaboration.',
+    'mission_text_1' => 'EDUCONECX is an international, interactive educational platform dedicated to supporting learners worldwide with practical language and digital business skills. Our mission is to help individuals overcome language barriers, build real-world competencies, and succeed in today\'s global digital economy.',
+    'mission_text_2' => 'We believe that access to practical education is essential for personal and economic growth. By combining interactive learning tools with a practical, skill-focused approach, we help learners build capabilities that open opportunities in customer service, freelancing, online business, and global professional collaboration.',
     'mission_stat_1' => 'Active Learners',
     'mission_stat_2' => 'Expert Instructors',
     'mission_stat_3' => 'Countries',
-    'mission_badge' => 'AI-Powered Learning',
+    'mission_badge' => 'Interactive Learning',
 
     // Values Section
     'values_subtitle' => 'Our Values',
@@ -25,7 +25,7 @@ return [
     'value_1_text' => 'We believe quality education should be accessible to everyone, regardless of their location, background, or financial situation.',
     
     'value_2_title' => 'Innovation',
-    'value_2_text' => 'We continuously leverage AI and cutting-edge technology to create more effective and engaging learning experiences.',
+    'value_2_text' => 'We continuously use modern learning technology and cutting-edge technology to create more effective and engaging learning experiences.',
     
     'value_3_title' => 'Integrity',
     'value_3_text' => 'We are committed to transparency, honesty, and ethical practices in everything we do, from content creation to learner support.',
@@ -43,7 +43,7 @@ return [
     'story_subtitle' => 'Our Story',
     'story_title' => 'Why We Created <span>This Platform</span>',
     'story_text_1' => 'Many individuals face challenges due to limited access to relevant learning resources or training that connects directly to real-world applications. EDUCONECX was created to address this gap.',
-    'story_text_2' => 'We saw a world where talented individuals were held back not by their ability, but by their access to quality education. So we built a platform that combines AI-powered learning tools with practical, skill-focused programs that prepare learners for the digital economy.',
+    'story_text_2' => 'We saw a world where talented individuals were held back not by their ability, but by their access to quality education. So we built a platform that combines interactive learning tools with practical, skill-focused programs that prepare learners for the digital economy.',
     'story_quote' => 'Our learning programs are curated from trusted educational sources and platforms, reviewed and updated to ensure relevance, practicality, and alignment with real-world needs. We bring essential knowledge together in one accessible platform.',
 
     // Services Section
@@ -55,7 +55,7 @@ return [
     'service_1_subtitle' => 'Master practical communication skills',
     'service_1_feature_1' => 'English, French, & Spanish',
     'service_1_feature_2' => 'Professional & everyday communication',
-    'service_1_feature_3' => 'AI-powered speaking practice',
+    'service_1_feature_3' => 'interactive speaking practice',
     'service_1_feature_4' => 'Cultural context integration',
     'service_1_feature_5' => 'Progress tracking & certification',
     'service_1_btn' => 'Explore Programs',
@@ -73,7 +73,7 @@ return [
     'service_3_subtitle' => 'Build and scale your online business',
     'service_3_feature_1' => 'E-commerce fundamentals',
     'service_3_feature_2' => 'Digital marketing strategies',
-    'service_3_feature_3' => 'AI integration for business',
+    'service_3_feature_3' => 'automation integration for business',
     'service_3_feature_4' => 'Freelancing mastery',
     'service_3_feature_5' => 'Business planning & execution',
     'service_3_btn' => 'Learn More',
@@ -81,14 +81,14 @@ return [
     // NEO Section
     'neo_subtitle' => 'NEO-EDTECH',
     'neo_title' => 'Professional <span>Agency Services</span>',
-    'neo_text_1' => 'In addition to our educational platform, EDUCONECX operates NEO-EDTECH, a professional agency providing digital marketing, AI-powered solutions, web and e-commerce services, and business support.',
+    'neo_text_1' => 'In addition to our educational platform, EDUCONECX operates NEO-EDTECH, a professional agency providing digital marketing, interactive solutions, web and e-commerce services, and business support.',
     'neo_text_2' => 'This initiative complements the learning experience by helping individuals and organizations apply knowledge in practical contexts and translate skills into measurable outcomes.',
     'neo_feature_1' => 'Digital Marketing Strategy',
-    'neo_feature_2' => 'AI-Powered Business Solutions',
+    'neo_feature_2' => 'Interactive Business Solutions',
     'neo_feature_3' => 'Web Development & E-commerce',
     'neo_feature_4' => 'Business Consulting',
     'neo_btn' => 'Explore NEO-EDTECH',
-    'neo_badge' => 'AI-Powered',
+    'neo_badge' => 'Interactive',
 
     // Team Section
     'team_subtitle' => 'Our Team',
@@ -104,8 +104,8 @@ return [
     'team_2_bio' => 'Former university professor, PhD in Education',
     
     'team_3_name' => 'Michael Chen',
-    'team_3_position' => 'AI & Technology Lead',
-    'team_3_bio' => 'AI researcher and machine learning expert',
+    'team_3_position' => 'Education Technology Lead',
+    'team_3_bio' => 'education technology specialist and machine learning expert',
     
     'team_4_name' => 'Maria Garcia',
     'team_4_position' => 'Language Programs Director',

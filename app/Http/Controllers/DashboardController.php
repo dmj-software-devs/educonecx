@@ -312,7 +312,7 @@ class DashboardController extends Controller
             $user->update(['avatar' => $path]);
         }
 
-        return redirect()->route('profile')->with('success', 'Avatar updated successfully');
+        return redirect()->route('profile')->with('success', 'Profile photo updated successfully');
     }
 
     /**

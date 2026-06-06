@@ -24,7 +24,7 @@ return [
     // Services Section
     'services_subtitle' => 'Our Expertise',
     'services_title' => 'Complete Digital <span>Solutions</span>',
-    'services_description' => 'NEO ED-TECH manages social media end-to-end and creates professional, platform-native content that promotes your business and drives growth. We also implement AI across your website and WhatsApp—smart chatbots, automations, and analytics—so you serve customers 24/7, convert more leads, and scale efficiently.',
+    'services_description' => 'NEO ED-TECH manages social media end-to-end and creates professional, platform-native content that promotes your business and drives growth. We also implement automation across your website and WhatsApp—smart chatbots, automations, and analytics—so you serve customers 24/7, convert more leads, and scale efficiently.',
     
     // Service 1: Social Media Management
     'service_1_title' => 'Social Media Management',
@@ -76,16 +76,16 @@ return [
     'service_5_feature_5' => 'Keyword research & strategy',
     'service_5_feature_6' => 'Basic ASO (if needed)',
 
-    // Service 6: AI & Automation
-    'service_6_title' => 'AI & Automation',
-    'service_6_text' => 'Smart AI implementation across your website and WhatsApp for 24/7 customer service.',
-    'service_6_feature_1' => 'Website AI assistant',
+    // Service 6: Digital Automation
+    'service_6_title' => 'Digital Automation',
+    'service_6_text' => 'Smart smart automation implementation across your website and WhatsApp for 24/7 customer service.',
+    'service_6_feature_1' => 'Website digital assistant',
     'service_6_feature_2' => 'WhatsApp Business chatbot',
     'service_6_feature_3' => 'Lead capture & qualification',
     'service_6_feature_4' => 'Appointment scheduling',
     'service_6_feature_5' => 'CRM integration',
     'service_6_feature_6' => 'Automated email/SMS sequences',
-    'service_6_feature_7' => 'AI knowledge base',
+    'service_6_feature_7' => 'smart knowledge base',
 
     // Service 7: Analytics & Reporting
     'service_7_title' => 'Analytics & Reporting',
@@ -131,7 +131,7 @@ return [
     'about_subtitle' => 'Why NEO ED-TECH?',
     'about_title' => 'Your Success is Our <span>Mission</span>',
     'about_text_1' => 'We don\'t just build websites and run campaigns. We create digital experiences that drive real business growth and deliver measurable results.',
-    'about_text_2' => 'NEO is an Ed-Tech & Digital Solutions agency specializing in modern website creation, smart automation, online store setup, and high-performance digital systems. We help entrepreneurs and businesses launch their platforms, sell online, optimize workflows, integrate AI, and build efficient, accessible, ready-to-use tech solutions.',
+    'about_text_2' => 'NEO is an Ed-Tech & Digital Solutions agency specializing in modern website creation, smart automation, online store setup, and high-performance digital systems. We help entrepreneurs and businesses launch their platforms, sell online, optimize workflows, integrate automation, and build efficient, accessible, ready-to-use tech solutions.',
     'about_feature_1' => '100+ Projects Delivered',
     'about_feature_2' => '95% Client Satisfaction',
     'about_feature_3' => 'Expert Team',

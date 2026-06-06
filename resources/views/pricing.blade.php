@@ -976,7 +976,7 @@
                         <td><i class="fas fa-check feature-check"></i> Full + VIP</td>
                     </tr>
                     <tr>
-                        <td class="feature-name">AI Companion</td>
+                        <td class="feature-name">Learning Companion</td>
                         <td><i class="fas fa-times feature-times"></i></td>
                         <td><i class="fas fa-check feature-check"></i> Basic</td>
                         <td><i class="fas fa-check feature-check"></i> Premium</td>

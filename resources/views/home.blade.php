@@ -2,7 +2,7 @@
 
 @section('title', 'Empower Your Learning Journey Today - EDUCONECX')
 
-@section('meta_description', 'EDUCONECX is an international AI-powered educational platform that empowers learners worldwide with practical language and digital business skills.')
+@section('meta_description', 'EDUCONECX is an international interactive educational platform that empowers learners worldwide with practical language and digital business skills.')
 
 @section('meta_og_image', asset('images/logo.jpg'))
 @push('styles')

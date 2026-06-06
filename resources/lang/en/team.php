@@ -3,12 +3,12 @@
 return [
     // Meta
     'title' => 'Our Team - EDUCONECX | Meet the Minds Behind the Platform',
-    'meta_description' => 'Meet the passionate minds behind EDUCONECX - a team of educators, creators, and AI visionaries working together to break language barriers and build a brighter, more inclusive future.',
+    'meta_description' => 'Meet the passionate minds behind EDUCONECX - a team of educators, creators, and education technology innovators working together to break language barriers and build a brighter, more inclusive future.',
 
     // Hero Section
     'hero_badge' => 'Our Team',
     'hero_title' => 'Meet the Minds Behind <span>EDUCONECX</span>',
-    'hero_text_1' => '<strong>A team of educators, creators, and AI visionaries</strong>',
+    'hero_text_1' => '<strong>A team of educators, creators, and education technology innovators</strong>',
     'hero_text_2' => 'Working together to break language barriers and build a brighter, more inclusive future.',
     'hero_text_3' => 'We blend technology, heart, and purpose to serve communities with clarity, care, and confidence.',
 

@@ -214,7 +214,7 @@ class PageController extends Controller
             'left' => [
                 [
                     'question' => 'What is EDUCONECX?',
-                    'answer' => 'EDUCONECX is an innovative online educational platform that combines AI-powered English learning with specialized call center training programs. We offer both free and premium educational content designed to accelerate your professional development. Even if you are already learning English, EDUCONECX is the best platform to stay connected and practice.',
+                    'answer' => 'EDUCONECX is an innovative online educational platform that combines interactive English learning with specialized call center training programs. We offer both free and premium educational content designed to accelerate your professional development. Even if you are already learning English, EDUCONECX is the best platform to stay connected and practice.',
                     'open' => true // First item open by default
                 ],
                 [
@@ -227,8 +227,8 @@ class PageController extends Controller
                     'answer' => 'You can access EDUCONECX seamlessly across all your devices — mobile phones, tablets, and computers — ensuring learning flexibility wherever you are.'
                 ],
                 [
-                    'question' => 'What is the AI Companion?',
-                    'answer' => 'The AI Companion is an interactive learning assistant that helps you practice languages, provides instant answers to your questions, and guides you through your educational journey with personalized support.'
+                    'question' => 'What is the Learning Companion?',
+                    'answer' => 'The Learning Companion is an interactive learning assistant that helps you practice languages, provides instant answers to your questions, and guides you through your educational journey with personalized support.'
                 ],
                 [
                     'question' => 'Can I cancel my subscription?',
@@ -270,7 +270,7 @@ class PageController extends Controller
                 ],
                 [
                     'question' => 'What is NEO-EDTECH?',
-                    'answer' => 'NEO-EDTECH is a professional agency that provides <strong>digital marketing, AI-powered solutions, and web services</strong>. Our mission is to help businesses and entrepreneurs grow by offering tools such as website creation, e-commerce support, marketing campaigns, and technology consulting. We focus on combining <strong>linguistic and technological innovation</strong> to deliver modern, results-oriented solutions.'
+                    'answer' => 'NEO-EDTECH is a professional agency that provides <strong>digital marketing, interactive solutions, and web services</strong>. Our mission is to help businesses and entrepreneurs grow by offering tools such as website creation, e-commerce support, marketing campaigns, and technology consulting. We focus on combining <strong>linguistic and technological innovation</strong> to deliver modern, results-oriented solutions.'
                 ],
             ]
         ];
