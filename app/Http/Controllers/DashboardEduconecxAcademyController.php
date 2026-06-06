@@ -41,8 +41,8 @@ class DashboardEduconecxAcademyController extends Controller
             ->get();
         $creditSummary = [
             'balance' => $creditAccount->balance,
-            'practice_cost' => (int) config('practice_room.practice_credit_cost'),
-            'exam_cost' => (int) config('practice_room.exam_credit_cost'),
+            'practice_cost' => (int) (config('practice_room.practice_credit_cost', 1) ?? 1),
+            'exam_cost' => (int) (config('practice_room.exam_credit_cost', 2) ?? 2),
             'lifetime_used' => $creditAccount->lifetime_used,
             'lifetime_granted' => $creditAccount->lifetime_granted,
         ];
@@ -233,7 +233,7 @@ class DashboardEduconecxAcademyController extends Controller
 
     private function creditAccount(int $userId): UserPracticeCredit
     {
-        $defaultCredits = (int) config('practice_room.default_course_credits');
+        $defaultCredits = (int) (config('practice_room.default_course_credits', 20) ?? 20);
         $account = UserPracticeCredit::firstOrCreate(
             ['user_id' => $userId],
             [

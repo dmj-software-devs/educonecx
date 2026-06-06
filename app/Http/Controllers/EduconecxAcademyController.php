@@ -293,8 +293,8 @@ class EduconecxAcademyController extends Controller
         $account = UserPracticeCredit::firstOrCreate(
             ['user_id' => $userId],
             [
-                'balance' => config('practice_room.default_course_credits'),
-                'lifetime_granted' => config('practice_room.default_course_credits'),
+                'balance' => (int) (config('practice_room.default_course_credits', 20) ?? 20),
+                'lifetime_granted' => (int) (config('practice_room.default_course_credits', 20) ?? 20),
             ]
         );
 
@@ -336,8 +336,8 @@ class EduconecxAcademyController extends Controller
     private function creditCost(string $sessionType): int
     {
         return $sessionType === 'exam'
-            ? (int) config('practice_room.exam_credit_cost')
-            : (int) config('practice_room.practice_credit_cost');
+            ? (int) (config('practice_room.exam_credit_cost', 2) ?? 2)
+            : (int) (config('practice_room.practice_credit_cost', 1) ?? 1);
     }
 
     private function examResult($score): ?string

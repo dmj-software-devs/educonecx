@@ -48,7 +48,7 @@ class EnrollmentController extends Controller
 
     private function grantCourseCredits($user, $course): void
     {
-        $credits = (int) config('practice_room.default_course_credits');
+        $credits = (int) (config('practice_room.default_course_credits', 20) ?? 20);
 
         if ($credits <= 0) {
             return;
