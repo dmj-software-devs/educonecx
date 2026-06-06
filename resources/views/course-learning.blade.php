@@ -841,6 +841,9 @@
 .lesson-content-body img { max-width: 100%; border-radius: var(--radius-md); margin: 20px 0; }
 .lesson-content-body pre { background: var(--ivory); padding: 15px; border-radius: var(--radius-md); overflow-x: auto; }
 .lesson-content-body code { background: var(--ivory); padding: 2px 5px; border-radius: 4px; font-family: monospace; }
+.lesson-action-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
+.lesson-practice-btn { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 18px; background:var(--bright-amber); color:var(--prussian-blue); font-weight:800; text-decoration:none; }
+.lesson-practice-btn:hover { color:var(--prussian-blue); text-decoration:none; transform:translateY(-1px); }
 .lesson-attachment { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(251,198,12,.2); }
 .lesson-attachment .btn {
     display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
@@ -1797,6 +1800,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h2>${esc(title)}</h2>
                 <div class="lesson-content-body">${content||'<p>No additional content for this lesson.</p>'}</div>
                 ${att}
+                <div class="lesson-action-row">
+                    <a href="{{ route('educonecx.academy.index') }}" class="lesson-practice-btn"><i class="fas fa-comments"></i> Practice This Lesson</a>
+                </div>
                 <div class="completion-toggle">
                     <input type="checkbox" id="markCompleteCheckbox" ${isDone?'checked':''}
                            onchange="toggleLessonComplete(${currentLessonId})">

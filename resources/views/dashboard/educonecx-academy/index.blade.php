@@ -139,8 +139,10 @@
 
                 <div class="academy-nav-title">Practice Room</div>
                 <a href="{{ route('educonecx.academy.index') }}" class="academy-nav-item"><i class="fas fa-play-circle"></i> Start Practice</a>
-                <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Session History</a>
+                <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Practice History</a>
+                <a href="#exam-results" class="academy-nav-item"><i class="fas fa-clipboard-check"></i> Exam Results</a>
                 <a href="#performance-reports" class="academy-nav-item"><i class="fas fa-chart-line"></i> Performance Reports</a>
+                <a href="#credits" class="academy-nav-item"><i class="fas fa-coins"></i> Credits</a>
                 <a href="#progress-tracking" class="academy-nav-item"><i class="fas fa-bullseye"></i> Progress Tracking</a>
                 @if(auth()->user()?->isAdmin())
                     <a href="#coach-settings" class="academy-nav-item"><i class="fas fa-user-cog"></i> Coach Configuration</a>
@@ -166,6 +168,7 @@
                 <div class="academy-stat"><span>Overall Speaking Score</span><strong>{{ $stats['average_overall_score'] ? $stats['average_overall_score'] . '/10' : 'N/A' }}</strong></div>
                 <div class="academy-stat"><span>Best Speaking Score</span><strong>{{ $stats['best_score'] ? $stats['best_score'] . '/10' : 'N/A' }}</strong></div>
                 <div class="academy-stat"><span>Last Practice</span><strong style="font-size:1rem;">{{ $stats['last_practice_date'] ?? 'No practice yet' }}</strong></div>
+                <div class="academy-stat"><span>Practice Credits</span><strong>{{ $creditSummary['balance'] }}</strong></div>
             </section>
 
             <section id="performance-reports" class="academy-card">
@@ -195,6 +198,77 @@
                     <div class="academy-stat"><span>Average Score</span><strong>{{ $stats['average_overall_score'] ? $stats['average_overall_score'] . '/10' : 'N/A' }}</strong></div>
                     <div class="academy-stat"><span>Improvement</span><strong>{{ $stats['improvement_percentage'] }}%</strong></div>
                 </div></div>
+            </section>
+
+
+            <section id="exam-results" class="academy-card">
+                <div class="academy-card-header">
+                    <div>
+                        <h2 class="academy-card-title">Exam Results</h2>
+                        <p class="academy-card-subtitle">Formal speaking assessment results submitted from the Practice Room.</p>
+                    </div>
+                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-yellow"><i class="fas fa-clipboard-check"></i> Take Exam</a>
+                </div>
+                <div class="academy-card-body">
+                    <div class="academy-table-wrap">
+                        <table class="academy-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th><th>Coach</th><th>Duration</th><th>Pronunciation</th><th>Grammar</th><th>Fluency</th><th>Vocabulary</th><th>Overall Score</th><th>Status</th><th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($examSessions as $session)
+                                    @php $duration = ($session->started_at && $session->ended_at) ? $session->started_at->diffForHumans($session->ended_at, true) : 'In progress'; @endphp
+                                    <tr>
+                                        <td>{{ optional($session->created_at)->format('M d, Y g:i A') }}</td>
+                                        <td><strong>Victoria Clarke</strong><br><span class="text-muted">English Coach</span></td>
+                                        <td>{{ $duration }}</td>
+                                        <td><span class="score-pill">{{ is_null($session->pronunciation_score) ? 'N/A' : number_format($session->pronunciation_score, 1) }}</span></td>
+                                        <td><span class="score-pill">{{ is_null($session->grammar_score) ? 'N/A' : number_format($session->grammar_score, 1) }}</span></td>
+                                        <td><span class="score-pill">{{ is_null($session->fluency_score) ? 'N/A' : number_format($session->fluency_score, 1) }}</span></td>
+                                        <td><span class="score-pill">{{ is_null($session->vocabulary_score) ? 'N/A' : number_format($session->vocabulary_score, 1) }}</span></td>
+                                        <td><span class="score-pill">{{ is_null($session->overall_score) ? 'N/A' : number_format($session->overall_score, 1) }}</span></td>
+                                        <td>{{ $session->is_locked ? 'Locked' : ucfirst($session->status ?? 'pending') }}</td>
+                                        <td><a href="{{ route('dashboard.educonecx-academy.sessions.show', $session) }}" class="academy-btn-navy">View Report</a></td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="10" class="text-center py-4">No exam results yet.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="credits" class="academy-card">
+                <div class="academy-card-header"><div><h2 class="academy-card-title">Credits</h2><p class="academy-card-subtitle">Practice Room credit balance and recent activity.</p></div><a href="{{ route('subscription.plans') }}" class="academy-btn-yellow"><i class="fas fa-plus"></i> Buy Additional Credits</a></div>
+                <div class="academy-card-body">
+                    <div class="academy-stats-grid">
+                        <div class="academy-stat"><span>Available Credits</span><strong>{{ $creditSummary['balance'] }}</strong></div>
+                        <div class="academy-stat"><span>Practice Cost</span><strong>{{ $creditSummary['practice_cost'] }}</strong></div>
+                        <div class="academy-stat"><span>Exam Cost</span><strong>{{ $creditSummary['exam_cost'] }}</strong></div>
+                        <div class="academy-stat"><span>Lifetime Used</span><strong>{{ $creditSummary['lifetime_used'] }}</strong></div>
+                    </div>
+                    <div class="academy-table-wrap mt-3">
+                        <table class="academy-table">
+                            <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance</th><th>Description</th></tr></thead>
+                            <tbody>
+                                @forelse($creditTransactions as $transaction)
+                                    <tr>
+                                        <td>{{ optional($transaction->created_at)->format('M d, Y g:i A') }}</td>
+                                        <td>{{ ucwords(str_replace('_', ' ', $transaction->type)) }}</td>
+                                        <td>{{ $transaction->amount > 0 ? '+' : '' }}{{ $transaction->amount }}</td>
+                                        <td>{{ $transaction->balance_after }}</td>
+                                        <td>{{ $transaction->description }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="5" class="text-center py-4">No credit activity yet.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             @if(auth()->user()?->isAdmin())

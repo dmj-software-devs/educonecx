@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AcademyScenario;
 use App\Models\AcademySession;
 use App\Models\AcademyUserAvatarSetting;
+use App\Models\PracticeCreditTransaction;
+use App\Models\UserPracticeCredit;
 use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +23,8 @@ class EduconecxAcademyController extends Controller
             ->where('user_id', auth()->id())
             ->where('status', 'active')
             ->first();
-        $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting);
+        $currentCoachConfig = $this->currentAvatarConfig($avatarSetting);
+        $creditAccount = $this->ensureCreditAccount(auth()->id());
         $recentPracticeSessions = AcademySession::query()
             ->where('user_id', auth()->id())
             ->latest()
@@ -33,14 +36,22 @@ class EduconecxAcademyController extends Controller
             'last_practice_date' => optional(AcademySession::where('user_id', auth()->id())->latest()->first()?->created_at)->format('M d, Y'),
             'completed_reviews' => AcademySession::where('user_id', auth()->id())->whereNotNull('overall_score')->count(),
         ];
+        $creditSummary = [
+            'balance' => $creditAccount->balance,
+            'practice_cost' => $this->creditCost('practice'),
+            'exam_cost' => $this->creditCost('exam'),
+            'lifetime_used' => $creditAccount->lifetime_used,
+            'lifetime_granted' => $creditAccount->lifetime_granted,
+        ];
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'recentPracticeSessions', 'practiceStats'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentCoachConfig', 'recentPracticeSessions', 'practiceStats', 'creditSummary'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
     {
         $validated = $request->validate([
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
+            'session_type' => ['nullable', 'in:practice,exam'],
         ]);
 
         $scenario = ! empty($validated['scenario_slug'])
@@ -50,27 +61,15 @@ class EduconecxAcademyController extends Controller
         try {
             $user = auth()->user();
             $tokenData = $heyGenService->generateSessionToken($scenario, $user);
-            $resolved = $heyGenService->resolveAvatarConfig($scenario, $user);
-            $instructions = $heyGenService->buildDynamicInstructions($scenario, $user);
 
             return response()->json([
                 'success' => true,
                 'token' => $tokenData['token'],
-                'avatar_id' => $resolved['avatar_id'],
-                'voice_id' => $resolved['voice_id'],
-                'context_id' => $resolved['context_id'],
-                'instructions' => $instructions,
-                'endpoint_url' => $tokenData['endpoint_url'],
-                'endpoint_status' => $tokenData['status'],
-                'debug' => $heyGenService->apiKeyDebugMeta(),
             ]);
         } catch (\Throwable $exception) {
             return response()->json([
                 'success' => false,
-                'message' => $exception->getMessage(),
-                'endpoint_url' => 'https://api.liveavatar.com/v1/sessions/token',
-                'hint' => 'If auth fails, set LIVEAVATAR_API_KEY explicitly (preferred for LiveAvatar) and run php artisan optimize:clear.',
-                'debug' => $heyGenService->apiKeyDebugMeta(),
+                'message' => 'Unable to prepare your speaking session right now. Please try again later.',
             ], 422);
         }
     }
@@ -80,6 +79,7 @@ class EduconecxAcademyController extends Controller
     {
         $validated = $request->validate([
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
+            'session_type' => ['nullable', 'in:practice,exam'],
         ]);
 
         $scenario = ! empty($validated['scenario_slug'])
@@ -89,6 +89,19 @@ class EduconecxAcademyController extends Controller
         try {
             $user = $request->user();
             abort_unless($user, 401);
+
+            $sessionType = $validated['session_type'] ?? 'practice';
+            $creditCost = $this->creditCost($sessionType);
+            $creditAccount = $this->ensureCreditAccount($user->id);
+
+            if ($creditAccount->balance < $creditCost) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You do not have enough Practice Room credits to start this session.',
+                    'credits_required' => $creditCost,
+                    'credits_available' => $creditAccount->balance,
+                ], 402);
+            }
 
             $avatarSetting = $this->activeAvatarSetting($user->id);
             $currentConfig = $this->currentAvatarConfig($avatarSetting);
@@ -111,15 +124,22 @@ class EduconecxAcademyController extends Controller
                 'dynamic_instructions' => $heyGenService->buildDynamicInstructions($scenario, $user),
                 'config_source' => data_get($resolved, 'source'),
                 'status' => 'started',
+                'session_type' => $sessionType,
+                'credit_used' => $creditCost,
                 'started_at' => now(),
                 'raw_response' => $embed['response'] ?? [],
             ]);
+
+            $this->consumeCredits($user->id, $creditCost, $session, $sessionType);
 
             return response()->json([
                 'success' => true,
                 'academy_session_id' => $session->id,
                 'embed_url' => $embedUrl,
                 'embed_script' => $embed['embed_script'],
+                'session_type' => $sessionType,
+                'is_exam' => $sessionType === 'exam',
+                'credits_remaining' => $this->ensureCreditAccount($user->id)->balance,
             ]);
         } catch (\Throwable $exception) {
             return response()->json([
@@ -206,6 +226,12 @@ class EduconecxAcademyController extends Controller
             $session = AcademySession::with(['scenario.category'])->findOrFail($validated['academy_session_id']);
             abort_unless((int) $session->user_id === (int) $user->id, 403);
 
+            if ($session->is_locked) {
+                throw ValidationException::withMessages([
+                    'academy_session_id' => 'This exam has already been submitted and locked.',
+                ]);
+            }
+
             return $session;
         }
 
@@ -227,18 +253,24 @@ class EduconecxAcademyController extends Controller
             'avatar_image_url' => $currentConfig['avatar_image_url'],
             'context_name' => $currentConfig['context_name'],
             'status' => 'evaluating',
+            'session_type' => 'practice',
             'started_at' => now(),
         ])->load(['scenario.category']);
     }
 
     private function saveEvaluationToSession(AcademySession $session, array $evaluation, array $extra = []): void
     {
+        $isExam = $session->session_type === 'exam';
+        $overallScore = $evaluation['overall_score'] ?? null;
+
         $session->update(array_merge([
             'grammar_score' => $evaluation['grammar_score'] ?? null,
             'fluency_score' => $evaluation['fluency_score'] ?? null,
             'vocabulary_score' => $evaluation['vocabulary_score'] ?? null,
             'pronunciation_score' => $evaluation['pronunciation_score'] ?? null,
-            'overall_score' => $evaluation['overall_score'] ?? null,
+            'overall_score' => $overallScore,
+            'exam_score' => $isExam ? $overallScore : $session->exam_score,
+            'exam_result' => $isExam ? $this->examResult($overallScore) : $session->exam_result,
             'corrections' => $evaluation['corrections'] ?? [],
             'strengths' => $evaluation['strengths'] ?? [],
             'weaknesses' => $evaluation['weaknesses'] ?? [],
@@ -246,10 +278,76 @@ class EduconecxAcademyController extends Controller
             'feedback' => $evaluation['feedback'] ?? null,
             'ai_evaluation' => $evaluation,
             'evaluated_at' => now(),
-            'status' => 'evaluated',
+            'submitted_at' => $isExam ? now() : $session->submitted_at,
+            'is_locked' => $isExam ? true : $session->is_locked,
+            'locked_at' => $isExam ? now() : $session->locked_at,
+            'ended_at' => $isExam ? now() : $session->ended_at,
+            'status' => $isExam ? 'submitted' : 'evaluated',
         ], array_filter($extra, fn($value) => $value !== null)));
     }
 
+
+
+    private function ensureCreditAccount(int $userId): UserPracticeCredit
+    {
+        $account = UserPracticeCredit::firstOrCreate(
+            ['user_id' => $userId],
+            [
+                'balance' => config('practice_room.default_course_credits'),
+                'lifetime_granted' => config('practice_room.default_course_credits'),
+            ]
+        );
+
+        if ($account->wasRecentlyCreated && $account->lifetime_granted > 0) {
+            PracticeCreditTransaction::create([
+                'user_id' => $userId,
+                'type' => 'course_grant',
+                'amount' => $account->lifetime_granted,
+                'balance_after' => $account->balance,
+                'description' => 'Default Practice Room course credits',
+            ]);
+        }
+
+        return $account->fresh();
+    }
+
+    private function consumeCredits(int $userId, int $amount, AcademySession $session, string $sessionType): void
+    {
+        if ($amount <= 0) {
+            return;
+        }
+
+        $account = $this->ensureCreditAccount($userId);
+        $account->decrement('balance', $amount);
+        $account->increment('lifetime_used', $amount);
+        $account->refresh();
+
+        PracticeCreditTransaction::create([
+            'user_id' => $userId,
+            'academy_session_id' => $session->id,
+            'type' => 'usage',
+            'amount' => -$amount,
+            'balance_after' => $account->balance,
+            'description' => ucfirst($sessionType) . ' session credit usage',
+            'meta' => ['session_type' => $sessionType],
+        ]);
+    }
+
+    private function creditCost(string $sessionType): int
+    {
+        return $sessionType === 'exam'
+            ? (int) config('practice_room.exam_credit_cost')
+            : (int) config('practice_room.practice_credit_cost');
+    }
+
+    private function examResult($score): ?string
+    {
+        if ($score === null) {
+            return null;
+        }
+
+        return ((float) $score) >= 7 ? 'Pass' : 'Needs Practice';
+    }
 
     private function activeAvatarSetting(int $userId): ?AcademyUserAvatarSetting
     {

@@ -321,6 +321,65 @@
         }
     }
 
+
+    .english-course-structure {
+        background: var(--ivory);
+        padding: 80px 0;
+    }
+
+    .english-course-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .english-course-card {
+        background: var(--pure-white);
+        border: 1px solid rgba(10, 29, 68, .08);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .english-course-card span {
+        display: inline-flex;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: var(--gradient-2);
+        color: var(--prussian-blue);
+        font-weight: 900;
+        margin-bottom: 12px;
+    }
+
+    .english-course-card h3 {
+        color: var(--prussian-blue);
+        font-weight: 800;
+        font-size: 1.05rem;
+    }
+
+    .english-course-card p {
+        color: var(--text-muted);
+        margin-bottom: 14px;
+    }
+
+    .english-course-card a {
+        color: var(--prussian-blue);
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+        .english-course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 520px) {
+        .english-course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .english-course-card { padding: 16px; }
+    }
+
     /* Section Header */
     .section-header {
         text-align: center;
@@ -1186,6 +1245,24 @@
                 <h3 class="feature-title">{{ App\Helpers\TranslationHelper::trans('academy.feature_4_title') }}</h3>
                 <p class="feature-text">{{ App\Helpers\TranslationHelper::trans('academy.feature_4_text') }}</p>
             </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- English Course Structure -->
+<section class="english-course-structure">
+    <div class="container">
+        <div class="section-header" data-aos="fade-up">
+            <span class="section-subtitle">English Course</span>
+            <h2 class="section-title">English Course → Modules → Lessons → Videos</h2>
+            <p class="section-description">A ready structure for incoming English lesson videos, with direct practice access for every lesson.</p>
+        </div>
+        <div class="english-course-grid">
+            <div class="english-course-card"><span>1</span><h3>Course</h3><p>English speaking course workspace for structured learning.</p><a href="{{ route('courses') }}">View Courses <i class="fas fa-arrow-right"></i></a></div>
+            <div class="english-course-card"><span>2</span><h3>Module</h3><p>Modules group lessons by level, topic, and learning goal.</p><a href="{{ route('courses') }}">Browse Modules <i class="fas fa-arrow-right"></i></a></div>
+            <div class="english-course-card"><span>3</span><h3>Lesson</h3><p>Lessons include descriptions, learning notes, and video URLs.</p><a href="{{ route('courses') }}">Open Lessons <i class="fas fa-arrow-right"></i></a></div>
+            <div class="english-course-card"><span>4</span><h3>Video + Practice</h3><p>Watch a lesson video, then open the Practice Room to practice that lesson.</p><a href="{{ route('educonecx.academy.index') }}">Practice This Lesson <i class="fas fa-arrow-right"></i></a></div>
         </div>
     </div>
 </section>

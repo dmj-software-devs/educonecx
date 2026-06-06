@@ -567,6 +567,72 @@
 
 
 
+    .academy-action-card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .academy-action-card {
+        border: 1px solid var(--academy-border);
+        border-radius: 18px;
+        padding: 18px;
+        background: #fff;
+        box-shadow: var(--academy-soft-shadow);
+        text-align: left;
+        width: 100%;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .academy-action-card:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--academy-shadow);
+    }
+
+    .academy-action-card:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+    }
+
+    .academy-action-card i {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--academy-yellow), var(--academy-yellow-soft));
+        color: var(--academy-navy);
+        margin-bottom: 12px;
+    }
+
+    .academy-action-card strong {
+        display: block;
+        color: var(--academy-navy);
+        font-size: 1.05rem;
+        margin-bottom: 6px;
+    }
+
+    .academy-action-card span {
+        color: var(--academy-muted);
+        display: block;
+        font-size: .9rem;
+    }
+
+    .academy-credit-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: var(--academy-ivory);
+        color: var(--academy-navy);
+        font-size: .78rem;
+        font-weight: 850;
+    }
+
+
     .academy-mobile-summary-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -639,6 +705,7 @@
         }
 
         .academy-config-list,
+        .academy-action-card-grid,
         .academy-step-row,
         .academy-recording-controls,
         .academy-coach-focus ul {
@@ -701,7 +768,7 @@
             @endguest
 
             @php
-                $currentPracticeConfig = $currentAvatarConfig ?? [];
+                $currentPracticeConfig = $currentCoachConfig ?? [];
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
                     && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
@@ -754,12 +821,22 @@
                                 </div>
                             @endif
 
-                            <div class="academy-action-row mt-2">
-                                <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
-                                    <i class="fas fa-play"></i> Start Practice
+                            <div class="academy-action-card-grid mt-2">
+                                <button type="button" class="academy-action-card start-session-btn" data-session-type="practice" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                                    <i class="fas fa-comments"></i>
+                                    <strong>Start Practice</strong>
+                                    <span>Practice speaking English with Victoria Clarke.</span>
+                                    <em class="academy-credit-pill">{{ $creditSummary['practice_cost'] }} credit{{ $creditSummary['practice_cost'] === 1 ? '' : 's' }}</em>
                                 </button>
-                                <span id="statusMessage" class="academy-status-message"></span>
+                                <button type="button" class="academy-action-card start-session-btn" data-session-type="exam" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                                    <i class="fas fa-clipboard-check"></i>
+                                    <strong>Take Exam</strong>
+                                    <span>Complete a speaking assessment and receive a performance report.</span>
+                                    <em class="academy-credit-pill">{{ $creditSummary['exam_cost'] }} credits</em>
+                                </button>
                             </div>
+                            <div class="academy-credit-pill mt-3"><i class="fas fa-coins"></i> Credits available: {{ $creditSummary['balance'] }}</div>
+                            <span id="statusMessage" class="academy-status-message d-block mt-2"></span>
                         </div>
                     </div>
                 </div>
@@ -876,7 +953,7 @@
     const hasServerPracticeConfig = @json($canStartPractice);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    const startBtn = document.getElementById('startPracticeBtn');
+    const startButtons = document.querySelectorAll('.start-session-btn');
     const statusMessage = document.getElementById('statusMessage');
     const coachSessionArea = document.getElementById('coachSessionArea');
     const coachSessionStatus = document.getElementById('coachSessionStatus');
@@ -901,6 +978,8 @@
     let recordingStartedAt = null;
     let recordingTimerInterval = null;
     let audioPreviewObjectUrl = null;
+    let currentSessionType = 'practice';
+    let examLocked = false;
 
     const hasPracticeConfig = Boolean(hasServerPracticeConfig && !missingHeyGenConfig.length);
 
@@ -931,9 +1010,12 @@
         const recording = mediaRecorder && mediaRecorder.state === 'recording';
         startRecordingBtn.disabled = !hasPracticeConfig || recording;
         stopRecordingBtn.disabled = !(mediaRecorder && mediaRecorder.state === 'recording');
-        retryRecordingBtn.disabled = !hasPracticeConfig || recording || !recordedBlob;
-        evaluateSpeakingBtn.disabled = !hasPracticeConfig || !recordedBlob;
-        evaluatePracticeBtn.disabled = !hasPracticeConfig || practiceTranscript.value.trim().length < 10;
+        retryRecordingBtn.disabled = examLocked || !hasPracticeConfig || recording || !recordedBlob;
+        evaluateSpeakingBtn.disabled = examLocked || !hasPracticeConfig || !recordedBlob;
+        evaluateSpeakingBtn.innerHTML = currentSessionType === 'exam'
+            ? '<i class="fas fa-lock"></i> Submit Exam'
+            : '<i class="fas fa-clipboard-check"></i> Get Performance Review';
+        evaluatePracticeBtn.disabled = examLocked || !hasPracticeConfig || practiceTranscript.value.trim().length < 10;
     };
 
     const resetRecordingState = (message = 'Ready to record your voice for performance feedback.') => {
@@ -1139,7 +1221,13 @@
             }
 
             renderEvaluation(data.evaluation);
-            setEvaluationStatus('Evaluation complete', 'small text-success');
+            if (currentSessionType === 'exam') {
+                examLocked = true;
+                retryRecordingBtn.disabled = true;
+                setEvaluationStatus('Exam submitted and locked. Your report is ready.', 'small text-success');
+            } else {
+                setEvaluationStatus('Evaluation complete', 'small text-success');
+            }
         } catch (error) {
             console.error('review service audio evaluation error:', error);
             setEvaluationStatus(error.message || 'Unable to evaluate this recording right now.', 'small text-danger');
@@ -1180,7 +1268,13 @@
             }
 
             renderEvaluation(data.evaluation);
-            setEvaluationStatus('Evaluation complete', 'small text-success');
+            if (currentSessionType === 'exam') {
+                examLocked = true;
+                retryRecordingBtn.disabled = true;
+                setEvaluationStatus('Exam submitted and locked. Your report is ready.', 'small text-success');
+            } else {
+                setEvaluationStatus('Evaluation complete', 'small text-success');
+            }
         } catch (error) {
             console.error('review service text evaluation error:', error);
             setEvaluationStatus(error.message || 'Unable to prepare your feedback report right now.', 'small text-danger');
@@ -1189,15 +1283,32 @@
         }
     });
 
-    startBtn?.addEventListener('click', async function () {
+    startButtons.forEach(button => button.addEventListener('click', async function () {
+        const requestedSessionType = button.dataset.sessionType || 'practice';
         if (!hasPracticeConfig) {
             setStatusMessage('The Practice Room is not ready yet. Please contact support before starting practice.', true);
             return;
         }
 
-        setStatusMessage('Preparing your Speaking Session...');
+        if (requestedSessionType === 'exam') {
+            const confirmed = window.confirm('Exam mode can only be submitted once. After submission, the exam is locked forever with no retry, editing, or resubmission. Continue?');
+            if (!confirmed) {
+                return;
+            }
+        }
+
+        currentSessionType = requestedSessionType;
+        examLocked = false;
+        resetRecordingState(currentSessionType === 'exam'
+            ? 'Exam mode started. Record your answer, then submit once you are ready.'
+            : 'Ready to record your voice for performance feedback.');
+        evaluationResult.classList.add('d-none');
+        evaluationResult.innerHTML = '';
+        practiceTranscript.value = '';
+
+        setStatusMessage(currentSessionType === 'exam' ? 'Preparing your Speaking Exam...' : 'Preparing your Speaking Session...');
         coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Preparing your coach...';
-        startBtn.disabled = true;
+        startButtons.forEach(item => item.disabled = true);
 
         try {
             const response = await fetch("{{ route('educonecx.academy.liveavatar.embed') }}", {
@@ -1207,7 +1318,7 @@
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({ session_type: currentSessionType }),
             });
 
             const responseText = await response.text();
@@ -1247,9 +1358,11 @@
             openSessionLink.href = data.embed_url;
             openSessionLink.classList.remove('d-none');
 
-            setStatusMessage('Speaking Session is ready.');
+            setStatusMessage(currentSessionType === 'exam' ? 'Speaking Exam is ready.' : 'Speaking Session is ready.');
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Your English Coach is ready. Click Chat Now and allow microphone access to begin your speaking session.';
-            setEvaluationStatus('Ready to record your voice for performance feedback.');
+            setEvaluationStatus(currentSessionType === 'exam'
+                ? 'Exam mode: record your answer, then submit it once. It will lock after submission.'
+                : 'Ready to record your voice for performance feedback.');
             updateEvaluationButtons();
 
             liveCoachDebug.innerHTML = '';
@@ -1262,9 +1375,9 @@
             setStatusMessage(error.message || 'Unable to load your speaking session.', true);
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
         } finally {
-            startBtn.disabled = !hasPracticeConfig;
+            startButtons.forEach(item => item.disabled = !hasPracticeConfig);
         }
-    });
+    }));
 
     if (missingHeyGenConfig.length) {
         setStatusMessage('Practice Room is not ready yet. Please contact support.', true);
@@ -1275,6 +1388,7 @@
         setEvaluationStatus('Start a speaking session, then record your voice for performance feedback.');
     }
 
+    startButtons.forEach(item => item.disabled = !hasPracticeConfig);
     updateEvaluationButtons();
 </script>
 @endsection

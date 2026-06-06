@@ -200,6 +200,18 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
 
+
+
+    public function practiceCredits()
+    {
+        return $this->hasOne(UserPracticeCredit::class);
+    }
+
+    public function practiceCreditTransactions()
+    {
+        return $this->hasMany(PracticeCreditTransaction::class);
+    }
+
     public function academyAvatarSetting()
     {
         return $this->hasOne(AcademyUserAvatarSetting::class);

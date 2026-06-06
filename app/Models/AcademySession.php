@@ -23,6 +23,7 @@ class AcademySession extends Model
         'avatar_image_url',
         'context_name',
         'status',
+        'session_type',
         'score',
         'feedback',
         'transcript',
@@ -32,6 +33,9 @@ class AcademySession extends Model
         'vocabulary_score',
         'pronunciation_score',
         'overall_score',
+        'exam_score',
+        'exam_result',
+        'credit_used',
         'corrections',
         'strengths',
         'weaknesses',
@@ -43,6 +47,9 @@ class AcademySession extends Model
         'raw_response',
         'started_at',
         'ended_at',
+        'submitted_at',
+        'is_locked',
+        'locked_at',
     ];
 
     protected $casts = [
@@ -56,6 +63,10 @@ class AcademySession extends Model
         'evaluated_at' => 'datetime',
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'locked_at' => 'datetime',
+        'is_locked' => 'boolean',
+        'credit_used' => 'integer',
     ];
 
     public function scenario()

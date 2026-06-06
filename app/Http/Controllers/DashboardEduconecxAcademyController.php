@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademySession;
 use App\Models\AcademyUserAvatarSetting;
+use App\Models\PracticeCreditTransaction;
+use App\Models\UserPracticeCredit;
 use App\Services\HeyGenLiveAvatarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,8 +22,30 @@ class DashboardEduconecxAcademyController extends Controller
 
         $academySessions = AcademySession::with(['category', 'scenario'])
             ->where('user_id', $user->id)
+            ->where('session_type', 'practice')
             ->latest()
             ->paginate(20);
+
+        $examSessions = AcademySession::with(['category', 'scenario'])
+            ->where('user_id', $user->id)
+            ->where('session_type', 'exam')
+            ->latest()
+            ->take(20)
+            ->get();
+
+        $creditAccount = $this->creditAccount($user->id);
+        $creditTransactions = PracticeCreditTransaction::query()
+            ->where('user_id', $user->id)
+            ->latest()
+            ->take(10)
+            ->get();
+        $creditSummary = [
+            'balance' => $creditAccount->balance,
+            'practice_cost' => (int) config('practice_room.practice_credit_cost'),
+            'exam_cost' => (int) config('practice_room.exam_credit_cost'),
+            'lifetime_used' => $creditAccount->lifetime_used,
+            'lifetime_granted' => $creditAccount->lifetime_granted,
+        ];
 
         $sessionQuery = AcademySession::where('user_id', $user->id);
         $allSessions = (clone $sessionQuery)->latest()->get();
@@ -103,6 +127,9 @@ class DashboardEduconecxAcademyController extends Controller
 
         return view('dashboard.educonecx-academy.index', compact(
             'academySessions',
+            'examSessions',
+            'creditSummary',
+            'creditTransactions',
             'avatarSetting',
             'avatars',
             'contexts',
@@ -202,6 +229,31 @@ class DashboardEduconecxAcademyController extends Controller
         return view('dashboard.educonecx-academy.show', compact('session', 'audioUrl'));
     }
 
+
+
+    private function creditAccount(int $userId): UserPracticeCredit
+    {
+        $defaultCredits = (int) config('practice_room.default_course_credits');
+        $account = UserPracticeCredit::firstOrCreate(
+            ['user_id' => $userId],
+            [
+                'balance' => $defaultCredits,
+                'lifetime_granted' => $defaultCredits,
+            ]
+        );
+
+        if ($account->wasRecentlyCreated && $defaultCredits > 0) {
+            PracticeCreditTransaction::create([
+                'user_id' => $userId,
+                'type' => 'course_grant',
+                'amount' => $defaultCredits,
+                'balance_after' => $defaultCredits,
+                'description' => 'Default Practice Room course credits',
+            ]);
+        }
+
+        return $account->fresh();
+    }
 
     private function practiceStreak($sessions): int
     {
