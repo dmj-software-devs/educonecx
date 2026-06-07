@@ -41,7 +41,7 @@
                 <div>
                     <h1>{{ $session->scenario->title ?? 'Daily Conversation' }}</h1>
                     <p>{{ $session->category->title ?? 'No category' }} • {{ optional($session->created_at)->format('M d, Y g:i A') }} • {{ ucfirst($session->status ?? 'pending') }}</p>
-                    <p>Coach: Victoria Clarke, English Coach • Scenario: {{ $session->scenario->title ?? 'Daily Conversation' }}</p>
+                    <p>Coach: {{ ($session->session_type ?? 'practice') === 'exam' ? 'Olivia, Assessment Supervisor' : 'Victoria Clarke, English Coach' }} • Scenario: {{ $session->scenario->title ?? 'Daily Conversation' }}</p>
                 </div>
             </div>
             <div class="academy-show-body">

@@ -14,6 +14,7 @@ class AcademyUserAvatarSetting extends Model
         'heygen_avatar_id',
         'heygen_voice_id',
         'heygen_context_id',
+        'voice_name',
         'avatar_name',
         'avatar_image_url',
         'context_name',

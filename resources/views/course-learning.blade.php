@@ -291,7 +291,7 @@
 ============================================================ */
 .learning-main { padding: 40px 0; }
 .learning-grid { display:grid; grid-template-columns:1fr 380px; gap:30px; }
-.learning-video-section { min-width:0; position: relative; z-index: 1; }
+.learning-video-section { min-width:0; }
 
 /* ============================================================
    ██╗   ██╗██╗██████╗ ███████╗ ██████╗     ██████╗ ██╗      █████╗ ██╗   ██╗███████╗██████╗ 
@@ -308,12 +308,12 @@
     border-radius: 14px;
     overflow: hidden;
     margin-bottom: 16px;
-    aspect-ratio: 16/9;
-    width: 100%;
-    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: clamp(190px, 52vw, 620px);
+    max-height: 72vh;
+    position: relative;
     contain: layout paint;
     isolation: isolate;
-    position: relative;
     user-select: none;
     box-shadow:
         0 0 0 1px rgba(251,198,12,.1),
@@ -321,7 +321,7 @@
         0 20px 60px rgba(0,0,0,.35);
 }
 .video-player {
-    width: 100%; height: 100%;
+    width: 100%; height: 100%; min-height: inherit;
     display: flex; align-items: center; justify-content: center;
     position: relative;
 }
@@ -348,9 +348,9 @@
 }
 
 /* --- Media wrap fills container --- */
-.vp-media-wrap { position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; overflow: hidden; }
+.vp-media-wrap { position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; overflow: hidden; background: #000; }
 .vp-media-wrap iframe,
-.vp-media-wrap video { width: 100%; height: 100%; display: block; border: none; }
+.vp-media-wrap video { width: 100% !important; height: 100% !important; max-width: 100%; display: block; border: none; object-fit: contain; }
 
 /* Right-click shield — pointer-events none so hover still fires on container */
 .vp-shield {
@@ -841,9 +841,6 @@
 .lesson-content-body img { max-width: 100%; border-radius: var(--radius-md); margin: 20px 0; }
 .lesson-content-body pre { background: var(--ivory); padding: 15px; border-radius: var(--radius-md); overflow-x: auto; }
 .lesson-content-body code { background: var(--ivory); padding: 2px 5px; border-radius: 4px; font-family: monospace; }
-.lesson-action-row { display:flex; gap:12px; flex-wrap:wrap; margin-top:20px; }
-.lesson-practice-btn { display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 18px; background:var(--bright-amber); color:var(--prussian-blue); font-weight:800; text-decoration:none; }
-.lesson-practice-btn:hover { color:var(--prussian-blue); text-decoration:none; transform:translateY(-1px); }
 .lesson-attachment { margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(251,198,12,.2); }
 .lesson-attachment .btn {
     display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px;
@@ -943,8 +940,7 @@
 ============================================================ */
 @media (max-width: 992px) {
     .learning-grid { grid-template-columns: 1fr; }
-    .learning-video-section { order: 1; }
-    .learning-sidebar { position: static; margin-top: 30px; order: 2; }
+    .learning-sidebar { position: static; margin-top: 30px; }
     .curriculum-container { max-width: 600px; margin: 0 auto; }
 }
 @media (max-width: 768px) {
@@ -952,9 +948,8 @@
     .learning-back-btn { width: 100%; justify-content: center; }
     .learning-progress { flex-direction: column; align-items: flex-start; width: 100%; }
     .progress-bar-container { width: 100%; }
-    .video-player-container { border-radius: 12px; margin-bottom: 12px; }
-    .video-player { min-height: 0; }
-    .lesson-content-container { padding: 20px; position: relative; z-index: 0; clear: both; }
+    .video-player-container { min-height: 210px; max-height: none; }
+    .lesson-content-container { padding: 20px; clear: both; position: relative; z-index: 1; }
     .lesson-nav-controls { padding: 10px 12px; gap: 8px; }
     .lesson-nav-btn { min-width: 0; padding: 8px 12px; }
     .lesson-nav-label strong { max-width: 70px; }
@@ -964,6 +959,7 @@
 @media (max-width: 576px) {
     .learning-header { padding: 15px 0; }
     .learning-title { font-size: 1.2rem; }
+    .video-player-container { min-height: 190px; margin-bottom: 18px; }
     .lesson-nav-label small { display: none; }
     .lesson-nav-center { display: none; }
     .lesson-nav-btn { flex: 1; }
@@ -1800,9 +1796,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 <h2>${esc(title)}</h2>
                 <div class="lesson-content-body">${content||'<p>No additional content for this lesson.</p>'}</div>
                 ${att}
-                <div class="lesson-action-row">
-                    <a href="{{ route('educonecx.academy.index') }}" class="lesson-practice-btn"><i class="fas fa-comments"></i> Practice This Lesson</a>
-                </div>
                 <div class="completion-toggle">
                     <input type="checkbox" id="markCompleteCheckbox" ${isDone?'checked':''}
                            onchange="toggleLessonComplete(${currentLessonId})">
@@ -1844,10 +1837,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.lesson-item').forEach(l => l.classList.remove('current'));
         el.classList.add('current');
         currentLessonId = parseInt(lessonId);
-        const isSmallScreen = window.matchMedia('(max-width: 992px)').matches;
-        if (!isSmallScreen) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
         const sec = el.closest('.section-lessons');
         if (sec && !sec.classList.contains('show')) { sec.classList.add('show'); sec.previousElementSibling?.classList.add('active'); }
@@ -1865,11 +1855,6 @@ document.addEventListener('DOMContentLoaded', function () {
         else showVideoPlaceholder('No video available for this lesson');
 
         loadLessonContent(title, el.dataset.content || el.dataset.description || '', el.dataset.attachment);
-        if (isSmallScreen) {
-            requestAnimationFrame(() => {
-                videoContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        }
         updateNavControls(lessonId);
         startTimer();
 

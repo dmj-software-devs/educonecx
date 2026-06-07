@@ -444,22 +444,6 @@
         font-size: 2.5rem;
     }
 
-    .academy-debug {
-        margin: 0;
-        padding: 14px 20px;
-        background: #f9fafb;
-        border-top: 1px solid #e5e7eb;
-        color: var(--academy-muted);
-        font-size: 0.84rem;
-        word-break: break-all;
-    }
-
-    .academy-debug summary {
-        color: var(--academy-navy);
-        cursor: pointer;
-        font-weight: 850;
-    }
-
     .academy-step-row {
         align-items: stretch;
         margin: 18px 0 22px;
@@ -565,100 +549,6 @@
         font-size: 1.9rem;
     }
 
-
-
-    .academy-action-card-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
-    }
-
-    .academy-action-card {
-        border: 1px solid var(--academy-border);
-        border-radius: 18px;
-        padding: 18px;
-        background: #fff;
-        box-shadow: var(--academy-soft-shadow);
-        text-align: left;
-        width: 100%;
-        transition: transform .2s ease, box-shadow .2s ease;
-    }
-
-    .academy-action-card:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: var(--academy-shadow);
-    }
-
-    .academy-action-card:disabled {
-        opacity: .55;
-        cursor: not-allowed;
-    }
-
-    .academy-action-card i {
-        width: 42px;
-        height: 42px;
-        border-radius: 14px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, var(--academy-yellow), var(--academy-yellow-soft));
-        color: var(--academy-navy);
-        margin-bottom: 12px;
-    }
-
-    .academy-action-card strong {
-        display: block;
-        color: var(--academy-navy);
-        font-size: 1.05rem;
-        margin-bottom: 6px;
-    }
-
-    .academy-action-card span {
-        color: var(--academy-muted);
-        display: block;
-        font-size: .9rem;
-    }
-
-    .academy-credit-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 10px;
-        padding: 7px 10px;
-        border-radius: 999px;
-        background: var(--academy-ivory);
-        color: var(--academy-navy);
-        font-size: .78rem;
-        font-weight: 850;
-    }
-
-
-    .academy-mobile-summary-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
-    }
-
-    .academy-mini-card {
-        border: 1px solid var(--academy-border);
-        border-radius: 14px;
-        padding: 16px;
-        background: linear-gradient(180deg, #fff, var(--academy-ivory));
-    }
-
-    .academy-mini-card span {
-        display: block;
-        color: var(--academy-muted);
-        font-size: .78rem;
-        font-weight: 800;
-        text-transform: uppercase;
-    }
-
-    .academy-mini-card strong {
-        color: var(--academy-navy);
-        font-size: 1.35rem;
-    }
-
     .academy-evaluation-result {
         background: #fff;
         border: 1px solid rgba(10, 29, 68, 0.08);
@@ -680,6 +570,28 @@
         gap: 12px;
     }
 
+
+
+    .academy-intro-card { margin-bottom: 24px; }
+    .academy-intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: 22px; align-items: center; }
+    .academy-intro-title { color: var(--academy-navy); font-weight: 900; margin-bottom: 8px; }
+    .academy-media-frame { width: 100%; aspect-ratio: 16 / 9; min-height: 240px; border-radius: 18px; overflow: hidden; background: var(--academy-ivory); border: 1px solid rgba(251, 198, 12, .24); }
+    .academy-media-frame video, .academy-media-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .academy-actions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 24px; }
+    .academy-action-card { width: 100%; min-width: 0; background: #fff; border: 1px solid var(--academy-border); border-radius: 18px; padding: 22px; box-shadow: var(--academy-soft-shadow); display: flex; flex-direction: column; gap: 14px; min-height: 100%; }
+    .academy-action-card h3 { color: var(--academy-navy); font-size: 1.12rem; font-weight: 900; margin: 0; }
+    .academy-action-card p { color: var(--academy-muted); margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
+    .academy-action-icon { width: 48px; height: 48px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; background: var(--academy-ivory); color: var(--academy-navy); font-size: 1.2rem; }
+    .academy-action-card .btn { width: 100%; justify-content: center; margin-top: auto; }
+    .academy-credit-value { display: block; color: var(--academy-navy); font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 950; line-height: 1; }
+    .academy-exam-rules { background: #fff; border: 1px solid rgba(10, 29, 68, .1); border-radius: 18px; padding: 20px; box-shadow: var(--academy-soft-shadow); }
+    .academy-exam-rules h3 { color: var(--academy-navy); font-weight: 900; font-size: 1.1rem; }
+    .academy-exam-rules li { margin-bottom: 8px; }
+    .academy-history-list { display: grid; gap: 12px; }
+    .academy-history-item { border: 1px solid var(--academy-border); border-radius: 14px; padding: 14px; background: #fff; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .academy-history-item strong { color: var(--academy-navy); }
+    .academy-fallback-note { font-size: .78rem; color: var(--academy-muted); margin-top: 8px; }
+
     @media (max-width: 992px) {
         .academy-grid,
         .academy-setup-grid {
@@ -689,6 +601,9 @@
         .academy-score-grid {
             grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
         }
+
+        .academy-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .academy-intro-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 768px) {
@@ -702,23 +617,6 @@
         .academy-card-body,
         .academy-evaluation-body {
             padding: 18px;
-        }
-
-        .academy-config-list,
-        .academy-action-card-grid,
-        .academy-step-row,
-        .academy-recording-controls,
-        .academy-coach-focus ul {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-        }
-
-        .academy-config-item,
-        .academy-step,
-        .academy-recording-controls .btn,
-        .academy-coach-focus li {
-            min-width: 0;
         }
 
         .academy-livecoach-header {
@@ -735,6 +633,11 @@
         .academy-livecoach-frame-wrap iframe {
             height: 520px !important;
         }
+
+        .academy-actions-grid { grid-template-columns: 1fr; }
+        .academy-action-card { padding: 18px; }
+        .academy-media-frame { min-height: 190px; }
+        .academy-coach-photo, .academy-coach-placeholder { min-height: 220px; }
 
         .academy-action-row .btn,
         .academy-recording-controls .btn,
@@ -768,11 +671,75 @@
             @endguest
 
             @php
-                $currentPracticeConfig = $currentCoachConfig ?? [];
+                $currentPracticeConfig = $currentAvatarConfig ?? [];
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
                     && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
+                $coachImage = $practiceCoachImage ?? null;
+                $examImage = $examCoachImage ?? null;
             @endphp
+
+
+            <section class="academy-card academy-intro-card">
+                <div class="academy-card-body">
+                    <div class="academy-intro-grid">
+                        <div>
+                            <h2 class="academy-intro-title">Welcome to the Practice Room</h2>
+                            <p class="academy-card-subtitle mb-3">Choose a friendly practice session for learning, or start a formal English Speaking Exam when you are ready to be assessed.</p>
+                            <div class="academy-badge-row">
+                                <span class="academy-pill"><i class="fas fa-user-graduate"></i> Practice for improvement</span>
+                                <span class="academy-pill"><i class="fas fa-lock"></i> Exam attempts lock after submission</span>
+                            </div>
+                        </div>
+                        <div class="academy-media-frame">
+                            @if(! empty($introVideoUrl))
+                                <video src="{{ $introVideoUrl }}" controls playsinline preload="metadata" @if(! empty($coachImage)) poster="{{ $coachImage }}" @endif></video>
+                            @elseif(! empty($coachImage))
+                                <img src="{{ $coachImage }}" alt="Victoria Clarke welcomes you to the Practice Room" loading="lazy">
+                            @else
+                                <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="academy-actions-grid" aria-label="Practice Room actions">
+                <article class="academy-action-card">
+                    <span class="academy-action-icon"><i class="fas fa-comments"></i></span>
+                    <h3>Start Practice</h3>
+                    <p>Learn with Victoria Clarke in a friendly session. You may retry recordings before requesting your performance review.</p>
+                    <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                        <i class="fas fa-play"></i> Start Practice
+                    </button>
+                </article>
+                <article class="academy-action-card">
+                    <span class="academy-action-icon"><i class="fas fa-clipboard-check"></i></span>
+                    <h3>Take Exam</h3>
+                    <p>Begin a formal English Speaking Exam with Olivia. Final submissions are saved and locked in your dashboard.</p>
+                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                        <i class="fas fa-award"></i> Take Exam
+                    </button>
+                </article>
+                <article class="academy-action-card">
+                    <span class="academy-action-icon"><i class="fas fa-coins"></i></span>
+                    <h3>Credits Available</h3>
+                    <span class="academy-credit-value">{{ $creditsAvailable }}</span>
+                    <p>Your current balance is shown here. Pricing options will be added later.</p>
+                </article>
+            </section>
+
+            <section id="examRulesArea" class="academy-exam-rules mb-4 d-none">
+                <h3>English Speaking Exam Rules</h3>
+                <ul class="mb-3">
+                    <li>This is a formal speaking assessment.</li>
+                    <li>You must complete your response before submission.</li>
+                    <li>Once submitted, you cannot retry or edit the attempt.</li>
+                    <li>Your score will be saved in your dashboard.</li>
+                    <li>Make sure your microphone works before starting.</li>
+                </ul>
+                <button type="button" id="confirmExamBtn" class="btn academy-btn-primary" data-bs-toggle="modal" data-bs-target="#examConfirmModal"><i class="fas fa-play"></i> Start Exam</button>
+            </section>
 
             <section class="academy-card mb-4">
                 <div class="academy-card-header">
@@ -782,17 +749,17 @@
                 <div class="academy-card-body">
                     <div class="academy-setup-grid">
                         <div class="academy-coach-card">
-                            <div class="academy-coach-preview academy-coach-photo">
-                                @if(! empty($currentPracticeConfig['avatar_image_url']))
-                                    <img src="{{ $currentPracticeConfig['avatar_image_url'] }}" alt="Victoria Clarke, English Coach" loading="lazy">
+                            <div class="academy-coach-preview academy-coach-photo" id="coachPhotoWrap">
+                                @if(! empty($coachImage))
+                                    <img src="{{ $coachImage }}" alt="Victoria Clarke, English Coach" loading="lazy">
                                 @else
                                     <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
                                 @endif
                             </div>
                             <div class="academy-coach-info">
-                                <h3>Victoria Clarke</h3>
-                                <p>English Coach</p>
-                                <strong>Speaking Practice Specialist</strong>
+                                <h3 id="coachName">Victoria Clarke</h3>
+                                <p id="coachTitle">English Coach</p>
+                                <strong id="coachSpecialty">Speaking Practice Specialist</strong>
                             </div>
                             <div class="academy-coach-focus">
                                 <span>Helping learners improve:</span>
@@ -808,12 +775,18 @@
                         <div class="academy-config-list">
                             <div class="academy-config-item">
                                 <span>Conversation Focus</span>
-                                <strong>{{ $currentPracticeConfig['context_name'] ?: 'Personalized English speaking practice' }}</strong>
+                                <strong>English Speaking Practice</strong>
                             </div>
                             <div class="academy-config-item">
                                 <span>Coaching Style</span>
                                 <strong>{{ $currentPracticeConfig['preferred_language'] ?: 'English' }}{{ $currentPracticeConfig['speaking_level'] ? ' • ' . $currentPracticeConfig['speaking_level'] : '' }}{{ $currentPracticeConfig['tutor_style'] ? ' • ' . $currentPracticeConfig['tutor_style'] : '' }}</strong>
                             </div>
+
+                            @if(! $canStartPractice)
+                                <div class="alert alert-warning mb-0">
+                                    Please choose your English Coach and conversation focus from Coach Settings before starting practice.
+                                </div>
+                            @endif
 
                             @if(!empty($missingHeyGenConfig))
                                 <div class="alert alert-warning mb-0">
@@ -821,22 +794,12 @@
                                 </div>
                             @endif
 
-                            <div class="academy-action-card-grid mt-2">
-                                <button type="button" class="academy-action-card start-session-btn" data-session-type="practice" {{ ! $canStartPractice ? 'disabled' : '' }}>
-                                    <i class="fas fa-comments"></i>
-                                    <strong>Start Practice</strong>
-                                    <span>Practice speaking English with Victoria Clarke.</span>
-                                    <em class="academy-credit-pill">{{ $creditSummary['practice_cost'] }} credit{{ $creditSummary['practice_cost'] === 1 ? '' : 's' }}</em>
-                                </button>
-                                <button type="button" class="academy-action-card start-session-btn" data-session-type="exam" {{ ! $canStartPractice ? 'disabled' : '' }}>
-                                    <i class="fas fa-clipboard-check"></i>
-                                    <strong>Take Exam</strong>
-                                    <span>Complete a speaking assessment and receive a performance report.</span>
-                                    <em class="academy-credit-pill">{{ $creditSummary['exam_cost'] }} credits</em>
-                                </button>
+                            <div class="academy-action-row mt-2">
+                                <a href="{{ route('dashboard.educonecx-academy.index') }}#coach-settings" class="btn academy-btn-soft">
+                                    <i class="fas fa-sliders-h"></i> Coach Settings
+                                </a>
+                                <span id="statusMessage" class="academy-status-message"></span>
                             </div>
-                            <div class="academy-credit-pill mt-3"><i class="fas fa-coins"></i> Credits available: {{ $creditSummary['balance'] }}</div>
-                            <span id="statusMessage" class="academy-status-message d-block mt-2"></span>
                         </div>
                     </div>
                 </div>
@@ -862,7 +825,6 @@
                         </div>
                     </div>
 
-                    <div id="liveCoachDebug"></div>
                 </div>
             </section>
 
@@ -887,10 +849,9 @@
                         <div class="academy-recording-controls">
                             <button type="button" id="startRecordingBtn" class="btn academy-btn-primary" disabled><i class="fas fa-microphone-alt"></i> Start Recording</button>
                             <button type="button" id="stopRecordingBtn" class="btn academy-btn-danger" disabled><i class="fas fa-stop"></i> Stop Recording</button>
-                            <button type="button" id="retryRecordingBtn" class="btn academy-btn-soft" disabled><i class="fas fa-redo-alt"></i> Retry Recording</button>
+                            <button type="button" id="retryRecordingBtn" class="btn academy-btn-soft" disabled><i class="fas fa-redo"></i> Retry Recording</button>
                             <button type="button" id="evaluateSpeakingBtn" class="btn academy-btn-navy" disabled><i class="fas fa-clipboard-check"></i> Get Performance Review</button>
                         </div>
-                        <div id="recordingTimer" class="small fw-semibold text-muted mt-2">Recording time: 00:00</div>
                         <audio id="audioPreview" class="academy-audio-preview d-none" controls></audio>
                         <p id="recordingHelp" class="small text-muted mt-2 mb-0">If your browser blocks simultaneous microphone access, please finish the speaking session first, then record your answer for evaluation.</p>
 
@@ -898,62 +859,105 @@
                         <textarea id="practiceTranscript" class="form-control academy-textarea" rows="5" placeholder="Optional fallback: type or paste what you said if you cannot record audio."></textarea>
                         <div class="academy-action-row mt-3">
                             <button type="button" id="evaluatePracticeBtn" class="btn academy-btn-soft" disabled><i class="fas fa-keyboard"></i> Review Text Only</button>
-                            <span id="evaluationStatus" class="small text-muted">Start a speaking session, then record your voice for performance feedback.</span>
+                            <span id="evaluationStatus" class="small text-muted">Start a speaking session, then record your voice for pronunciation feedback.</span>
                         </div>
                         <div id="evaluationResult" class="academy-evaluation-result mt-4 d-none"></div>
                     </div>
                 </div>
             </section>
 
-            <section id="practiceHistoryArea" class="academy-card mb-4">
+
+            <section class="academy-card mt-4">
                 <div class="academy-card-header">
-                    <h2 class="academy-card-title"><i class="fas fa-history"></i> Practice History</h2>
-                    <p class="academy-card-subtitle">Quick access to your latest English speaking sessions.</p>
+                    <div>
+                        <h2 class="academy-card-title"><i class="fas fa-book-open"></i> Academy Course Area</h2>
+                        <p class="academy-card-subtitle">Prepared space for upcoming English course videos and lesson practice.</p>
+                    </div>
                 </div>
                 <div class="academy-card-body">
-                    <div class="academy-mobile-summary-grid">
-                        @forelse($recentPracticeSessions as $session)
-                            <div class="academy-mini-card">
-                                <span>{{ optional($session->created_at)->format('M d, Y') }}</span>
-                                <strong>{{ is_null($session->overall_score) ? 'In progress' : number_format($session->overall_score, 1) . '/10' }}</strong>
-                                <p class="mb-0 text-muted">{{ $session->context_name ?: 'English speaking practice' }}</p>
+                    <div class="academy-actions-grid mb-0">
+                        <article class="academy-action-card">
+                            <span class="academy-action-icon"><i class="fas fa-graduation-cap"></i></span>
+                            <h3>Course title</h3>
+                            <p>English Speaking Foundations</p>
+                        </article>
+                        <article class="academy-action-card">
+                            <span class="academy-action-icon"><i class="fas fa-layer-group"></i></span>
+                            <h3>Module title</h3>
+                            <p>Clear Pronunciation and Confident Conversation</p>
+                        </article>
+                        <article class="academy-action-card">
+                            <span class="academy-action-icon"><i class="fas fa-video"></i></span>
+                            <h3>Lesson title</h3>
+                            <p>Video URL / uploaded video placeholder</p>
+                            <a href="{{ route('educonecx.academy.index') }}" class="btn academy-btn-soft">Practice This Lesson</a>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="academy-card mt-4">
+                <div class="academy-card-header">
+                    <div>
+                        <h2 class="academy-card-title"><i class="fas fa-history"></i> Practice History</h2>
+                        <p class="academy-card-subtitle">Open this section when you want to review recent practice and exam results.</p>
+                    </div>
+                    <button class="btn academy-btn-soft" type="button" data-bs-toggle="collapse" data-bs-target="#practiceHistoryCollapse" aria-expanded="false" aria-controls="practiceHistoryCollapse">Practice History</button>
+                </div>
+                <div class="collapse" id="practiceHistoryCollapse">
+                    <div class="academy-card-body academy-history-list">
+                        @forelse($recentAcademySessions as $session)
+                            <div class="academy-history-item">
+                                <div><strong>{{ ucfirst($session->session_type ?? 'practice') }} • {{ optional($session->created_at)->format('M d, Y') }}</strong><br><span class="text-muted">{{ $session->scenario->title ?? $session->context_name ?? 'Speaking Session' }}</span></div>
+                                <div><span class="academy-pill">{{ is_null($session->overall_score) ? 'In progress' : number_format($session->overall_score, 1) . '/10' }}</span></div>
                             </div>
                         @empty
-                            <div class="academy-mini-card">
-                                <span>No sessions yet</span>
-                                <strong>Start today</strong>
-                                <p class="mb-0 text-muted">Your practice history will appear here.</p>
-                            </div>
+                            <p class="text-muted mb-0">No Practice History yet. Start Practice to create your first session.</p>
                         @endforelse
                     </div>
                 </div>
             </section>
-
-            <section id="learningProgressArea" class="academy-card mb-4">
-                <div class="academy-card-header">
-                    <h2 class="academy-card-title"><i class="fas fa-chart-line"></i> Learning Progress</h2>
-                    <p class="academy-card-subtitle">Track your speaking consistency and feedback review results.</p>
-                </div>
-                <div class="academy-card-body">
-                    <div class="academy-mobile-summary-grid">
-                        <div class="academy-mini-card"><span>Total Sessions</span><strong>{{ $practiceStats['total_sessions'] }}</strong></div>
-                        <div class="academy-mini-card"><span>Average Score</span><strong>{{ $practiceStats['average_overall_score'] ? $practiceStats['average_overall_score'] . '/10' : 'N/A' }}</strong></div>
-                        <div class="academy-mini-card"><span>Completed Reviews</span><strong>{{ $practiceStats['completed_reviews'] }}</strong></div>
-                        <div class="academy-mini-card"><span>Last Practice</span><strong style="font-size:1rem;">{{ $practiceStats['last_practice_date'] ?? 'No practice yet' }}</strong></div>
-                    </div>
-                </div>
-            </section>
-
         </div>
     </main>
 </div>
 
+
+
+    <div class="modal fade" id="examConfirmModal" tabindex="-1" aria-labelledby="examConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="examConfirmModalLabel">Are you ready to start the exam?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Olivia will supervise a formal English Speaking Exam. After your final performance review is submitted, the attempt will be locked.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn academy-btn-soft" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="startExamBtn" class="btn academy-btn-primary" data-bs-dismiss="modal">Start Exam</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
-    const hasServerPracticeConfig = @json($canStartPractice);
+    const currentPracticeConfig = @json($currentAvatarConfig ?? []);
+    const coachImages = {
+        practice: { url: @json($coachImage), exists: @json(! empty($coachImage)), name: 'Victoria Clarke', title: 'English Coach', specialty: 'Speaking Practice Specialist' },
+        exam: { url: @json($examImage), exists: @json(! empty($examImage)), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
+    };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    const startButtons = document.querySelectorAll('.start-session-btn');
+    const startBtn = document.getElementById('startPracticeBtn');
+    const showExamRulesBtn = document.getElementById('showExamRulesBtn');
+    const startExamBtn = document.getElementById('startExamBtn');
+    const examRulesArea = document.getElementById('examRulesArea');
+    const coachPhotoWrap = document.getElementById('coachPhotoWrap');
+    const coachName = document.getElementById('coachName');
+    const coachTitle = document.getElementById('coachTitle');
+    const coachSpecialty = document.getElementById('coachSpecialty');
     const statusMessage = document.getElementById('statusMessage');
     const coachSessionArea = document.getElementById('coachSessionArea');
     const coachSessionStatus = document.getElementById('coachSessionStatus');
@@ -964,24 +968,21 @@
     const stopRecordingBtn = document.getElementById('stopRecordingBtn');
     const retryRecordingBtn = document.getElementById('retryRecordingBtn');
     const evaluateSpeakingBtn = document.getElementById('evaluateSpeakingBtn');
-    const recordingTimer = document.getElementById('recordingTimer');
     const audioPreview = document.getElementById('audioPreview');
     const evaluationStatus = document.getElementById('evaluationStatus');
     const evaluationResult = document.getElementById('evaluationResult');
-    const liveCoachDebug = document.getElementById('liveCoachDebug');
 
     let academySessionId = null;
     let mediaRecorder = null;
     let audioChunks = [];
     let recordedBlob = null;
     let activeStream = null;
-    let recordingStartedAt = null;
-    let recordingTimerInterval = null;
-    let audioPreviewObjectUrl = null;
-    let currentSessionType = 'practice';
-    let examLocked = false;
+    let sessionMode = 'practice';
+    let examSubmitted = false;
+    let recordingTimer = null;
+    let recordingSeconds = 0;
 
-    const hasPracticeConfig = Boolean(hasServerPracticeConfig && !missingHeyGenConfig.length);
+    const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
 
     const setEvaluationStatus = (message, className = 'small text-muted') => {
         evaluationStatus.textContent = message;
@@ -993,53 +994,14 @@
         statusMessage.classList.toggle('text-danger', isError);
     };
 
-    const formatRecordingTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
-        return `${minutes}:${secs}`;
-    };
-
-    const stopRecordingTimer = () => {
-        if (recordingTimerInterval) {
-            clearInterval(recordingTimerInterval);
-            recordingTimerInterval = null;
-        }
-    };
-
     const updateEvaluationButtons = () => {
-        const recording = mediaRecorder && mediaRecorder.state === 'recording';
-        startRecordingBtn.disabled = !hasPracticeConfig || recording;
-        stopRecordingBtn.disabled = !(mediaRecorder && mediaRecorder.state === 'recording');
-        retryRecordingBtn.disabled = examLocked || !hasPracticeConfig || recording || !recordedBlob;
-        evaluateSpeakingBtn.disabled = examLocked || !hasPracticeConfig || !recordedBlob;
-        evaluateSpeakingBtn.innerHTML = currentSessionType === 'exam'
-            ? '<i class="fas fa-lock"></i> Submit Exam'
-            : '<i class="fas fa-clipboard-check"></i> Get Performance Review';
-        evaluatePracticeBtn.disabled = examLocked || !hasPracticeConfig || practiceTranscript.value.trim().length < 10;
-    };
-
-    const resetRecordingState = (message = 'Ready to record your voice for performance feedback.') => {
-        if (mediaRecorder && mediaRecorder.state === 'recording') {
-            mediaRecorder.stop();
-        }
-        if (activeStream) {
-            activeStream.getTracks().forEach(track => track.stop());
-            activeStream = null;
-        }
-        stopRecordingTimer();
-        recordingStartedAt = null;
-        audioChunks = [];
-        recordedBlob = null;
-        if (audioPreviewObjectUrl) {
-            URL.revokeObjectURL(audioPreviewObjectUrl);
-            audioPreviewObjectUrl = null;
-        }
-        audioPreview.removeAttribute('src');
-        audioPreview.load();
-        audioPreview.classList.add('d-none');
-        recordingTimer.textContent = 'Recording time: 00:00';
-        setEvaluationStatus(message);
-        updateEvaluationButtons();
+        const isRecording = Boolean(mediaRecorder && mediaRecorder.state === 'recording');
+        const locked = sessionMode === 'exam' && examSubmitted;
+        startRecordingBtn.disabled = !hasPracticeConfig || isRecording || locked;
+        stopRecordingBtn.disabled = !isRecording || locked;
+        retryRecordingBtn.disabled = !hasPracticeConfig || isRecording || !recordedBlob || locked;
+        evaluateSpeakingBtn.disabled = !hasPracticeConfig || !recordedBlob || locked;
+        evaluatePracticeBtn.disabled = !hasPracticeConfig || locked;
     };
 
     const escapeHtml = (value) => String(value ?? '')
@@ -1121,11 +1083,27 @@
         `;
     };
 
-    practiceTranscript.addEventListener('input', updateEvaluationButtons);
+    const resetRecording = () => {
+        if (recordingTimer) {
+            clearInterval(recordingTimer);
+            recordingTimer = null;
+        }
+        recordingSeconds = 0;
+        recordedBlob = null;
+        audioChunks = [];
+        if (audioPreview.src) {
+            URL.revokeObjectURL(audioPreview.src);
+        }
+        audioPreview.removeAttribute('src');
+        audioPreview.load();
+        audioPreview.classList.add('d-none');
+        setEvaluationStatus('Recording reset. You can start again.', 'small text-muted');
+        updateEvaluationButtons();
+    };
 
     startRecordingBtn.addEventListener('click', async function () {
         if (!hasPracticeConfig) {
-            setEvaluationStatus('The Practice Room is not ready yet. Please contact support before recording.', 'small text-danger');
+            setEvaluationStatus('Please complete your coach settings before recording.', 'small text-danger');
             return;
         }
 
@@ -1135,7 +1113,7 @@
         }
 
         try {
-            resetRecordingState('Preparing recorder...');
+            resetRecording();
             activeStream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(activeStream);
 
@@ -1146,10 +1124,12 @@
             });
 
             mediaRecorder.addEventListener('stop', () => {
-                stopRecordingTimer();
+                if (recordingTimer) {
+                    clearInterval(recordingTimer);
+                    recordingTimer = null;
+                }
                 recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                audioPreviewObjectUrl = URL.createObjectURL(recordedBlob);
-                audioPreview.src = audioPreviewObjectUrl;
+                audioPreview.src = URL.createObjectURL(recordedBlob);
                 audioPreview.classList.remove('d-none');
                 if (activeStream) {
                     activeStream.getTracks().forEach(track => track.stop());
@@ -1160,11 +1140,11 @@
             });
 
             mediaRecorder.start();
-            recordingStartedAt = Date.now();
-            recordingTimerInterval = setInterval(() => {
-                recordingTimer.textContent = `Recording time: ${formatRecordingTime((Date.now() - recordingStartedAt) / 1000)}`;
-            }, 250);
-            setEvaluationStatus('Recording...', 'small text-danger');
+            recordingTimer = setInterval(() => {
+                recordingSeconds += 1;
+                setEvaluationStatus(`Recording... ${String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:${String(recordingSeconds % 60).padStart(2, '0')}`, 'small text-danger');
+            }, 1000);
+            setEvaluationStatus('Recording... 00:00', 'small text-danger');
             updateEvaluationButtons();
         } catch (error) {
             console.error('Audio recording error:', error);
@@ -1184,12 +1164,16 @@
     });
 
     retryRecordingBtn.addEventListener('click', function () {
-        resetRecordingState('Previous recording cleared. You can record again now.');
+        if (sessionMode === 'exam' && examSubmitted) {
+            setEvaluationStatus('This exam attempt is locked after final submission.', 'small text-danger');
+            return;
+        }
+        resetRecording();
     });
 
     evaluateSpeakingBtn.addEventListener('click', async function () {
         if (!recordedBlob) {
-            setEvaluationStatus('Please record your voice before requesting a performance review.', 'small text-danger');
+            setEvaluationStatus('Please record your voice before requesting pronunciation evaluation.', 'small text-danger');
             return;
         }
 
@@ -1201,6 +1185,7 @@
             const formData = new FormData();
             formData.append('audio', recordedBlob, 'practice.webm');
             formData.append('academy_session_id', academySessionId || '');
+            formData.append('session_type', sessionMode);
 
             setEvaluationStatus('Preparing your performance review...', 'small text-muted');
 
@@ -1221,10 +1206,9 @@
             }
 
             renderEvaluation(data.evaluation);
-            if (currentSessionType === 'exam') {
-                examLocked = true;
-                retryRecordingBtn.disabled = true;
-                setEvaluationStatus('Exam submitted and locked. Your report is ready.', 'small text-success');
+            if (sessionMode === 'exam') {
+                examSubmitted = true;
+                setEvaluationStatus('Exam submitted. This attempt is now locked.', 'small text-success');
             } else {
                 setEvaluationStatus('Evaluation complete', 'small text-success');
             }
@@ -1257,6 +1241,7 @@
                 body: JSON.stringify({
                     academy_session_id: academySessionId,
                     transcript,
+                    session_type: sessionMode,
                 }),
             });
 
@@ -1268,10 +1253,9 @@
             }
 
             renderEvaluation(data.evaluation);
-            if (currentSessionType === 'exam') {
-                examLocked = true;
-                retryRecordingBtn.disabled = true;
-                setEvaluationStatus('Exam submitted and locked. Your report is ready.', 'small text-success');
+            if (sessionMode === 'exam') {
+                examSubmitted = true;
+                setEvaluationStatus('Exam submitted. This attempt is now locked.', 'small text-success');
             } else {
                 setEvaluationStatus('Evaluation complete', 'small text-success');
             }
@@ -1283,32 +1267,42 @@
         }
     });
 
-    startButtons.forEach(button => button.addEventListener('click', async function () {
-        const requestedSessionType = button.dataset.sessionType || 'practice';
+    const updateModeMessaging = () => {
+        const isExam = sessionMode === 'exam';
+        const coach = coachImages[isExam ? 'exam' : 'practice'];
+        coachName.textContent = coach.name;
+        coachTitle.textContent = coach.title;
+        coachSpecialty.textContent = coach.specialty;
+        coachPhotoWrap.innerHTML = coach.exists
+            ? `<img src="${coach.url}" alt="${coach.name}, ${coach.title}" loading="lazy">`
+            : '<div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>';
+        document.querySelector('.academy-hero-title').textContent = isExam ? 'English Speaking Exam' : 'Practice Room';
+        coachSessionStatus.innerHTML = isExam
+            ? '<span class="academy-status-dot"></span>Start a formal English Speaking Exam with Olivia, Assessment Supervisor.'
+            : '<span class="academy-status-dot"></span>Start a live speaking session with Victoria Clarke and practice real-world English conversations.';
+        document.querySelectorAll('.academy-step-row .academy-step:first-child strong').forEach(el => {
+            el.textContent = isExam ? 'Complete your exam response' : 'Practice with your coach';
+        });
+        document.querySelector('.academy-info-box').innerHTML = isExam
+            ? '<i class="fas fa-info-circle"></i> Complete your exam with Olivia. You may retry recording before final submission only; after submission, the attempt is locked.'
+            : '<i class="fas fa-info-circle"></i> Complete your conversation with Victoria Clarke, then record a short response to receive your performance review.';
+    };
+
+    const startSpeakingSession = async (mode = 'practice') => {
         if (!hasPracticeConfig) {
-            setStatusMessage('The Practice Room is not ready yet. Please contact support before starting practice.', true);
+            setStatusMessage('Please complete your Coach Settings before starting.', true);
             return;
         }
 
-        if (requestedSessionType === 'exam') {
-            const confirmed = window.confirm('Exam mode can only be submitted once. After submission, the exam is locked forever with no retry, editing, or resubmission. Continue?');
-            if (!confirmed) {
-                return;
-            }
-        }
+        sessionMode = mode;
+        examSubmitted = false;
+        resetRecording();
+        updateModeMessaging();
 
-        currentSessionType = requestedSessionType;
-        examLocked = false;
-        resetRecordingState(currentSessionType === 'exam'
-            ? 'Exam mode started. Record your answer, then submit once you are ready.'
-            : 'Ready to record your voice for performance feedback.');
-        evaluationResult.classList.add('d-none');
-        evaluationResult.innerHTML = '';
-        practiceTranscript.value = '';
-
-        setStatusMessage(currentSessionType === 'exam' ? 'Preparing your Speaking Exam...' : 'Preparing your Speaking Session...');
-        coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Preparing your coach...';
-        startButtons.forEach(item => item.disabled = true);
+        setStatusMessage(mode === 'exam' ? 'Preparing your English Speaking Exam...' : 'Preparing your Speaking Session...');
+        coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Preparing your session...';
+        startBtn.disabled = true;
+        showExamRulesBtn.disabled = true;
 
         try {
             const response = await fetch("{{ route('educonecx.academy.liveavatar.embed') }}", {
@@ -1318,7 +1312,7 @@
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json',
                 },
-                body: JSON.stringify({ session_type: currentSessionType }),
+                body: JSON.stringify({ session_type: mode }),
             });
 
             const responseText = await response.text();
@@ -1326,7 +1320,6 @@
 
             try {
                 data = responseText ? JSON.parse(responseText) : {};
-
             } catch (e) {
                 throw new Error('Server returned an unexpected response. Please refresh and try again.');
             }
@@ -1336,7 +1329,6 @@
             }
 
             academySessionId = data.academy_session_id || null;
-
             const openSessionLink = document.getElementById('openSessionLink');
 
             if (!data.embed_url) {
@@ -1344,7 +1336,6 @@
             }
 
             coachSessionArea.classList.remove('d-none');
-
             coachMount.innerHTML = `
                 <iframe
                     src="${data.embed_url}"
@@ -1358,14 +1349,12 @@
             openSessionLink.href = data.embed_url;
             openSessionLink.classList.remove('d-none');
 
-            setStatusMessage(currentSessionType === 'exam' ? 'Speaking Exam is ready.' : 'Speaking Session is ready.');
-            coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Your English Coach is ready. Click Chat Now and allow microphone access to begin your speaking session.';
-            setEvaluationStatus(currentSessionType === 'exam'
-                ? 'Exam mode: record your answer, then submit it once. It will lock after submission.'
-                : 'Ready to record your voice for performance feedback.');
+            setStatusMessage(mode === 'exam' ? 'English Speaking Exam is ready.' : 'Speaking Session is ready.');
+            coachSessionStatus.innerHTML = mode === 'exam'
+                ? '<span class="academy-status-dot"></span>Olivia is ready. Complete the exam carefully before final submission.'
+                : '<span class="academy-status-dot"></span>Your English Coach is ready. Click Chat Now and allow microphone access to begin your speaking session.';
+            setEvaluationStatus(mode === 'exam' ? 'Record your exam response when ready. Final submission will lock the attempt.' : 'Ready to record your voice for pronunciation feedback.');
             updateEvaluationButtons();
-
-            liveCoachDebug.innerHTML = '';
 
             setTimeout(() => {
                 coachSessionArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1375,20 +1364,29 @@
             setStatusMessage(error.message || 'Unable to load your speaking session.', true);
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
         } finally {
-            startButtons.forEach(item => item.disabled = !hasPracticeConfig);
+            startBtn.disabled = !hasPracticeConfig;
+            showExamRulesBtn.disabled = !hasPracticeConfig;
         }
-    }));
+    };
+
+    startBtn?.addEventListener('click', () => startSpeakingSession('practice'));
+    showExamRulesBtn?.addEventListener('click', () => {
+        examRulesArea.classList.toggle('d-none');
+        if (!examRulesArea.classList.contains('d-none')) {
+            examRulesArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+    startExamBtn?.addEventListener('click', () => startSpeakingSession('exam'));
 
     if (missingHeyGenConfig.length) {
-        setStatusMessage('Practice Room is not ready yet. Please contact support.', true);
+        setStatusMessage('Practice Room is not ready yet. Please contact support to complete setup.', true);
     } else if (!hasPracticeConfig) {
-        setStatusMessage('The Practice Room is not ready yet. Please contact support before starting practice.', true);
+        setStatusMessage('Please complete your Coach Settings before starting practice.', true);
     } else {
         setStatusMessage('Ready to start your speaking session.');
-        setEvaluationStatus('Start a speaking session, then record your voice for performance feedback.');
+        setEvaluationStatus('Start a speaking session, then record your voice for pronunciation feedback.');
     }
 
-    startButtons.forEach(item => item.disabled = !hasPracticeConfig);
     updateEvaluationButtons();
 </script>
 @endsection

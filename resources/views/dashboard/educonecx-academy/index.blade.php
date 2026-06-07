@@ -88,17 +88,13 @@
     .coach-card, .context-card { border: 1px solid var(--academy-border); border-radius: 14px; padding: 14px; background: #fff; position: relative; }
     .coach-card.selected, .context-card.selected { border: 2px solid var(--academy-navy); box-shadow: 0 0 0 4px rgba(251, 198, 12, .22); }
     .academy-coach-preview { width: 100%; height: 170px; background: #f8f3dd; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+    .academy-coach-image-wrap { width: 100%; height: 150px; border-radius: 14px; overflow: hidden; background: #f8f3dd; margin-bottom: 12px; }
+    .academy-coach-image { width: 100%; height: 100%; object-fit: cover; display: block; }
     .academy-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .academy-coach-placeholder { font-size: 42px; color: var(--academy-navy); }
+    .academy-coach-placeholder { height: 150px; display: flex; align-items: center; justify-content: center; background: #f8f3dd; border-radius: 14px; font-size: 42px; color: var(--academy-navy); margin-bottom: 12px; }
     .coach-name, .context-name { color: var(--academy-navy); font-weight: 850; margin-bottom: 8px; }
     .selected-badge { position:absolute; top:10px; right:10px; background: var(--academy-yellow); color: var(--academy-navy); border-radius:999px; padding:4px 8px; font-size:.72rem; font-weight:900; }
-    .debug-id { color: var(--academy-muted); font-size: .75rem; word-break: break-all; }
-
     .context-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-
-    .academy-api-debug { background:#f8fafc; border:1px solid var(--academy-border); border-radius:14px; padding:14px; margin-bottom:16px; }
-    .academy-api-debug summary { cursor:pointer; font-weight:850; color:var(--academy-navy); }
-    .academy-api-debug pre { white-space:pre-wrap; word-break:break-word; max-height:320px; overflow:auto; background:#fff; border:1px solid var(--academy-border); border-radius:10px; padding:12px; }
 
     .academy-table-wrap { overflow-x: auto; }
     .academy-table { width: 100%; border-collapse: collapse; min-width: 1050px; }
@@ -117,8 +113,8 @@
     .academy-chart-row i { display: block; height: 100%; background: linear-gradient(135deg, var(--academy-yellow), var(--academy-navy-2)); border-radius: inherit; }
 
     @media (max-width: 1180px) { .coach-grid, .academy-chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 900px) { .academy-dashboard-layout { grid-template-columns: 1fr; } .academy-stats-grid, .academy-chart-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 560px) { .academy-dashboard { padding: 12px; } .coach-grid, .context-grid { grid-template-columns: 1fr; } .academy-card-body { padding: 14px; } }
+    @media (max-width: 900px) { .academy-dashboard-layout { grid-template-columns: 1fr; } .academy-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 560px) { .academy-dashboard { padding: 12px; } .academy-stats-grid, .coach-grid, .context-grid, .academy-chart-grid { grid-template-columns: 1fr; } }
 </style>
 @endpush
 
@@ -140,13 +136,9 @@
                 <div class="academy-nav-title">Practice Room</div>
                 <a href="{{ route('educonecx.academy.index') }}" class="academy-nav-item"><i class="fas fa-play-circle"></i> Start Practice</a>
                 <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Practice History</a>
-                <a href="#exam-results" class="academy-nav-item"><i class="fas fa-clipboard-check"></i> Exam Results</a>
                 <a href="#performance-reports" class="academy-nav-item"><i class="fas fa-chart-line"></i> Performance Reports</a>
-                <a href="#credits" class="academy-nav-item"><i class="fas fa-coins"></i> Credits</a>
                 <a href="#progress-tracking" class="academy-nav-item"><i class="fas fa-bullseye"></i> Progress Tracking</a>
-                @if(auth()->user()?->isAdmin())
-                    <a href="#coach-settings" class="academy-nav-item"><i class="fas fa-user-cog"></i> Coach Configuration</a>
-                @endif
+                <a href="#coach-settings" class="academy-nav-item"><i class="fas fa-user-cog"></i> Coach Settings</a>
             </nav>
         </aside>
 
@@ -168,7 +160,6 @@
                 <div class="academy-stat"><span>Overall Speaking Score</span><strong>{{ $stats['average_overall_score'] ? $stats['average_overall_score'] . '/10' : 'N/A' }}</strong></div>
                 <div class="academy-stat"><span>Best Speaking Score</span><strong>{{ $stats['best_score'] ? $stats['best_score'] . '/10' : 'N/A' }}</strong></div>
                 <div class="academy-stat"><span>Last Practice</span><strong style="font-size:1rem;">{{ $stats['last_practice_date'] ?? 'No practice yet' }}</strong></div>
-                <div class="academy-stat"><span>Practice Credits</span><strong>{{ $creditSummary['balance'] }}</strong></div>
             </section>
 
             <section id="performance-reports" class="academy-card">
@@ -200,83 +191,11 @@
                 </div></div>
             </section>
 
-
-            <section id="exam-results" class="academy-card">
-                <div class="academy-card-header">
-                    <div>
-                        <h2 class="academy-card-title">Exam Results</h2>
-                        <p class="academy-card-subtitle">Formal speaking assessment results submitted from the Practice Room.</p>
-                    </div>
-                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-yellow"><i class="fas fa-clipboard-check"></i> Take Exam</a>
-                </div>
-                <div class="academy-card-body">
-                    <div class="academy-table-wrap">
-                        <table class="academy-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th><th>Coach</th><th>Duration</th><th>Pronunciation</th><th>Grammar</th><th>Fluency</th><th>Vocabulary</th><th>Overall Score</th><th>Status</th><th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($examSessions as $session)
-                                    @php $duration = ($session->started_at && $session->ended_at) ? $session->started_at->diffForHumans($session->ended_at, true) : 'In progress'; @endphp
-                                    <tr>
-                                        <td>{{ optional($session->created_at)->format('M d, Y g:i A') }}</td>
-                                        <td><strong>Victoria Clarke</strong><br><span class="text-muted">English Coach</span></td>
-                                        <td>{{ $duration }}</td>
-                                        <td><span class="score-pill">{{ is_null($session->pronunciation_score) ? 'N/A' : number_format($session->pronunciation_score, 1) }}</span></td>
-                                        <td><span class="score-pill">{{ is_null($session->grammar_score) ? 'N/A' : number_format($session->grammar_score, 1) }}</span></td>
-                                        <td><span class="score-pill">{{ is_null($session->fluency_score) ? 'N/A' : number_format($session->fluency_score, 1) }}</span></td>
-                                        <td><span class="score-pill">{{ is_null($session->vocabulary_score) ? 'N/A' : number_format($session->vocabulary_score, 1) }}</span></td>
-                                        <td><span class="score-pill">{{ is_null($session->overall_score) ? 'N/A' : number_format($session->overall_score, 1) }}</span></td>
-                                        <td>{{ $session->is_locked ? 'Locked' : ucfirst($session->status ?? 'pending') }}</td>
-                                        <td><a href="{{ route('dashboard.educonecx-academy.sessions.show', $session) }}" class="academy-btn-navy">View Report</a></td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="10" class="text-center py-4">No exam results yet.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="credits" class="academy-card">
-                <div class="academy-card-header"><div><h2 class="academy-card-title">Credits</h2><p class="academy-card-subtitle">Practice Room credit balance and recent activity.</p></div><a href="{{ route('subscription.plans') }}" class="academy-btn-yellow"><i class="fas fa-plus"></i> Buy Additional Credits</a></div>
-                <div class="academy-card-body">
-                    <div class="academy-stats-grid">
-                        <div class="academy-stat"><span>Available Credits</span><strong>{{ $creditSummary['balance'] }}</strong></div>
-                        <div class="academy-stat"><span>Practice Cost</span><strong>{{ $creditSummary['practice_cost'] }}</strong></div>
-                        <div class="academy-stat"><span>Exam Cost</span><strong>{{ $creditSummary['exam_cost'] }}</strong></div>
-                        <div class="academy-stat"><span>Lifetime Used</span><strong>{{ $creditSummary['lifetime_used'] }}</strong></div>
-                    </div>
-                    <div class="academy-table-wrap mt-3">
-                        <table class="academy-table">
-                            <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Balance</th><th>Description</th></tr></thead>
-                            <tbody>
-                                @forelse($creditTransactions as $transaction)
-                                    <tr>
-                                        <td>{{ optional($transaction->created_at)->format('M d, Y g:i A') }}</td>
-                                        <td>{{ ucwords(str_replace('_', ' ', $transaction->type)) }}</td>
-                                        <td>{{ $transaction->amount > 0 ? '+' : '' }}{{ $transaction->amount }}</td>
-                                        <td>{{ $transaction->balance_after }}</td>
-                                        <td>{{ $transaction->description }}</td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="5" class="text-center py-4">No credit activity yet.</td></tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            @if(auth()->user()?->isAdmin())
             <section id="coach-settings" class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Configure English Coach</h2>
-                        <p class="academy-card-subtitle">Administrator-only coach profile controls for the Practice Room.</p>
+                        <h2 class="academy-card-title">Choose Your English Coach</h2>
+                        <p class="academy-card-subtitle">Select the coach profile learners see in the Practice Room.</p>
                     </div>
                 </div>
                 <div class="academy-card-body">
@@ -287,18 +206,21 @@
                                 <form method="POST" action="{{ route('dashboard.educonecx-academy.avatar-preference') }}" class="coach-card {{ $selectedCoach ? 'selected' : '' }}">
                                     @csrf
                                     @if($selectedCoach)<span class="selected-badge">Selected</span>@endif
-                                    <div class="academy-coach-preview">
-                                        @if(!empty($avatar['image_url']))
-                                            <img src="{{ $avatar['image_url'] }}" alt="Victoria Clarke" class="academy-avatar-img" loading="lazy">
-                                        @else
-                                            <i class="fas fa-user-tie academy-coach-placeholder"></i>
-                                        @endif
-                                    </div>
-                                    <div class="coach-name">Victoria Clarke</div>
-                                    <small class="text-muted d-block mb-2">English Coach<br>Speaking Practice Specialist</small><button type="button" class="academy-btn-soft w-100 mb-2"><i class="fas fa-volume-up"></i> Voice Preview</button>
+                                    @if(!empty($avatar['image_url']))
+                                        <div class="academy-coach-image-wrap">
+                                            <img src="{{ $avatar['image_url'] }}" alt="{{ $avatar['name'] ?? 'English Coach' }}" class="academy-coach-image" loading="lazy">
+                                        </div>
+                                    @else
+                                        <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
+                                    @endif
+                                    <div class="coach-name">{{ $avatar['name'] ?? 'English Coach' }}</div>
+                                    <small class="text-muted d-block mb-2">English Coach<br>{{ ucfirst($avatar['type'] ?? 'coach') }} profile</small><button type="button" class="academy-btn-soft w-100 mb-2"><i class="fas fa-volume-up"></i> Voice Preview</button>
+                                    <input type="hidden" name="avatar_id" value="{{ $avatar['id'] }}">
                                     <input type="hidden" name="heygen_avatar_id" value="{{ $avatar['id'] }}">
-                                    <input type="hidden" name="avatar_name" value="Victoria Clarke">
+                                    <input type="hidden" name="avatar_name" value="{{ $avatar['name'] ?? 'English Coach' }}">
                                     <input type="hidden" name="avatar_image_url" value="{{ $avatar['image_url'] ?? '' }}">
+                                    <input type="hidden" name="default_voice_id" value="{{ $avatar['default_voice_id'] ?? '' }}">
+                                    <input type="hidden" name="default_voice_name" value="{{ $avatar['default_voice_name'] ?? '' }}">
                                     <button type="submit" class="academy-btn-{{ $selectedCoach ? 'soft' : 'navy' }} mt-3 w-100">{{ $selectedCoach ? 'Selected Coach' : 'Select Coach' }}</button>
                                 </form>
                             @endforeach
@@ -312,8 +234,8 @@
             <section class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Configure Conversation Scenario</h2>
-                        <p class="academy-card-subtitle">Administrator-only conversation focus controls for learner sessions.</p>
+                        <h2 class="academy-card-title">Choose Conversation Scenario</h2>
+                        <p class="academy-card-subtitle">Choose the real-world conversation scenario for your next coaching session.</p>
                     </div>
                 </div>
                 <div class="academy-card-body">
@@ -321,8 +243,7 @@
                         <div class="context-grid">
                             @foreach($contexts as $context)
                                 @php
-                                    $scenarioNames = ['Restaurant Conversation', 'Job Interview', 'Business Meeting', 'Customer Service', 'Travel and Tourism', 'Daily Conversation'];
-                                    $displayScenario = $scenarioNames[$loop->index % count($scenarioNames)];
+                                    $displayScenario = strcasecmp($context['name'] ?? '', 'Language Learning') === 0 ? 'English Speaking Practice' : ($context['name'] ?? 'English Speaking Practice');
                                     $selectedContext = $avatarSetting->heygen_context_id && $avatarSetting->heygen_context_id === ($context['id'] ?? null);
                                 @endphp
                                 <form method="POST" action="{{ route('dashboard.educonecx-academy.context-preference') }}" class="context-card {{ $selectedContext ? 'selected' : '' }}">
@@ -343,17 +264,16 @@
                 </div>
             </section>
 
-            @endif
-
             <section id="session-history" class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Session History</h2>
-                        <p class="academy-card-subtitle">Review your saved speaking sessions and feedback reports.</p>
+                        <h2 class="academy-card-title">Practice History</h2>
+                        <p class="academy-card-subtitle">Review your saved practice sessions, exam results, and feedback reports.</p>
                     </div>
-                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-soft"><i class="fas fa-play"></i> Start Practice</a>
+                    <button class="academy-btn-soft" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardPracticeHistory" aria-expanded="false" aria-controls="dashboardPracticeHistory"><i class="fas fa-history"></i> Practice History</button>
                 </div>
-                <div class="academy-card-body">
+                <div class="collapse" id="dashboardPracticeHistory">
+                    <div class="academy-card-body">
                     <div class="academy-table-wrap">
                         <table class="academy-table">
                             <thead>
@@ -368,7 +288,7 @@
                                     @endphp
                                     <tr>
                                         <td>{{ optional($session->created_at)->format('M d, Y g:i A') }}</td>
-                                        <td><strong>Victoria Clarke</strong><br><span class="text-muted">English Coach</span></td>
+                                        <td><strong>{{ ($session->session_type ?? 'practice') === 'exam' ? 'Olivia' : 'Victoria Clarke' }}</strong><br><span class="text-muted">{{ ($session->session_type ?? 'practice') === 'exam' ? 'Assessment Supervisor' : 'English Coach' }}</span></td>
                                         <td>{{ $session->scenario->title ?? $session->context_name ?? 'Daily Conversation' }}</td>
                                         <td>{{ $duration }}</td>
                                         <td><span class="score-pill">{{ is_null($session->pronunciation_score) ? 'N/A' : number_format($session->pronunciation_score, 1) }}</span></td>
@@ -388,6 +308,7 @@
                         </table>
                     </div>
                     <div class="mt-3">{{ $academySessions->links() }}</div>
+                    </div>
                 </div>
             </section>
         </main>

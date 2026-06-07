@@ -24,7 +24,7 @@ class HeyGenLiveAvatarService
         return [];
     }
 
-    public function resolveAvatarConfig(?AcademyScenario $scenario = null, ?User $user = null): array
+    public function resolveAvatarConfig(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): array
     {
         $userSetting = null;
         if ($user) {
@@ -34,15 +34,20 @@ class HeyGenLiveAvatarService
                 ->first();
         }
 
-        $avatarId = $userSetting?->heygen_avatar_id
+        $isExam = $sessionType === 'exam';
+
+        $avatarId = ($isExam ? config('services.heygen.exam_avatar_id') : null)
+            ?? $userSetting?->heygen_avatar_id
             ?? $scenario?->heygen_avatar_id
             ?? config('services.heygen.default_avatar_id');
 
-        $voiceId = $userSetting?->heygen_voice_id
+        $voiceId = ($isExam ? config('services.heygen.exam_voice_id') : null)
+            ?? $userSetting?->heygen_voice_id
             ?? $scenario?->heygen_voice_id
             ?? config('services.heygen.default_voice_id');
 
-        $contextId = $userSetting?->heygen_context_id
+        $contextId = ($isExam ? config('services.heygen.exam_context_id') : null)
+            ?? $userSetting?->heygen_context_id
             ?? config('services.heygen.default_context_id');
 
         return [
@@ -50,14 +55,14 @@ class HeyGenLiveAvatarService
             'voice_id' => $voiceId,
             'context_id' => $contextId,
             'source' => [
-                'avatar_id' => $userSetting?->heygen_avatar_id ? 'user' : ($scenario?->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none')),
-                'voice_id' => $userSetting?->heygen_voice_id ? 'user' : ($scenario?->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
-                'context_id' => $userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none'),
+                'avatar_id' => $isExam && config('services.heygen.exam_avatar_id') ? 'exam_env' : ($userSetting?->heygen_avatar_id ? 'user' : ($scenario?->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none'))),
+                'voice_id' => $isExam && config('services.heygen.exam_voice_id') ? 'exam_env' : ($userSetting?->heygen_voice_id ? 'user' : ($scenario?->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none'))),
+                'context_id' => $isExam && config('services.heygen.exam_context_id') ? 'exam_env' : ($userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
             ],
         ];
     }
 
-    public function buildDynamicInstructions(?AcademyScenario $scenario = null, ?User $user = null): string
+    public function buildDynamicInstructions(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): string
     {
         $userSetting = null;
         if ($user) {
@@ -70,55 +75,54 @@ class HeyGenLiveAvatarService
         $speakingLevel = $userSetting?->speaking_level ?? $scenario?->level ?? 'Beginner';
         $preferredLanguage = $userSetting?->preferred_language ?? 'English';
         $tutorStyle = $userSetting?->tutor_style ?? 'friendly and encouraging';
-        $sampleQuestions = is_array($scenario?->sample_questions) ? implode('; ', $scenario->sample_questions) : 'Ask natural follow-up questions about daily conversation, travel English, job interviews, business English, pronunciation, vocabulary, or speaking confidence.';
-        $categoryTitle = $scenario?->category?->title ?? 'English Speaking Practice';
-        $scenarioTitle = $scenario?->title ?? ($userSetting?->context_name ?: 'English speaking practice');
+        $isExam = $sessionType === 'exam';
+        $sampleQuestions = is_array($scenario?->sample_questions) ? implode('; ', $scenario->sample_questions) : 'Ask natural follow-up questions for the selected speaking focus.';
+        $categoryTitle = $scenario?->category?->title ?? ($isExam ? 'English Speaking Exam' : 'English Practice');
+        $scenarioTitle = $scenario?->title ?? ($userSetting?->context_name ?: ($isExam ? 'formal speaking assessment' : 'speaking practice'));
         $scenarioLevel = $scenario?->level ?? $speakingLevel;
-        $scenarioDescription = $scenario?->description ?? 'Practice a natural English learning conversation focused on pronunciation, vocabulary, grammar, fluency, and confidence.';
-        $practiceText = $scenario?->practice_text ?? 'Guide a realistic English learning conversation and keep the learner focused on speaking practice.';
+        $scenarioDescription = $scenario?->description ?? ($isExam ? 'Conduct a formal English speaking assessment.' : 'Practice a natural English conversation.');
+        $practiceText = $scenario?->practice_text ?? ($isExam ? 'Ask clear assessment questions and keep a formal tone.' : 'Guide a realistic English conversation.');
 
-        return "You are Victoria Clarke, an English Coach inside EDUCONECX Academy. You are an English tutor first, focused only on English-speaking development.\n\n"
-            . "Required opening flow:\n"
-            . "1. Greet the learner exactly in this style: Hello, I'm Victoria Clarke, your English Coach.\n"
-            . "2. Ask: What is your English level? Offer Beginner, Intermediate, and Advanced.\n"
-            . "3. Ask: What would you like to practice today? Offer examples such as daily conversation, travel English, job interviews, business English, pronunciation, vocabulary, and speaking confidence.\n\n"
+        return "You are an English speaking practice tutor inside EDUCONECX Academy.\n\n"
             . "Learner information:\n"
-            . "- Current speaking level if known: {$speakingLevel}\n"
-            . "- Preferred learning language: {$preferredLanguage}\n"
-            . "- Coaching style: {$tutorStyle}\n\n"
+            . "- Speaking level: {$speakingLevel}\n"
+            . "- Preferred language: {$preferredLanguage}\n"
+            . "- Tutor style: {$tutorStyle}\n\n"
             . "Selected practice:\n"
             . "- Category: {$categoryTitle}\n"
-            . "- Conversation focus: {$scenarioTitle}\n"
+            . "- Scenario/context: {$scenarioTitle}\n"
             . "- Level: {$scenarioLevel}\n"
             . "- Description: {$scenarioDescription}\n"
             . "- Practice text: {$practiceText}\n"
             . "- Sample questions: {$sampleQuestions}\n\n"
-            . "Coaching behavior:\n"
-            . "- guide every conversation toward English learning\n"
-            . "- ask one clear question at a time and wait for the learner response\n"
-            . "- correct grammar, word choice, and pronunciation naturally without interrupting too much\n"
-            . "- introduce better vocabulary and example sentences\n"
-            . "- encourage speaking confidence and celebrate progress\n"
-            . "- adapt speed, vocabulary, and corrections to the learner level\n"
-            . "- keep responses short, supportive, and practical\n"
-            . "- never default to business consulting, startup advice, entrepreneurship, marketing, or sales coaching unless the learner specifically chooses business English, and even then focus on English communication skills\n"
+            . "Your behavior:\n"
+            . "- greet the learner warmly\n"
+            . "- explain the scenario briefly\n"
+            . "- ask one question at a time\n"
+            . "- wait for the learner response\n"
+            . "- correct grammar gently\n"
+            . "- improve vocabulary naturally\n"
+            . "- encourage the learner\n"
+            . "- keep responses short and simple\n"
+            . "- adapt to the learner level\n"
+            . "- do not overwhelm the learner\n"
             . "- at the end, provide short feedback and a score out of 10.";
     }
 
-    public function generateSessionToken(?AcademyScenario $scenario = null, ?User $user = null): array
+    public function generateSessionToken(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): array
     {
         $url = 'https://api.liveavatar.com/v1/sessions/token';
         $apiKey = $this->apiKey();
 
-        $resolved = $this->resolveAvatarConfig($scenario, $user);
-        $instructions = $this->buildDynamicInstructions($scenario, $user);
+        $resolved = $this->resolveAvatarConfig($scenario, $user, $sessionType);
+        $instructions = $this->buildDynamicInstructions($scenario, $user, $sessionType);
 
         $tokenPayload = [
             'mode' => 'FULL',
             'avatar_id' => $resolved['avatar_id'],
             'avatar_persona' => [
-                'name' => 'Victoria Clarke',
-                'role' => 'English Coach',
+                'name' => 'EDUCONECX Academy Tutor',
+                'role' => 'English speaking practice tutor',
                 'description' => $instructions,
                 'personality' => 'Friendly, patient, encouraging, and clear',
                 'instructions' => $instructions,
@@ -196,9 +200,9 @@ class HeyGenLiveAvatarService
     }
 
 
-    public function createLiveAvatarEmbed(?AcademyScenario $scenario = null, ?User $user = null): array
+    public function createLiveAvatarEmbed(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): array
     {
-        $resolved = $this->resolveAvatarConfig($scenario, $user);
+        $resolved = $this->resolveAvatarConfig($scenario, $user, $sessionType);
 
         if (empty($resolved['avatar_id'])) {
             throw new \RuntimeException('LiveAvatar avatar_id is missing.');
@@ -440,26 +444,28 @@ class HeyGenLiveAvatarService
     {
         return [
             'id' => (string) (data_get($item, 'id') ?? data_get($item, 'avatar_id') ?? data_get($item, 'avatarId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar'),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'English Coach'),
             'image_url' => $this->resolveAvatarImageUrl($item),
             'type' => $type,
+            'default_voice_id' => data_get($item, 'default_voice.id'),
+            'default_voice_name' => data_get($item, 'default_voice.name'),
         ];
     }
 
     protected function resolveAvatarImageUrl(array $avatar): ?string
     {
         $candidates = [
+            data_get($avatar, 'preview_url'),
             data_get($avatar, 'image_url'),
             data_get($avatar, 'thumbnail_url'),
             data_get($avatar, 'preview_image_url'),
-            data_get($avatar, 'preview_url'),
+            data_get($avatar, 'preview'),
+            data_get($avatar, 'image'),
+            data_get($avatar, 'thumbnail'),
             data_get($avatar, 'avatar_image_url'),
             data_get($avatar, 'portrait_url'),
             data_get($avatar, 'photo_url'),
             data_get($avatar, 'cover_url'),
-            data_get($avatar, 'image'),
-            data_get($avatar, 'thumbnail'),
-            data_get($avatar, 'preview'),
             data_get($avatar, 'media.url'),
             data_get($avatar, 'preview_image.url'),
             data_get($avatar, 'asset.url'),
@@ -507,7 +513,7 @@ class HeyGenLiveAvatarService
     {
         return [
             'id' => (string) (data_get($item, 'id') ?? data_get($item, 'context_id') ?? data_get($item, 'contextId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'context_name') ?? data_get($item, 'title') ?? 'LiveAvatar Context'),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'context_name') ?? data_get($item, 'title') ?? 'English Speaking Practice'),
         ];
     }
 
@@ -515,7 +521,7 @@ class HeyGenLiveAvatarService
     {
         return [
             'id' => (string) (data_get($item, 'id') ?? data_get($item, 'voice_id') ?? data_get($item, 'voiceId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'voice_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar Voice'),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'voice_name') ?? data_get($item, 'display_name') ?? 'English Voice'),
         ];
     }
 

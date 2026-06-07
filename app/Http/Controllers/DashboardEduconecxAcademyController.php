@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademySession;
 use App\Models\AcademyUserAvatarSetting;
-use App\Models\PracticeCreditTransaction;
-use App\Models\UserPracticeCredit;
 use App\Services\HeyGenLiveAvatarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -22,30 +21,8 @@ class DashboardEduconecxAcademyController extends Controller
 
         $academySessions = AcademySession::with(['category', 'scenario'])
             ->where('user_id', $user->id)
-            ->where('session_type', 'practice')
             ->latest()
             ->paginate(20);
-
-        $examSessions = AcademySession::with(['category', 'scenario'])
-            ->where('user_id', $user->id)
-            ->where('session_type', 'exam')
-            ->latest()
-            ->take(20)
-            ->get();
-
-        $creditAccount = $this->creditAccount($user->id);
-        $creditTransactions = PracticeCreditTransaction::query()
-            ->where('user_id', $user->id)
-            ->latest()
-            ->take(10)
-            ->get();
-        $creditSummary = [
-            'balance' => $creditAccount->balance,
-            'practice_cost' => (int) (config('practice_room.practice_credit_cost', 1) ?? 1),
-            'exam_cost' => (int) (config('practice_room.exam_credit_cost', 2) ?? 2),
-            'lifetime_used' => $creditAccount->lifetime_used,
-            'lifetime_granted' => $creditAccount->lifetime_granted,
-        ];
 
         $sessionQuery = AcademySession::where('user_id', $user->id);
         $allSessions = (clone $sessionQuery)->latest()->get();
@@ -88,48 +65,97 @@ class DashboardEduconecxAcademyController extends Controller
             ],
         ];
 
-        $avatars = [];
-        $contexts = [];
-        $voices = [];
-        $liveAvatarDebug = [];
+        $publicAvatars = $liveAvatarService->listPublicAvatars();
+        $customAvatars = $liveAvatarService->listCustomAvatars();
+        $avatars = collect(array_merge($publicAvatars, $customAvatars))
+            ->unique('id')
+            ->values()
+            ->all();
 
-        if ($user->isAdmin()) {
-            $publicAvatars = $liveAvatarService->listPublicAvatars();
-            $customAvatars = $liveAvatarService->listCustomAvatars();
-            $avatars = collect(array_merge($publicAvatars, $customAvatars))
-                ->unique('id')
-                ->values()
-                ->all();
-
-            if ($avatars === [] && filled(config('services.heygen.default_avatar_id'))) {
-                $avatars[] = [
-                    'id' => (string) config('services.heygen.default_avatar_id'),
-                    'name' => 'Victoria Clarke',
-                    'image_url' => null,
-                    'type' => 'default',
-                ];
-            }
-
-            $contexts = $this->normalizeContexts($liveAvatarService->listContexts());
-            if ($contexts === [] && filled(config('services.heygen.default_context_id'))) {
-                $contexts[] = [
-                    'id' => (string) config('services.heygen.default_context_id'),
-                    'name' => 'English Speaking Practice',
-                ];
-            }
-
-            $voices = $liveAvatarService->listVoices();
-            $liveAvatarDebug = $liveAvatarService->getLiveAvatarListingDebug();
+        if ($avatars === [] && filled(config('services.heygen.default_avatar_id'))) {
+            $avatars[] = [
+                'id' => (string) config('services.heygen.default_avatar_id'),
+                'name' => 'Env Avatar Fallback',
+                'image_url' => null,
+                'type' => 'env fallback',
+            ];
         }
 
+        $contexts = $this->normalizeContexts($liveAvatarService->listContexts());
+        $languageLearningContext = collect($contexts)->first(function (array $context) {
+            return strcasecmp((string) ($context['name'] ?? ''), 'Language Learning') === 0;
+        });
 
+        if (blank($avatarSetting->heygen_context_id) && $languageLearningContext) {
+            $avatarSetting->fill([
+                'heygen_context_id' => $languageLearningContext['id'],
+                'context_name' => $languageLearningContext['name'],
+                'preferred_language' => $avatarSetting->preferred_language ?: 'en',
+                'tutor_style' => $avatarSetting->tutor_style ?: 'friendly and encouraging',
+                'status' => 'active',
+            ])->save();
+        }
+
+        if ($contexts === [] && filled(config('services.heygen.default_context_id'))) {
+            $contexts[] = [
+                'id' => (string) config('services.heygen.default_context_id'),
+                'name' => 'English Speaking Practice',
+            ];
+        }
+
+        $voices = $liveAvatarService->listVoices();
+        $liveAvatarDebug = $liveAvatarService->getLiveAvatarListingDebug();
+
+        if (app()->environment('local') && $request->boolean('liveavatar_debug')) {
+            return response()->json([
+                'avatars_raw' => collect($liveAvatarDebug)
+                    ->filter(fn ($debug) => ($debug['type'] ?? null) === 'avatars')
+                    ->map(fn ($debug) => [
+                        'endpoint_url' => $debug['endpoint_url'] ?? null,
+                        'status' => $debug['status'] ?? null,
+                        'headers' => $debug['headers'] ?? [],
+                        'body' => $debug['raw'] ?? null,
+                        'count' => $debug['count'] ?? 0,
+                        'error' => $debug['error'] ?? null,
+                        'first_raw_item_keys' => $debug['first_raw_item_keys'] ?? [],
+                        'first_raw_item' => $debug['first_raw_item'] ?? null,
+                    ])
+                    ->values(),
+                'contexts_raw' => collect($liveAvatarDebug)
+                    ->filter(fn ($debug) => ($debug['type'] ?? null) === 'contexts')
+                    ->map(fn ($debug) => [
+                        'endpoint_url' => $debug['endpoint_url'] ?? null,
+                        'status' => $debug['status'] ?? null,
+                        'headers' => $debug['headers'] ?? [],
+                        'body' => $debug['raw'] ?? null,
+                        'count' => $debug['count'] ?? 0,
+                        'error' => $debug['error'] ?? null,
+                        'first_raw_item_keys' => $debug['first_raw_item_keys'] ?? [],
+                        'first_raw_item' => $debug['first_raw_item'] ?? null,
+                    ])
+                    ->values(),
+                'voices_raw' => collect($liveAvatarDebug)
+                    ->filter(fn ($debug) => ($debug['type'] ?? null) === 'voices')
+                    ->map(fn ($debug) => [
+                        'endpoint_url' => $debug['endpoint_url'] ?? null,
+                        'status' => $debug['status'] ?? null,
+                        'headers' => $debug['headers'] ?? [],
+                        'body' => $debug['raw'] ?? null,
+                        'count' => $debug['count'] ?? 0,
+                        'error' => $debug['error'] ?? null,
+                        'first_raw_item_keys' => $debug['first_raw_item_keys'] ?? [],
+                        'first_raw_item' => $debug['first_raw_item'] ?? null,
+                    ])
+                    ->values(),
+                'avatar_count_loaded' => count($avatars),
+                'context_count_loaded' => count($contexts),
+                'voice_count_loaded' => count($voices),
+            ]);
+        }
 
 
         return view('dashboard.educonecx-academy.index', compact(
             'academySessions',
-            'examSessions',
-            'creditSummary',
-            'creditTransactions',
             'avatarSetting',
             'avatars',
             'contexts',
@@ -141,31 +167,40 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function updateAvatarPreference(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin(), 403);
-
         $validated = $request->validate([
-            'heygen_avatar_id' => ['required', 'string', 'max:255'],
+            'avatar_id' => ['nullable', 'string', 'max:255'],
+            'heygen_avatar_id' => ['nullable', 'string', 'max:255'],
             'avatar_name' => ['nullable', 'string', 'max:255'],
             'avatar_image_url' => ['nullable', 'url', 'max:2000'],
+            'default_voice_id' => ['nullable', 'string', 'max:255'],
+            'default_voice_name' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $avatarId = $validated['avatar_id'] ?? $validated['heygen_avatar_id'] ?? null;
+        abort_if(blank($avatarId), 422, 'Please select an English Coach.');
+
         $setting = $this->avatarSetting($request->user()->id);
-        $setting->fill([
-            'heygen_avatar_id' => $validated['heygen_avatar_id'],
+        $payload = [
+            'heygen_avatar_id' => $avatarId,
+            'heygen_voice_id' => $validated['default_voice_id'] ?? $setting->heygen_voice_id,
             'avatar_name' => $validated['avatar_name'] ?? $setting->avatar_name,
             'avatar_image_url' => $validated['avatar_image_url'] ?? $setting->avatar_image_url,
             'preferred_language' => $setting->preferred_language ?: 'en',
             'tutor_style' => $setting->tutor_style ?: 'friendly and encouraging',
             'status' => 'active',
-        ])->save();
+        ];
+
+        if (Schema::hasColumn('academy_user_avatar_settings', 'voice_name')) {
+            $payload['voice_name'] = $validated['default_voice_name'] ?? $setting->voice_name;
+        }
+
+        $setting->fill($payload)->save();
 
         return back()->with('success', 'Your English Coach preference has been saved.');
     }
 
     public function updateContextPreference(Request $request): RedirectResponse
     {
-        abort_unless($request->user()?->isAdmin(), 403);
-
         $validated = $request->validate([
             'heygen_context_id' => ['required', 'string', 'max:255'],
             'context_name' => ['nullable', 'string', 'max:255'],
@@ -199,8 +234,8 @@ class DashboardEduconecxAcademyController extends Controller
                 'date' => optional($session->created_at)->format('M d, Y g:i A'),
                 'scenario' => $session->scenario->title ?? 'Daily Conversation',
                 'category' => $session->category->title ?? 'No category',
-                'coach' => 'Victoria Clarke',
-                'coach_title' => 'English Coach',
+                'coach' => ($session->session_type ?? 'practice') === 'exam' ? 'Olivia' : 'Victoria Clarke',
+                'coach_title' => ($session->session_type ?? 'practice') === 'exam' ? 'Assessment Supervisor' : 'English Coach',
                 'overall' => $this->formatScore($session->overall_score),
                 'pronunciation' => $this->formatScore($session->pronunciation_score),
                 'grammar' => $this->formatScore($session->grammar_score),
@@ -229,31 +264,6 @@ class DashboardEduconecxAcademyController extends Controller
         return view('dashboard.educonecx-academy.show', compact('session', 'audioUrl'));
     }
 
-
-
-    private function creditAccount(int $userId): UserPracticeCredit
-    {
-        $defaultCredits = (int) (config('practice_room.default_course_credits', 20) ?? 20);
-        $account = UserPracticeCredit::firstOrCreate(
-            ['user_id' => $userId],
-            [
-                'balance' => $defaultCredits,
-                'lifetime_granted' => $defaultCredits,
-            ]
-        );
-
-        if ($account->wasRecentlyCreated && $defaultCredits > 0) {
-            PracticeCreditTransaction::create([
-                'user_id' => $userId,
-                'type' => 'course_grant',
-                'amount' => $defaultCredits,
-                'balance_after' => $defaultCredits,
-                'description' => 'Default Practice Room course credits',
-            ]);
-        }
-
-        return $account->fresh();
-    }
 
     private function practiceStreak($sessions): int
     {
