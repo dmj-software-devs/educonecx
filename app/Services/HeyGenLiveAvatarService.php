@@ -24,7 +24,7 @@ class HeyGenLiveAvatarService
         return [];
     }
 
-    public function resolveAvatarConfig(?AcademyScenario $scenario = null, ?User $user = null): array
+    public function resolveAvatarConfig(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): array
     {
         $userSetting = null;
         if ($user) {
@@ -34,15 +34,20 @@ class HeyGenLiveAvatarService
                 ->first();
         }
 
-        $avatarId = $userSetting?->heygen_avatar_id
+        $isExam = $sessionType === 'exam';
+
+        $avatarId = ($isExam ? config('services.heygen.exam_avatar_id') : null)
+            ?? $userSetting?->heygen_avatar_id
             ?? $scenario?->heygen_avatar_id
             ?? config('services.heygen.default_avatar_id');
 
-        $voiceId = $userSetting?->heygen_voice_id
+        $voiceId = ($isExam ? config('services.heygen.exam_voice_id') : null)
+            ?? $userSetting?->heygen_voice_id
             ?? $scenario?->heygen_voice_id
             ?? config('services.heygen.default_voice_id');
 
-        $contextId = $userSetting?->heygen_context_id
+        $contextId = ($isExam ? config('services.heygen.exam_context_id') : null)
+            ?? $userSetting?->heygen_context_id
             ?? config('services.heygen.default_context_id');
 
         return [
@@ -50,14 +55,14 @@ class HeyGenLiveAvatarService
             'voice_id' => $voiceId,
             'context_id' => $contextId,
             'source' => [
-                'avatar_id' => $userSetting?->heygen_avatar_id ? 'user' : ($scenario?->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none')),
-                'voice_id' => $userSetting?->heygen_voice_id ? 'user' : ($scenario?->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none')),
-                'context_id' => $userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none'),
+                'avatar_id' => $isExam && config('services.heygen.exam_avatar_id') ? 'exam_env' : ($userSetting?->heygen_avatar_id ? 'user' : ($scenario?->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none'))),
+                'voice_id' => $isExam && config('services.heygen.exam_voice_id') ? 'exam_env' : ($userSetting?->heygen_voice_id ? 'user' : ($scenario?->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none'))),
+                'context_id' => $isExam && config('services.heygen.exam_context_id') ? 'exam_env' : ($userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
             ],
         ];
     }
 
-    public function buildDynamicInstructions(?AcademyScenario $scenario = null, ?User $user = null): string
+    public function buildDynamicInstructions(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): string
     {
         $userSetting = null;
         if ($user) {
@@ -70,12 +75,13 @@ class HeyGenLiveAvatarService
         $speakingLevel = $userSetting?->speaking_level ?? $scenario?->level ?? 'Beginner';
         $preferredLanguage = $userSetting?->preferred_language ?? 'English';
         $tutorStyle = $userSetting?->tutor_style ?? 'friendly and encouraging';
-        $sampleQuestions = is_array($scenario?->sample_questions) ? implode('; ', $scenario->sample_questions) : 'Use the selected LiveAvatar context to ask natural follow-up questions.';
-        $categoryTitle = $scenario?->category?->title ?? 'LiveAvatar English Practice';
-        $scenarioTitle = $scenario?->title ?? ($userSetting?->context_name ?: 'LiveAvatar speaking practice');
+        $isExam = $sessionType === 'exam';
+        $sampleQuestions = is_array($scenario?->sample_questions) ? implode('; ', $scenario->sample_questions) : 'Ask natural follow-up questions for the selected speaking focus.';
+        $categoryTitle = $scenario?->category?->title ?? ($isExam ? 'English Speaking Exam' : 'English Practice');
+        $scenarioTitle = $scenario?->title ?? ($userSetting?->context_name ?: ($isExam ? 'formal speaking assessment' : 'speaking practice'));
         $scenarioLevel = $scenario?->level ?? $speakingLevel;
-        $scenarioDescription = $scenario?->description ?? 'Practice a natural English conversation using the selected LiveAvatar context.';
-        $practiceText = $scenario?->practice_text ?? 'Use the selected LiveAvatar context to guide a realistic English conversation.';
+        $scenarioDescription = $scenario?->description ?? ($isExam ? 'Conduct a formal English speaking assessment.' : 'Practice a natural English conversation.');
+        $practiceText = $scenario?->practice_text ?? ($isExam ? 'Ask clear assessment questions and keep a formal tone.' : 'Guide a realistic English conversation.');
 
         return "You are an English speaking practice tutor inside EDUCONECX Academy.\n\n"
             . "Learner information:\n"
@@ -103,13 +109,13 @@ class HeyGenLiveAvatarService
             . "- at the end, provide short feedback and a score out of 10.";
     }
 
-    public function generateSessionToken(?AcademyScenario $scenario = null, ?User $user = null): array
+    public function generateSessionToken(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): array
     {
         $url = 'https://api.liveavatar.com/v1/sessions/token';
         $apiKey = $this->apiKey();
 
-        $resolved = $this->resolveAvatarConfig($scenario, $user);
-        $instructions = $this->buildDynamicInstructions($scenario, $user);
+        $resolved = $this->resolveAvatarConfig($scenario, $user, $sessionType);
+        $instructions = $this->buildDynamicInstructions($scenario, $user, $sessionType);
 
         $tokenPayload = [
             'mode' => 'FULL',
@@ -194,9 +200,9 @@ class HeyGenLiveAvatarService
     }
 
 
-    public function createLiveAvatarEmbed(?AcademyScenario $scenario = null, ?User $user = null): array
+    public function createLiveAvatarEmbed(?AcademyScenario $scenario = null, ?User $user = null, string $sessionType = 'practice'): array
     {
-        $resolved = $this->resolveAvatarConfig($scenario, $user);
+        $resolved = $this->resolveAvatarConfig($scenario, $user, $sessionType);
 
         if (empty($resolved['avatar_id'])) {
             throw new \RuntimeException('LiveAvatar avatar_id is missing.');

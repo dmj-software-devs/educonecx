@@ -92,13 +92,7 @@
     .academy-coach-placeholder { font-size: 42px; color: var(--academy-navy); }
     .coach-name, .context-name { color: var(--academy-navy); font-weight: 850; margin-bottom: 8px; }
     .selected-badge { position:absolute; top:10px; right:10px; background: var(--academy-yellow); color: var(--academy-navy); border-radius:999px; padding:4px 8px; font-size:.72rem; font-weight:900; }
-    .debug-id { color: var(--academy-muted); font-size: .75rem; word-break: break-all; }
-
     .context-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-
-    .academy-api-debug { background:#f8fafc; border:1px solid var(--academy-border); border-radius:14px; padding:14px; margin-bottom:16px; }
-    .academy-api-debug summary { cursor:pointer; font-weight:850; color:var(--academy-navy); }
-    .academy-api-debug pre { white-space:pre-wrap; word-break:break-word; max-height:320px; overflow:auto; background:#fff; border:1px solid var(--academy-border); border-radius:10px; padding:12px; }
 
     .academy-table-wrap { overflow-x: auto; }
     .academy-table { width: 100%; border-collapse: collapse; min-width: 1050px; }
@@ -139,7 +133,7 @@
 
                 <div class="academy-nav-title">Practice Room</div>
                 <a href="{{ route('educonecx.academy.index') }}" class="academy-nav-item"><i class="fas fa-play-circle"></i> Start Practice</a>
-                <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Session History</a>
+                <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Practice History</a>
                 <a href="#performance-reports" class="academy-nav-item"><i class="fas fa-chart-line"></i> Performance Reports</a>
                 <a href="#progress-tracking" class="academy-nav-item"><i class="fas fa-bullseye"></i> Progress Tracking</a>
                 <a href="#coach-settings" class="academy-nav-item"><i class="fas fa-user-cog"></i> Coach Settings</a>
@@ -269,12 +263,13 @@
             <section id="session-history" class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Session History</h2>
-                        <p class="academy-card-subtitle">Review your saved speaking sessions and feedback reports.</p>
+                        <h2 class="academy-card-title">Practice History</h2>
+                        <p class="academy-card-subtitle">Review your saved practice sessions, exam results, and feedback reports.</p>
                     </div>
-                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-soft"><i class="fas fa-play"></i> Start Practice</a>
+                    <button class="academy-btn-soft" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardPracticeHistory" aria-expanded="false" aria-controls="dashboardPracticeHistory"><i class="fas fa-history"></i> Practice History</button>
                 </div>
-                <div class="academy-card-body">
+                <div class="collapse" id="dashboardPracticeHistory">
+                    <div class="academy-card-body">
                     <div class="academy-table-wrap">
                         <table class="academy-table">
                             <thead>
@@ -289,7 +284,7 @@
                                     @endphp
                                     <tr>
                                         <td>{{ optional($session->created_at)->format('M d, Y g:i A') }}</td>
-                                        <td><strong>Victoria Clarke</strong><br><span class="text-muted">English Coach</span></td>
+                                        <td><strong>{{ ($session->session_type ?? 'practice') === 'exam' ? 'Olivia' : 'Victoria Clarke' }}</strong><br><span class="text-muted">{{ ($session->session_type ?? 'practice') === 'exam' ? 'Assessment Supervisor' : 'English Coach' }}</span></td>
                                         <td>{{ $session->scenario->title ?? $session->context_name ?? 'Daily Conversation' }}</td>
                                         <td>{{ $duration }}</td>
                                         <td><span class="score-pill">{{ is_null($session->pronunciation_score) ? 'N/A' : number_format($session->pronunciation_score, 1) }}</span></td>
@@ -309,6 +304,7 @@
                         </table>
                     </div>
                     <div class="mt-3">{{ $academySessions->links() }}</div>
+                    </div>
                 </div>
             </section>
         </main>

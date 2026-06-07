@@ -22,14 +22,24 @@ class EduconecxAcademyController extends Controller
             ->where('status', 'active')
             ->first();
         $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting);
+        $introVideoUrl = config('services.heygen.practice_room_intro_video_url');
+        $recentAcademySessions = auth()->check()
+            ? AcademySession::query()
+                ->where('user_id', auth()->id())
+                ->latest()
+                ->limit(5)
+                ->get()
+            : collect();
+        $creditsAvailable = optional(auth()->user())->academy_credits ?? optional(auth()->user())->credits ?? 0;
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'recentAcademySessions', 'creditsAvailable'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
     {
         $validated = $request->validate([
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
+            'session_type' => ['nullable', 'in:practice,exam'],
         ]);
 
         $scenario = ! empty($validated['scenario_slug'])
@@ -38,9 +48,10 @@ class EduconecxAcademyController extends Controller
 
         try {
             $user = auth()->user();
-            $tokenData = $heyGenService->generateSessionToken($scenario, $user);
-            $resolved = $heyGenService->resolveAvatarConfig($scenario, $user);
-            $instructions = $heyGenService->buildDynamicInstructions($scenario, $user);
+            $sessionType = $validated['session_type'] ?? 'practice';
+            $tokenData = $heyGenService->generateSessionToken($scenario, $user, $sessionType);
+            $resolved = $heyGenService->resolveAvatarConfig($scenario, $user, $sessionType);
+            $instructions = $heyGenService->buildDynamicInstructions($scenario, $user, $sessionType);
 
             return response()->json([
                 'success' => true,
@@ -69,6 +80,7 @@ class EduconecxAcademyController extends Controller
     {
         $validated = $request->validate([
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
+            'session_type' => ['nullable', 'in:practice,exam'],
         ]);
 
         $scenario = ! empty($validated['scenario_slug'])
@@ -79,9 +91,10 @@ class EduconecxAcademyController extends Controller
             $user = $request->user();
             abort_unless($user, 401);
 
+            $sessionType = $validated['session_type'] ?? 'practice';
             $avatarSetting = $this->activeAvatarSetting($user->id);
-            $currentConfig = $this->currentAvatarConfig($avatarSetting);
-            $embed = $heyGenService->createLiveAvatarEmbed($scenario, $user);
+            $currentConfig = $sessionType === 'exam' ? $this->examAvatarConfig($avatarSetting) : $this->currentAvatarConfig($avatarSetting);
+            $embed = $heyGenService->createLiveAvatarEmbed($scenario, $user, $sessionType);
             $embedUrl = $embed['embed_url'];
             $resolved = data_get($embed, 'resolved', []);
 
@@ -89,6 +102,7 @@ class EduconecxAcademyController extends Controller
                 'user_id' => $user->id,
                 'academy_category_id' => $scenario?->academy_category_id,
                 'academy_scenario_id' => $scenario?->id,
+                'session_type' => $sessionType,
                 'liveavatar_embed_id' => $this->extractLiveAvatarEmbedId($embedUrl, $embed['response'] ?? []),
                 'liveavatar_embed_url' => $embedUrl,
                 'heygen_avatar_id' => data_get($resolved, 'avatar_id'),
@@ -97,10 +111,14 @@ class EduconecxAcademyController extends Controller
                 'avatar_name' => $currentConfig['avatar_name'],
                 'avatar_image_url' => $currentConfig['avatar_image_url'],
                 'context_name' => $currentConfig['context_name'],
-                'dynamic_instructions' => $heyGenService->buildDynamicInstructions($scenario, $user),
+                'dynamic_instructions' => $heyGenService->buildDynamicInstructions($scenario, $user, $sessionType),
                 'config_source' => data_get($resolved, 'source'),
                 'status' => 'started',
                 'started_at' => now(),
+                'credits_used' => 0,
+                'evaluation_used' => false,
+                'recording_used' => false,
+                'attempt_locked' => false,
                 'raw_response' => $embed['response'] ?? [],
             ]);
 
@@ -137,6 +155,7 @@ class EduconecxAcademyController extends Controller
         $session->update([
             'transcript' => $validated['transcript'],
             'status' => 'evaluating',
+            'evaluation_used' => true,
         ]);
 
         try {
@@ -170,6 +189,8 @@ class EduconecxAcademyController extends Controller
         $session->update([
             'audio_path' => $audioPath,
             'status' => 'evaluating',
+            'recording_used' => true,
+            'evaluation_used' => true,
         ]);
 
         try {
@@ -200,6 +221,11 @@ class EduconecxAcademyController extends Controller
         if (! empty($validated['academy_session_id'])) {
             $session = AcademySession::with(['scenario.category'])->findOrFail($validated['academy_session_id']);
             abort_unless((int) $session->user_id === (int) $user->id, 403);
+            if ($session->attempt_locked) {
+                throw ValidationException::withMessages([
+                    'academy_session_id' => 'This exam attempt is locked.',
+                ]);
+            }
 
             return $session;
         }
@@ -221,6 +247,7 @@ class EduconecxAcademyController extends Controller
             'avatar_name' => $currentConfig['avatar_name'],
             'avatar_image_url' => $currentConfig['avatar_image_url'],
             'context_name' => $currentConfig['context_name'],
+            'session_type' => $request->input('session_type', 'practice') === 'exam' ? 'exam' : 'practice',
             'status' => 'evaluating',
             'started_at' => now(),
         ])->load(['scenario.category']);
@@ -242,6 +269,9 @@ class EduconecxAcademyController extends Controller
             'ai_evaluation' => $evaluation,
             'evaluated_at' => now(),
             'status' => 'evaluated',
+            'ended_at' => now(),
+            'duration_seconds' => $session->started_at ? now()->diffInSeconds($session->started_at) : null,
+            'attempt_locked' => $session->session_type === 'exam',
         ], array_filter($extra, fn($value) => $value !== null)));
     }
 
@@ -260,9 +290,9 @@ class EduconecxAcademyController extends Controller
             'avatar_id' => $avatarSetting?->heygen_avatar_id ?: config('services.heygen.default_avatar_id'),
             'voice_id' => $avatarSetting?->heygen_voice_id ?: config('services.heygen.default_voice_id'),
             'context_id' => $avatarSetting?->heygen_context_id ?: config('services.heygen.default_context_id'),
-            'avatar_name' => $avatarSetting?->avatar_name ?: (config('services.heygen.default_avatar_id') ? 'Env Avatar Fallback' : null),
-            'avatar_image_url' => $avatarSetting?->avatar_image_url,
-            'context_name' => $avatarSetting?->context_name ?: (config('services.heygen.default_context_id') ? 'Env Context Fallback' : null),
+            'avatar_name' => $avatarSetting?->avatar_name ?: 'Victoria Clarke',
+            'avatar_image_url' => $avatarSetting?->avatar_image_url ?: asset('images/academy/victoria-clarke.jpg'),
+            'context_name' => $avatarSetting?->context_name ?: 'Personalized English speaking practice',
             'preferred_language' => $avatarSetting?->preferred_language ?: 'English',
             'speaking_level' => $avatarSetting?->speaking_level,
             'tutor_style' => $avatarSetting?->tutor_style,
@@ -272,6 +302,20 @@ class EduconecxAcademyController extends Controller
                 'context_id' => $avatarSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none'),
             ],
         ];
+    }
+
+    private function examAvatarConfig(?AcademyUserAvatarSetting $avatarSetting): array
+    {
+        $config = $this->currentAvatarConfig($avatarSetting);
+
+        return array_merge($config, [
+            'avatar_id' => config('services.heygen.exam_avatar_id') ?: $config['avatar_id'],
+            'voice_id' => config('services.heygen.exam_voice_id') ?: $config['voice_id'],
+            'context_id' => config('services.heygen.exam_context_id') ?: $config['context_id'],
+            'avatar_name' => 'Olivia',
+            'avatar_image_url' => asset('images/academy/olivia.jpg'),
+            'context_name' => 'English Speaking Exam',
+        ]);
     }
 
     private function extractLiveAvatarEmbedId(?string $embedUrl, array $response = []): ?string
