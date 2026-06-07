@@ -444,26 +444,28 @@ class HeyGenLiveAvatarService
     {
         return [
             'id' => (string) (data_get($item, 'id') ?? data_get($item, 'avatar_id') ?? data_get($item, 'avatarId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar'),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'English Coach'),
             'image_url' => $this->resolveAvatarImageUrl($item),
             'type' => $type,
+            'default_voice_id' => data_get($item, 'default_voice.id'),
+            'default_voice_name' => data_get($item, 'default_voice.name'),
         ];
     }
 
     protected function resolveAvatarImageUrl(array $avatar): ?string
     {
         $candidates = [
+            data_get($avatar, 'preview_url'),
             data_get($avatar, 'image_url'),
             data_get($avatar, 'thumbnail_url'),
             data_get($avatar, 'preview_image_url'),
-            data_get($avatar, 'preview_url'),
+            data_get($avatar, 'preview'),
+            data_get($avatar, 'image'),
+            data_get($avatar, 'thumbnail'),
             data_get($avatar, 'avatar_image_url'),
             data_get($avatar, 'portrait_url'),
             data_get($avatar, 'photo_url'),
             data_get($avatar, 'cover_url'),
-            data_get($avatar, 'image'),
-            data_get($avatar, 'thumbnail'),
-            data_get($avatar, 'preview'),
             data_get($avatar, 'media.url'),
             data_get($avatar, 'preview_image.url'),
             data_get($avatar, 'asset.url'),
@@ -511,7 +513,7 @@ class HeyGenLiveAvatarService
     {
         return [
             'id' => (string) (data_get($item, 'id') ?? data_get($item, 'context_id') ?? data_get($item, 'contextId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'context_name') ?? data_get($item, 'title') ?? 'LiveAvatar Context'),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'context_name') ?? data_get($item, 'title') ?? 'English Speaking Practice'),
         ];
     }
 
@@ -519,7 +521,7 @@ class HeyGenLiveAvatarService
     {
         return [
             'id' => (string) (data_get($item, 'id') ?? data_get($item, 'voice_id') ?? data_get($item, 'voiceId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'voice_name') ?? data_get($item, 'display_name') ?? 'LiveAvatar Voice'),
+            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'voice_name') ?? data_get($item, 'display_name') ?? 'English Voice'),
         ];
     }
 

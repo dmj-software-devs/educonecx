@@ -675,10 +675,8 @@
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
                     && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
-                $victoriaImage = asset('images/academy/victoria-clarke.jpg');
-                $oliviaImage = asset('images/academy/olivia.jpg');
-                $hasVictoriaImage = file_exists(public_path('images/academy/victoria-clarke.jpg'));
-                $hasOliviaImage = file_exists(public_path('images/academy/olivia.jpg'));
+                $coachImage = $practiceCoachImage ?? null;
+                $examImage = $examCoachImage ?? null;
             @endphp
 
 
@@ -695,11 +693,10 @@
                         </div>
                         <div class="academy-media-frame">
                             @if(! empty($introVideoUrl))
-                                <video src="{{ $introVideoUrl }}" controls playsinline preload="metadata" poster="{{ $victoriaImage }}"></video>
-                            @elseif($hasVictoriaImage)
-                                <img src="{{ $victoriaImage }}" alt="Victoria Clarke welcomes you to the Practice Room" loading="lazy">
+                                <video src="{{ $introVideoUrl }}" controls playsinline preload="metadata" @if(! empty($coachImage)) poster="{{ $coachImage }}" @endif></video>
+                            @elseif(! empty($coachImage))
+                                <img src="{{ $coachImage }}" alt="Victoria Clarke welcomes you to the Practice Room" loading="lazy">
                             @else
-                                {{-- Place Victoria Clarke banner image at public/images/academy/victoria-clarke.jpg --}}
                                 <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
                             @endif
                         </div>
@@ -753,12 +750,10 @@
                     <div class="academy-setup-grid">
                         <div class="academy-coach-card">
                             <div class="academy-coach-preview academy-coach-photo" id="coachPhotoWrap">
-                                @if($hasVictoriaImage)
-                                    <img src="{{ $victoriaImage }}" alt="Victoria Clarke, English Coach" loading="lazy">
+                                @if(! empty($coachImage))
+                                    <img src="{{ $coachImage }}" alt="Victoria Clarke, English Coach" loading="lazy">
                                 @else
-                                    {{-- Place Victoria Clarke image at public/images/academy/victoria-clarke.jpg --}}
                                     <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
-                                    <p class="academy-fallback-note">Coach image placeholder. Add the final photo to public/images/academy/victoria-clarke.jpg.</p>
                                 @endif
                             </div>
                             <div class="academy-coach-info">
@@ -780,7 +775,7 @@
                         <div class="academy-config-list">
                             <div class="academy-config-item">
                                 <span>Conversation Focus</span>
-                                <strong>{{ $currentPracticeConfig['context_name'] ?: 'Personalized English speaking practice' }}</strong>
+                                <strong>English Speaking Practice</strong>
                             </div>
                             <div class="academy-config-item">
                                 <span>Coaching Style</span>
@@ -950,8 +945,8 @@
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
     const currentPracticeConfig = @json($currentAvatarConfig ?? []);
     const coachImages = {
-        practice: { url: @json($victoriaImage), exists: @json($hasVictoriaImage), name: 'Victoria Clarke', title: 'English Coach', specialty: 'Speaking Practice Specialist' },
-        exam: { url: @json($oliviaImage), exists: @json($hasOliviaImage), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
+        practice: { url: @json($coachImage), exists: @json(! empty($coachImage)), name: 'Victoria Clarke', title: 'English Coach', specialty: 'Speaking Practice Specialist' },
+        exam: { url: @json($examImage), exists: @json(! empty($examImage)), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -1280,7 +1275,7 @@
         coachSpecialty.textContent = coach.specialty;
         coachPhotoWrap.innerHTML = coach.exists
             ? `<img src="${coach.url}" alt="${coach.name}, ${coach.title}" loading="lazy">`
-            : `<div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div><p class="academy-fallback-note">Coach image placeholder. Add the final photo to ${isExam ? 'public/images/academy/olivia.jpg' : 'public/images/academy/victoria-clarke.jpg'}.</p>`;
+            : '<div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>';
         document.querySelector('.academy-hero-title').textContent = isExam ? 'English Speaking Exam' : 'Practice Room';
         coachSessionStatus.innerHTML = isExam
             ? '<span class="academy-status-dot"></span>Start a formal English Speaking Exam with Olivia, Assessment Supervisor.'

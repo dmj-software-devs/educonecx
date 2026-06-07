@@ -23,6 +23,9 @@ class EduconecxAcademyController extends Controller
             ->first();
         $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting);
         $introVideoUrl = config('services.heygen.practice_room_intro_video_url');
+        $practiceCoachImage = $avatarSetting?->avatar_image_url
+            ?: (file_exists(public_path('images/academy/victoria-clarke.jpg')) ? asset('images/academy/victoria-clarke.jpg') : null);
+        $examCoachImage = file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null;
         $recentAcademySessions = auth()->check()
             ? AcademySession::query()
                 ->where('user_id', auth()->id())
@@ -32,7 +35,7 @@ class EduconecxAcademyController extends Controller
             : collect();
         $creditsAvailable = optional(auth()->user())->academy_credits ?? optional(auth()->user())->credits ?? 0;
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'recentAcademySessions', 'creditsAvailable'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
@@ -291,8 +294,8 @@ class EduconecxAcademyController extends Controller
             'voice_id' => $avatarSetting?->heygen_voice_id ?: config('services.heygen.default_voice_id'),
             'context_id' => $avatarSetting?->heygen_context_id ?: config('services.heygen.default_context_id'),
             'avatar_name' => $avatarSetting?->avatar_name ?: 'Victoria Clarke',
-            'avatar_image_url' => $avatarSetting?->avatar_image_url ?: asset('images/academy/victoria-clarke.jpg'),
-            'context_name' => $avatarSetting?->context_name ?: 'Personalized English speaking practice',
+            'avatar_image_url' => $avatarSetting?->avatar_image_url,
+            'context_name' => 'English Speaking Practice',
             'preferred_language' => $avatarSetting?->preferred_language ?: 'English',
             'speaking_level' => $avatarSetting?->speaking_level,
             'tutor_style' => $avatarSetting?->tutor_style,
@@ -313,7 +316,7 @@ class EduconecxAcademyController extends Controller
             'voice_id' => config('services.heygen.exam_voice_id') ?: $config['voice_id'],
             'context_id' => config('services.heygen.exam_context_id') ?: $config['context_id'],
             'avatar_name' => 'Olivia',
-            'avatar_image_url' => asset('images/academy/olivia.jpg'),
+            'avatar_image_url' => file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null,
             'context_name' => 'English Speaking Exam',
         ]);
     }

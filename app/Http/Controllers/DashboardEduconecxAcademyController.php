@@ -8,6 +8,7 @@ use App\Services\HeyGenLiveAvatarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -81,10 +82,24 @@ class DashboardEduconecxAcademyController extends Controller
         }
 
         $contexts = $this->normalizeContexts($liveAvatarService->listContexts());
+        $languageLearningContext = collect($contexts)->first(function (array $context) {
+            return strcasecmp((string) ($context['name'] ?? ''), 'Language Learning') === 0;
+        });
+
+        if (blank($avatarSetting->heygen_context_id) && $languageLearningContext) {
+            $avatarSetting->fill([
+                'heygen_context_id' => $languageLearningContext['id'],
+                'context_name' => $languageLearningContext['name'],
+                'preferred_language' => $avatarSetting->preferred_language ?: 'en',
+                'tutor_style' => $avatarSetting->tutor_style ?: 'friendly and encouraging',
+                'status' => 'active',
+            ])->save();
+        }
+
         if ($contexts === [] && filled(config('services.heygen.default_context_id'))) {
             $contexts[] = [
                 'id' => (string) config('services.heygen.default_context_id'),
-                'name' => 'Env Context Fallback',
+                'name' => 'English Speaking Practice',
             ];
         }
 
@@ -153,20 +168,33 @@ class DashboardEduconecxAcademyController extends Controller
     public function updateAvatarPreference(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'heygen_avatar_id' => ['required', 'string', 'max:255'],
+            'avatar_id' => ['nullable', 'string', 'max:255'],
+            'heygen_avatar_id' => ['nullable', 'string', 'max:255'],
             'avatar_name' => ['nullable', 'string', 'max:255'],
             'avatar_image_url' => ['nullable', 'url', 'max:2000'],
+            'default_voice_id' => ['nullable', 'string', 'max:255'],
+            'default_voice_name' => ['nullable', 'string', 'max:255'],
         ]);
 
+        $avatarId = $validated['avatar_id'] ?? $validated['heygen_avatar_id'] ?? null;
+        abort_if(blank($avatarId), 422, 'Please select an English Coach.');
+
         $setting = $this->avatarSetting($request->user()->id);
-        $setting->fill([
-            'heygen_avatar_id' => $validated['heygen_avatar_id'],
+        $payload = [
+            'heygen_avatar_id' => $avatarId,
+            'heygen_voice_id' => $validated['default_voice_id'] ?? $setting->heygen_voice_id,
             'avatar_name' => $validated['avatar_name'] ?? $setting->avatar_name,
             'avatar_image_url' => $validated['avatar_image_url'] ?? $setting->avatar_image_url,
             'preferred_language' => $setting->preferred_language ?: 'en',
             'tutor_style' => $setting->tutor_style ?: 'friendly and encouraging',
             'status' => 'active',
-        ])->save();
+        ];
+
+        if (Schema::hasColumn('academy_user_avatar_settings', 'voice_name')) {
+            $payload['voice_name'] = $validated['default_voice_name'] ?? $setting->voice_name;
+        }
+
+        $setting->fill($payload)->save();
 
         return back()->with('success', 'Your English Coach preference has been saved.');
     }
@@ -206,8 +234,8 @@ class DashboardEduconecxAcademyController extends Controller
                 'date' => optional($session->created_at)->format('M d, Y g:i A'),
                 'scenario' => $session->scenario->title ?? 'Daily Conversation',
                 'category' => $session->category->title ?? 'No category',
-                'coach' => 'Victoria Clarke',
-                'coach_title' => 'English Coach',
+                'coach' => ($session->session_type ?? 'practice') === 'exam' ? 'Olivia' : 'Victoria Clarke',
+                'coach_title' => ($session->session_type ?? 'practice') === 'exam' ? 'Assessment Supervisor' : 'English Coach',
                 'overall' => $this->formatScore($session->overall_score),
                 'pronunciation' => $this->formatScore($session->pronunciation_score),
                 'grammar' => $this->formatScore($session->grammar_score),
@@ -304,7 +332,7 @@ class DashboardEduconecxAcademyController extends Controller
             ->filter(fn ($context) => filled($context['id'] ?? null))
             ->map(fn ($context) => [
                 'id' => (string) $context['id'],
-                'name' => (string) ($context['name'] ?? 'LiveAvatar Context'),
+                'name' => (string) ($context['name'] ?? 'English Speaking Practice'),
             ]);
 
         return $contextCollection->unique('id')->values()->all();
