@@ -21,9 +21,11 @@ class EduconecxAcademyController extends Controller
             ->where('user_id', auth()->id())
             ->where('status', 'active')
             ->first();
-        $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting);
+        $defaultAvatarMetadata = $heyGenService->defaultPracticeAvatarMetadata();
+        $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting, $defaultAvatarMetadata);
         $introVideoUrl = config('services.heygen.practice_room_intro_video_url');
-        $practiceCoachImage = $avatarSetting?->avatar_image_url
+        $practiceCoachImage = $currentAvatarConfig['avatar_image_url']
+            ?: data_get($defaultAvatarMetadata, 'image_url')
             ?: (file_exists(public_path('images/academy/victoria-clarke.jpg')) ? asset('images/academy/victoria-clarke.jpg') : null);
         $examCoachImage = file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null;
         $recentAcademySessions = auth()->check()
@@ -96,10 +98,15 @@ class EduconecxAcademyController extends Controller
 
             $sessionType = $validated['session_type'] ?? 'practice';
             $avatarSetting = $this->activeAvatarSetting($user->id);
-            $currentConfig = $sessionType === 'exam' ? $this->examAvatarConfig($avatarSetting) : $this->currentAvatarConfig($avatarSetting);
+            $defaultAvatarMetadata = $sessionType === 'exam' ? null : $heyGenService->defaultPracticeAvatarMetadata();
+            $currentConfig = $sessionType === 'exam' ? $this->examAvatarConfig($avatarSetting) : $this->currentAvatarConfig($avatarSetting, $defaultAvatarMetadata);
             $embed = $heyGenService->createLiveAvatarEmbed($scenario, $user, $sessionType);
             $embedUrl = $embed['embed_url'];
             $resolved = data_get($embed, 'resolved', []);
+
+            if ($sessionType !== 'exam' && (string) data_get($resolved, 'avatar_id') === (string) data_get($defaultAvatarMetadata, 'id')) {
+                $currentConfig = $this->currentAvatarConfig(null, $defaultAvatarMetadata);
+            }
 
             $session = AcademySession::create([
                 'user_id' => $user->id,
@@ -287,14 +294,19 @@ class EduconecxAcademyController extends Controller
             ->first();
     }
 
-    private function currentAvatarConfig(?AcademyUserAvatarSetting $avatarSetting): array
+    private function currentAvatarConfig(?AcademyUserAvatarSetting $avatarSetting, ?array $defaultAvatarMetadata = null): array
     {
+        $defaultAvatarId = (string) (config('services.heygen.default_avatar_id') ?: '513fd1b7-7ef9-466d-9af2-344e51eeb833');
+        $avatarId = $avatarSetting?->heygen_avatar_id ?: $defaultAvatarId;
+        $usesDefaultAvatar = (string) $avatarId === $defaultAvatarId;
+
         return [
-            'avatar_id' => $avatarSetting?->heygen_avatar_id ?: config('services.heygen.default_avatar_id'),
-            'voice_id' => $avatarSetting?->heygen_voice_id ?: config('services.heygen.default_voice_id'),
+            'avatar_id' => $avatarId,
+            'voice_id' => $avatarSetting?->heygen_voice_id ?: config('services.heygen.default_voice_id') ?: data_get($defaultAvatarMetadata, 'default_voice_id'),
             'context_id' => $avatarSetting?->heygen_context_id ?: config('services.heygen.default_context_id'),
-            'avatar_name' => $avatarSetting?->avatar_name ?: 'Victoria Clarke',
-            'avatar_image_url' => $avatarSetting?->avatar_image_url,
+            'avatar_name' => $usesDefaultAvatar ? 'Victoria Clarke' : ($avatarSetting?->avatar_name ?: 'English Coach'),
+            'avatar_image_url' => $avatarSetting?->avatar_image_url ?: ($usesDefaultAvatar ? data_get($defaultAvatarMetadata, 'image_url') : null),
+            'image_url' => $avatarSetting?->avatar_image_url ?: ($usesDefaultAvatar ? data_get($defaultAvatarMetadata, 'image_url') : null),
             'context_name' => 'English Speaking Practice',
             'preferred_language' => $avatarSetting?->preferred_language ?: 'English',
             'speaking_level' => $avatarSetting?->speaking_level,

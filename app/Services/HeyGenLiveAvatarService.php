@@ -10,7 +10,16 @@ use Illuminate\Support\Facades\Log;
 
 class HeyGenLiveAvatarService
 {
+    private const FALLBACK_PRACTICE_AVATAR_ID = '513fd1b7-7ef9-466d-9af2-344e51eeb833';
+
     private array $lastListingDebug = [];
+
+    public function defaultPracticeAvatarId(): string
+    {
+        $configured = (string) config('services.heygen.default_avatar_id');
+
+        return filled($configured) ? $configured : self::FALLBACK_PRACTICE_AVATAR_ID;
+    }
 
     public function getMissingConfigurationKeys(): array
     {
@@ -36,28 +45,53 @@ class HeyGenLiveAvatarService
 
         $isExam = $sessionType === 'exam';
 
-        $avatarId = ($isExam ? config('services.heygen.exam_avatar_id') : null)
-            ?? $userSetting?->heygen_avatar_id
-            ?? $scenario?->heygen_avatar_id
-            ?? config('services.heygen.default_avatar_id');
+        $defaultAvatarId = $this->defaultPracticeAvatarId();
+        $avatarCandidates = [
+            'exam_env' => $isExam ? config('services.heygen.exam_avatar_id') : null,
+            'user' => $userSetting?->heygen_avatar_id,
+            'scenario' => $scenario?->heygen_avatar_id,
+            'default' => $defaultAvatarId,
+        ];
+        $avatarSource = collect($avatarCandidates)->filter(fn ($value) => filled($value))->keys()->first() ?? 'none';
+        $avatarId = collect($avatarCandidates)->first(fn ($value) => filled($value));
 
-        $voiceId = ($isExam ? config('services.heygen.exam_voice_id') : null)
-            ?? $userSetting?->heygen_voice_id
-            ?? $scenario?->heygen_voice_id
-            ?? config('services.heygen.default_voice_id');
+        $avatarMetadata = null;
+        if (! $isExam) {
+            $avatarMetadata = $this->resolveAvatarMetadata($avatarId);
+            if (filled($avatarId) && $avatarId !== $defaultAvatarId && $avatarMetadata === null && $this->hasAvatarListingData()) {
+                $avatarId = $defaultAvatarId;
+                $avatarSource = 'default_unresolved_selection';
+                $avatarMetadata = $this->resolveAvatarMetadata($avatarId);
+            }
+        }
 
-        $contextId = ($isExam ? config('services.heygen.exam_context_id') : null)
-            ?? $userSetting?->heygen_context_id
-            ?? config('services.heygen.default_context_id');
+        $voiceCandidates = [
+            'exam_env' => $isExam ? config('services.heygen.exam_voice_id') : null,
+            'user' => $userSetting?->heygen_voice_id,
+            'scenario' => $scenario?->heygen_voice_id,
+            'env' => config('services.heygen.default_voice_id'),
+            'avatar_metadata' => data_get($avatarMetadata, 'default_voice_id'),
+        ];
+        $voiceSource = collect($voiceCandidates)->filter(fn ($value) => filled($value))->keys()->first() ?? 'none';
+        $voiceId = collect($voiceCandidates)->first(fn ($value) => filled($value));
+
+        $contextCandidates = [
+            'exam_env' => $isExam ? config('services.heygen.exam_context_id') : null,
+            'user' => $userSetting?->heygen_context_id,
+            'env' => config('services.heygen.default_context_id'),
+        ];
+        $contextSource = collect($contextCandidates)->filter(fn ($value) => filled($value))->keys()->first() ?? 'none';
+        $contextId = collect($contextCandidates)->first(fn ($value) => filled($value));
 
         return [
             'avatar_id' => $avatarId,
             'voice_id' => $voiceId,
             'context_id' => $contextId,
+            'avatar_metadata' => $avatarMetadata,
             'source' => [
-                'avatar_id' => $isExam && config('services.heygen.exam_avatar_id') ? 'exam_env' : ($userSetting?->heygen_avatar_id ? 'user' : ($scenario?->heygen_avatar_id ? 'scenario' : (config('services.heygen.default_avatar_id') ? 'env' : 'none'))),
-                'voice_id' => $isExam && config('services.heygen.exam_voice_id') ? 'exam_env' : ($userSetting?->heygen_voice_id ? 'user' : ($scenario?->heygen_voice_id ? 'scenario' : (config('services.heygen.default_voice_id') ? 'env' : 'none'))),
-                'context_id' => $isExam && config('services.heygen.exam_context_id') ? 'exam_env' : ($userSetting?->heygen_context_id ? 'user' : (config('services.heygen.default_context_id') ? 'env' : 'none')),
+                'avatar_id' => $avatarSource,
+                'voice_id' => $voiceSource,
+                'context_id' => $contextSource,
             ],
         ];
     }
@@ -253,6 +287,42 @@ class HeyGenLiveAvatarService
         ];
     }
 
+
+    public function resolveAvatarMetadata(?string $avatarId): ?array
+    {
+        if (blank($avatarId)) {
+            return null;
+        }
+
+        $avatarId = (string) $avatarId;
+        $avatars = array_merge($this->listPublicAvatars(), $this->listCustomAvatars());
+
+        return collect($avatars)->first(fn (array $avatar) => (string) ($avatar['id'] ?? '') === $avatarId) ?: null;
+    }
+
+    public function defaultPracticeAvatarMetadata(): array
+    {
+        $avatarId = $this->defaultPracticeAvatarId();
+        $metadata = $this->resolveAvatarMetadata($avatarId) ?? [];
+
+        return array_merge([
+            'id' => $avatarId,
+            'name' => 'Victoria Clarke',
+            'image_url' => null,
+            'default_voice_id' => null,
+            'default_voice_name' => null,
+            'type' => 'default practice',
+        ], $metadata, [
+            'id' => $avatarId,
+        ]);
+    }
+
+    private function hasAvatarListingData(): bool
+    {
+        return collect($this->lastListingDebug)
+            ->filter(fn ($debug) => ($debug['type'] ?? null) === 'avatars')
+            ->contains(fn ($debug) => (int) ($debug['count'] ?? 0) > 0);
+    }
 
     public function getLiveAvatarListingDebug(): array
     {

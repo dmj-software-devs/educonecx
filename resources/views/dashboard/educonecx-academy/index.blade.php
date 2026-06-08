@@ -202,7 +202,7 @@
                     @if(count($avatars))
                         <div class="coach-grid">
                             @foreach($avatars as $avatar)
-                                @php $selectedCoach = $avatarSetting->heygen_avatar_id && $avatarSetting->heygen_avatar_id === $avatar['id']; @endphp
+                                @php $selectedCoach = ($avatarSetting->heygen_avatar_id && $avatarSetting->heygen_avatar_id === $avatar['id']) || (blank($avatarSetting->heygen_avatar_id) && (string) $avatar['id'] === (string) config('services.heygen.default_avatar_id')); @endphp
                                 <form method="POST" action="{{ route('dashboard.educonecx-academy.avatar-preference') }}" class="coach-card {{ $selectedCoach ? 'selected' : '' }}">
                                     @csrf
                                     @if($selectedCoach)<span class="selected-badge">Selected</span>@endif

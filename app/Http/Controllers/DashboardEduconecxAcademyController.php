@@ -72,13 +72,9 @@ class DashboardEduconecxAcademyController extends Controller
             ->values()
             ->all();
 
-        if ($avatars === [] && filled(config('services.heygen.default_avatar_id'))) {
-            $avatars[] = [
-                'id' => (string) config('services.heygen.default_avatar_id'),
-                'name' => 'Env Avatar Fallback',
-                'image_url' => null,
-                'type' => 'env fallback',
-            ];
+        $defaultAvatarMetadata = $liveAvatarService->defaultPracticeAvatarMetadata();
+        if (! collect($avatars)->contains(fn (array $avatar) => (string) ($avatar['id'] ?? '') === (string) $defaultAvatarMetadata['id'])) {
+            $avatars[] = $defaultAvatarMetadata;
         }
 
         $contexts = $this->normalizeContexts($liveAvatarService->listContexts());

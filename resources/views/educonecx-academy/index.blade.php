@@ -675,7 +675,10 @@
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
                     && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
-                $coachImage = $practiceCoachImage ?? null;
+                $coachImage = $practiceCoachImage
+                    ?? data_get($currentAvatarConfig, 'avatar_image_url')
+                    ?? data_get($currentAvatarConfig, 'image_url')
+                    ?? asset('images/academy/victoria-clarke.jpg');
                 $examImage = $examCoachImage ?? null;
             @endphp
 
@@ -889,7 +892,7 @@
                         <article class="academy-action-card">
                             <span class="academy-action-icon"><i class="fas fa-video"></i></span>
                             <h3>Lesson title</h3>
-                            <p>Video URL / uploaded video placeholder</p>
+                            <p>Lesson practice video</p>
                             <a href="{{ route('educonecx.academy.index') }}" class="btn academy-btn-soft">Practice This Lesson</a>
                         </article>
                     </div>
