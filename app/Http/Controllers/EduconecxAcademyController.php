@@ -21,12 +21,27 @@ class EduconecxAcademyController extends Controller
             ->where('user_id', auth()->id())
             ->where('status', 'active')
             ->first();
-        $defaultAvatarMetadata = $heyGenService->defaultPracticeAvatarMetadata();
+        $defaultPracticeAvatarId = config('services.heygen.default_avatar_id')
+            ?: '513fd1b7-7ef9-466d-9af2-344e51eeb833';
+        $defaultAvatar = $heyGenService->findPublicAvatarById($defaultPracticeAvatarId);
+        $defaultAvatarMetadata = $defaultAvatar ?: $heyGenService->defaultPracticeAvatarMetadata();
         $currentAvatarConfig = $this->currentAvatarConfig($avatarSetting, $defaultAvatarMetadata);
+        $currentAvatarConfig['avatar_id'] = $currentAvatarConfig['avatar_id'] ?? $defaultPracticeAvatarId;
+        $currentAvatarConfig['avatar_name'] = $currentAvatarConfig['avatar_name'] ?? data_get($defaultAvatar, 'name', 'Victoria Clarke');
+        $currentAvatarConfig['avatar_image_url'] = $this->isValidImageUrl(data_get($currentAvatarConfig, 'avatar_image_url'))
+            ? data_get($currentAvatarConfig, 'avatar_image_url')
+            : (data_get($defaultAvatar, 'image_url') ?: data_get($defaultAvatarMetadata, 'image_url'));
+        $currentAvatarConfig['image_url'] = $currentAvatarConfig['avatar_image_url'];
+        $currentAvatarConfig['voice_id'] = $currentAvatarConfig['voice_id'] ?? data_get($defaultAvatar, 'default_voice_id');
         $introVideoUrl = config('services.heygen.practice_room_intro_video_url');
-        $practiceCoachImage = $currentAvatarConfig['avatar_image_url']
-            ?: data_get($defaultAvatarMetadata, 'image_url')
-            ?: (file_exists(public_path('images/academy/victoria-clarke.jpg')) ? asset('images/academy/victoria-clarke.jpg') : null);
+        $practiceCoachImage = data_get($currentAvatarConfig, 'avatar_image_url')
+            ?: data_get($defaultAvatar, 'image_url')
+            ?: asset('images/academy/victoria-clarke.jpg');
+        $defaultAvatarDebug = [
+            'default_avatar_id' => $defaultPracticeAvatarId,
+            'resolved_image_url' => data_get($defaultAvatar, 'image_url') ?: data_get($defaultAvatarMetadata, 'image_url'),
+            'current_avatar_image_url' => data_get($currentAvatarConfig, 'avatar_image_url'),
+        ];
         $examCoachImage = file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null;
         $recentAcademySessions = auth()->check()
             ? AcademySession::query()
@@ -37,7 +52,7 @@ class EduconecxAcademyController extends Controller
             : collect();
         $creditsAvailable = optional(auth()->user())->academy_credits ?? optional(auth()->user())->credits ?? 0;
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'defaultAvatarDebug'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
@@ -285,6 +300,17 @@ class EduconecxAcademyController extends Controller
         ], array_filter($extra, fn($value) => $value !== null)));
     }
 
+
+    private function isValidImageUrl(mixed $imageUrl): bool
+    {
+        if (! is_string($imageUrl) || blank($imageUrl)) {
+            return false;
+        }
+
+        return str_starts_with($imageUrl, 'http://')
+            || str_starts_with($imageUrl, 'https://')
+            || str_starts_with($imageUrl, '/');
+    }
 
     private function activeAvatarSetting(int $userId): ?AcademyUserAvatarSetting
     {

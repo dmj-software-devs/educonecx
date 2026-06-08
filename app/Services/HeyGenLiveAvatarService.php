@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AcademyScenario;
 use App\Models\AcademyUserAvatarSetting;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -295,9 +296,24 @@ class HeyGenLiveAvatarService
         }
 
         $avatarId = (string) $avatarId;
-        $avatars = array_merge($this->listPublicAvatars(), $this->listCustomAvatars());
+        $publicAvatar = $this->findPublicAvatarById($avatarId);
+        if ($publicAvatar !== null) {
+            return $publicAvatar;
+        }
 
-        return collect($avatars)->first(fn (array $avatar) => (string) ($avatar['id'] ?? '') === $avatarId) ?: null;
+        return collect($this->listCustomAvatars())->first(fn (array $avatar) => (string) ($avatar['id'] ?? '') === $avatarId) ?: null;
+    }
+
+    public function findPublicAvatarById(string $avatarId): ?array
+    {
+        $avatarId = trim($avatarId);
+        if ($avatarId === '') {
+            return null;
+        }
+
+        return Cache::remember("liveavatar.public_avatar.{$avatarId}", now()->addMinutes(10), function () use ($avatarId) {
+            return collect($this->listPublicAvatars())->first(fn (array $avatar) => (string) ($avatar['id'] ?? '') === $avatarId) ?: null;
+        });
     }
 
     public function defaultPracticeAvatarMetadata(): array
@@ -380,52 +396,70 @@ class HeyGenLiveAvatarService
             return [];
         }
 
-        try {
-            $response = Http::withHeaders([
-                'X-API-KEY' => $apiKey,
-                'Accept' => 'application/json',
-            ])->timeout(20)->get($endpoint);
-        } catch (\Throwable $exception) {
-            $this->recordListingDebug($endpoint, $type, null, [], $exception->getMessage());
+        $allItems = [];
+        $nextEndpoint = $endpoint;
+        $lastStatus = null;
+        $lastHeaders = [];
+        $lastRawBody = null;
+        $firstRawItem = null;
+        $pageCount = 0;
 
-            Log::error('LiveAvatar listing request failed', [
-                'endpoint_url' => $endpoint,
-                'type' => $type,
-                'exception' => $exception->getMessage(),
-            ]);
+        while ($nextEndpoint !== null && $pageCount < 10) {
+            $pageCount++;
 
-            return [];
-        }
+            try {
+                $response = Http::withHeaders([
+                    'X-API-KEY' => $apiKey,
+                    'Accept' => 'application/json',
+                ])->timeout(20)->get($nextEndpoint);
+            } catch (\Throwable $exception) {
+                $this->recordListingDebug($endpoint, $type, null, [], $exception->getMessage());
 
-        $rawJson = $response->json();
-        $rawBody = $rawJson ?? $response->body();
+                Log::error('LiveAvatar listing request failed', [
+                    'endpoint_url' => $nextEndpoint,
+                    'type' => $type,
+                    'exception' => $exception->getMessage(),
+                ]);
 
-        $this->recordListingDebug($endpoint, $type, $response->status(), $response->headers(), null, $rawBody);
+                break;
+            }
 
-        Log::info('LiveAvatar listing response received', [
-            'endpoint_url' => $endpoint,
-            'type' => $type,
-            'status' => $response->status(),
-            'headers' => $response->headers(),
-            'body' => $rawBody,
-        ]);
+            $rawJson = $response->json();
+            $rawBody = $rawJson ?? $response->body();
+            $lastStatus = $response->status();
+            $lastHeaders = $response->headers();
+            $lastRawBody = $rawBody;
 
-        if ($response->failed()) {
-            Log::error('LiveAvatar listing returned an error', [
-                'endpoint_url' => $endpoint,
+            Log::info('LiveAvatar listing response received', [
+                'endpoint_url' => $nextEndpoint,
                 'type' => $type,
                 'status' => $response->status(),
                 'headers' => $response->headers(),
                 'body' => $rawBody,
-                'provider_message' => $this->extractProviderError($response),
             ]);
 
-            return [];
+            if ($response->failed()) {
+                Log::error('LiveAvatar listing returned an error', [
+                    'endpoint_url' => $nextEndpoint,
+                    'type' => $type,
+                    'status' => $response->status(),
+                    'headers' => $response->headers(),
+                    'body' => $rawBody,
+                    'provider_message' => $this->extractProviderError($response),
+                ]);
+
+                break;
+            }
+
+            $items = $this->extractLiveAvatarItems(is_array($rawJson) ? $rawJson : [], $type);
+            $allItems = array_merge($allItems, $items);
+            $firstRawItem ??= $items[0] ?? null;
+            $nextEndpoint = $this->extractNextPageUrl(is_array($rawJson) ? $rawJson : [], $nextEndpoint);
         }
 
-        $items = $this->extractLiveAvatarItems(is_array($rawJson) ? $rawJson : [], $type);
+        $this->recordListingDebug($endpoint, $type, $lastStatus, $lastHeaders, null, $lastRawBody);
 
-        $normalized = collect($items)
+        $normalized = collect($allItems)
             ->filter(fn ($item) => is_array($item))
             ->map(fn ($item) => $normalizer($item))
             ->filter(fn ($item) => filled($item['id'] ?? null))
@@ -434,10 +468,42 @@ class HeyGenLiveAvatarService
             ->all();
 
         $this->lastListingDebug[$endpoint]['count'] = count($normalized);
-        $this->lastListingDebug[$endpoint]['first_raw_item'] = $items[0] ?? null;
-        $this->lastListingDebug[$endpoint]['first_raw_item_keys'] = isset($items[0]) && is_array($items[0]) ? array_keys($items[0]) : [];
+        $this->lastListingDebug[$endpoint]['pages_loaded'] = $pageCount;
+        $this->lastListingDebug[$endpoint]['first_raw_item'] = $firstRawItem;
+        $this->lastListingDebug[$endpoint]['first_raw_item_keys'] = is_array($firstRawItem) ? array_keys($firstRawItem) : [];
 
         return $normalized;
+    }
+
+    protected function extractNextPageUrl(array $response, string $currentEndpoint): ?string
+    {
+        $next = data_get($response, 'next')
+            ?? data_get($response, 'next_page')
+            ?? data_get($response, 'next_page_url')
+            ?? data_get($response, 'links.next')
+            ?? data_get($response, 'pagination.next')
+            ?? data_get($response, 'pagination.next_url')
+            ?? data_get($response, 'data.next')
+            ?? data_get($response, 'data.next_page')
+            ?? data_get($response, 'data.next_page_url')
+            ?? data_get($response, 'data.links.next')
+            ?? data_get($response, 'data.pagination.next')
+            ?? data_get($response, 'data.pagination.next_url');
+
+        if (! is_string($next) || trim($next) === '') {
+            return null;
+        }
+
+        $next = trim($next);
+        if (str_starts_with($next, 'http://') || str_starts_with($next, 'https://')) {
+            return $next === $currentEndpoint ? null : $next;
+        }
+
+        $baseUrl = parse_url($currentEndpoint, PHP_URL_SCHEME) . '://' . parse_url($currentEndpoint, PHP_URL_HOST);
+        $path = str_starts_with($next, '/') ? $next : '/' . ltrim($next, '/');
+        $nextUrl = $baseUrl . $path;
+
+        return $nextUrl === $currentEndpoint ? null : $nextUrl;
     }
 
     protected function extractLiveAvatarItems(array $response, string $type): array
@@ -510,15 +576,21 @@ class HeyGenLiveAvatarService
         ];
     }
 
-    protected function normalizeAvatarResource(array $item, string $type): array
+    protected function normalizeAvatarResource(array $avatar, string $type): array
     {
         return [
-            'id' => (string) (data_get($item, 'id') ?? data_get($item, 'avatar_id') ?? data_get($item, 'avatarId') ?? ''),
-            'name' => (string) (data_get($item, 'name') ?? data_get($item, 'avatar_name') ?? data_get($item, 'display_name') ?? 'English Coach'),
-            'image_url' => $this->resolveAvatarImageUrl($item),
+            'id' => (string) (data_get($avatar, 'id') ?? ''),
+            'name' => (string) (data_get($avatar, 'name') ?? 'English Coach'),
+            'image_url' => data_get($avatar, 'preview_url')
+                ?? data_get($avatar, 'image_url')
+                ?? data_get($avatar, 'thumbnail_url')
+                ?? data_get($avatar, 'preview_image_url')
+                ?? data_get($avatar, 'image')
+                ?? data_get($avatar, 'thumbnail')
+                ?? null,
             'type' => $type,
-            'default_voice_id' => data_get($item, 'default_voice.id'),
-            'default_voice_name' => data_get($item, 'default_voice.name'),
+            'default_voice_id' => data_get($avatar, 'default_voice.id'),
+            'default_voice_name' => data_get($avatar, 'default_voice.name'),
         ];
     }
 

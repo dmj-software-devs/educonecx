@@ -181,12 +181,14 @@
         justify-content: center;
     }
 
-    .academy-coach-preview img {
+    .academy-coach-preview img,
+    .academy-media-frame img {
         width: 100%;
         height: 100%;
         min-height: 230px;
         object-fit: cover;
         display: block;
+        background: #F9F7E9;
     }
 
     .academy-coach-preview i {
@@ -576,7 +578,7 @@
     .academy-intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: 22px; align-items: center; }
     .academy-intro-title { color: var(--academy-navy); font-weight: 900; margin-bottom: 8px; }
     .academy-media-frame { width: 100%; aspect-ratio: 16 / 9; min-height: 240px; border-radius: 18px; overflow: hidden; background: var(--academy-ivory); border: 1px solid rgba(251, 198, 12, .24); }
-    .academy-media-frame video, .academy-media-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .academy-media-frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
     .academy-actions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 24px; }
     .academy-action-card { width: 100%; min-width: 0; background: #fff; border: 1px solid var(--academy-border); border-radius: 18px; padding: 22px; box-shadow: var(--academy-soft-shadow); display: flex; flex-direction: column; gap: 14px; min-height: 100%; }
     .academy-action-card h3 { color: var(--academy-navy); font-size: 1.12rem; font-weight: 900; margin: 0; }
@@ -679,7 +681,19 @@
                     ?? data_get($currentAvatarConfig, 'avatar_image_url')
                     ?? data_get($currentAvatarConfig, 'image_url')
                     ?? asset('images/academy/victoria-clarke.jpg');
+                $isCoachImageUrl = ! empty($coachImage) && (
+                    str_starts_with($coachImage, 'http://') ||
+                    str_starts_with($coachImage, 'https://') ||
+                    str_starts_with($coachImage, '/')
+                );
+                $coachImage = $isCoachImageUrl ? $coachImage : null;
                 $examImage = $examCoachImage ?? null;
+                $isExamImageUrl = ! empty($examImage) && (
+                    str_starts_with($examImage, 'http://') ||
+                    str_starts_with($examImage, 'https://') ||
+                    str_starts_with($examImage, '/')
+                );
+                $examImage = $isExamImageUrl ? $examImage : null;
             @endphp
 
 
@@ -696,8 +710,8 @@
                         </div>
                         <div class="academy-media-frame">
                             @if(! empty($introVideoUrl))
-                                <video src="{{ $introVideoUrl }}" controls playsinline preload="metadata" @if(! empty($coachImage)) poster="{{ $coachImage }}" @endif></video>
-                            @elseif(! empty($coachImage))
+                                <video src="{{ $introVideoUrl }}" controls playsinline preload="metadata" @if($isCoachImageUrl) poster="{{ $coachImage }}" @endif></video>
+                            @elseif($isCoachImageUrl)
                                 <img src="{{ $coachImage }}" alt="Victoria Clarke welcomes you to the Practice Room" loading="lazy">
                             @else
                                 <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
@@ -706,6 +720,15 @@
                     </div>
                 </div>
             </section>
+
+            @if(config('app.debug'))
+                <div class="alert alert-info small">
+                    <strong>Practice Avatar Debug</strong><br>
+                    default_avatar_id: {{ data_get($defaultAvatarDebug ?? [], 'default_avatar_id') }}<br>
+                    resolved image_url: {{ data_get($defaultAvatarDebug ?? [], 'resolved_image_url') ?: 'none' }}<br>
+                    currentAvatarConfig avatar_image_url: {{ data_get($defaultAvatarDebug ?? [], 'current_avatar_image_url') ?: 'none' }}
+                </div>
+            @endif
 
             <section class="academy-actions-grid" aria-label="Practice Room actions">
                 <article class="academy-action-card">
@@ -753,7 +776,7 @@
                     <div class="academy-setup-grid">
                         <div class="academy-coach-card">
                             <div class="academy-coach-preview academy-coach-photo" id="coachPhotoWrap">
-                                @if(! empty($coachImage))
+                                @if($isCoachImageUrl)
                                     <img src="{{ $coachImage }}" alt="Victoria Clarke, English Coach" loading="lazy">
                                 @else
                                     <div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>
@@ -948,8 +971,8 @@
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
     const currentPracticeConfig = @json($currentAvatarConfig ?? []);
     const coachImages = {
-        practice: { url: @json($coachImage), exists: @json(! empty($coachImage)), name: 'Victoria Clarke', title: 'English Coach', specialty: 'Speaking Practice Specialist' },
-        exam: { url: @json($examImage), exists: @json(! empty($examImage)), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
+        practice: { url: @json($isCoachImageUrl ? $coachImage : null), exists: @json($isCoachImageUrl), name: 'Victoria Clarke', title: 'English Coach', specialty: 'Speaking Practice Specialist' },
+        exam: { url: @json($isExamImageUrl ? $examImage : null), exists: @json($isExamImageUrl), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
