@@ -121,12 +121,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->activeSubscriptions()->first();
     }
 
-    // Check if user can access the Practice Room using the same paid subscription
-    // columns that unlock paid courses: user_subscriptions.status,
-    // user_subscriptions.payment_status, and user_subscriptions.end_date.
+    // Check if user can access the Practice Room using the same access paths
+    // that unlock paid courses: a valid subscription or an existing paid-course
+    // enrollment created after payment.
     public function canAccessPracticeRoom(): bool
     {
-        return $this->has_active_subscription;
+        if ($this->has_active_subscription) {
+            return true;
+        }
+
+        return $this->enrollments()
+            ->whereHas('course', fn ($query) => $query->where('is_free', false))
+            ->exists();
     }
 
     // Check if user can access a course
