@@ -29,36 +29,34 @@ class PracticeCreditService
     {
         $amount = (int) config('practice_room.credits.new_user_credits', 20);
 
-        if ($amount <= 0) {
-            return $this->getOrCreateWallet($user);
-        }
-
         return DB::transaction(function () use ($user, $amount) {
             $wallet = UserPracticeCredit::where('user_id', $user->id)->lockForUpdate()->first()
                 ?: $this->getOrCreateWallet($user);
 
-            if ($this->hasTransaction($user, 'signup_bonus')) {
-                return $wallet->refresh();
+            if ($amount > 0) {
+                $signupGranted = (int) PracticeCreditTransaction::where('user_id', $user->id)
+                    ->where('type', 'signup_bonus')
+                    ->sum('amount');
+
+                if ($signupGranted < $amount) {
+                    $topUp = $amount - max(0, $signupGranted);
+                    $balanceBefore = max(0, (int) PracticeCreditTransaction::where('user_id', $user->id)->sum('amount'));
+                    $balanceAfter = $balanceBefore + $topUp;
+
+                    PracticeCreditTransaction::create([
+                        'user_id' => $user->id,
+                        'type' => 'signup_bonus',
+                        'amount' => $topUp,
+                        'balance_before' => $balanceBefore,
+                        'balance_after' => $balanceAfter,
+                        'description' => $signupGranted > 0
+                            ? 'Practice Room signup bonus top-up.'
+                            : 'New user Practice Room signup bonus.',
+                    ]);
+                }
             }
 
-            $balanceBefore = (int) $wallet->balance;
-            $balanceAfter = $balanceBefore + $amount;
-
-            $wallet->update([
-                'balance' => $balanceAfter,
-                'lifetime_granted' => (int) $wallet->lifetime_granted + $amount,
-            ]);
-
-            PracticeCreditTransaction::create([
-                'user_id' => $user->id,
-                'type' => 'signup_bonus',
-                'amount' => $amount,
-                'balance_before' => $balanceBefore,
-                'balance_after' => $balanceAfter,
-                'description' => 'New user Practice Room signup bonus.',
-            ]);
-
-            return $wallet->refresh();
+            return $this->recalculateWallet($user);
         });
     }
 
@@ -186,6 +184,35 @@ class PracticeCreditService
         return $this->addCredits($user, $credits, 'course_grant', 'Course enrollment Practice Room credits', [
             'course_id' => $courseId,
         ]);
+    }
+
+    public function recalculateWallet(User $user): UserPracticeCredit
+    {
+        $wallet = UserPracticeCredit::where('user_id', $user->id)->lockForUpdate()->first()
+            ?: $this->getOrCreateWallet($user);
+
+        $transactions = PracticeCreditTransaction::where('user_id', $user->id);
+        $balance = max(0, (int) (clone $transactions)->sum('amount'));
+        $lifetimeGranted = (int) (clone $transactions)
+            ->whereIn('type', ['signup_bonus', 'course_grant', 'admin_grant'])
+            ->where('amount', '>', 0)
+            ->sum('amount');
+        $lifetimePurchased = (int) (clone $transactions)
+            ->where('type', 'purchase')
+            ->where('amount', '>', 0)
+            ->sum('amount');
+        $lifetimeUsed = abs((int) (clone $transactions)
+            ->where('amount', '<', 0)
+            ->sum('amount'));
+
+        $wallet->update([
+            'balance' => $balance,
+            'lifetime_granted' => $lifetimeGranted,
+            'lifetime_purchased' => $lifetimePurchased,
+            'lifetime_used' => $lifetimeUsed,
+        ]);
+
+        return $wallet->refresh();
     }
 
     private function hasTransaction(User $user, string $type): bool
