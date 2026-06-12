@@ -969,12 +969,10 @@
                 <i class="fas fa-home"></i>
                 <span>{{ App\Helpers\TranslationHelper::trans('my-courses.nav_dashboard') }}</span>
             </a>
-            @if(Auth::user()->canAccessPracticeRoom())
             <a href="{{ route('dashboard.educonecx-academy.index') }}" class="nav-item {{ request()->routeIs('dashboard.educonecx-academy.*') || request()->routeIs('educonecx.academy.*') ? 'active' : '' }}">
                 <i class="fas fa-graduation-cap"></i>
                 <span>Practice Room</span>
             </a>
-            @endif
             <a href="{{ route('my-courses') }}" class="nav-item active">
                 <i class="fas fa-book"></i>
                 <span>{{ App\Helpers\TranslationHelper::trans('my-courses.nav_my_courses') }}</span>
