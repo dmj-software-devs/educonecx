@@ -1364,10 +1364,12 @@
                     <i class="fas fa-home"></i>
                     <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_dashboard') }}</span>
                 </a>
+                @if(Auth::user()->canAccessPracticeRoom())
                 <a href="{{ route('dashboard.educonecx-academy.index') }}" class="nav-item {{ request()->routeIs('dashboard.educonecx-academy.*') || request()->routeIs('educonecx.academy.*') ? 'active' : '' }}">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Practice Room</span>
                 </a>
+                @endif
                 <a href="{{ route('my-courses') }}" class="nav-item">
                     <i class="fas fa-book"></i>
                     <span>{{ App\Helpers\TranslationHelper::trans('dashboard.nav_my_courses') }}</span>
@@ -1482,6 +1484,7 @@
             </div>
         </div>
 
+        @if(Auth::user()->canAccessPracticeRoom())
         <!-- Practice Room Session History -->
         <div class="content-card">
             <div class="card-header">
@@ -1557,6 +1560,30 @@
                 </div>
             @endif
         </div>
+
+        @else
+        <div class="content-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-lock"></i>
+                    Practice Room Locked
+                </h2>
+                <a href="{{ route('subscription.plans') }}" class="empty-btn">
+                    Pay now <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+                <h3 class="empty-title">Pay money to access the Practice Room.</h3>
+                <p class="empty-text">Your paid-course subscription unlocks all paid courses plus the Practice Room page, module, speaking sessions, exams, and feedback.</p>
+                <a href="{{ route('subscription.plans') }}" class="empty-btn">
+                    View subscription plans <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        @endif
 
         <!-- Recent Courses -->
         <div class="content-card">

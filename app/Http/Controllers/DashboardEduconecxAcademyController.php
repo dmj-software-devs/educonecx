@@ -17,6 +17,11 @@ class DashboardEduconecxAcademyController extends Controller
     public function index(Request $request, HeyGenLiveAvatarService $liveAvatarService): View|JsonResponse
     {
         $user = $request->user();
+
+        if (! $user->canAccessPracticeRoom()) {
+            return view('educonecx-academy.paywall');
+        }
+
         $avatarSetting = $this->avatarSetting($user->id);
 
         $academySessions = AcademySession::with(['category', 'scenario'])
@@ -163,6 +168,11 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function updateAvatarPreference(Request $request): RedirectResponse
     {
+        if (! $request->user()->canAccessPracticeRoom()) {
+            return redirect()->route('subscription.plans')
+                ->with('error', 'Please pay for a subscription to access the Practice Room.');
+        }
+
         $validated = $request->validate([
             'avatar_id' => ['nullable', 'string', 'max:255'],
             'heygen_avatar_id' => ['nullable', 'string', 'max:255'],
@@ -197,6 +207,11 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function updateContextPreference(Request $request): RedirectResponse
     {
+        if (! $request->user()->canAccessPracticeRoom()) {
+            return redirect()->route('subscription.plans')
+                ->with('error', 'Please pay for a subscription to access the Practice Room.');
+        }
+
         $validated = $request->validate([
             'heygen_context_id' => ['required', 'string', 'max:255'],
             'context_name' => ['nullable', 'string', 'max:255'],
@@ -220,6 +235,14 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function history(Request $request): JsonResponse
     {
+        if (! $request->user()->canAccessPracticeRoom()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please pay for a subscription to access the Practice Room.',
+                'subscription_url' => route('subscription.plans'),
+            ], 402);
+        }
+
         $sessions = AcademySession::with(['category', 'scenario'])
             ->where('user_id', $request->user()->id)
             ->latest()
@@ -252,6 +275,10 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function showSession(Request $request, AcademySession $session): View
     {
+        if (! $request->user()->canAccessPracticeRoom()) {
+            return view('educonecx-academy.paywall');
+        }
+
         abort_unless((int) $session->user_id === (int) $request->user()->id, 403);
 
         $session->load(['category', 'scenario']);
@@ -319,6 +346,11 @@ class DashboardEduconecxAcademyController extends Controller
 
     public function updateScenarioPreference(Request $request): RedirectResponse
     {
+        if (! $request->user()->canAccessPracticeRoom()) {
+            return redirect()->route('subscription.plans')
+                ->with('error', 'Please pay for a subscription to access the Practice Room.');
+        }
+
         return $this->updateContextPreference($request);
     }
 

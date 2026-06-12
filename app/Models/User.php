@@ -120,6 +120,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->activeSubscriptions()->first();
     }
 
+    // Check if user can access the Practice Room
+    public function canAccessPracticeRoom(): bool
+    {
+        return $this->has_active_subscription;
+    }
+
     // Check if user can access a course
     public function canAccessCourse($courseId)
     {

@@ -9,13 +9,18 @@ use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class EduconecxAcademyController extends Controller
 {
-    public function index(HeyGenLiveAvatarService $heyGenService)
+    public function index(HeyGenLiveAvatarService $heyGenService): View
     {
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return view('educonecx-academy.paywall');
+        }
+
         $missingHeyGenConfig = $heyGenService->getMissingConfigurationKeys();
         $avatarSetting = AcademyUserAvatarSetting::query()
             ->where('user_id', auth()->id())
@@ -62,6 +67,10 @@ class EduconecxAcademyController extends Controller
             'session_type' => ['nullable', 'in:practice,exam'],
         ]);
 
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return $this->practiceRoomPaymentRequiredResponse();
+        }
+
         $scenario = ! empty($validated['scenario_slug'])
             ? AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail()
             : null;
@@ -102,6 +111,10 @@ class EduconecxAcademyController extends Controller
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
             'session_type' => ['nullable', 'in:practice,exam'],
         ]);
+
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return $this->practiceRoomPaymentRequiredResponse();
+        }
 
         $scenario = ! empty($validated['scenario_slug'])
             ? AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail()
@@ -175,6 +188,10 @@ class EduconecxAcademyController extends Controller
             'transcript' => ['required', 'string', 'min:10'],
         ]);
 
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return $this->practiceRoomPaymentRequiredResponse();
+        }
+
         $session = $this->resolveEvaluationSession($validated, $request);
 
         $session->update([
@@ -206,6 +223,10 @@ class EduconecxAcademyController extends Controller
             'audio' => ['required', 'file', 'max:20480', 'mimes:webm,mp3,mp4,mpeg,mpga,m4a,wav,ogg'],
             'academy_session_id' => ['nullable', 'integer', 'exists:academy_sessions,id'],
         ]);
+
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return $this->practiceRoomPaymentRequiredResponse();
+        }
 
         $session = $this->resolveEvaluationSession($validated, $request);
         $audioPath = $request->file('audio')->store('academy-audio', 'public');
@@ -389,6 +410,10 @@ class EduconecxAcademyController extends Controller
             'status' => ['nullable', 'string'],
         ]);
 
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return $this->practiceRoomPaymentRequiredResponse();
+        }
+
         $session = AcademySession::findOrFail($validated['academy_session_id']);
         abort_unless((int) $session->user_id === (int) $request->user()->id, 403);
 
@@ -404,5 +429,19 @@ class EduconecxAcademyController extends Controller
             'success' => true,
             'message' => 'Session ended successfully.',
         ]);
+    }
+
+    private function currentUserCanAccessPracticeRoom(): bool
+    {
+        return (bool) auth()->user()?->canAccessPracticeRoom();
+    }
+
+    private function practiceRoomPaymentRequiredResponse(): JsonResponse
+    {
+        return response()->json([
+            'success' => false,
+            'message' => 'Please pay for a subscription to access the Practice Room.',
+            'subscription_url' => route('subscription.plans'),
+        ], 402);
     }
 }
