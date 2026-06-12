@@ -202,7 +202,12 @@
                     @if(count($avatars))
                         <div class="coach-grid">
                             @foreach($avatars as $avatar)
-                                @php $selectedCoach = ($avatarSetting->heygen_avatar_id && $avatarSetting->heygen_avatar_id === $avatar['id']) || (blank($avatarSetting->heygen_avatar_id) && (string) $avatar['id'] === (string) config('services.heygen.default_avatar_id')); @endphp
+                                @php
+                                    $defaultCoachAvatarId = config('services.heygen.default_avatar_id') ?: '513fd1b7-7ef9-466d-9af2-344e51eeb833';
+                                    $avatarId = (string) data_get($avatar, 'id', $defaultCoachAvatarId);
+                                    $selectedAvatarId = (string) ($avatarSetting?->heygen_avatar_id ?: $defaultCoachAvatarId);
+                                    $selectedCoach = $selectedAvatarId === $avatarId;
+                                @endphp
                                 <form method="POST" action="{{ route('dashboard.educonecx-academy.avatar-preference') }}" class="coach-card {{ $selectedCoach ? 'selected' : '' }}">
                                     @csrf
                                     @if($selectedCoach)<span class="selected-badge">Selected</span>@endif
@@ -215,8 +220,8 @@
                                     @endif
                                     <div class="coach-name">{{ $avatar['name'] ?? 'English Coach' }}</div>
                                     <small class="text-muted d-block mb-2">English Coach<br>{{ ucfirst($avatar['type'] ?? 'coach') }} profile</small><button type="button" class="academy-btn-soft w-100 mb-2"><i class="fas fa-volume-up"></i> Voice Preview</button>
-                                    <input type="hidden" name="avatar_id" value="{{ $avatar['id'] }}">
-                                    <input type="hidden" name="heygen_avatar_id" value="{{ $avatar['id'] }}">
+                                    <input type="hidden" name="avatar_id" value="{{ $avatarId }}">
+                                    <input type="hidden" name="heygen_avatar_id" value="{{ $avatarId }}">
                                     <input type="hidden" name="avatar_name" value="{{ $avatar['name'] ?? 'English Coach' }}">
                                     <input type="hidden" name="avatar_image_url" value="{{ $avatar['image_url'] ?? '' }}">
                                     <input type="hidden" name="default_voice_id" value="{{ $avatar['default_voice_id'] ?? '' }}">
