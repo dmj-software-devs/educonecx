@@ -62,7 +62,7 @@ class PracticeCreditService
 
     public function getBalance(User $user): int
     {
-        return (int) $this->getOrCreateWallet($user)->balance;
+        return (int) $this->recalculateWallet($user)->balance;
     }
 
     public function hasEnoughCredits(User $user, int $cost): bool

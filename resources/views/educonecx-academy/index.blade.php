@@ -1046,6 +1046,27 @@
         }
     };
 
+    const refreshCreditBalance = async () => {
+        try {
+            const response = await fetch("{{ route('educonecx.academy.credits') }}", {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                cache: 'no-store',
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success && typeof data.credits_balance !== 'undefined') {
+                updateCreditDisplay(data.credits_balance);
+            }
+        } catch (error) {
+            console.warn('Unable to refresh Practice Room credits.', error);
+        }
+    };
+
     const setEvaluationStatus = (message, className = 'small text-muted') => {
         evaluationStatus.textContent = message;
         evaluationStatus.className = className;
@@ -1453,6 +1474,7 @@
     startExamBtn?.addEventListener('click', () => startSpeakingSession('exam'));
 
     updateCreditDisplay();
+    refreshCreditBalance();
 
     if (missingHeyGenConfig.length) {
         setStatusMessage('Practice Room is not ready yet. Please contact support to complete setup.', true);

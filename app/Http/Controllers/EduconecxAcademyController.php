@@ -11,13 +11,14 @@ use App\Services\OpenAIEvaluationService;
 use App\Services\PracticeCreditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class EduconecxAcademyController extends Controller
 {
-    public function index(HeyGenLiveAvatarService $heyGenService, PracticeCreditService $creditService): View
+    public function index(HeyGenLiveAvatarService $heyGenService, PracticeCreditService $creditService): View|Response
     {
         $creditWallet = $creditService->grantSignupCredits(auth()->user());
         $practiceCreditCost = $creditService->getSessionCost('practice');
@@ -64,7 +65,30 @@ class EduconecxAcademyController extends Controller
         $creditWallet->refresh();
         $creditsAvailable = (int) $creditWallet->balance;
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'practiceCreditCost', 'examCreditCost', 'defaultAvatarDebug'));
+        return response()
+            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'practiceCreditCost', 'examCreditCost', 'defaultAvatarDebug'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
+    }
+
+    public function creditSummary(Request $request, PracticeCreditService $creditService): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user, 401);
+
+        if (! $this->currentUserCanAccessPracticeRoom()) {
+            return $this->practiceRoomPaymentRequiredResponse();
+        }
+
+        $wallet = $creditService->grantSignupCredits($user);
+
+        return response()->json([
+            'success' => true,
+            'credits_balance' => (int) $wallet->balance,
+            'practice_cost' => $creditService->getSessionCost('practice'),
+            'exam_cost' => $creditService->getSessionCost('exam'),
+        ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse

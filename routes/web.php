@@ -835,6 +835,7 @@ Route::post('/dev/liveavatar/test-embed', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
+    Route::get('/educonecx-academy/credits', [EduconecxAcademyController::class, 'creditSummary'])->name('educonecx.academy.credits');
     Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
     Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');
     Route::post('/educonecx-academy/session/evaluate', [EduconecxAcademyController::class, 'evaluateSession'])->name('educonecx.academy.session.evaluate');
