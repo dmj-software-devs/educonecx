@@ -106,6 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->subscriptions()
             ->where('status', 'active')
+            ->where('payment_status', 'paid')
             ->where('end_date', '>', now());
     }
 
@@ -120,7 +121,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->activeSubscriptions()->first();
     }
 
-    // Check if user can access the Practice Room
+    // Check if user can access the Practice Room using the same paid subscription
+    // columns that unlock paid courses: user_subscriptions.status,
+    // user_subscriptions.payment_status, and user_subscriptions.end_date.
     public function canAccessPracticeRoom(): bool
     {
         return $this->has_active_subscription;

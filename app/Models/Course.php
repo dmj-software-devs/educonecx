@@ -261,9 +261,10 @@ class Course extends Model
         $userId = $userId ?? auth()->id();
         if (!$userId) return false;
         
-        // Check if user has an active subscription
+        // Check the same paid subscription columns used by User::has_active_subscription.
         return UserSubscription::where('user_id', $userId)
             ->where('status', 'active')
+            ->where('payment_status', 'paid')
             ->where('end_date', '>', now())
             ->exists();
     }

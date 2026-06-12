@@ -56,7 +56,9 @@ class UserSubscription extends Model
     // Accessors
     public function getIsActiveAttribute()
     {
-        return $this->status === 'active' && $this->end_date > now();
+        return $this->status === 'active'
+            && $this->payment_status === 'paid'
+            && $this->end_date > now();
     }
 
     public function getIsExpiredAttribute()
@@ -87,6 +89,7 @@ class UserSubscription extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'active')
+            ->where('payment_status', 'paid')
             ->where('end_date', '>', now());
     }
 
