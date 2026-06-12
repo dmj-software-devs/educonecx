@@ -720,7 +720,7 @@
                     </div>
                 </div>
             </section>
-
+<!-- 
             @if(config('app.debug'))
                 <div class="alert alert-info small">
                     <strong>Practice Avatar Debug</strong><br>
@@ -728,7 +728,7 @@
                     resolved image_url: {{ data_get($defaultAvatarDebug ?? [], 'resolved_image_url') ?: 'none' }}<br>
                     currentAvatarConfig avatar_image_url: {{ data_get($defaultAvatarDebug ?? [], 'current_avatar_image_url') ?: 'none' }}
                 </div>
-            @endif
+            @endif -->
 
             <section class="academy-actions-grid" aria-label="Practice Room actions">
                 <article class="academy-action-card">
