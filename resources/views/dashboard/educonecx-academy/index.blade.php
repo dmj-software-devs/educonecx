@@ -135,6 +135,7 @@
 
                 <div class="academy-nav-title">Practice Room</div>
                 <a href="{{ route('educonecx.academy.index') }}" class="academy-nav-item"><i class="fas fa-play-circle"></i> Start Practice</a>
+                <a href="#practice-credits" class="academy-nav-item"><i class="fas fa-coins"></i> Credits</a>
                 <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Practice History</a>
                 <a href="#performance-reports" class="academy-nav-item"><i class="fas fa-chart-line"></i> Performance Reports</a>
                 <a href="#progress-tracking" class="academy-nav-item"><i class="fas fa-bullseye"></i> Progress Tracking</a>
@@ -160,6 +161,64 @@
                 <div class="academy-stat"><span>Overall Speaking Score</span><strong>{{ $stats['average_overall_score'] ? $stats['average_overall_score'] . '/10' : 'N/A' }}</strong></div>
                 <div class="academy-stat"><span>Best Speaking Score</span><strong>{{ $stats['best_score'] ? $stats['best_score'] . '/10' : 'N/A' }}</strong></div>
                 <div class="academy-stat"><span>Last Practice</span><strong style="font-size:1rem;">{{ $stats['last_practice_date'] ?? 'No practice yet' }}</strong></div>
+            </section>
+
+
+            <section id="practice-credits" class="academy-card">
+                <div class="academy-card-header">
+                    <div>
+                        <h2 class="academy-card-title">Practice Room Credits</h2>
+                        <p class="academy-card-subtitle">Track the internal platform credits used for Practice Room sessions and exams.</p>
+                    </div>
+                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-yellow"><i class="fas fa-play"></i> Use Credits</a>
+                </div>
+                <div class="academy-card-body">
+                    <div class="academy-stats-grid">
+                        <div class="academy-stat"><span>Current Credits</span><strong>{{ $creditWallet->balance ?? 0 }}</strong></div>
+                        <div class="academy-stat"><span>Lifetime Granted</span><strong>{{ $creditWallet->lifetime_granted ?? 0 }}</strong></div>
+                        <div class="academy-stat"><span>Lifetime Purchased</span><strong>{{ $creditWallet->lifetime_purchased ?? 0 }}</strong></div>
+                        <div class="academy-stat"><span>Lifetime Used</span><strong>{{ $creditWallet->lifetime_used ?? 0 }}</strong></div>
+                    </div>
+
+                    <div class="table-responsive mt-4">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Balance After</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($creditTransactions ?? [] as $transaction)
+                                    @php
+                                        $creditLabels = [
+                                            'signup_bonus' => 'Signup Bonus',
+                                            'practice_usage' => 'Practice Session',
+                                            'exam_usage' => 'Speaking Exam',
+                                            'refund' => 'Refund',
+                                            'purchase' => 'Purchase',
+                                            'admin_grant' => 'Admin Grant',
+                                            'course_grant' => 'Course Grant',
+                                            'adjustment' => 'Adjustment',
+                                        ];
+                                    @endphp
+                                    <tr>
+                                        <td>{{ optional($transaction->created_at)->format('M d, Y g:i A') }}</td>
+                                        <td>{{ $creditLabels[$transaction->type] ?? Str::headline($transaction->type) }}</td>
+                                        <td class="{{ $transaction->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $transaction->amount >= 0 ? '+' : '' }}{{ $transaction->amount }}</td>
+                                        <td>{{ $transaction->balance_after }}</td>
+                                        <td>{{ $transaction->description ?: '—' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr><td colspan="5" class="text-muted">No credit transactions yet.</td></tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
 
             <section id="performance-reports" class="academy-card">

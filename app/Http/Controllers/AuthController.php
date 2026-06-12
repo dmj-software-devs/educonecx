@@ -11,6 +11,7 @@ use App\Models\Enrollment;
 use App\Models\QuizAttempt;
 use App\Models\Certificate;
 use Illuminate\Auth\Events\Registered;
+use App\Services\PracticeCreditService;
 
 
 class AuthController extends Controller
@@ -119,6 +120,8 @@ class AuthController extends Controller
             'role' => 'student',
             'status' => 'active',
         ]);
+
+        app(PracticeCreditService::class)->grantSignupCredits($user);
 
         // Send email verification notification
         event(new Registered($user));

@@ -11,8 +11,7 @@ use App\Models\Quiz;
 use App\Models\Question;
 use App\Models\Certificate;
 use App\Models\LessonProgress;
-use App\Models\PracticeCreditTransaction;
-use App\Models\UserPracticeCredit;
+use App\Services\PracticeCreditService;
 
 class EnrollmentController extends Controller
 {
@@ -50,33 +49,7 @@ class EnrollmentController extends Controller
     {
         $credits = (int) (config('practice_room.default_course_credits', 20) ?? 20);
 
-        if ($credits <= 0) {
-            return;
-        }
-
-        $alreadyGranted = PracticeCreditTransaction::query()
-            ->where('user_id', $user->id)
-            ->where('type', 'course_grant')
-            ->where('meta->course_id', $course->id)
-            ->exists();
-
-        if ($alreadyGranted) {
-            return;
-        }
-
-        $account = UserPracticeCredit::firstOrCreate(['user_id' => $user->id]);
-        $account->increment('balance', $credits);
-        $account->increment('lifetime_granted', $credits);
-        $account->refresh();
-
-        PracticeCreditTransaction::create([
-            'user_id' => $user->id,
-            'type' => 'course_grant',
-            'amount' => $credits,
-            'balance_after' => $account->balance,
-            'description' => 'Course enrollment Practice Room credits',
-            'meta' => ['course_id' => $course->id, 'course_title' => $course->title],
-        ]);
+        app(PracticeCreditService::class)->grantCourseCredits($user, $credits, $course);
     }
 
     /**

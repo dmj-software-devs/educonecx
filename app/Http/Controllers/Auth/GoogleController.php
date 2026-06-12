@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\PracticeCreditService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
@@ -69,6 +70,8 @@ class GoogleController extends Controller
                     'status' => 'active', // Default status
                 ]);
                 
+                app(PracticeCreditService::class)->grantSignupCredits($user);
+
                 Auth::login($user, true);
                 
                 return redirect('/')->with('success', 'Welcome to Educonecx! Your account has been successfully created. You can now login with Google anytime.');

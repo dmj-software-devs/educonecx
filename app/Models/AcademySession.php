@@ -42,6 +42,7 @@ class AcademySession extends Model
         'exam_score',
         'exam_result',
         'credit_used',
+        'credit_transaction_id',
         'corrections',
         'strengths',
         'weaknesses',
@@ -76,6 +77,7 @@ class AcademySession extends Model
         'locked_at' => 'datetime',
         'is_locked' => 'boolean',
         'credit_used' => 'integer',
+        'credit_transaction_id' => 'integer',
     ];
 
     public function scenario()
@@ -91,5 +93,10 @@ class AcademySession extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function creditTransaction()
+    {
+        return $this->belongsTo(PracticeCreditTransaction::class, 'credit_transaction_id');
     }
 }

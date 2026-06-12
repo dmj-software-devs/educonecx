@@ -392,6 +392,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('subscription-plans', App\Http\Controllers\Admin\SubscriptionPlanController::class);
     Route::post('subscription-plans/reorder', [App\Http\Controllers\Admin\SubscriptionPlanController::class, 'reorder'])->name('subscription-plans.reorder');
 
+    // Practice Credit Management
+    Route::get('practice-credits', [App\Http\Controllers\Admin\PracticeCreditController::class, 'index'])->name('practice-credits.index');
+    Route::get('practice-credits/users/{user}', [App\Http\Controllers\Admin\PracticeCreditController::class, 'show'])->name('practice-credits.show');
+    Route::post('practice-credits/users/{user}/add', [App\Http\Controllers\Admin\PracticeCreditController::class, 'add'])->name('practice-credits.add');
+    Route::post('practice-credits/users/{user}/subtract', [App\Http\Controllers\Admin\PracticeCreditController::class, 'subtract'])->name('practice-credits.subtract');
+
     // User Subscriptions Management
     Route::get('subscriptions', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'index'])->name('subscriptions.index');
      Route::get('subscriptions/create', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'create'])->name('subscriptions.create');

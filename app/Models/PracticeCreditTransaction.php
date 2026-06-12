@@ -14,6 +14,7 @@ class PracticeCreditTransaction extends Model
         'academy_session_id',
         'type',
         'amount',
+        'balance_before',
         'balance_after',
         'description',
         'meta',
@@ -21,6 +22,7 @@ class PracticeCreditTransaction extends Model
 
     protected $casts = [
         'amount' => 'integer',
+        'balance_before' => 'integer',
         'balance_after' => 'integer',
         'meta' => 'array',
     ];
@@ -32,6 +34,6 @@ class PracticeCreditTransaction extends Model
 
     public function academySession()
     {
-        return $this->belongsTo(AcademySession::class);
+        return $this->belongsTo(AcademySession::class, 'academy_session_id');
     }
 }

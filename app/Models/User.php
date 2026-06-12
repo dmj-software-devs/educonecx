@@ -217,9 +217,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
 
-    public function practiceCredits()
+    public function practiceCredit()
     {
         return $this->hasOne(UserPracticeCredit::class);
+    }
+
+    public function practiceCredits()
+    {
+        return $this->practiceCredit();
     }
 
     public function practiceCreditTransactions()

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AcademySession;
 use App\Models\AcademyUserAvatarSetting;
 use App\Services\HeyGenLiveAvatarService;
+use App\Services\PracticeCreditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,9 +15,11 @@ use Illuminate\View\View;
 
 class DashboardEduconecxAcademyController extends Controller
 {
-    public function index(Request $request, HeyGenLiveAvatarService $liveAvatarService): View|JsonResponse
+    public function index(Request $request, HeyGenLiveAvatarService $liveAvatarService, PracticeCreditService $creditService): View|JsonResponse
     {
         $user = $request->user();
+        $creditWallet = $creditService->grantSignupCredits($user);
+        $creditTransactions = $user->practiceCreditTransactions()->latest()->limit(15)->get();
 
         if (! $user->canAccessPracticeRoom()) {
             return view('educonecx-academy.paywall');
@@ -162,7 +165,9 @@ class DashboardEduconecxAcademyController extends Controller
             'contexts',
             'stats',
             'liveAvatarDebug',
-            'chartData'
+            'chartData',
+            'creditWallet',
+            'creditTransactions'
         ));
     }
 

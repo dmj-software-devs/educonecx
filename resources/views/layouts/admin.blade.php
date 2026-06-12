@@ -429,6 +429,12 @@
                 </a>
             </div>
 
+            <div class="nav-item">
+                <a href="{{ route('admin.practice-credits.index') }}" class="nav-link {{ request()->routeIs('admin.practice-credits.*') ? 'active' : '' }}">
+                    <i class="fas fa-coins"></i> Practice Credits
+                </a>
+            </div>
+
             <div class="nav-header">Sales</div>
             <div class="nav-item">
                 <a href="{{ route('admin.orders.index') }}" class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">

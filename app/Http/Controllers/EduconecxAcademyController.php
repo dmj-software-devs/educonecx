@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\AcademyScenario;
 use App\Models\AcademySession;
 use App\Models\AcademyUserAvatarSetting;
+use App\Exceptions\InsufficientPracticeCreditsException;
 use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
+use App\Services\PracticeCreditService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,8 +17,12 @@ use Illuminate\Validation\ValidationException;
 
 class EduconecxAcademyController extends Controller
 {
-    public function index(HeyGenLiveAvatarService $heyGenService): View
+    public function index(HeyGenLiveAvatarService $heyGenService, PracticeCreditService $creditService): View
     {
+        $creditWallet = $creditService->grantSignupCredits(auth()->user());
+        $practiceCreditCost = $creditService->getSessionCost('practice');
+        $examCreditCost = $creditService->getSessionCost('exam');
+
         if (! $this->currentUserCanAccessPracticeRoom()) {
             return view('educonecx-academy.paywall');
         }
@@ -55,9 +61,10 @@ class EduconecxAcademyController extends Controller
                 ->limit(5)
                 ->get()
             : collect();
-        $creditsAvailable = optional(auth()->user())->academy_credits ?? optional(auth()->user())->credits ?? 0;
+        $creditWallet->refresh();
+        $creditsAvailable = (int) $creditWallet->balance;
 
-        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'defaultAvatarDebug'));
+        return view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'practiceCreditCost', 'examCreditCost', 'defaultAvatarDebug'));
     }
 
     public function createLiveAvatarToken(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
@@ -105,7 +112,7 @@ class EduconecxAcademyController extends Controller
     }
 
 
-    public function createLiveAvatarEmbed(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
+    public function createLiveAvatarEmbed(Request $request, HeyGenLiveAvatarService $heyGenService, PracticeCreditService $creditService): JsonResponse
     {
         $validated = $request->validate([
             'scenario_slug' => ['nullable', 'string', 'exists:academy_scenarios,slug'],
@@ -120,14 +127,61 @@ class EduconecxAcademyController extends Controller
             ? AcademyScenario::with('category')->where('slug', $validated['scenario_slug'])->firstOrFail()
             : null;
 
-        try {
-            $user = $request->user();
-            abort_unless($user, 401);
+        $user = $request->user();
+        abort_unless($user, 401);
 
-            $sessionType = $validated['session_type'] ?? 'practice';
+        $creditService->grantSignupCredits($user);
+        $sessionType = $validated['session_type'] ?? 'practice';
+        $creditCost = $creditService->getSessionCost($sessionType);
+        $currentBalance = $creditService->getBalance($user);
+
+        if (! $creditService->hasEnoughCredits($user, $creditCost)) {
+            return response()->json([
+                'success' => false,
+                'type' => 'insufficient_credits',
+                'message' => 'You do not have enough practice credits to start this session.',
+                'balance' => $currentBalance,
+                'required' => $creditCost,
+            ], 402);
+        }
+
+        $session = null;
+        $creditTransaction = null;
+
+        try {
             $avatarSetting = $this->activeAvatarSetting($user->id);
             $defaultAvatarMetadata = $sessionType === 'exam' ? null : $heyGenService->defaultPracticeAvatarMetadata();
             $currentConfig = $sessionType === 'exam' ? $this->examAvatarConfig($avatarSetting) : $this->currentAvatarConfig($avatarSetting, $defaultAvatarMetadata);
+
+            $session = AcademySession::create([
+                'user_id' => $user->id,
+                'academy_category_id' => $scenario?->academy_category_id,
+                'academy_scenario_id' => $scenario?->id,
+                'session_type' => $sessionType,
+                'avatar_name' => $currentConfig['avatar_name'],
+                'avatar_image_url' => $currentConfig['avatar_image_url'],
+                'context_name' => $currentConfig['context_name'],
+                'dynamic_instructions' => $heyGenService->buildDynamicInstructions($scenario, $user, $sessionType),
+                'status' => 'starting',
+                'started_at' => now(),
+                'credit_used' => $creditCost,
+                'credits_used' => $creditCost,
+                'evaluation_used' => false,
+                'recording_used' => false,
+                'attempt_locked' => false,
+            ]);
+
+            $creditTransaction = $creditService->deductCredits(
+                $user,
+                $creditCost,
+                $sessionType === 'exam' ? 'exam_usage' : 'practice_usage',
+                $session,
+                $sessionType === 'exam' ? 'Speaking Exam credit usage.' : 'Practice Room session credit usage.',
+                ['session_type' => $sessionType]
+            );
+
+            $session->update(['credit_transaction_id' => $creditTransaction->id]);
+
             $embed = $heyGenService->createLiveAvatarEmbed($scenario, $user, $sessionType);
             $embedUrl = $embed['embed_url'];
             $resolved = data_get($embed, 'resolved', []);
@@ -136,11 +190,7 @@ class EduconecxAcademyController extends Controller
                 $currentConfig = $this->currentAvatarConfig(null, $defaultAvatarMetadata);
             }
 
-            $session = AcademySession::create([
-                'user_id' => $user->id,
-                'academy_category_id' => $scenario?->academy_category_id,
-                'academy_scenario_id' => $scenario?->id,
-                'session_type' => $sessionType,
+            $session->update([
                 'liveavatar_embed_id' => $this->extractLiveAvatarEmbedId($embedUrl, $embed['response'] ?? []),
                 'liveavatar_embed_url' => $embedUrl,
                 'heygen_avatar_id' => data_get($resolved, 'avatar_id'),
@@ -149,14 +199,8 @@ class EduconecxAcademyController extends Controller
                 'avatar_name' => $currentConfig['avatar_name'],
                 'avatar_image_url' => $currentConfig['avatar_image_url'],
                 'context_name' => $currentConfig['context_name'],
-                'dynamic_instructions' => $heyGenService->buildDynamicInstructions($scenario, $user, $sessionType),
                 'config_source' => data_get($resolved, 'source'),
                 'status' => 'started',
-                'started_at' => now(),
-                'credits_used' => 0,
-                'evaluation_used' => false,
-                'recording_used' => false,
-                'attempt_locked' => false,
                 'raw_response' => $embed['response'] ?? [],
             ]);
 
@@ -170,11 +214,30 @@ class EduconecxAcademyController extends Controller
                 'context_id' => data_get($resolved, 'context_id'),
                 'endpoint_url' => $embed['endpoint_url'],
                 'endpoint_status' => $embed['status'],
+                'credits_balance' => $creditService->getBalance($user),
+                'credits_used' => $creditCost,
             ]);
+        } catch (InsufficientPracticeCreditsException $exception) {
+            return response()->json([
+                'success' => false,
+                'type' => 'insufficient_credits',
+                'message' => 'You do not have enough practice credits to start this session.',
+                'balance' => $creditService->getBalance($user),
+                'required' => $creditCost,
+            ], 402);
         } catch (\Throwable $exception) {
+            if ($creditTransaction && $session) {
+                $creditService->refundCredits($user, $creditCost, $session, 'Refund for failed Practice Room session.');
+            }
+
+            if ($session) {
+                $session->update(['status' => 'failed']);
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => 'Unable to prepare your speaking session right now. Please try again later.',
+                'credits_balance' => $creditService->getBalance($user),
                 'debug' => config('app.debug') ? $heyGenService->apiKeyDebugMeta() : null,
             ], 422);
         }

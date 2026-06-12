@@ -12,14 +12,16 @@ class UserPracticeCredit extends Model
     protected $fillable = [
         'user_id',
         'balance',
-        'lifetime_used',
         'lifetime_granted',
+        'lifetime_purchased',
+        'lifetime_used',
     ];
 
     protected $casts = [
         'balance' => 'integer',
-        'lifetime_used' => 'integer',
         'lifetime_granted' => 'integer',
+        'lifetime_purchased' => 'integer',
+        'lifetime_used' => 'integer',
     ];
 
     public function user()

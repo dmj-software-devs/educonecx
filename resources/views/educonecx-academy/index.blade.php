@@ -677,6 +677,11 @@
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
                     && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
+                $practiceCreditCost = (int) ($practiceCreditCost ?? config('practice_room.credits.practice_cost', 1));
+                $examCreditCost = (int) ($examCreditCost ?? config('practice_room.credits.exam_cost', 2));
+                $creditsAvailable = (int) ($creditsAvailable ?? 0);
+                $canStartPracticeSession = $canStartPractice && $creditsAvailable >= $practiceCreditCost;
+                $canStartExamSession = $canStartPractice && $creditsAvailable >= $examCreditCost;
                 $coachImage = $practiceCoachImage
                     ?? data_get($currentAvatarConfig, 'avatar_image_url')
                     ?? data_get($currentAvatarConfig, 'image_url')
@@ -735,7 +740,7 @@
                     <span class="academy-action-icon"><i class="fas fa-comments"></i></span>
                     <h3>Start Practice</h3>
                     <p>Learn with Victoria Clarke in a friendly session. You may retry recordings before requesting your performance review.</p>
-                    <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                    <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPracticeSession ? 'disabled' : '' }}>
                         <i class="fas fa-play"></i> Start Practice
                     </button>
                 </article>
@@ -743,15 +748,18 @@
                     <span class="academy-action-icon"><i class="fas fa-clipboard-check"></i></span>
                     <h3>Take Exam</h3>
                     <p>Begin a formal English Speaking Exam with Olivia. Final submissions are saved and locked in your dashboard.</p>
-                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" {{ ! $canStartPractice ? 'disabled' : '' }}>
+                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" {{ ! $canStartExamSession ? 'disabled' : '' }}>
                         <i class="fas fa-award"></i> Take Exam
                     </button>
                 </article>
                 <article class="academy-action-card">
                     <span class="academy-action-icon"><i class="fas fa-coins"></i></span>
                     <h3>Credits Available</h3>
-                    <span class="academy-credit-value">{{ $creditsAvailable }}</span>
-                    <p>Your current balance is shown here. Pricing options will be added later.</p>
+                    <span class="academy-credit-value" id="creditsAvailableValue">{{ $creditsAvailable }}</span>
+                    <p>Practice costs {{ $practiceCreditCost }} credit{{ $practiceCreditCost === 1 ? '' : 's' }}. Exams cost {{ $examCreditCost }} credit{{ $examCreditCost === 1 ? '' : 's' }}.</p>
+                    <div id="creditWarning" class="alert alert-warning mt-3 mb-0 {{ $creditsAvailable <= 0 ? '' : 'd-none' }}">
+                        You do not have enough practice credits. Please purchase or receive more credits to continue.
+                    </div>
                 </article>
             </section>
 
@@ -764,7 +772,7 @@
                     <li>Your score will be saved in your dashboard.</li>
                     <li>Make sure your microphone works before starting.</li>
                 </ul>
-                <button type="button" id="confirmExamBtn" class="btn academy-btn-primary" data-bs-toggle="modal" data-bs-target="#examConfirmModal"><i class="fas fa-play"></i> Start Exam</button>
+                <button type="button" id="confirmExamBtn" class="btn academy-btn-primary" data-bs-toggle="modal" data-bs-target="#examConfirmModal" {{ ! $canStartExamSession ? 'disabled' : '' }}><i class="fas fa-play"></i> Start Exam</button>
             </section>
 
             <section class="academy-card mb-4">
@@ -975,10 +983,16 @@
         exam: { url: @json($isExamImageUrl ? $examImage : null), exists: @json($isExamImageUrl), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const practiceCreditCost = @json($practiceCreditCost);
+    const examCreditCost = @json($examCreditCost);
+    let creditsAvailable = @json($creditsAvailable);
 
     const startBtn = document.getElementById('startPracticeBtn');
     const showExamRulesBtn = document.getElementById('showExamRulesBtn');
     const startExamBtn = document.getElementById('startExamBtn');
+    const confirmExamBtn = document.getElementById('confirmExamBtn');
+    const creditsAvailableValue = document.getElementById('creditsAvailableValue');
+    const creditWarning = document.getElementById('creditWarning');
     const examRulesArea = document.getElementById('examRulesArea');
     const coachPhotoWrap = document.getElementById('coachPhotoWrap');
     const coachName = document.getElementById('coachName');
@@ -1009,6 +1023,28 @@
     let recordingSeconds = 0;
 
     const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
+
+    const sessionCost = (mode) => mode === 'exam' ? examCreditCost : practiceCreditCost;
+    const hasCreditsFor = (mode) => creditsAvailable >= sessionCost(mode);
+
+    const updateCreditDisplay = (balance = creditsAvailable) => {
+        creditsAvailable = Number(balance ?? 0);
+        if (creditsAvailableValue) {
+            creditsAvailableValue.textContent = creditsAvailable;
+        }
+        if (creditWarning) {
+            creditWarning.classList.toggle('d-none', creditsAvailable > 0);
+        }
+        if (startBtn) {
+            startBtn.disabled = !hasPracticeConfig || !hasCreditsFor('practice');
+        }
+        if (showExamRulesBtn) {
+            showExamRulesBtn.disabled = !hasPracticeConfig || !hasCreditsFor('exam');
+        }
+        if (confirmExamBtn) {
+            confirmExamBtn.disabled = !hasPracticeConfig || !hasCreditsFor('exam');
+        }
+    };
 
     const setEvaluationStatus = (message, className = 'small text-muted') => {
         evaluationStatus.textContent = message;
@@ -1320,6 +1356,12 @@
             return;
         }
 
+        if (!hasCreditsFor(mode)) {
+            setStatusMessage('You do not have enough practice credits to start this session.', true);
+            updateCreditDisplay();
+            return;
+        }
+
         sessionMode = mode;
         examSubmitted = false;
         resetRecording();
@@ -1351,10 +1393,17 @@
             }
 
             if (!response.ok || !data.success) {
+                if (data.type === 'insufficient_credits') {
+                    updateCreditDisplay(data.balance);
+                    throw new Error(data.message || 'You do not have enough practice credits to start this session.');
+                }
                 throw new Error(data.message || 'Unable to load your speaking session.');
             }
 
             academySessionId = data.academy_session_id || null;
+            if (typeof data.credits_balance !== 'undefined') {
+                updateCreditDisplay(data.credits_balance);
+            }
             const openSessionLink = document.getElementById('openSessionLink');
 
             if (!data.embed_url) {
@@ -1390,8 +1439,7 @@
             setStatusMessage(error.message || 'Unable to load your speaking session.', true);
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
         } finally {
-            startBtn.disabled = !hasPracticeConfig;
-            showExamRulesBtn.disabled = !hasPracticeConfig;
+            updateCreditDisplay();
         }
     };
 
@@ -1403,6 +1451,8 @@
         }
     });
     startExamBtn?.addEventListener('click', () => startSpeakingSession('exam'));
+
+    updateCreditDisplay();
 
     if (missingHeyGenConfig.length) {
         setStatusMessage('Practice Room is not ready yet. Please contact support to complete setup.', true);
