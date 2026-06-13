@@ -181,10 +181,11 @@
         min-height: 100%;
     }
 
-    .english-course-thumb {
+    .course-thumbnail {
         width: 100%;
         aspect-ratio: 16 / 9;
         object-fit: cover;
+        border-radius: 14px;
         background: var(--academy-ivory);
     }
 
@@ -681,10 +682,11 @@
         min-height: 100%;
     }
 
-    .english-course-thumb {
+    .course-thumbnail {
         width: 100%;
         aspect-ratio: 16 / 9;
         object-fit: cover;
+        border-radius: 14px;
         background: var(--academy-ivory);
     }
 
@@ -1061,7 +1063,17 @@
                         <div class="english-course-grid">
                             @foreach($englishPracticeCourses as $course)
                                 <article class="english-course-card">
-                                    <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}" class="english-course-thumb">
+                                    @if($course->thumbnail)
+                                        <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}" class="course-thumbnail">
+                                    @else
+                                        <div class="course-thumbnail d-flex align-items-center justify-content-center">
+                                            <div class="text-center">
+                                                <i class="fas fa-comments fa-2x mb-2"></i><br>
+                                                <strong>EDUCONECX</strong><br>
+                                                <span>English Practice</span>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="english-course-body">
                                         @if($course->level)<span class="english-course-level">{{ $course->level }}</span>@endif
                                         <h3 class="mb-0">{{ $course->title }}</h3>

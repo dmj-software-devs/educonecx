@@ -11,9 +11,6 @@
     <a href="{{ route('admin.english-practice-courses.create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New Course</a>
 </div>
 
-@if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-@endif
 
 <div class="table-container bg-white">
     <div class="table-responsive">

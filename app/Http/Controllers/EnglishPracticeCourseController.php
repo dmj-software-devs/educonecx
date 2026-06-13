@@ -12,7 +12,7 @@ class EnglishPracticeCourseController extends Controller
 {
     public function show(Request $request, EnglishPracticeCourse $course, PracticeCreditService $creditService): View
     {
-        abort_unless($request->user()?->canAccessPracticeRoom(), 403);
+        abort_unless($request->user()?->canAccessPracticeRoom() || $request->user()?->isAdmin(), 403);
         $creditService->grantSignupCredits($request->user());
 
         abort_unless($course->status === 'published', 404);

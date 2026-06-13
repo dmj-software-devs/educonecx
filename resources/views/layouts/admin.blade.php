@@ -405,6 +405,11 @@
                 </a>
             </div>
             <div class="nav-item">
+                <a href="{{ route('admin.english-practice-courses.create') }}" class="nav-link {{ request()->routeIs('admin.english-practice-courses.create') ? 'active' : '' }}">
+                    <i class="fas fa-plus-circle"></i> Add Practice Course
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="{{ route('admin.quizzes.index') }}" class="nav-link {{ request()->routeIs('admin.quizzes.*') ? 'active' : '' }}">
                     <i class="fas fa-question-circle"></i> Quizzes
                 </a>

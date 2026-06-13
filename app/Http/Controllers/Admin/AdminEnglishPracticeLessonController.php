@@ -43,7 +43,7 @@ class AdminEnglishPracticeLessonController extends Controller
     public function update(Request $request, EnglishPracticeLesson $lesson)
     {
         $course = $lesson->course;
-        $data = $this->validatedLessonData($request, $course);
+        $data = $this->validatedLessonData($request, $course, $lesson);
         $data['slug'] = $this->uniqueSlug($course, $data['title'], $lesson->id);
 
         $this->handleUploads($request, $data, $lesson);
@@ -68,20 +68,27 @@ class AdminEnglishPracticeLessonController extends Controller
             ->with('success', 'Lesson deleted.');
     }
 
-    private function validatedLessonData(Request $request, EnglishPracticeCourse $course): array
+    private function validatedLessonData(Request $request, EnglishPracticeCourse $course, ?EnglishPracticeLesson $lesson = null): array
     {
+        $videoType = $request->input('video_type');
+        $needsUpload = $videoType === 'upload' && ! $lesson?->video_path;
+        $needsUrl = in_array($videoType, ['url', 'youtube', 'vimeo'], true) && ! $lesson?->video_url;
+
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'english_practice_course_module_id' => ['nullable', Rule::exists('english_practice_course_modules', 'id')->where('english_practice_course_id', $course->id)],
             'video_type' => ['required', Rule::in(['upload', 'url', 'youtube', 'vimeo'])],
-            'video_file' => ['nullable', 'file', 'mimes:mp4,webm,mov', 'max:307200'],
-            'video_url' => ['nullable', 'url', 'max:2048'],
+            'video_file' => [Rule::requiredIf($needsUpload), 'nullable', 'file', 'mimes:mp4,webm,mov', 'max:307200'],
+            'video_url' => [Rule::requiredIf($needsUrl), 'nullable', 'url', 'max:2048'],
             'thumbnail' => ['nullable', 'image', 'max:5120'],
             'duration_seconds' => ['nullable', 'integer', 'min:0'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_free' => ['nullable', 'boolean'],
             'status' => ['required', Rule::in(['draft', 'published'])],
+        ], [
+            'video_file.required' => 'Please upload a video file when Video Type is Upload Video.',
+            'video_url.required' => 'Please enter a video URL for URL, YouTube, or Vimeo video types.',
         ]);
     }
 
