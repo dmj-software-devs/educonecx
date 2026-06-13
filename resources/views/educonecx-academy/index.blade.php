@@ -166,31 +166,62 @@
 
     .english-course-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 18px;
     }
 
     .english-course-card {
-        border: 1px solid var(--academy-border);
+        background: #fff;
+        border: 1px solid rgba(10, 29, 68, 0.08);
         border-radius: 18px;
         overflow: hidden;
-        background: #fff;
-        box-shadow: var(--academy-soft-shadow);
+        box-shadow: 0 8px 22px rgba(10, 29, 68, 0.07);
         display: flex;
         flex-direction: column;
         min-height: 100%;
     }
 
-    .course-thumbnail {
+    .english-course-thumb {
         width: 100%;
         aspect-ratio: 16 / 9;
-        object-fit: cover;
-        border-radius: 14px;
+        max-height: 180px;
+        overflow: hidden;
         background: var(--academy-ivory);
     }
 
+    .english-course-thumb img,
+    .english-course-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
+
+    .english-course-thumb img {
+        object-fit: cover;
+        display: block;
+    }
+
+    .english-course-placeholder {
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--academy-navy), var(--academy-teal));
+        color: var(--academy-white);
+        text-align: center;
+    }
+
+    .english-course-placeholder strong {
+        color: var(--academy-yellow);
+        font-size: 1rem;
+        letter-spacing: .08em;
+    }
+
+    .english-course-placeholder span {
+        color: rgba(255, 255, 255, .86);
+        font-weight: 800;
+    }
+
     .english-course-body {
-        padding: 18px;
+        padding: 16px;
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -204,23 +235,57 @@
         border-radius: 999px;
         background: rgba(251, 198, 12, 0.18);
         color: var(--academy-navy);
-        font-size: 0.78rem;
-        font-weight: 800;
+        font-size: 0.76rem;
+        font-weight: 850;
         text-transform: capitalize;
     }
 
-    .english-progress-bar {
-        width: 100%;
-        height: 10px;
+    .english-course-title {
+        font-size: 1.05rem;
+        font-weight: 900;
+        color: var(--academy-navy);
+        margin: 0;
+        line-height: 1.25;
+    }
+
+    .english-course-desc {
+        color: var(--academy-muted);
+        font-size: .9rem;
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        min-height: 42px;
+        margin: 0;
+    }
+
+    .english-course-progress {
+        height: 8px;
         border-radius: 999px;
         background: #eef2f7;
         overflow: hidden;
     }
 
-    .english-progress-fill {
+    .english-course-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, var(--academy-yellow), var(--academy-teal));
-        border-radius: inherit;
+        background: linear-gradient(135deg, var(--academy-yellow), var(--academy-yellow-soft));
+        border-radius: 999px;
+    }
+
+    .english-course-meta {
+        color: var(--academy-muted);
+        font-size: .82rem;
+        margin: 0;
+    }
+
+    .english-course-card .academy-btn-primary {
+        width: 100%;
+        justify-content: center;
+        border-radius: 999px;
+        background: var(--academy-yellow);
+        border-color: var(--academy-yellow);
+        color: var(--academy-navy);
     }
 
     .practice-lesson-context {
@@ -664,76 +729,16 @@
 
     @media (max-width: 992px) {
         .academy-grid,
-    
-    .english-course-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-        gap: 18px;
-    }
-
-    .english-course-card {
-        border: 1px solid var(--academy-border);
-        border-radius: 18px;
-        overflow: hidden;
-        background: #fff;
-        box-shadow: var(--academy-soft-shadow);
-        display: flex;
-        flex-direction: column;
-        min-height: 100%;
-    }
-
-    .course-thumbnail {
-        width: 100%;
-        aspect-ratio: 16 / 9;
-        object-fit: cover;
-        border-radius: 14px;
-        background: var(--academy-ivory);
-    }
-
-    .english-course-body {
-        padding: 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        flex: 1;
-    }
-
-    .english-course-level {
-        display: inline-flex;
-        width: fit-content;
-        padding: 5px 10px;
-        border-radius: 999px;
-        background: rgba(251, 198, 12, 0.18);
-        color: var(--academy-navy);
-        font-size: 0.78rem;
-        font-weight: 800;
-        text-transform: capitalize;
-    }
-
-    .english-progress-bar {
-        width: 100%;
-        height: 10px;
-        border-radius: 999px;
-        background: #eef2f7;
-        overflow: hidden;
-    }
-
-    .english-progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--academy-yellow), var(--academy-teal));
-        border-radius: inherit;
-    }
-
-    .practice-lesson-context {
-        border: 1px solid rgba(251, 198, 12, 0.35);
-        background: rgba(251, 198, 12, 0.12);
-        border-radius: 16px;
-        padding: 16px 18px;
-        margin-bottom: 18px;
-    }
-
-    .academy-setup-grid {
+        .academy-setup-grid {
             grid-template-columns: 1fr;
+        }
+
+        .english-course-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .english-course-thumb {
+            max-height: 160px;
         }
 
         .academy-score-grid {
@@ -742,6 +747,16 @@
 
         .academy-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .academy-intro-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 576px) {
+        .english-course-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .english-course-thumb {
+            max-height: 140px;
+        }
     }
 
     @media (max-width: 768px) {
@@ -1063,30 +1078,34 @@
                         <div class="english-course-grid">
                             @foreach($englishPracticeCourses as $course)
                                 <article class="english-course-card">
-                                    @if($course->thumbnail)
-                                        <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}" class="course-thumbnail">
-                                    @else
-                                        <div class="course-thumbnail d-flex align-items-center justify-content-center">
-                                            <div class="text-center">
-                                                <i class="fas fa-comments fa-2x mb-2"></i><br>
-                                                <strong>EDUCONECX</strong><br>
-                                                <span>English Practice</span>
+                                    <div class="english-course-thumb">
+                                        @if($course->thumbnail)
+                                            <img src="{{ $course->thumbnail_url }}" alt="{{ $course->title }}">
+                                        @else
+                                            <div class="english-course-placeholder">
+                                                <div>
+                                                    <i class="fas fa-comments fa-2x mb-2"></i><br>
+                                                    <strong>EDUCONECX</strong><br>
+                                                    <span>English Practice</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
                                     <div class="english-course-body">
                                         @if($course->level)<span class="english-course-level">{{ $course->level }}</span>@endif
-                                        <h3 class="mb-0">{{ $course->title }}</h3>
-                                        <p class="text-muted mb-0">{{ \Illuminate\Support\Str::limit(strip_tags($course->description), 95) }}</p>
+                                        <h3 class="english-course-title">{{ $course->title }}</h3>
+                                        <p class="english-course-desc">{{ \Illuminate\Support\Str::limit(strip_tags($course->description), 120) }}</p>
                                         <div>
                                             <div class="d-flex justify-content-between small fw-semibold mb-1">
                                                 <span>Progress</span>
                                                 <span>{{ $course->user_course_progress_percent }}%</span>
                                             </div>
-                                            <div class="english-progress-bar"><div class="english-progress-fill" style="width: {{ $course->user_course_progress_percent }}%"></div></div>
-                                            <small class="text-muted">{{ $course->user_completed_lessons_count }} of {{ $course->published_lessons_count }} completed</small>
+                                            <div class="english-course-progress"><div class="english-course-progress-bar" style="width: {{ $course->user_course_progress_percent }}%"></div></div>
+                                            @if($course->published_lessons_count)
+                                                <p class="english-course-meta mt-2">{{ $course->user_completed_lessons_count }} of {{ $course->published_lessons_count }} completed</p>
+                                            @endif
                                         </div>
-                                        <a href="{{ route('practice-room.courses.show', [$course, 'lesson' => $course->user_continue_lesson_id]) }}" class="btn academy-btn-primary mt-auto">
+                                        <a href="{{ route('practice-room.courses.show', $course) }}" class="btn academy-btn-primary mt-auto">
                                             {{ $course->user_has_progress ? 'Continue' : 'Start' }}
                                         </a>
                                     </div>
@@ -1096,8 +1115,8 @@
                     @else
                         <div class="text-center py-4">
                             <i class="fas fa-video fa-2x mb-3 text-muted"></i>
-                            <h3>No lessons yet</h3>
-                            <p class="text-muted mb-0">English practice videos will appear here when published.</p>
+                            <h3>No English practice courses available yet.</h3>
+                            <p class="text-muted mb-0">Please check back soon.</p>
                         </div>
                     @endif
                 </div>

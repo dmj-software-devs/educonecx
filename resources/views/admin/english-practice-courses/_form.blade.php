@@ -38,11 +38,11 @@
     <div class="col-lg-4">
         <label class="form-label fw-semibold">Thumbnail</label>
         <div class="border rounded-3 p-3 bg-light">
-            <p class="text-muted small mb-2">Recommended size: 1280x720 image.</p>
+            <p class="text-muted small mb-2">Recommended thumbnail size: 1280 x 720 pixels. Use a clear course image, not screenshots or charts.</p>
             @if($course->thumbnail)
                 <div class="mb-3">
                     <div class="fw-semibold small mb-2">Current Thumbnail</div>
-                    <img src="{{ $course->thumbnail_url }}" alt="Current thumbnail for {{ $course->title }}" class="img-fluid rounded border" style="aspect-ratio: 16 / 9; object-fit: cover; width: 100%;">
+                    <img src="{{ $course->thumbnail_url }}" alt="Current thumbnail for {{ $course->title }}" class="img-fluid rounded border" style="aspect-ratio: 16 / 9; object-fit: cover; width: 100%; max-width: 280px;">
                     <div class="small text-muted mt-2 text-break">{{ $course->thumbnail }}</div>
                 </div>
             @else

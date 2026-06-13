@@ -8,7 +8,7 @@
     .course-player-shell { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr); gap: 24px; align-items: start; }
     .course-panel { background: #fff; border: 1px solid rgba(10,29,68,.09); border-radius: 20px; box-shadow: 0 14px 32px rgba(10,29,68,.08); overflow: hidden; }
     .course-panel-body { padding: 22px; }
-    .lesson-video-wrapper { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 16px; overflow: hidden; }
+    .lesson-video-wrapper { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 18px; overflow: hidden; }
     .lesson-video-wrapper video, .lesson-video-wrapper iframe { width: 100%; height: 100%; display: block; object-fit: contain; border: 0; }
     .course-progress-bar { height: 12px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
     .course-progress-fill { height: 100%; background: linear-gradient(90deg, #FBC60C, #2E5C61); border-radius: inherit; }
