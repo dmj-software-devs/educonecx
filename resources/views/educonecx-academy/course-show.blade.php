@@ -4,100 +4,380 @@
 
 @push('styles')
 <style>
-    .course-player-page { background: #F9F7E9; min-height: 100vh; padding: 46px 0; color: #0A1D44; }
-    .course-player-shell { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr); gap: 24px; align-items: start; }
-    .course-panel { background: #fff; border: 1px solid rgba(10,29,68,.09); border-radius: 20px; box-shadow: 0 14px 32px rgba(10,29,68,.08); overflow: hidden; }
-    .course-panel-body { padding: 22px; }
-    .lesson-video-wrapper { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 18px; overflow: hidden; }
-    .lesson-video-wrapper video, .lesson-video-wrapper iframe { width: 100%; height: 100%; display: block; object-fit: contain; border: 0; }
-    .course-progress-bar { height: 12px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
-    .course-progress-fill { height: 100%; background: linear-gradient(90deg, #FBC60C, #2E5C61); border-radius: inherit; }
-    .lesson-list { display: flex; flex-direction: column; gap: 10px; }
-    .lesson-item { border: 1px solid rgba(10,29,68,.09); border-radius: 14px; padding: 14px; text-decoration: none; color: #0A1D44; background: #fff; display: flex; justify-content: space-between; gap: 12px; }
-    .lesson-item.active { border-color: #FBC60C; background: rgba(251,198,12,.12); }
-    .lesson-item.completed { border-color: rgba(46,92,97,.28); }
-    .simple-btn { border-radius: 999px; padding: 10px 16px; font-weight: 800; }
-    .btn-navy { background: #0A1D44; color: #fff; } .btn-navy:hover { color: #fff; background: #18386E; }
-    .btn-yellow { background: #FBC60C; color: #0A1D44; } .btn-yellow:hover { background: #e7b505; color: #0A1D44; }
-    .resume-message { border-radius: 14px; background: rgba(251,198,12,.16); padding: 12px 14px; margin: 14px 0; }
-    @media (max-width: 991px) { .course-player-shell { grid-template-columns: 1fr; } .course-player-page { padding: 24px 0; } .course-panel-body { padding: 16px; } }
+    .practice-course-page {
+        background: linear-gradient(180deg, #F9F7E9 0%, #fff 100%);
+        min-height: 100vh;
+        padding: 42px 0 64px;
+        color: #0A1D44;
+    }
+
+    .practice-course-header,
+    .practice-course-video-card,
+    .lesson-list-card {
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid rgba(10, 29, 68, 0.08);
+        box-shadow: 0 12px 30px rgba(10, 29, 68, 0.08);
+    }
+
+    .practice-course-header {
+        padding: 22px;
+        margin-bottom: 24px;
+    }
+
+    .practice-course-kicker {
+        color: #FBC60C;
+        font-size: .78rem;
+        font-weight: 900;
+        letter-spacing: .11em;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .practice-course-title {
+        color: #0A1D44;
+        font-size: clamp(1.7rem, 4vw, 2.6rem);
+        font-weight: 950;
+        line-height: 1.05;
+        margin-bottom: 10px;
+    }
+
+    .practice-course-description {
+        color: #6B7280;
+        max-width: 760px;
+        margin-bottom: 18px;
+        line-height: 1.55;
+    }
+
+    .course-progress-track {
+        height: 10px;
+        background: #eef2f7;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .course-progress-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #FBC60C, #EBD789);
+        border-radius: 999px;
+    }
+
+    .practice-course-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.48fr) minmax(300px, .78fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .practice-course-video-card,
+    .lesson-list-card {
+        padding: 22px;
+    }
+
+    .practice-card-label {
+        color: #FBC60C;
+        font-size: .78rem;
+        font-weight: 900;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .lesson-current-title {
+        color: #0A1D44;
+        font-size: clamp(1.35rem, 3vw, 2rem);
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    .lesson-current-description {
+        color: #6B7280;
+        line-height: 1.55;
+        margin-bottom: 18px;
+    }
+
+    .lesson-video-wrapper {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background: #050505;
+        border-radius: 18px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .lesson-video-wrapper video,
+    .lesson-video-wrapper iframe {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+        background: #050505;
+        border: 0;
+    }
+
+    .lesson-video-empty {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, .84);
+        text-align: center;
+        padding: 24px;
+    }
+
+    .resume-message {
+        border-radius: 14px;
+        background: rgba(251, 198, 12, .16);
+        border: 1px solid rgba(251, 198, 12, .26);
+        padding: 12px 14px;
+        margin: 16px 0 0;
+        color: #0A1D44;
+    }
+
+    .practice-course-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 22px;
+    }
+
+    .practice-course-actions-main {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .simple-btn {
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-weight: 850;
+    }
+
+    .btn-navy { background: #0A1D44; color: #fff; }
+    .btn-navy:hover { color: #fff; background: #18386E; }
+    .btn-yellow { background: #FBC60C; color: #0A1D44; }
+    .btn-yellow:hover { background: #e7b505; color: #0A1D44; }
+
+    .autoplay-card {
+        border: 1px solid rgba(10, 29, 68, .08);
+        background: #F9F7E9;
+        border-radius: 16px;
+        padding: 12px 14px;
+        min-width: 250px;
+    }
+
+    .autoplay-card .form-check-label {
+        font-weight: 850;
+        color: #0A1D44;
+    }
+
+    .autoplay-card small {
+        color: #6B7280;
+        display: block;
+        margin-top: 2px;
+    }
+
+    .lesson-list-card-title {
+        color: #0A1D44;
+        font-weight: 900;
+        margin-bottom: 16px;
+    }
+
+    .lesson-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .lesson-list-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(10, 29, 68, 0.08);
+        background: #fff;
+        color: #0A1D44;
+        text-decoration: none;
+        transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .lesson-list-item:hover {
+        color: #0A1D44;
+        transform: translateY(-1px);
+        border-color: rgba(251, 198, 12, .45);
+    }
+
+    .lesson-list-item.active {
+        background: #F9F7E9;
+        border-color: rgba(251, 198, 12, 0.55);
+    }
+
+    .lesson-number {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(10, 29, 68, .08);
+        color: #0A1D44;
+        font-weight: 900;
+    }
+
+    .lesson-list-item.active .lesson-number {
+        background: #FBC60C;
+    }
+
+    .lesson-list-title {
+        font-weight: 900;
+        line-height: 1.25;
+        margin-bottom: 4px;
+    }
+
+    .lesson-list-meta {
+        color: #6B7280;
+        font-size: .84rem;
+        line-height: 1.35;
+    }
+
+    .lesson-status-badge {
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: .72rem;
+        font-weight: 850;
+        white-space: nowrap;
+    }
+
+    .lesson-status-completed { background: rgba(46, 92, 97, .13); color: #2E5C61; }
+    .lesson-status-progress { background: rgba(251, 198, 12, .2); color: #0A1D44; }
+    .lesson-status-not-started { background: #eef2f7; color: #6B7280; }
+
+    @media (max-width: 768px) {
+        .practice-course-page { padding: 24px 0 48px; }
+        .practice-course-layout { grid-template-columns: 1fr; }
+        .practice-course-header,
+        .practice-course-video-card,
+        .lesson-list-card { padding: 18px; }
+        .practice-course-actions { flex-direction: column; align-items: stretch; }
+        .practice-course-actions-main { flex-direction: column; }
+        .practice-course-actions .btn,
+        .autoplay-card { width: 100%; }
+        .lesson-list-item { align-items: flex-start; }
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="course-player-page">
+@php
+    $videoUrl = $selectedLesson->video_source_url;
+    $resumeSeconds = optional($selectedLesson->userProgress)->watched_seconds ?? 0;
+    $isCompleted = optional($selectedLesson->userProgress)->is_completed ?? false;
+    $canResume = $resumeSeconds > 5 && ! $isCompleted;
+@endphp
+
+<div class="practice-course-page">
     <div class="container">
-        <div class="mb-4">
-            <a href="{{ route('educonecx.academy.index') }}" class="btn btn-outline-secondary simple-btn mb-3"><i class="fas fa-arrow-left"></i> Practice Room</a>
-            <h1 class="fw-bold mb-2">{{ $course->title }}</h1>
-            <p class="text-muted mb-3">{{ $course->description }}</p>
-            <div class="d-flex flex-wrap align-items-center gap-3">
-                <div style="min-width:220px; flex:1; max-width:420px;">
-                    <div class="course-progress-bar"><div class="course-progress-fill" style="width: {{ $progressPercent }}%"></div></div>
-                </div>
-                <strong>{{ $progressPercent }}% Completed</strong>
-                <span class="text-muted">{{ $completedCount }} of {{ $lessons->count() }} lessons</span>
+        <header class="practice-course-header">
+            <a href="{{ route('educonecx.academy.index') }}" class="btn btn-outline-secondary simple-btn mb-3"><i class="fas fa-arrow-left"></i> Back to Practice Room</a>
+            <div class="practice-course-kicker">{{ $course->level ? ucfirst($course->level) . ' Course' : 'English Practice Course' }}</div>
+            <h1 class="practice-course-title">{{ $course->title }}</h1>
+            @if($course->description)
+                <p class="practice-course-description">{{ $course->description }}</p>
+            @endif
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <strong>Progress: {{ $progressPercent }}%</strong>
+                <span class="text-muted">{{ $completedCount }} of {{ $lessons->count() }} lessons completed</span>
             </div>
-        </div>
+            <div class="course-progress-track"><div class="course-progress-fill" style="width: {{ $progressPercent }}%"></div></div>
+        </header>
 
-        <div class="course-player-shell">
-            <main class="course-panel">
-                <div class="course-panel-body">
-                    <h2 class="fw-bold mb-2">{{ $selectedLesson->title }}</h2>
-                    @if($selectedLesson->description)<p class="text-muted">{{ $selectedLesson->description }}</p>@endif
+        <div class="practice-course-layout">
+            <main class="practice-course-video-card">
+                <div class="practice-card-label">Current Lesson</div>
+                <h2 class="lesson-current-title">{{ $selectedLesson->title }}</h2>
+                @if($selectedLesson->description)
+                    <p class="lesson-current-description">{{ $selectedLesson->description }}</p>
+                @endif
 
-                    @php
-                        $videoUrl = $selectedLesson->video_source_url;
-                        $resumeSeconds = optional($selectedLesson->userProgress)->watched_seconds ?? 0;
-                        $isCompleted = optional($selectedLesson->userProgress)->is_completed ?? false;
-                        $canResume = $resumeSeconds > 5 && ! $isCompleted;
-                    @endphp
-
-                    <div class="lesson-video-wrapper">
-                        @if(in_array($selectedLesson->video_type, ['upload', 'url']) && $videoUrl)
-                            <video id="lessonVideo" controls playsinline preload="metadata">
-                                <source src="{{ $videoUrl }}" type="video/mp4">
-                            </video>
-                        @elseif($videoUrl)
-                            <iframe src="{{ $videoUrl }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-                        @else
-                            <div class="d-flex h-100 align-items-center justify-content-center text-white">No video added yet.</div>
-                        @endif
-                    </div>
-
-                    @if($canResume)
-                        <div id="resumeMessage" class="resume-message">
-                            Continue from <strong id="resumeTime"></strong>
-                            <button type="button" id="startBeginningBtn" class="btn btn-sm btn-outline-dark ms-2">Start from Beginning</button>
+                <div class="lesson-video-wrapper">
+                    @if(in_array($selectedLesson->video_type, ['upload', 'url']) && $videoUrl)
+                        <video
+                            id="lessonVideo"
+                            controls
+                            playsinline
+                            preload="metadata"
+                            controlsList="nodownload noplaybackrate"
+                            disablePictureInPicture
+                            oncontextmenu="return false;"
+                        >
+                            <source src="{{ $videoUrl }}" type="video/mp4">
+                        </video>
+                    @elseif($videoUrl)
+                        <iframe src="{{ $videoUrl }}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    @else
+                        <div class="lesson-video-empty">
+                            <div>
+                                <i class="fas fa-video-slash fa-2x mb-3"></i>
+                                <div>Video lesson is not available yet.</div>
+                            </div>
                         </div>
                     @endif
+                </div>
 
-                    <div id="courseCompletedMessage" class="alert alert-success mt-3 d-none">Course completed. Great work!</div>
+                @if($canResume)
+                    <div id="resumeMessage" class="resume-message">
+                        Continue from <strong id="resumeTime"></strong>
+                        <button type="button" id="startBeginningBtn" class="btn btn-sm btn-outline-dark ms-2">Start from beginning</button>
+                    </div>
+                @endif
 
-                    <div class="d-flex flex-wrap align-items-center gap-2 mt-4">
+                <div id="courseCompletedMessage" class="alert alert-success mt-3 d-none">Course completed. Great work!</div>
+
+                <div class="practice-course-actions">
+                    <div class="practice-course-actions-main">
                         <a href="{{ route('educonecx.academy.index', ['lesson_id' => $selectedLesson->id]) }}" class="btn btn-yellow simple-btn"><i class="fas fa-microphone-alt"></i> Practice This Lesson</a>
                         @if($nextLesson)
                             <a href="{{ route('practice-room.courses.show', [$course, 'lesson' => $nextLesson->id]) }}" class="btn btn-navy simple-btn">Next Lesson</a>
                         @endif
-                        <label class="ms-auto d-flex align-items-center gap-2 fw-semibold">
-                            <input type="checkbox" id="autoplayNext" checked> Autoplay next lesson
-                        </label>
+                    </div>
+                    <div class="autoplay-card">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="autoplayNext" checked>
+                            <label class="form-check-label" for="autoplayNext">Autoplay next lesson</label>
+                            <small>Automatically continue when this lesson ends.</small>
+                        </div>
                     </div>
                 </div>
             </main>
 
-            <aside class="course-panel">
-                <div class="course-panel-body">
-                    <h3 class="fw-bold mb-3">Lessons</h3>
-                    <div class="lesson-list">
-                        @foreach($lessons as $lesson)
-                            @php($completed = optional($lesson->userProgress)->is_completed)
-                            <a class="lesson-item {{ $lesson->id === $selectedLesson->id ? 'active' : '' }} {{ $completed ? 'completed' : '' }}" href="{{ route('practice-room.courses.show', [$course, 'lesson' => $lesson->id]) }}">
-                                <span><strong>{{ $lesson->title }}</strong><br><small class="text-muted">{{ $lesson->module?->title ?? 'Watch Lesson' }}</small></span>
-                                <span>{{ $completed ? 'Completed' : 'Watch' }}</span>
-                            </a>
-                        @endforeach
-                    </div>
+            <aside class="lesson-list-card">
+                <h3 class="lesson-list-card-title">Lessons</h3>
+                <div class="lesson-list">
+                    @foreach($lessons as $lesson)
+                        @php
+                            $progress = $lesson->userProgress;
+                            $completed = optional($progress)->is_completed;
+                            $started = optional($progress)->watched_seconds > 0;
+                            $statusClass = $completed ? 'lesson-status-completed' : ($started ? 'lesson-status-progress' : 'lesson-status-not-started');
+                            $statusText = $completed ? 'Completed' : ($started ? 'In Progress' : 'Not Started');
+                            $lessonMeta = $lesson->module?->title ?: ($lesson->duration_seconds ? gmdate($lesson->duration_seconds >= 3600 ? 'H:i:s' : 'i:s', $lesson->duration_seconds) : 'Watch lesson');
+                        @endphp
+                        <a class="lesson-list-item {{ $lesson->id === $selectedLesson->id ? 'active' : '' }}" href="{{ route('practice-room.courses.show', [$course, 'lesson' => $lesson->id]) }}">
+                            <span class="lesson-number">{{ $loop->iteration }}</span>
+                            <span class="flex-grow-1">
+                                <span class="lesson-list-title d-block">{{ $lesson->title }}</span>
+                                <span class="lesson-list-meta d-block">{{ $lessonMeta }}</span>
+                            </span>
+                            <span class="text-end">
+                                <span class="lesson-status-badge {{ $statusClass }}">{{ $statusText }}</span>
+                                <span class="d-block small fw-semibold mt-2">Watch</span>
+                            </span>
+                        </a>
+                    @endforeach
                 </div>
             </aside>
         </div>
