@@ -91,6 +91,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AcademySession::class);
     }
 
+    public function englishPracticeLessonProgress()
+    {
+        return $this->hasMany(EnglishPracticeLessonProgress::class);
+    }
+
     public function notifications()
     {
         return $this->hasMany(Notification::class);

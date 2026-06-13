@@ -16,6 +16,8 @@ use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\TranslationController;
 use App\Services\DeepLService;
 use App\Http\Controllers\EduconecxAcademyController;
+use App\Http\Controllers\EnglishPracticeCourseController;
+use App\Http\Controllers\EnglishPracticeProgressController;
 use App\Http\Controllers\DashboardAcademySessionController;
 use App\Http\Controllers\DashboardEduconecxAcademyController;
 use Illuminate\Support\Facades\Http;
@@ -391,6 +393,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Subscription Plans Management
     Route::resource('subscription-plans', App\Http\Controllers\Admin\SubscriptionPlanController::class);
     Route::post('subscription-plans/reorder', [App\Http\Controllers\Admin\SubscriptionPlanController::class, 'reorder'])->name('subscription-plans.reorder');
+
+    // English Practice Courses for Practice Room
+    Route::resource('english-practice-courses', App\Http\Controllers\Admin\AdminEnglishPracticeCourseController::class)->except(['show'])->parameters([
+        'english-practice-courses' => 'englishPracticeCourse',
+    ]);
+    Route::post('english-practice-courses/{course}/modules', [App\Http\Controllers\Admin\AdminEnglishPracticeModuleController::class, 'store'])->name('english-practice-courses.modules.store');
+    Route::put('english-practice-modules/{module}', [App\Http\Controllers\Admin\AdminEnglishPracticeModuleController::class, 'update'])->name('english-practice-modules.update');
+    Route::delete('english-practice-modules/{module}', [App\Http\Controllers\Admin\AdminEnglishPracticeModuleController::class, 'destroy'])->name('english-practice-modules.destroy');
+    Route::get('english-practice-courses/{course}/lessons/create', [App\Http\Controllers\Admin\AdminEnglishPracticeLessonController::class, 'create'])->name('english-practice-courses.lessons.create');
+    Route::post('english-practice-courses/{course}/lessons', [App\Http\Controllers\Admin\AdminEnglishPracticeLessonController::class, 'store'])->name('english-practice-courses.lessons.store');
+    Route::get('english-practice-lessons/{lesson}/edit', [App\Http\Controllers\Admin\AdminEnglishPracticeLessonController::class, 'edit'])->name('english-practice-lessons.edit');
+    Route::put('english-practice-lessons/{lesson}', [App\Http\Controllers\Admin\AdminEnglishPracticeLessonController::class, 'update'])->name('english-practice-lessons.update');
+    Route::delete('english-practice-lessons/{lesson}', [App\Http\Controllers\Admin\AdminEnglishPracticeLessonController::class, 'destroy'])->name('english-practice-lessons.destroy');
+    Route::post('english-practice-courses/{course}/reorder-lessons', [App\Http\Controllers\Admin\AdminEnglishPracticeCourseController::class, 'reorderLessons'])->name('english-practice-courses.reorder-lessons');
+    Route::post('english-practice-courses/{course}/reorder-modules', [App\Http\Controllers\Admin\AdminEnglishPracticeCourseController::class, 'reorderModules'])->name('english-practice-courses.reorder-modules');
 
     // Practice Credit Management
     Route::get('practice-credits', [App\Http\Controllers\Admin\PracticeCreditController::class, 'index'])->name('practice-credits.index');
@@ -835,6 +852,8 @@ Route::post('/dev/liveavatar/test-embed', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
+    Route::get('/practice-room/courses/{course}', [EnglishPracticeCourseController::class, 'show'])->name('practice-room.courses.show');
+    Route::post('/practice-room/lessons/{lesson}/progress', [EnglishPracticeProgressController::class, 'update'])->name('practice-room.lessons.progress');
     Route::get('/educonecx-academy/credits', [EduconecxAcademyController::class, 'creditSummary'])->name('educonecx.academy.credits');
     Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
     Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');

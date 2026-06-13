@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\AcademyScenario;
 use App\Models\AcademySession;
 use App\Models\AcademyUserAvatarSetting;
+use App\Models\EnglishPracticeCourse;
+use App\Models\EnglishPracticeLesson;
 use App\Exceptions\InsufficientPracticeCreditsException;
 use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
@@ -62,14 +64,61 @@ class EduconecxAcademyController extends Controller
                 ->limit(5)
                 ->get()
             : collect();
+        $englishPracticeCourses = $this->englishPracticeCoursesForUser();
+        $practiceLessonContext = $this->practiceLessonContext(request()->query('lesson_id'));
         $creditWallet->refresh();
         $creditsAvailable = (int) $creditWallet->balance;
 
         return response()
-            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'practiceCreditCost', 'examCreditCost', 'defaultAvatarDebug'))
+            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'practiceCreditCost', 'examCreditCost', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
+    }
+
+    private function englishPracticeCoursesForUser()
+    {
+        return EnglishPracticeCourse::query()
+            ->with([
+                'lessons' => fn ($query) => $query->where('status', 'published')->orderBy('sort_order'),
+                'lessons.userProgress',
+            ])
+            ->withCount(['lessons as published_lessons_count' => fn ($query) => $query->where('status', 'published')])
+            ->where('status', 'published')
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function (EnglishPracticeCourse $course) {
+                $lessons = $course->lessons;
+                $completed = $lessons->filter(fn ($lesson) => optional($lesson->userProgress)->is_completed)->count();
+                $total = max(1, $lessons->count());
+                $lastProgressLesson = $lessons
+                    ->filter(fn ($lesson) => optional($lesson->userProgress)->last_watched_at)
+                    ->sortByDesc(fn ($lesson) => optional($lesson->userProgress)->last_watched_at)
+                    ->first();
+                $firstIncomplete = $lessons->first(fn ($lesson) => ! optional($lesson->userProgress)->is_completed);
+                $continueLesson = $lastProgressLesson ?: $firstIncomplete ?: $lessons->first();
+
+                $course->user_completed_lessons_count = $completed;
+                $course->user_course_progress_percent = (int) round(($completed / $total) * 100);
+                $course->user_continue_lesson_id = $continueLesson?->id;
+                $course->user_has_progress = $lessons->contains(fn ($lesson) => optional($lesson->userProgress)->watched_seconds > 0);
+
+                return $course;
+            });
+    }
+
+    private function practiceLessonContext($lessonId): ?EnglishPracticeLesson
+    {
+        if (! $lessonId) {
+            return null;
+        }
+
+        return EnglishPracticeLesson::query()
+            ->with('course')
+            ->whereKey($lessonId)
+            ->where('status', 'published')
+            ->whereHas('course', fn ($query) => $query->where('status', 'published'))
+            ->first();
     }
 
     public function creditSummary(Request $request, PracticeCreditService $creditService): JsonResponse

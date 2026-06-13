@@ -400,6 +400,11 @@
                 </a>
             </div>
             <div class="nav-item">
+                <a href="{{ route('admin.english-practice-courses.index') }}" class="nav-link {{ request()->routeIs('admin.english-practice-*') ? 'active' : '' }}">
+                    <i class="fas fa-video"></i> English Practice
+                </a>
+            </div>
+            <div class="nav-item">
                 <a href="{{ route('admin.quizzes.index') }}" class="nav-link {{ request()->routeIs('admin.quizzes.*') ? 'active' : '' }}">
                     <i class="fas fa-question-circle"></i> Quizzes
                 </a>
