@@ -1242,6 +1242,7 @@
     let recordingSeconds = 0;
     let sessionStartedAt = null;
     let sessionLimitTimer = null;
+    let shouldEvaluateAfterRecordingStops = false;
 
     const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
 
@@ -1406,9 +1407,8 @@
         updateEvaluationButtons();
     };
 
-    startRecordingBtn.addEventListener('click', async function () {
-        if (!hasPracticeConfig) {
-            setEvaluationStatus('Please complete your coach settings before recording.', 'small text-danger');
+    const startAutomaticExamRecording = async () => {
+        if (!hasPracticeConfig || sessionMode !== 'exam') {
             return;
         }
 
@@ -1435,32 +1435,39 @@
                 }
                 recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
                 audioPreview.src = URL.createObjectURL(recordedBlob);
-                audioPreview.classList.remove('d-none');
+                audioPreview.classList.add('d-none');
                 if (activeStream) {
                     activeStream.getTracks().forEach(track => track.stop());
                 }
                 activeStream = null;
-                setEvaluationStatus('Recording stopped. Ready for your performance review.', 'small text-success');
+                setEvaluationStatus('Recording stopped. Preparing your exam evaluation.', 'small text-muted');
                 updateEvaluationButtons();
+
+                if (shouldEvaluateAfterRecordingStops && sessionMode === 'exam') {
+                    shouldEvaluateAfterRecordingStops = false;
+                    evaluateSpeakingBtn.click();
+                }
             });
 
             mediaRecorder.start();
             recordingTimer = setInterval(() => {
                 recordingSeconds += 1;
-                setEvaluationStatus(`Recording... ${String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:${String(recordingSeconds % 60).padStart(2, '0')}`, 'small text-danger');
+                setEvaluationStatus(`Exam recording in progress... ${String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:${String(recordingSeconds % 60).padStart(2, '0')}`, 'small text-danger');
             }, 1000);
-            setEvaluationStatus('Recording... 00:00', 'small text-danger');
+            setEvaluationStatus('Exam recording in progress... 00:00', 'small text-danger');
             updateEvaluationButtons();
         } catch (error) {
-            console.error('Audio recording error:', error);
-            setEvaluationStatus('Please allow microphone access, then try recording again.', 'small text-danger');
+            console.error('Automatic exam recording error:', error);
+            setEvaluationStatus('Please allow microphone access so the exam can be recorded automatically.', 'small text-danger');
             if (activeStream) {
                 activeStream.getTracks().forEach(track => track.stop());
                 activeStream = null;
             }
             updateEvaluationButtons();
         }
-    });
+    };
+
+    startRecordingBtn.addEventListener('click', startAutomaticExamRecording);
 
     stopRecordingBtn.addEventListener('click', function () {
         if (mediaRecorder && mediaRecorder.state === 'recording') {
@@ -1651,7 +1658,7 @@
                 sessionLimitTimer = setTimeout(() => endActiveSession(true), maxMinutes * 60 * 1000);
             }
             if (mode === 'exam') {
-                setTimeout(() => startRecordingBtn?.click(), 500);
+                setTimeout(() => startAutomaticExamRecording(), 500);
             }
             if (typeof data.credits_balance !== 'undefined') {
                 updateCreditDisplay(data.credits_balance);
@@ -1698,7 +1705,7 @@
     const endActiveSession = async (limitReached = false) => {
         if (!academySessionId) return;
         const durationSeconds = sessionStartedAt ? Math.max(1, Math.ceil((Date.now() - sessionStartedAt) / 1000)) : 60;
-        if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+        if (mediaRecorder && mediaRecorder.state === 'recording') { shouldEvaluateAfterRecordingStops = sessionMode === 'exam'; mediaRecorder.stop(); }
         if (sessionLimitTimer) clearTimeout(sessionLimitTimer);
         coachMount.innerHTML = '<div class="academy-livecoach-placeholder"><i class="fas fa-check-circle"></i><strong>Session ended.</strong></div>';
         const response = await fetch(@json(route('educonecx.academy.session.end')), {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'}, body: JSON.stringify({academy_session_id: academySessionId, duration_seconds: durationSeconds, status: limitReached ? 'limit_reached' : 'ended'})});
@@ -1707,7 +1714,7 @@
         if (limitReached) {
             setStatusMessage('You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.', true);
         }
-        if (sessionMode === 'exam' && recordedBlob) evaluateSpeakingBtn?.click();
+        if (sessionMode === 'exam' && recordedBlob && !shouldEvaluateAfterRecordingStops) evaluateSpeakingBtn?.click();
     };
 
     startBtn?.addEventListener('click', () => startSpeakingSession('practice'));

@@ -131,7 +131,13 @@ class User extends Authenticatable implements MustVerifyEmail
     // enrollment created after payment.
     public function canAccessPracticeRoom(): bool
     {
-        return true;
+        if ($this->has_active_subscription) {
+            return true;
+        }
+
+        return $this->enrollments()
+            ->whereHas('course', fn ($query) => $query->where('is_free', false))
+            ->exists();
     }
 
     public function canStartPaidPracticeSession(): bool
