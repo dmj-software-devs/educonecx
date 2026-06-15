@@ -18,8 +18,10 @@ class DashboardEduconecxAcademyController extends Controller
     public function index(Request $request, HeyGenLiveAvatarService $liveAvatarService, PracticeCreditService $creditService): View|JsonResponse
     {
         $user = $request->user();
-        $creditWallet = $creditService->grantSignupCredits($user);
-        $creditTransactions = $user->practiceCreditTransactions()->latest()->limit(15)->get();
+        $practiceBalance = $creditService->syncMonthlyAllocation($user);
+        $usageLogs = $user->practiceUsageLogs()->latest()->limit(15)->get();
+        $creditWallet = $creditService->getOrCreateWallet($user);
+        $creditTransactions = collect();
 
         if (! $user->canAccessPracticeRoom()) {
             return view('educonecx-academy.paywall');
@@ -167,7 +169,9 @@ class DashboardEduconecxAcademyController extends Controller
             'liveAvatarDebug',
             'chartData',
             'creditWallet',
-            'creditTransactions'
+            'creditTransactions',
+            'practiceBalance',
+            'usageLogs'
         ));
     }
 

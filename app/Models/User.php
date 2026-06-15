@@ -131,13 +131,12 @@ class User extends Authenticatable implements MustVerifyEmail
     // enrollment created after payment.
     public function canAccessPracticeRoom(): bool
     {
-        if ($this->has_active_subscription) {
-            return true;
-        }
+        return true;
+    }
 
-        return $this->enrollments()
-            ->whereHas('course', fn ($query) => $query->where('is_free', false))
-            ->exists();
+    public function canStartPaidPracticeSession(): bool
+    {
+        return (bool) $this->has_active_subscription;
     }
 
     // Check if user can access a course
@@ -235,6 +234,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function practiceCreditTransactions()
     {
         return $this->hasMany(PracticeCreditTransaction::class);
+    }
+
+    public function practiceBalance()
+    {
+        return $this->hasOne(UserPracticeBalance::class);
+    }
+
+    public function practiceUsageLogs()
+    {
+        return $this->hasMany(PracticeUsageLog::class);
     }
 
     public function academyAvatarSetting()

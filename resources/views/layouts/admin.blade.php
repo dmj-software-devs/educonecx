@@ -440,8 +440,8 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.practice-credits.index') }}" class="nav-link {{ request()->routeIs('admin.practice-credits.*') ? 'active' : '' }}">
-                    <i class="fas fa-coins"></i> Practice Credits
+                <a href="{{ route('admin.practice-sessions.index') }}" class="nav-link {{ request()->routeIs('admin.practice-sessions.*') ? 'active' : '' }}">
+                    <i class="fas fa-clock"></i> Practice Sessions
                 </a>
             </div>
 

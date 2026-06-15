@@ -215,6 +215,117 @@ class PracticeCreditService
         return $wallet->refresh();
     }
 
+    public function minutesToInternalCredits(int $minutes): int
+    {
+        return max(0, $minutes) * 2;
+    }
+
+    public function getOrCreatePracticeBalance(User $user): \App\Models\UserPracticeBalance
+    {
+        return \App\Models\UserPracticeBalance::firstOrCreate(['user_id' => $user->id]);
+    }
+
+    public function syncMonthlyAllocation(User $user): \App\Models\UserPracticeBalance
+    {
+        $balance = $this->getOrCreatePracticeBalance($user);
+        if (! $user->has_active_subscription) {
+            $balance->update([
+                'monthly_minutes_allocated' => 0,
+                'monthly_minutes_used' => 0,
+                'total_available_minutes' => max(0, (int) $balance->purchased_minutes),
+            ]);
+            return $balance->refresh();
+        }
+
+        $subscription = $user->active_subscription;
+        $resetDate = $subscription?->end_date ? \Illuminate\Support\Carbon::parse($subscription->end_date) : now()->addMonth();
+        $shouldReset = ! $balance->last_reset_at
+            || ! $balance->monthly_reset_date
+            || now()->greaterThanOrEqualTo($balance->monthly_reset_date);
+
+        if ($shouldReset) {
+            $balance->monthly_minutes_allocated = 20;
+            $balance->monthly_minutes_used = 0;
+            $balance->last_reset_at = now();
+            $balance->monthly_reset_date = $resetDate;
+        }
+
+        $balance->total_available_minutes = max(0, ((int) $balance->monthly_minutes_allocated - (int) $balance->monthly_minutes_used) + (int) $balance->purchased_minutes);
+        $balance->save();
+
+        return $balance->refresh();
+    }
+
+    public function remainingMinutes(User $user): int
+    {
+        $balance = $this->syncMonthlyAllocation($user);
+        return max(0, (int) $balance->total_available_minutes);
+    }
+
+    public function addPurchasedMinutes(User $user, int $minutes, string $description = null, array $meta = []): \App\Models\UserPracticeBalance
+    {
+        if ($minutes <= 0) {
+            throw new \InvalidArgumentException('Minutes must be greater than zero.');
+        }
+
+        return DB::transaction(function () use ($user, $minutes, $description, $meta) {
+            $balance = \App\Models\UserPracticeBalance::where('user_id', $user->id)->lockForUpdate()->first()
+                ?: $this->getOrCreatePracticeBalance($user);
+            $balance->purchased_minutes = (int) $balance->purchased_minutes + $minutes;
+            $balance->save();
+            $this->addCredits($user, $this->minutesToInternalCredits($minutes), 'purchase', $description ?: 'Practice session purchase.', $meta + ['minutes' => $minutes]);
+            return $this->syncMonthlyAllocation($user);
+        });
+    }
+
+    public function addManualMinutes(User $user, int $minutes, string $reason = null): \App\Models\UserPracticeBalance
+    {
+        return $this->addPurchasedMinutes($user, $minutes, 'Admin practice time adjustment.', ['reason' => $reason, 'source' => 'admin']);
+    }
+
+    public function removeManualMinutes(User $user, int $minutes, string $reason = null): \App\Models\UserPracticeBalance
+    {
+        return DB::transaction(function () use ($user, $minutes, $reason) {
+            $balance = \App\Models\UserPracticeBalance::where('user_id', $user->id)->lockForUpdate()->first()
+                ?: $this->getOrCreatePracticeBalance($user);
+            $balance->purchased_minutes = max(0, (int) $balance->purchased_minutes - $minutes);
+            $balance->save();
+            return $this->syncMonthlyAllocation($user);
+        });
+    }
+
+    public function recordUsageMinutes(User $user, AcademySession $session, int $minutes, string $source = 'session'): \App\Models\PracticeUsageLog
+    {
+        $minutes = max(1, $minutes);
+        return DB::transaction(function () use ($user, $session, $minutes, $source) {
+            $balance = \App\Models\UserPracticeBalance::where('user_id', $user->id)->lockForUpdate()->first()
+                ?: $this->getOrCreatePracticeBalance($user);
+            $remainingMonthly = max(0, (int) $balance->monthly_minutes_allocated - (int) $balance->monthly_minutes_used);
+            $fromMonthly = min($remainingMonthly, $minutes);
+            $fromPurchased = max(0, $minutes - $fromMonthly);
+            $balance->monthly_minutes_used = (int) $balance->monthly_minutes_used + $fromMonthly;
+            $balance->purchased_minutes = max(0, (int) $balance->purchased_minutes - $fromPurchased);
+            $balance->total_available_minutes = max(0, ((int) $balance->monthly_minutes_allocated - (int) $balance->monthly_minutes_used) + (int) $balance->purchased_minutes);
+            $balance->save();
+
+            $session->update([
+                'duration_seconds' => $minutes * 60,
+                'credits_used' => $this->minutesToInternalCredits($minutes),
+                'credit_used' => $this->minutesToInternalCredits($minutes),
+            ]);
+
+            return \App\Models\PracticeUsageLog::create([
+                'user_id' => $user->id,
+                'academy_session_id' => $session->id,
+                'session_type' => $session->session_type ?: 'practice',
+                'started_at' => $session->started_at,
+                'ended_at' => $session->ended_at ?: now(),
+                'minutes_used' => $minutes,
+                'source' => $source,
+            ]);
+        });
+    }
+
     private function hasTransaction(User $user, string $type): bool
     {
         return PracticeCreditTransaction::where('user_id', $user->id)

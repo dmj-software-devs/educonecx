@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Stripe\PaymentIntent;
+use App\Services\PracticeCreditService;
 
 class PaymentController extends Controller
 {
@@ -143,6 +144,7 @@ class PaymentController extends Controller
 
                 // Enroll user in all paid courses with monthly expiry
                 $this->enrollInAllPaidCourses($user, $subscription);
+                app(PracticeCreditService::class)->syncMonthlyAllocation($user->refresh());
 
                 DB::commit();
 

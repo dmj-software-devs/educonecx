@@ -37,6 +37,7 @@ class AcademySession extends Model
         'grammar_score',
         'fluency_score',
         'vocabulary_score',
+        'confidence_score',
         'pronunciation_score',
         'overall_score',
         'exam_score',

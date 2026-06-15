@@ -409,11 +409,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('english-practice-courses/{course}/reorder-lessons', [App\Http\Controllers\Admin\AdminEnglishPracticeCourseController::class, 'reorderLessons'])->name('english-practice-courses.reorder-lessons');
     Route::post('english-practice-courses/{course}/reorder-modules', [App\Http\Controllers\Admin\AdminEnglishPracticeCourseController::class, 'reorderModules'])->name('english-practice-courses.reorder-modules');
 
-    // Practice Credit Management
-    Route::get('practice-credits', [App\Http\Controllers\Admin\PracticeCreditController::class, 'index'])->name('practice-credits.index');
-    Route::get('practice-credits/users/{user}', [App\Http\Controllers\Admin\PracticeCreditController::class, 'show'])->name('practice-credits.show');
-    Route::post('practice-credits/users/{user}/add', [App\Http\Controllers\Admin\PracticeCreditController::class, 'add'])->name('practice-credits.add');
-    Route::post('practice-credits/users/{user}/subtract', [App\Http\Controllers\Admin\PracticeCreditController::class, 'subtract'])->name('practice-credits.subtract');
+    Route::get('practice-sessions', [App\Http\Controllers\Admin\PracticeSessionManagementController::class, 'index'])->name('practice-sessions.index');
+    Route::post('practice-sessions/adjust', [App\Http\Controllers\Admin\PracticeSessionManagementController::class, 'adjust'])->name('practice-sessions.adjust');
 
     // User Subscriptions Management
     Route::get('subscriptions', [App\Http\Controllers\Admin\UserSubscriptionController::class, 'index'])->name('subscriptions.index');
@@ -860,4 +857,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/educonecx-academy/session/evaluate', [EduconecxAcademyController::class, 'evaluateSession'])->name('educonecx.academy.session.evaluate');
     Route::post('/educonecx-academy/session/evaluate-audio', [EduconecxAcademyController::class, 'evaluateAudioSession'])->name('educonecx.academy.session.evaluate.audio');
     Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');
+    Route::post('/educonecx-academy/practice-sessions/purchase', [EduconecxAcademyController::class, 'purchaseSessions'])->name('educonecx.academy.practice-sessions.purchase');
+    Route::get('/educonecx-academy/practice-sessions/success', [EduconecxAcademyController::class, 'purchaseSessionsSuccess'])->name('educonecx.academy.practice-sessions.success');
 });
