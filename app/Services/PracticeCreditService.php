@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Exceptions\InsufficientPracticeCreditsException;
 use App\Models\AcademySession;
 use App\Models\Course;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\PracticeCreditTransaction;
 use App\Models\User;
 use App\Models\UserPracticeCredit;
@@ -27,37 +29,9 @@ class PracticeCreditService
 
     public function grantSignupCredits(User $user): UserPracticeCredit
     {
-        $amount = (int) config('practice_room.credits.new_user_credits', 20);
-
-        return DB::transaction(function () use ($user, $amount) {
-            $wallet = UserPracticeCredit::where('user_id', $user->id)->lockForUpdate()->first()
-                ?: $this->getOrCreateWallet($user);
-
-            if ($amount > 0) {
-                $signupGranted = (int) PracticeCreditTransaction::where('user_id', $user->id)
-                    ->where('type', 'signup_bonus')
-                    ->sum('amount');
-
-                if ($signupGranted < $amount) {
-                    $topUp = $amount - max(0, $signupGranted);
-                    $balanceBefore = max(0, (int) PracticeCreditTransaction::where('user_id', $user->id)->sum('amount'));
-                    $balanceAfter = $balanceBefore + $topUp;
-
-                    PracticeCreditTransaction::create([
-                        'user_id' => $user->id,
-                        'type' => 'signup_bonus',
-                        'amount' => $topUp,
-                        'balance_before' => $balanceBefore,
-                        'balance_after' => $balanceAfter,
-                        'description' => $signupGranted > 0
-                            ? 'Practice Room signup bonus top-up.'
-                            : 'New user Practice Room signup bonus.',
-                    ]);
-                }
-            }
-
-            return $this->recalculateWallet($user);
-        });
+        // Free users no longer receive practice-time entitlements. Keep the
+        // legacy wallet available only for internal cost accounting/backwards compatibility.
+        return $this->getOrCreateWallet($user);
     }
 
     public function getBalance(User $user): int
@@ -275,6 +249,72 @@ class PracticeCreditService
             $balance->save();
             $this->addCredits($user, $this->minutesToInternalCredits($minutes), 'purchase', $description ?: 'Practice session purchase.', $meta + ['minutes' => $minutes]);
             return $this->syncMonthlyAllocation($user);
+        });
+    }
+
+
+    public function processPracticeSessionCheckout($checkout, ?User $fallbackUser = null): ?Order
+    {
+        if ((string) data_get($checkout, 'metadata.type') !== 'practice_sessions') {
+            return null;
+        }
+
+        if ((string) data_get($checkout, 'payment_status') !== 'paid') {
+            return null;
+        }
+
+        $stripeSessionId = (string) data_get($checkout, 'id');
+        if ($stripeSessionId === '') {
+            return null;
+        }
+
+        $existing = Order::where('transaction_id', $stripeSessionId)->first();
+        if ($existing) {
+            return $existing;
+        }
+
+        $userId = (int) data_get($checkout, 'metadata.user_id', $fallbackUser?->id);
+        $user = $fallbackUser && (int) $fallbackUser->id === $userId ? $fallbackUser : User::find($userId);
+        if (! $user) {
+            return null;
+        }
+
+        $quantity = max(1, (int) data_get($checkout, 'metadata.quantity', 1));
+        $minutes = max(20, (int) data_get($checkout, 'metadata.minutes', 20 * $quantity));
+        $total = ((float) data_get($checkout, 'amount_total', 0)) / 100;
+
+        return DB::transaction(function () use ($checkout, $stripeSessionId, $user, $quantity, $minutes, $total) {
+            $order = Order::create([
+                'user_id' => $user->id,
+                'order_number' => 'PS-' . strtoupper(uniqid()),
+                'order_type' => 'practice_sessions',
+                'subtotal' => $total,
+                'total' => $total,
+                'payment_method' => 'stripe',
+                'payment_status' => 'paid',
+                'transaction_id' => $stripeSessionId,
+                'stripe_session_id' => $stripeSessionId,
+                'stripe_payment_intent' => data_get($checkout, 'payment_intent'),
+                'stripe_response' => json_encode($checkout),
+                'billing_name' => $user->name,
+                'billing_email' => $user->email,
+            ]);
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'item_type' => 'practice_sessions',
+                'course_id' => null,
+                'item_name' => $quantity . ' Practice Session' . ($quantity === 1 ? '' : 's'),
+                'price' => $total,
+                'total' => $total,
+            ]);
+
+            $this->addPurchasedMinutes($user, $minutes, 'Practice session add-on purchase.', [
+                'quantity' => $quantity,
+                'stripe_session_id' => $stripeSessionId,
+            ]);
+
+            return $order;
         });
     }
 

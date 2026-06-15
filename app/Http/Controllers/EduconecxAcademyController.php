@@ -8,8 +8,6 @@ use App\Models\AcademyUserAvatarSetting;
 use App\Models\EnglishPracticeCourse;
 use App\Models\EnglishPracticeLesson;
 use App\Models\PracticeSessionPackage;
-use App\Models\Order;
-use App\Models\OrderItem;
 use App\Exceptions\InsufficientPracticeCreditsException;
 use App\Services\HeyGenLiveAvatarService;
 use App\Services\OpenAIEvaluationService;
@@ -19,7 +17,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Illuminate\Validation\ValidationException;
@@ -32,8 +29,6 @@ class EduconecxAcademyController extends Controller
         $isPaidMember = (bool) $user?->has_active_subscription;
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
         $practiceSessionPackage = PracticeSessionPackage::where('status', 'active')->first();
-        $practiceCreditCost = $creditService->getSessionCost('practice');
-        $examCreditCost = $creditService->getSessionCost('exam');
 
         $missingHeyGenConfig = $heyGenService->getMissingConfigurationKeys();
         $avatarSetting = AcademyUserAvatarSetting::query()
@@ -74,10 +69,9 @@ class EduconecxAcademyController extends Controller
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
         $practiceMinutesAvailable = (int) $practiceBalance->total_available_minutes;
         $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 20);
-        $creditsAvailable = $practiceMinutesAvailable; // legacy JS variable now represents visible minutes only.
 
         return response()
-            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'creditsAvailable', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'practiceCreditCost', 'examCreditCost', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
+            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
@@ -128,7 +122,7 @@ class EduconecxAcademyController extends Controller
             ->first();
     }
 
-    public function creditSummary(Request $request, PracticeCreditService $creditService): JsonResponse
+    public function practiceTimeSummary(Request $request, PracticeCreditService $creditService): JsonResponse
     {
         $user = $request->user();
         abort_unless($user, 401);
@@ -143,9 +137,8 @@ class EduconecxAcademyController extends Controller
             'success' => true,
             'practice_minutes_available' => (int) $balance->total_available_minutes,
             'practice_sessions_available' => intdiv((int) $balance->total_available_minutes, 20),
-            'credits_balance' => (int) $balance->total_available_minutes,
-            'practice_cost' => 20,
-            'exam_cost' => 20,
+            'practice_cost_minutes' => 20,
+            'exam_cost_minutes' => 20,
         ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
@@ -290,7 +283,6 @@ class EduconecxAcademyController extends Controller
                 'endpoint_url' => $embed['endpoint_url'],
                 'endpoint_status' => $embed['status'],
                 'practice_minutes_available' => $creditService->remainingMinutes($user),
-                'credits_balance' => $creditService->remainingMinutes($user),
                 'max_minutes' => $currentBalance,
             ]);
         } catch (InsufficientPracticeCreditsException $exception) {
@@ -313,8 +305,66 @@ class EduconecxAcademyController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Unable to prepare your speaking session right now. Please try again later.',
-                'credits_balance' => $creditService->remainingMinutes($user),
+                'practice_minutes_available' => $creditService->remainingMinutes($user),
                 'debug' => config('app.debug') ? $heyGenService->apiKeyDebugMeta() : null,
+            ], 422);
+        }
+    }
+
+
+    public function createFreeDemoEmbed(Request $request, HeyGenLiveAvatarService $heyGenService): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user, 401);
+
+        if ($user->has_active_subscription) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Demo mode is only available before upgrading. Please start Practice Mode instead.',
+            ], 422);
+        }
+
+        try {
+            $avatarSetting = $this->activeAvatarSetting($user->id);
+            $defaultAvatarMetadata = $heyGenService->defaultPracticeAvatarMetadata();
+            $currentConfig = $this->currentAvatarConfig($avatarSetting, $defaultAvatarMetadata);
+
+            $session = AcademySession::create([
+                'user_id' => $user->id,
+                'session_type' => 'demo',
+                'avatar_name' => 'Olivia Clarcke',
+                'avatar_image_url' => $currentConfig['avatar_image_url'],
+                'context_name' => 'Guided onboarding demo',
+                'dynamic_instructions' => 'Free onboarding demo only. Ask exactly: "What is your name?" Then wait. Do not continue beyond the required upgrade message.',
+                'status' => 'demo_started',
+                'started_at' => now(),
+                'evaluation_used' => false,
+                'recording_used' => false,
+                'attempt_locked' => true,
+            ]);
+
+            $embed = $heyGenService->createLiveAvatarEmbed(null, $user, 'practice');
+            $resolved = data_get($embed, 'resolved', []);
+
+            $session->update([
+                'liveavatar_embed_id' => $this->extractLiveAvatarEmbedId($embed['embed_url'] ?? null, $embed['response'] ?? []),
+                'liveavatar_embed_url' => $embed['embed_url'] ?? null,
+                'heygen_avatar_id' => data_get($resolved, 'avatar_id'),
+                'heygen_voice_id' => data_get($resolved, 'voice_id'),
+                'heygen_context_id' => data_get($resolved, 'context_id'),
+                'raw_response' => $embed['response'] ?? [],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'academy_session_id' => $session->id,
+                'embed_url' => $embed['embed_url'],
+                'message' => 'What is your name?',
+            ]);
+        } catch (\Throwable $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to start the guided avatar demo right now. Please use the onboarding prompt below.',
             ], 422);
         }
     }
@@ -577,7 +627,6 @@ class EduconecxAcademyController extends Controller
             'success' => true,
             'message' => 'Session ended successfully.',
             'practice_minutes_available' => $remaining,
-            'credits_balance' => $remaining,
         ]);
     }
 
@@ -622,26 +671,7 @@ class EduconecxAcademyController extends Controller
         $checkout = Session::retrieve($sessionId);
         abort_unless((int) data_get($checkout, 'metadata.user_id') === (int) $request->user()->id, 403);
 
-        if ($checkout->payment_status === 'paid' && ! Order::where('transaction_id', $sessionId)->exists()) {
-            $quantity = (int) data_get($checkout, 'metadata.quantity', 1);
-            $minutes = (int) data_get($checkout, 'metadata.minutes', 20 * $quantity);
-            DB::transaction(function () use ($request, $checkout, $quantity, $minutes, $creditService) {
-                $order = Order::create([
-                    'user_id' => $request->user()->id,
-                    'order_number' => 'PS-' . strtoupper(uniqid()),
-                    'order_type' => 'practice_sessions',
-                    'subtotal' => ((float) $checkout->amount_total) / 100,
-                    'total' => ((float) $checkout->amount_total) / 100,
-                    'payment_method' => 'stripe',
-                    'payment_status' => 'paid',
-                    'transaction_id' => $checkout->id,
-                    'billing_name' => $request->user()->name,
-                    'billing_email' => $request->user()->email,
-                ]);
-                OrderItem::create(['order_id' => $order->id, 'item_type' => 'practice_sessions', 'course_id' => null, 'item_name' => $quantity . ' Practice Session(s)', 'price' => ((float) $checkout->amount_total) / 100, 'total' => ((float) $checkout->amount_total) / 100]);
-                $creditService->addPurchasedMinutes($request->user(), $minutes, 'Practice session add-on purchase.', ['quantity' => $quantity, 'stripe_session_id' => $checkout->id]);
-            });
-        }
+        $creditService->processPracticeSessionCheckout($checkout, $request->user());
 
         return redirect()->route('educonecx.academy.index')->with('success', 'Practice sessions purchased successfully.');
     }

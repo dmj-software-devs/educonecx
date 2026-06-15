@@ -851,9 +851,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/educonecx-academy', [EduconecxAcademyController::class, 'index'])->name('educonecx.academy.index');
     Route::get('/practice-room/courses/{course}', [EnglishPracticeCourseController::class, 'show'])->name('practice-room.courses.show');
     Route::post('/practice-room/lessons/{lesson}/progress', [EnglishPracticeProgressController::class, 'update'])->name('practice-room.lessons.progress');
-    Route::get('/educonecx-academy/credits', [EduconecxAcademyController::class, 'creditSummary'])->name('educonecx.academy.credits');
+    Route::get('/educonecx-academy/practice-time', [EduconecxAcademyController::class, 'practiceTimeSummary'])->name('educonecx.academy.practice-time');
     Route::post('/educonecx-academy/liveavatar/token', [EduconecxAcademyController::class, 'createLiveAvatarToken'])->name('educonecx.academy.liveavatar.token');
     Route::post('/educonecx-academy/liveavatar/embed', [EduconecxAcademyController::class, 'createLiveAvatarEmbed'])->name('educonecx.academy.liveavatar.embed');
+    Route::post('/educonecx-academy/liveavatar/free-demo', [EduconecxAcademyController::class, 'createFreeDemoEmbed'])->name('educonecx.academy.liveavatar.free-demo');
     Route::post('/educonecx-academy/session/evaluate', [EduconecxAcademyController::class, 'evaluateSession'])->name('educonecx.academy.session.evaluate');
     Route::post('/educonecx-academy/session/evaluate-audio', [EduconecxAcademyController::class, 'evaluateAudioSession'])->name('educonecx.academy.session.evaluate.audio');
     Route::post('/educonecx-academy/session/end', [EduconecxAcademyController::class, 'endSession'])->name('educonecx.academy.session.end');

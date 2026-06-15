@@ -718,7 +718,7 @@
     .academy-action-card p { color: var(--academy-muted); margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
     .academy-action-icon { width: 48px; height: 48px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; background: var(--academy-ivory); color: var(--academy-navy); font-size: 1.2rem; }
     .academy-action-card .btn { width: 100%; justify-content: center; margin-top: auto; }
-    .academy-credit-value { display: block; color: var(--academy-navy); font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 950; line-height: 1; }
+    .academy-practice-time-value { display: block; color: var(--academy-navy); font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 950; line-height: 1; }
     .academy-exam-rules { background: #fff; border: 1px solid rgba(10, 29, 68, .1); border-radius: 18px; padding: 20px; box-shadow: var(--academy-soft-shadow); }
     .academy-exam-rules h3 { color: var(--academy-navy); font-weight: 900; font-size: 1.1rem; }
     .academy-exam-rules li { margin-bottom: 8px; }
@@ -829,8 +829,8 @@
                     && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
                 $isPaidMember = (bool) ($isPaidMember ?? false);
-                $practiceMinutesAvailable = (int) ($practiceMinutesAvailable ?? $creditsAvailable ?? 0);
-                $creditsAvailable = $practiceMinutesAvailable;
+                $practiceMinutesAvailable = (int) ($practiceMinutesAvailable ?? $practiceMinutesAvailableJs ?? 0);
+                $practiceMinutesAvailableJs = $practiceMinutesAvailable;
                 $canStartPracticeSession = $isPaidMember && $canStartPractice && $practiceMinutesAvailable > 0;
                 $canStartExamSession = $isPaidMember && $canStartPractice && $practiceMinutesAvailable > 0;
                 $coachImage = $practiceCoachImage
@@ -906,9 +906,9 @@
                 <article class="academy-action-card">
                     <span class="academy-action-icon"><i class="fas fa-clock"></i></span>
                     <h3>Practice Time Available</h3>
-                    <span class="academy-credit-value"><span id="creditsAvailableValue">{{ $practiceMinutesAvailable }}</span> Minutes</span>
+                    <span class="academy-practice-time-value"><span id="practiceMinutesAvailableJsValue">{{ $practiceMinutesAvailable }}</span> Minutes</span>
                     <p>{{ max(0, intdiv($practiceMinutesAvailable, 20)) }} Practice Session{{ intdiv($practiceMinutesAvailable, 20) === 1 ? '' : 's' }} Remaining</p>
-                    <div id="creditWarning" class="alert alert-warning mt-3 mb-0 {{ $practiceMinutesAvailable <= 0 ? '' : 'd-none' }}">
+                    <div id="practiceTimeWarning" class="alert alert-warning mt-3 mb-0 {{ $practiceMinutesAvailable <= 0 ? '' : 'd-none' }}">
                         You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.
                     </div>
                 </article>
@@ -932,7 +932,9 @@
                 <section class="academy-card mb-4" id="freeDemoCard">
                     <div class="academy-card-header"><h2 class="academy-card-title"><i class="fas fa-user"></i> Guided Onboarding Demo</h2></div>
                     <div class="academy-card-body">
-                        <p><strong>Olivia:</strong> What is your name?</p>
+                        <p class="mb-3"><strong>Olivia:</strong> What is your name?</p>
+                        <button type="button" id="startFreeDemoBtn" class="btn academy-btn-primary mb-3"><i class="fas fa-video"></i> Start Guided Avatar Demo</button>
+                        <div id="freeDemoAvatarFrame" class="academy-livecoach-frame-wrap d-none mb-3"></div>
                         <div class="academy-action-row"><input id="freeDemoName" class="form-control" style="max-width:320px" placeholder="Your name"><button id="freeDemoSubmit" type="button" class="btn academy-btn-primary">Continue Demo</button></div>
                         <div id="freeDemoMessage" class="alert alert-info mt-3 d-none"></div>
                         <a href="{{ route('subscription.plans') }}" class="btn academy-btn-navy mt-3">Upgrade Membership</a>
@@ -1058,9 +1060,6 @@
                         </div>
 
                         <div class="academy-recording-controls d-none">
-                            <button type="button" id="startRecordingBtn" class="btn academy-btn-primary" disabled></button>
-                            <button type="button" id="stopRecordingBtn" class="btn academy-btn-danger" disabled></button>
-                            <button type="button" id="retryRecordingBtn" class="btn academy-btn-soft" disabled></button>
                             <button type="button" id="evaluateSpeakingBtn" class="btn academy-btn-navy" disabled><i class="fas fa-clipboard-check"></i> Get Performance Review</button>
                         </div>
                         <audio id="audioPreview" class="academy-audio-preview d-none" controls></audio>
@@ -1201,17 +1200,17 @@
         exam: { url: @json($isExamImageUrl ? $examImage : null), exists: @json($isExamImageUrl), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const practiceCreditCost = 1;
-    const examCreditCost = 1;
+    const practiceMinuteRequirement = 1;
+    const examMinuteRequirement = 1;
     const isPaidMember = @json($isPaidMember ?? false);
-    let creditsAvailable = @json($creditsAvailable);
+    let practiceMinutesAvailableJs = @json($practiceMinutesAvailableJs);
 
     const startBtn = document.getElementById('startPracticeBtn');
     const showExamRulesBtn = document.getElementById('showExamRulesBtn');
     const startExamBtn = document.getElementById('startExamBtn');
     const confirmExamBtn = document.getElementById('confirmExamBtn');
-    const creditsAvailableValue = document.getElementById('creditsAvailableValue');
-    const creditWarning = document.getElementById('creditWarning');
+    const practiceMinutesAvailableJsValue = document.getElementById('practiceMinutesAvailableJsValue');
+    const practiceTimeWarning = document.getElementById('practiceTimeWarning');
     const examRulesArea = document.getElementById('examRulesArea');
     const coachPhotoWrap = document.getElementById('coachPhotoWrap');
     const coachName = document.getElementById('coachName');
@@ -1223,9 +1222,9 @@
     const coachMount = document.getElementById('coachMount');
     const practiceTranscript = document.getElementById('practiceTranscript');
     const evaluatePracticeBtn = document.getElementById('evaluatePracticeBtn');
-    const startRecordingBtn = document.getElementById('startRecordingBtn');
-    const stopRecordingBtn = document.getElementById('stopRecordingBtn');
-    const retryRecordingBtn = document.getElementById('retryRecordingBtn');
+    const automaticExamRecorder = { addEventListener: () => {}, disabled: true };
+    const automaticExamStopper = { addEventListener: () => {}, disabled: true };
+    const automaticExamRetry = { addEventListener: () => {}, disabled: true };
     const evaluateSpeakingBtn = document.getElementById('evaluateSpeakingBtn');
     const audioPreview = document.getElementById('audioPreview');
     const evaluationStatus = document.getElementById('evaluationStatus');
@@ -1246,31 +1245,31 @@
 
     const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
 
-    const sessionCost = (mode) => mode === 'exam' ? examCreditCost : practiceCreditCost;
-    const hasCreditsFor = (mode) => creditsAvailable >= sessionCost(mode);
+    const sessionCost = (mode) => mode === 'exam' ? examMinuteRequirement : practiceMinuteRequirement;
+    const hasPracticeTimeFor = (mode) => practiceMinutesAvailableJs >= sessionCost(mode);
 
-    const updateCreditDisplay = (balance = creditsAvailable) => {
-        creditsAvailable = Number(balance ?? 0);
-        if (creditsAvailableValue) {
-            creditsAvailableValue.textContent = `${creditsAvailable}`;
+    const updatePracticeTimeDisplay = (balance = practiceMinutesAvailableJs) => {
+        practiceMinutesAvailableJs = Number(balance ?? 0);
+        if (practiceMinutesAvailableJsValue) {
+            practiceMinutesAvailableJsValue.textContent = `${practiceMinutesAvailableJs}`;
         }
-        if (creditWarning) {
-            creditWarning.classList.toggle('d-none', creditsAvailable > 0);
+        if (practiceTimeWarning) {
+            practiceTimeWarning.classList.toggle('d-none', practiceMinutesAvailableJs > 0);
         }
         if (startBtn) {
-            startBtn.disabled = !hasPracticeConfig || !hasCreditsFor('practice');
+            startBtn.disabled = !hasPracticeConfig || !hasPracticeTimeFor('practice');
         }
         if (showExamRulesBtn) {
-            showExamRulesBtn.disabled = !hasPracticeConfig || !hasCreditsFor('exam');
+            showExamRulesBtn.disabled = !hasPracticeConfig || !hasPracticeTimeFor('exam');
         }
         if (confirmExamBtn) {
-            confirmExamBtn.disabled = !hasPracticeConfig || !hasCreditsFor('exam');
+            confirmExamBtn.disabled = !hasPracticeConfig || !hasPracticeTimeFor('exam');
         }
     };
 
-    const refreshCreditBalance = async () => {
+    const refreshPracticeTimeBalance = async () => {
         try {
-            const response = await fetch("{{ route('educonecx.academy.credits') }}", {
+            const response = await fetch("{{ route('educonecx.academy.practice-time') }}", {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -1281,8 +1280,8 @@
 
             const data = await response.json();
 
-            if (response.ok && data.success && typeof data.credits_balance !== 'undefined') {
-                updateCreditDisplay(data.credits_balance);
+            if (response.ok && data.success && typeof data.practice_minutes_available !== 'undefined') {
+                updatePracticeTimeDisplay(data.practice_minutes_available);
             }
         } catch (error) {
             console.warn('Unable to refresh Practice Room practice time.', error);
@@ -1302,9 +1301,9 @@
     const updateEvaluationButtons = () => {
         const isRecording = Boolean(mediaRecorder && mediaRecorder.state === 'recording');
         const locked = sessionMode === 'exam' && examSubmitted;
-        startRecordingBtn.disabled = true;
-        stopRecordingBtn.disabled = !isRecording || locked;
-        retryRecordingBtn.disabled = true;
+        automaticExamRecorder.disabled = true;
+        automaticExamStopper.disabled = !isRecording || locked;
+        automaticExamRetry.disabled = true;
         evaluateSpeakingBtn.disabled = !hasPracticeConfig || !recordedBlob || locked;
         evaluatePracticeBtn.disabled = sessionMode !== 'exam' || !hasPracticeConfig || locked;
     };
@@ -1467,15 +1466,15 @@
         }
     };
 
-    startRecordingBtn.addEventListener('click', startAutomaticExamRecording);
+    automaticExamRecorder.addEventListener('click', startAutomaticExamRecording);
 
-    stopRecordingBtn.addEventListener('click', function () {
+    automaticExamStopper.addEventListener('click', function () {
         if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
         }
     });
 
-    retryRecordingBtn.addEventListener('click', function () {
+    automaticExamRetry.addEventListener('click', function () {
         if (sessionMode === 'exam' && examSubmitted) {
             setEvaluationStatus('This exam attempt is locked after final submission.', 'small text-danger');
             return;
@@ -1491,7 +1490,7 @@
 
         setEvaluationStatus('Uploading audio...', 'small text-muted');
         evaluateSpeakingBtn.disabled = true;
-        startRecordingBtn.disabled = true;
+        automaticExamRecorder.disabled = true;
 
         try {
             const formData = new FormData();
@@ -1606,9 +1605,9 @@
             return;
         }
 
-        if (!hasCreditsFor(mode)) {
+        if (!hasPracticeTimeFor(mode)) {
             setStatusMessage('You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.', true);
-            updateCreditDisplay();
+            updatePracticeTimeDisplay();
             return;
         }
 
@@ -1643,8 +1642,8 @@
             }
 
             if (!response.ok || !data.success) {
-                if (data.type === 'insufficient_practice_time' || data.type === 'insufficient_credits') {
-                    updateCreditDisplay(data.balance);
+                if (data.type === 'insufficient_practice_time') {
+                    updatePracticeTimeDisplay(data.balance);
                     throw new Error(data.message || 'You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.');
                 }
                 throw new Error(data.message || 'Unable to load your speaking session.');
@@ -1653,15 +1652,15 @@
             academySessionId = data.academy_session_id || null;
             sessionStartedAt = Date.now();
             if (sessionLimitTimer) clearTimeout(sessionLimitTimer);
-            const maxMinutes = Number(data.max_minutes || creditsAvailable || 0);
+            const maxMinutes = Number(data.max_minutes || practiceMinutesAvailableJs || 0);
             if (maxMinutes > 0) {
                 sessionLimitTimer = setTimeout(() => endActiveSession(true), maxMinutes * 60 * 1000);
             }
             if (mode === 'exam') {
                 setTimeout(() => startAutomaticExamRecording(), 500);
             }
-            if (typeof data.credits_balance !== 'undefined') {
-                updateCreditDisplay(data.credits_balance);
+            if (typeof data.practice_minutes_available !== 'undefined') {
+                updatePracticeTimeDisplay(data.practice_minutes_available);
             }
             const openSessionLink = document.getElementById('openSessionLink');
 
@@ -1698,7 +1697,7 @@
             setStatusMessage(error.message || 'Unable to load your speaking session.', true);
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
         } finally {
-            updateCreditDisplay();
+            updatePracticeTimeDisplay();
         }
     };
 
@@ -1710,7 +1709,7 @@
         coachMount.innerHTML = '<div class="academy-livecoach-placeholder"><i class="fas fa-check-circle"></i><strong>Session ended.</strong></div>';
         const response = await fetch(@json(route('educonecx.academy.session.end')), {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'}, body: JSON.stringify({academy_session_id: academySessionId, duration_seconds: durationSeconds, status: limitReached ? 'limit_reached' : 'ended'})});
         const data = await response.json().catch(() => ({}));
-        if (typeof data.credits_balance !== 'undefined') updateCreditDisplay(data.credits_balance);
+        if (typeof data.practice_minutes_available !== 'undefined') updatePracticeTimeDisplay(data.practice_minutes_available);
         if (limitReached) {
             setStatusMessage('You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.', true);
         }
@@ -1739,15 +1738,37 @@
         const data = await response.json();
         if (data.checkout_url) window.location.href = data.checkout_url; else setStatusMessage(data.message || 'Unable to start checkout.', true);
     });
+
+    document.getElementById('startFreeDemoBtn')?.addEventListener('click', async () => {
+        const frame = document.getElementById('freeDemoAvatarFrame');
+        const button = document.getElementById('startFreeDemoBtn');
+        button.disabled = true;
+        try {
+            const response = await fetch(@json(route('educonecx.academy.liveavatar.free-demo')), {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'}, body: JSON.stringify({})});
+            const data = await response.json();
+            if (!response.ok || !data.success || !data.embed_url) throw new Error(data.message || 'Unable to start the guided avatar demo.');
+            frame.classList.remove('d-none');
+            frame.innerHTML = `<iframe src="${data.embed_url}" title="Olivia guided onboarding demo" allow="microphone; camera; autoplay; fullscreen" allowfullscreen loading="eager"></iframe>`;
+        } catch (error) {
+            button.disabled = false;
+            setStatusMessage(error.message || 'Unable to start the guided avatar demo.', true);
+        }
+    });
     document.getElementById('freeDemoSubmit')?.addEventListener('click', () => {
         const name = (document.getElementById('freeDemoName')?.value || '').trim() || 'there';
         const box = document.getElementById('freeDemoMessage');
         box.textContent = `Hello ${name}, thank you for joining our platform. I am Olivia Clarcke your English Coach. I can help you improve your English speaking, listening, pronunciation, vocabulary, and confidence through interactive practice sessions. Upgrade your membership to unlock full access and start practicing with me.`;
         box.classList.remove('d-none');
+        document.getElementById('freeDemoName').disabled = true;
+        document.getElementById('freeDemoSubmit').disabled = true;
+        const frame = document.getElementById('freeDemoAvatarFrame');
+        if (frame) {
+            frame.innerHTML = '<div class="academy-livecoach-placeholder"><i class="fas fa-lock"></i><strong>Demo session ended.</strong><span>Upgrade Membership to continue.</span></div>';
+        }
     });
 
-    updateCreditDisplay();
-    refreshCreditBalance();
+    updatePracticeTimeDisplay();
+    refreshPracticeTimeBalance();
 
     if (missingHeyGenConfig.length) {
         setStatusMessage('Practice Room is not ready yet. Please contact support to complete setup.', true);
