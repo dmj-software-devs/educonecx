@@ -131,7 +131,7 @@ class User extends Authenticatable implements MustVerifyEmail
     // enrollment created after payment.
     public function canAccessPracticeRoom(): bool
     {
-        if ($this->has_active_subscription) {
+        if ($this->has_active_subscription || $this->hasAvailablePracticeTime()) {
             return true;
         }
 
@@ -142,7 +142,16 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function canStartPaidPracticeSession(): bool
     {
-        return (bool) $this->has_active_subscription;
+        return $this->canAccessPracticeRoom();
+    }
+
+    public function hasAvailablePracticeTime(): bool
+    {
+        $balance = $this->relationLoaded('practiceBalance')
+            ? $this->practiceBalance
+            : $this->practiceBalance()->first();
+
+        return (int) ($balance?->computed_available_minutes ?? 0) > 0;
     }
 
     // Check if user can access a course

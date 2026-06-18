@@ -206,9 +206,6 @@ class EduconecxAcademyController extends Controller
         abort_unless($user, 401);
 
         $sessionType = $validated['session_type'] ?? 'practice';
-        if (! $user->has_active_subscription) {
-            return $this->practiceRoomPaymentRequiredResponse();
-        }
         $creditCost = 0;
         $currentBalance = $creditService->remainingMinutes($user);
 

@@ -1859,7 +1859,6 @@
     document.getElementById('decreasePackageQty')?.addEventListener('click', () => { packageQty = Math.max(1, packageQty - 1); updatePackageTotal(); });
     document.getElementById('increasePackageQty')?.addEventListener('click', () => { packageQty += 1; updatePackageTotal(); });
     document.getElementById('purchasePracticeSessionsBtn')?.addEventListener('click', async () => {
-        if (!isPaidMember) { window.location.href = @json(route('subscription.plans')); return; }
         const response = await fetch(@json(route('educonecx.academy.practice-sessions.purchase')), {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'}, body: JSON.stringify({quantity: packageQty})});
         const data = await response.json();
         if (data.checkout_url) window.location.href = data.checkout_url; else setStatusMessage(data.message || 'Unable to start checkout.', true);
