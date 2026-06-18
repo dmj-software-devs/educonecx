@@ -140,6 +140,11 @@ class User extends Authenticatable implements MustVerifyEmail
             ->exists();
     }
 
+    public function canStartPaidPracticeSession(): bool
+    {
+        return (bool) $this->has_active_subscription;
+    }
+
     // Check if user can access a course
     public function canAccessCourse($courseId)
     {
@@ -235,6 +240,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function practiceCreditTransactions()
     {
         return $this->hasMany(PracticeCreditTransaction::class);
+    }
+
+    public function practiceBalance()
+    {
+        return $this->hasOne(UserPracticeBalance::class);
+    }
+
+    public function practiceUsageLogs()
+    {
+        return $this->hasMany(PracticeUsageLog::class);
     }
 
     public function academyAvatarSetting()

@@ -4,17 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\EnglishPracticeCourse;
 use App\Models\EnglishPracticeLesson;
-use App\Services\PracticeCreditService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class EnglishPracticeCourseController extends Controller
 {
-    public function show(Request $request, EnglishPracticeCourse $course, PracticeCreditService $creditService): View
+    public function show(Request $request, EnglishPracticeCourse $course): View
     {
         abort_unless($request->user()?->canAccessPracticeRoom() || $request->user()?->isAdmin(), 403);
-        $creditService->grantSignupCredits($request->user());
-
         abort_unless($course->status === 'published', 404);
 
         $course->load([

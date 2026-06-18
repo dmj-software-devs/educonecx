@@ -135,7 +135,7 @@
 
                 <div class="academy-nav-title">Practice Room</div>
                 <a href="{{ route('educonecx.academy.index') }}" class="academy-nav-item"><i class="fas fa-play-circle"></i> Start Practice</a>
-                <a href="#practice-credits" class="academy-nav-item"><i class="fas fa-coins"></i> Credits</a>
+                <a href="#practice-time" class="academy-nav-item"><i class="fas fa-clock"></i> Practice Time</a>
                 <a href="#session-history" class="academy-nav-item"><i class="fas fa-history"></i> Practice History</a>
                 <a href="#performance-reports" class="academy-nav-item"><i class="fas fa-chart-line"></i> Performance Reports</a>
                 <a href="#progress-tracking" class="academy-nav-item"><i class="fas fa-bullseye"></i> Progress Tracking</a>
@@ -164,56 +164,30 @@
             </section>
 
 
-            <section id="practice-credits" class="academy-card">
+            <section id="practice-time" class="academy-card">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title">Practice Room Credits</h2>
-                        <p class="academy-card-subtitle">Track the internal platform credits used for Practice Room sessions and exams.</p>
+                        <h2 class="academy-card-title">Practice Time</h2>
+                        <p class="academy-card-subtitle">Track your available Practice Sessions and recent usage.</p>
                     </div>
-                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-yellow"><i class="fas fa-play"></i> Use Credits</a>
+                    <a href="{{ route('educonecx.academy.index') }}" class="academy-btn-yellow"><i class="fas fa-play"></i> Start Practice</a>
                 </div>
                 <div class="academy-card-body">
                     <div class="academy-stats-grid">
-                        <div class="academy-stat"><span>Current Credits</span><strong>{{ $creditWallet->balance ?? 0 }}</strong></div>
-                        <div class="academy-stat"><span>Lifetime Granted</span><strong>{{ $creditWallet->lifetime_granted ?? 0 }}</strong></div>
-                        <div class="academy-stat"><span>Lifetime Purchased</span><strong>{{ $creditWallet->lifetime_purchased ?? 0 }}</strong></div>
-                        <div class="academy-stat"><span>Lifetime Used</span><strong>{{ $creditWallet->lifetime_used ?? 0 }}</strong></div>
+                        <div class="academy-stat"><span>Practice Time Available</span><strong>{{ $practiceBalance->total_available_minutes ?? 0 }} Minutes</strong></div>
+                        <div class="academy-stat"><span>Practice Sessions Available</span><strong>{{ intdiv((int) ($practiceBalance->total_available_minutes ?? 0), 20) }}</strong></div>
+                        <div class="academy-stat"><span>Monthly Used</span><strong>{{ $practiceBalance->monthly_minutes_used ?? 0 }} Minutes</strong></div>
+                        <div class="academy-stat"><span>Next Reset</span><strong>{{ optional($practiceBalance->monthly_reset_date)->format('M d, Y') ?? 'N/A' }}</strong></div>
                     </div>
 
                     <div class="table-responsive mt-4">
                         <table class="table align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Type</th>
-                                    <th>Amount</th>
-                                    <th>Balance After</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Date</th><th>Mode</th><th>Minutes Used</th><th>Source</th></tr></thead>
                             <tbody>
-                                @forelse($creditTransactions ?? [] as $transaction)
-                                    @php
-                                        $creditLabels = [
-                                            'signup_bonus' => 'Signup Bonus',
-                                            'practice_usage' => 'Practice Session',
-                                            'exam_usage' => 'Speaking Exam',
-                                            'refund' => 'Refund',
-                                            'purchase' => 'Purchase',
-                                            'admin_grant' => 'Admin Grant',
-                                            'course_grant' => 'Course Grant',
-                                            'adjustment' => 'Adjustment',
-                                        ];
-                                    @endphp
-                                    <tr>
-                                        <td>{{ optional($transaction->created_at)->format('M d, Y g:i A') }}</td>
-                                        <td>{{ $creditLabels[$transaction->type] ?? Str::headline($transaction->type) }}</td>
-                                        <td class="{{ $transaction->amount >= 0 ? 'text-success' : 'text-danger' }}">{{ $transaction->amount >= 0 ? '+' : '' }}{{ $transaction->amount }}</td>
-                                        <td>{{ $transaction->balance_after }}</td>
-                                        <td>{{ $transaction->description ?: '—' }}</td>
-                                    </tr>
+                                @forelse($usageLogs ?? [] as $log)
+                                    <tr><td>{{ optional($log->created_at)->format('M d, Y g:i A') }}</td><td>{{ ucfirst($log->session_type) }}</td><td>{{ $log->minutes_used }}</td><td>{{ ucfirst($log->source) }}</td></tr>
                                 @empty
-                                    <tr><td colspan="5" class="text-muted">No credit transactions yet.</td></tr>
+                                    <tr><td colspan="4" class="text-muted">No practice time usage yet.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
