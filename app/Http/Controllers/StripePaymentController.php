@@ -13,6 +13,7 @@ use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Stripe\PaymentIntent;
 use Stripe\Webhook;
+use App\Services\PracticeCreditService;
 use Exception;
 
 class StripePaymentController extends Controller
@@ -280,6 +281,11 @@ class StripePaymentController extends Controller
      */
     protected function handleCheckoutSessionCompleted($session)
     {
+        if ((string) data_get($session, 'metadata.type') === 'practice_sessions') {
+            app(PracticeCreditService::class)->processPracticeSessionCheckout($session);
+            return;
+        }
+
         // Find the order
         $order = Order::find($session->client_reference_id);
         

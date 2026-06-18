@@ -11,7 +11,6 @@ use App\Models\Quiz;
 use App\Models\Question;
 use App\Models\Certificate;
 use App\Models\LessonProgress;
-use App\Services\PracticeCreditService;
 
 class EnrollmentController extends Controller
 {
@@ -44,14 +43,6 @@ class EnrollmentController extends Controller
         return $this->createEnrollment($course, $user, 'purchased');
     }
 
-
-    private function grantCourseCredits($user, $course): void
-    {
-        $credits = (int) (config('practice_room.default_course_credits', 20) ?? 20);
-
-        app(PracticeCreditService::class)->grantCourseCredits($user, $credits, $course);
-    }
-
     /**
      * Create enrollment record
      */
@@ -71,8 +62,6 @@ class EnrollmentController extends Controller
             ]);
 
             $course->increment('total_students');
-            $this->grantCourseCredits($user, $course);
-
             DB::commit();
 
             $message = $accessType === 'subscription' 
@@ -131,7 +120,6 @@ class EnrollmentController extends Controller
                 ]);
 
                 $course->increment('total_students');
-                $this->grantCourseCredits($user, $course);
                 DB::commit();
 
                 return response()->json([
@@ -154,7 +142,6 @@ class EnrollmentController extends Controller
             ]);
 
             $course->increment('total_students');
-            $this->grantCourseCredits($user, $course);
             DB::commit();
 
             return response()->json([
@@ -211,7 +198,6 @@ class EnrollmentController extends Controller
                 'progress' => 0
             ]);
             $course->increment('total_students');
-            $this->grantCourseCredits($user, $course);
         }
 
         // Get course progress

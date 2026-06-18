@@ -189,6 +189,9 @@
     .lesson-list {
         display: grid;
         gap: 12px;
+        max-height: 720px;
+        overflow-y: auto;
+        padding-right: 4px;
     }
 
     .lesson-list-item {
@@ -290,7 +293,7 @@
             @endif
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                 <strong>Progress: {{ $progressPercent }}%</strong>
-                <span class="text-muted">{{ $completedCount }} of {{ $lessons->count() }} lessons completed</span>
+                <span class="text-muted">Completed {{ $completedCount }} of {{ $lessons->count() }} lessons</span>
             </div>
             <div class="course-progress-track"><div class="course-progress-fill" style="width: {{ $progressPercent }}%"></div></div>
         </header>

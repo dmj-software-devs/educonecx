@@ -323,7 +323,7 @@ class HeyGenLiveAvatarService
 
         return array_merge([
             'id' => $avatarId,
-            'name' => 'Victoria Clarke',
+            'name' => 'Olivia Clarcke',
             'image_url' => null,
             'default_voice_id' => null,
             'default_voice_name' => null,
