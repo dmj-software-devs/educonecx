@@ -900,7 +900,15 @@
                     <span class="academy-action-icon"><i class="fas fa-clock"></i></span>
                     <h3>Practice Time Available</h3>
                     <span class="academy-practice-time-value"><span id="practiceMinutesAvailableJsValue">{{ $practiceMinutesAvailable }}</span> Minutes</span>
-                    <p>{{ max(0, intdiv($practiceMinutesAvailable, 20)) }} Practice Session{{ intdiv($practiceMinutesAvailable, 20) === 1 ? '' : 's' }} Remaining</p>
+                    <p>
+                        @if($practiceMinutesAvailable >= 20)
+                            {{ intdiv($practiceMinutesAvailable, 20) }} Full Practice Session{{ intdiv($practiceMinutesAvailable, 20) === 1 ? '' : 's' }} Remaining
+                        @elseif($practiceMinutesAvailable > 0)
+                            Partial Session Available — {{ $practiceMinutesAvailable }} Minutes Remaining
+                        @else
+                            0 Practice Sessions Remaining
+                        @endif
+                    </p>
                     <div id="practiceTimeWarning" class="alert alert-warning mt-3 mb-0 {{ $practiceMinutesAvailable <= 0 ? '' : 'd-none' }}">
                         You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.
                     </div>
@@ -1268,7 +1276,7 @@
     const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
 
     const sessionCost = (mode) => mode === 'exam' ? examMinuteRequirement : practiceMinuteRequirement;
-    const hasPracticeTimeFor = (mode) => practiceMinutesAvailableJs >= sessionCost(mode);
+    const hasPracticeTimeFor = () => practiceMinutesAvailableJs > 0;
 
     const updatePracticeTimeDisplay = (balance = practiceMinutesAvailableJs) => {
         practiceMinutesAvailableJs = Number(balance ?? 0);

@@ -209,13 +209,13 @@ class EduconecxAcademyController extends Controller
         $creditCost = 0;
         $currentBalance = $creditService->remainingMinutes($user);
 
-        if ($currentBalance < 20) {
+        if ($currentBalance <= 0) {
             return response()->json([
                 'success' => false,
                 'type' => 'insufficient_practice_time',
                 'message' => 'You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.',
                 'balance' => $currentBalance,
-                'required' => 20,
+                'required' => 1,
             ], 402);
         }
 
