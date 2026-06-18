@@ -26,8 +26,8 @@ class EduconecxAcademyController extends Controller
     public function index(HeyGenLiveAvatarService $heyGenService, PracticeCreditService $creditService): View|Response
     {
         $user = auth()->user();
-        $isPaidMember = (bool) $user?->has_active_subscription;
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
+        $isPaidMember = (bool) ($user?->has_active_subscription || $practiceBalance->computed_available_minutes > 0);
         $practiceSessionPackage = PracticeSessionPackage::where('status', 'active')->first();
 
         $missingHeyGenConfig = $heyGenService->getMissingConfigurationKeys();
@@ -67,7 +67,7 @@ class EduconecxAcademyController extends Controller
         $englishPracticeCourses = $this->englishPracticeCoursesForUser();
         $practiceLessonContext = $this->practiceLessonContext(request()->query('lesson_id'));
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
-        $practiceMinutesAvailable = (int) $practiceBalance->total_available_minutes;
+        $practiceMinutesAvailable = (int) $practiceBalance->computed_available_minutes;
         $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 20);
 
         return response()
@@ -135,8 +135,8 @@ class EduconecxAcademyController extends Controller
 
         return response()->json([
             'success' => true,
-            'practice_minutes_available' => (int) $balance->total_available_minutes,
-            'practice_sessions_available' => intdiv((int) $balance->total_available_minutes, 20),
+            'practice_minutes_available' => (int) $balance->computed_available_minutes,
+            'practice_sessions_available' => intdiv((int) $balance->computed_available_minutes, 20),
             'practice_cost_minutes' => 20,
             'exam_cost_minutes' => 20,
         ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');

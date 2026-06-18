@@ -12,4 +12,14 @@ class UserPracticeBalance extends Model
     protected $casts = ['last_reset_at' => 'datetime', 'monthly_reset_date' => 'datetime'];
 
     public function user() { return $this->belongsTo(User::class); }
+
+    public function recalculateAvailableMinutes(): int
+    {
+        return max(0, ((int) $this->monthly_minutes_allocated - (int) $this->monthly_minutes_used) + (int) $this->purchased_minutes);
+    }
+
+    public function getComputedAvailableMinutesAttribute(): int
+    {
+        return $this->recalculateAvailableMinutes();
+    }
 }

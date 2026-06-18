@@ -189,11 +189,10 @@ class PracticeCreditService
     {
         $balance = $this->getOrCreatePracticeBalance($user);
         if (! $user->has_active_subscription) {
-            $balance->update([
-                'monthly_minutes_allocated' => 0,
-                'monthly_minutes_used' => 0,
-                'total_available_minutes' => 0,
-            ]);
+            $balance->monthly_minutes_allocated = 0;
+            $balance->monthly_minutes_used = 0;
+            $balance->total_available_minutes = $balance->recalculateAvailableMinutes();
+            $balance->save();
             return $balance->refresh();
         }
 
@@ -210,7 +209,7 @@ class PracticeCreditService
             $balance->monthly_reset_date = $resetDate;
         }
 
-        $balance->total_available_minutes = max(0, ((int) $balance->monthly_minutes_allocated - (int) $balance->monthly_minutes_used) + (int) $balance->purchased_minutes);
+        $balance->total_available_minutes = $balance->recalculateAvailableMinutes();
         $balance->save();
 
         return $balance->refresh();
@@ -219,7 +218,7 @@ class PracticeCreditService
     public function remainingMinutes(User $user): int
     {
         $balance = $this->syncMonthlyAllocation($user);
-        return max(0, (int) $balance->total_available_minutes);
+        return max(0, (int) $balance->computed_available_minutes);
     }
 
     public function addPurchasedMinutes(User $user, int $minutes, string $description = null, array $meta = []): \App\Models\UserPracticeBalance
@@ -332,7 +331,7 @@ class PracticeCreditService
             $fromPurchased = max(0, $minutes - $fromMonthly);
             $balance->monthly_minutes_used = (int) $balance->monthly_minutes_used + $fromMonthly;
             $balance->purchased_minutes = max(0, (int) $balance->purchased_minutes - $fromPurchased);
-            $balance->total_available_minutes = max(0, ((int) $balance->monthly_minutes_allocated - (int) $balance->monthly_minutes_used) + (int) $balance->purchased_minutes);
+            $balance->total_available_minutes = $balance->recalculateAvailableMinutes();
             $balance->save();
 
             $session->update([
