@@ -193,6 +193,12 @@ class Lesson extends Model
 
         $progress = min(round(($secondsWatched / $this->video_duration) * 100), 100);
         
+        $wasCompleted = LessonProgress::where('user_id', $userId)
+            ->where('lesson_id', $this->id)
+            ->where('course_id', $this->course_id)
+            ->where('status', 'completed')
+            ->exists();
+
         $lessonProgress = LessonProgress::updateOrCreate(
             [
                 'user_id' => $userId,
@@ -203,13 +209,13 @@ class Lesson extends Model
                 'watched_seconds' => $secondsWatched,
                 'last_position' => $secondsWatched,
                 'progress' => $progress,
-                'status' => $progress >= 90 ? 'completed' : 'in_progress',
-                'completed_at' => $progress >= 90 ? now() : null
+                'status' => $progress > 90 ? 'completed' : 'in_progress',
+                'completed_at' => $progress > 90 ? now() : null
             ]
         );
 
-        // Auto-mark as completed if watched 90%
-        if ($progress >= 90 && $lessonProgress->status !== 'completed') {
+        // Auto-mark as completed only after more than 90% is watched.
+        if ($progress > 90 && ! $wasCompleted) {
             $this->markAsCompleted($userId);
         }
 

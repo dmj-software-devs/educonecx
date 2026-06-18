@@ -212,13 +212,13 @@ class EduconecxAcademyController extends Controller
         $creditCost = 0;
         $currentBalance = $creditService->remainingMinutes($user);
 
-        if ($currentBalance <= 0) {
+        if ($currentBalance < 20) {
             return response()->json([
                 'success' => false,
                 'type' => 'insufficient_practice_time',
                 'message' => 'You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.',
                 'balance' => $currentBalance,
-                'required' => 1,
+                'required' => 20,
             ], 402);
         }
 
@@ -283,7 +283,7 @@ class EduconecxAcademyController extends Controller
                 'endpoint_url' => $embed['endpoint_url'],
                 'endpoint_status' => $embed['status'],
                 'practice_minutes_available' => $creditService->remainingMinutes($user),
-                'max_minutes' => $currentBalance,
+                'max_minutes' => min(20, $currentBalance),
             ]);
         } catch (InsufficientPracticeCreditsException $exception) {
             return response()->json([

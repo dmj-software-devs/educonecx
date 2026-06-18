@@ -22,7 +22,7 @@ class EnglishPracticeProgressController extends Controller
         $duration = $data['duration_seconds'] ?: $lesson->duration_seconds;
         $watched = $data['watched_seconds'];
         $percent = $duration > 0 ? min(100, round(($watched / $duration) * 100, 2)) : 0;
-        $isCompleted = $request->boolean('is_completed') || $percent >= 90;
+        $isCompleted = $request->boolean('is_completed') || $percent > 90;
 
         $progress = EnglishPracticeLessonProgress::firstOrNew([
             'user_id' => $request->user()->id,

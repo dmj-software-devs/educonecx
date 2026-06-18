@@ -1214,8 +1214,8 @@
         exam: { url: @json($isExamImageUrl ? $examImage : null), exists: @json($isExamImageUrl), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const practiceMinuteRequirement = 1;
-    const examMinuteRequirement = 1;
+    const practiceMinuteRequirement = 20;
+    const examMinuteRequirement = 20;
     const isPaidMember = @json($isPaidMember ?? false);
     let practiceMinutesAvailableJs = @json($practiceMinutesAvailableJs);
 
@@ -1258,7 +1258,11 @@
     let recordingSeconds = 0;
     let sessionStartedAt = null;
     let sessionLimitTimer = null;
+    let sessionCountdownTimer = null;
     let shouldEvaluateAfterRecordingStops = false;
+    let activeSessionEnded = false;
+    let transcriptActive = false;
+    let demoSessionLocked = false;
 
     const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
 
@@ -1406,6 +1410,73 @@
         `;
     };
 
+    const stopMicrophone = () => {
+        if (activeStream) {
+            activeStream.getTracks().forEach(track => track.stop());
+            activeStream = null;
+        }
+    };
+
+    const stopMediaRecorder = (evaluateExam = false) => {
+        shouldEvaluateAfterRecordingStops = Boolean(evaluateExam && sessionMode === 'exam');
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            return true;
+        }
+        stopMicrophone();
+        return false;
+    };
+
+    const stopTranscript = () => {
+        transcriptActive = false;
+        if (practiceTranscript) practiceTranscript.readOnly = sessionMode === 'exam';
+    };
+
+    const clearSessionTimers = () => {
+        if (sessionLimitTimer) {
+            clearTimeout(sessionLimitTimer);
+            sessionLimitTimer = null;
+        }
+        if (sessionCountdownTimer) {
+            clearInterval(sessionCountdownTimer);
+            sessionCountdownTimer = null;
+        }
+        if (recordingTimer) {
+            clearInterval(recordingTimer);
+            recordingTimer = null;
+        }
+    };
+
+    const closeAvatarTransport = () => {
+        document.querySelectorAll('#coachMount iframe, #freeDemoAvatarFrame iframe').forEach(frame => {
+            try { frame.src = 'about:blank'; } catch (_) {}
+            frame.remove();
+        });
+        window.dispatchEvent(new CustomEvent('academy-avatar-force-stop'));
+    };
+
+    const destroyAvatarSession = (message = 'Session ended.') => {
+        closeAvatarTransport();
+        if (coachMount) {
+            coachMount.innerHTML = `<div class="academy-livecoach-placeholder"><i class="fas fa-check-circle"></i><strong>${escapeHtml(message)}</strong></div>`;
+        }
+    };
+
+    const terminateLiveSessionResources = (options = {}) => {
+        const evaluateExam = Boolean(options.evaluateExam);
+        const keepTranscript = Boolean(options.keepTranscript);
+        const stoppedForEvaluation = stopMediaRecorder(evaluateExam);
+        stopMicrophone();
+        if (!keepTranscript && sessionMode !== 'exam') {
+            if (practiceTranscript) practiceTranscript.value = '';
+        }
+        stopTranscript();
+        clearSessionTimers();
+        closeAvatarTransport();
+        updateEvaluationButtons();
+        return stoppedForEvaluation;
+    };
+
     const resetRecording = () => {
         if (recordingTimer) {
             clearInterval(recordingTimer);
@@ -1457,6 +1528,7 @@
                     activeStream.getTracks().forEach(track => track.stop());
                 }
                 activeStream = null;
+                transcriptActive = false;
                 setEvaluationStatus('Recording stopped. Preparing your exam evaluation.', 'small text-muted');
                 updateEvaluationButtons();
 
@@ -1613,7 +1685,7 @@
             el.textContent = isExam ? 'Complete your exam response' : 'Practice with your coach';
         });
         document.querySelector('.academy-info-box').innerHTML = isExam
-            ? '<i class="fas fa-info-circle"></i> Complete your exam with Olivia. You may retry recording before final submission only; after submission, the attempt is locked.'
+            ? '<i class="fas fa-info-circle"></i> Complete your exam with Olivia. Recording, transcript, timer, and AI evaluation run automatically; after submission, the attempt is locked.'
             : '<i class="fas fa-info-circle"></i> Complete your conversation with Olivia Clarcke, then record a short response to receive your performance review.';
     };
 
@@ -1630,7 +1702,10 @@
         }
 
         sessionMode = mode;
+        activeSessionEnded = false;
         examSubmitted = false;
+        transcriptActive = mode === 'exam';
+        if (practiceTranscript) practiceTranscript.readOnly = mode === 'exam';
         resetRecording();
         updateModeMessaging();
 
@@ -1669,10 +1744,16 @@
 
             academySessionId = data.academy_session_id || null;
             sessionStartedAt = Date.now();
-            if (sessionLimitTimer) clearTimeout(sessionLimitTimer);
-            const maxMinutes = Number(data.max_minutes || practiceMinutesAvailableJs || 0);
+            clearSessionTimers();
+            const maxMinutes = Math.min(sessionCost(mode), Number(data.max_minutes || practiceMinutesAvailableJs || 0));
             if (maxMinutes > 0) {
+                const deadline = Date.now() + (maxMinutes * 60 * 1000);
                 sessionLimitTimer = setTimeout(() => endActiveSession(true), maxMinutes * 60 * 1000);
+                sessionCountdownTimer = setInterval(() => {
+                    const secondsLeft = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+                    if (practiceTimeRemainingBadge) practiceTimeRemainingBadge.textContent = `Session Time Left: ${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, '0')}`;
+                    if (secondsLeft <= 0) endActiveSession(true);
+                }, 1000);
             }
             if (mode === 'exam') {
                 setTimeout(() => startAutomaticExamRecording(), 500);
@@ -1723,19 +1804,40 @@
     };
 
     const endActiveSession = async (limitReached = false) => {
-        if (!academySessionId) return;
+        if (!academySessionId || activeSessionEnded) return;
+        activeSessionEnded = true;
+        const endingSessionId = academySessionId;
         const durationSeconds = sessionStartedAt ? Math.max(1, Math.ceil((Date.now() - sessionStartedAt) / 1000)) : 60;
-        if (mediaRecorder && mediaRecorder.state === 'recording') { shouldEvaluateAfterRecordingStops = sessionMode === 'exam'; mediaRecorder.stop(); }
-        if (sessionLimitTimer) clearTimeout(sessionLimitTimer);
-        coachMount.innerHTML = '<div class="academy-livecoach-placeholder"><i class="fas fa-check-circle"></i><strong>Session ended.</strong></div>';
+        const shouldAutoEvaluateExam = sessionMode === 'exam';
+        const stoppedRecorder = terminateLiveSessionResources({ evaluateExam: shouldAutoEvaluateExam, keepTranscript: shouldAutoEvaluateExam });
+        destroyAvatarSession(limitReached ? 'Practice time ended.' : 'Session ended.');
         endSessionBtn?.classList.add('d-none');
-        const response = await fetch(@json(route('educonecx.academy.session.end')), {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'}, body: JSON.stringify({academy_session_id: academySessionId, duration_seconds: durationSeconds, status: limitReached ? 'limit_reached' : 'ended'})});
-        const data = await response.json().catch(() => ({}));
-        if (typeof data.practice_minutes_available !== 'undefined') updatePracticeTimeDisplay(data.practice_minutes_available);
+
+        try {
+            const response = await fetch(@json(route('educonecx.academy.session.end')), {
+                method:'POST',
+                headers:{'Content-Type':'application/json','X-CSRF-TOKEN':csrfToken,'Accept':'application/json'},
+                body: JSON.stringify({
+                    academy_session_id: endingSessionId,
+                    duration_seconds: durationSeconds,
+                    status: limitReached ? 'limit_reached' : 'ended',
+                    transcript: practiceTranscript?.value || ''
+                })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (typeof data.practice_minutes_available !== 'undefined') updatePracticeTimeDisplay(data.practice_minutes_available);
+        } catch (error) {
+            console.error('session end error:', error);
+        }
+
         if (limitReached) {
             setStatusMessage('You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.', true);
+            coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Practice time ended. Purchase additional Practice Sessions to continue.';
         }
-        if (sessionMode === 'exam' && recordedBlob && !shouldEvaluateAfterRecordingStops) evaluateSpeakingBtn?.click();
+
+        if (shouldAutoEvaluateExam && recordedBlob && !stoppedRecorder) {
+            evaluateSpeakingBtn?.click();
+        }
     };
 
     endSessionBtn?.addEventListener('click', () => endActiveSession(false));
@@ -1771,7 +1873,8 @@
             const data = await response.json();
             if (!response.ok || !data.success || !data.embed_url) throw new Error(data.message || 'Unable to start the guided avatar demo.');
             frame.classList.remove('d-none');
-            frame.innerHTML = `<iframe src="${data.embed_url}" title="Olivia guided onboarding demo" allow="microphone; camera; autoplay; fullscreen" allowfullscreen loading="eager"></iframe>`;
+            demoSessionLocked = false;
+            frame.innerHTML = `<iframe src="${data.embed_url}" title="Olivia guided onboarding demo" allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" allowfullscreen loading="eager"></iframe>`;
         } catch (error) {
             button.disabled = false;
             setStatusMessage(error.message || 'Unable to start the guided avatar demo.', true);
@@ -1784,9 +1887,11 @@
         box.classList.remove('d-none');
         document.getElementById('freeDemoName').disabled = true;
         document.getElementById('freeDemoSubmit').disabled = true;
+        demoSessionLocked = true;
         const frame = document.getElementById('freeDemoAvatarFrame');
         if (frame) {
-            frame.innerHTML = '<div class="academy-livecoach-placeholder"><i class="fas fa-lock"></i><strong>Demo session ended.</strong><span>Upgrade Membership to continue.</span></div>';
+            frame.querySelectorAll('iframe').forEach(iframe => { try { iframe.src = 'about:blank'; } catch (_) {} iframe.remove(); });
+            frame.innerHTML = '<div class="academy-livecoach-placeholder"><i class="fas fa-lock"></i><strong>Demo session ended.</strong><span>Upgrade Membership to continue.</span><a class="btn academy-btn-primary mt-3" href="{{ route('subscription.plans') }}">Upgrade Membership</a></div>';
         }
     });
 

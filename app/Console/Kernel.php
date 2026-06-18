@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('practice:sync-monthly-allocations')->hourly()->withoutOverlapping();
     }
 
     /**
@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
 
 
     protected $commands = [
-    \App\Console\Commands\TestDeepL::class,
-];
+        \App\Console\Commands\TestDeepL::class,
+        \App\Console\Commands\SyncPracticeMonthlyAllocations::class,
+    ];
 }
