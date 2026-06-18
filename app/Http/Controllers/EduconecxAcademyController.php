@@ -56,7 +56,9 @@ class EduconecxAcademyController extends Controller
             'resolved_image_url' => data_get($defaultAvatar, 'image_url') ?: data_get($defaultAvatarMetadata, 'image_url'),
             'current_avatar_image_url' => data_get($currentAvatarConfig, 'avatar_image_url'),
         ];
-        $examCoachImage = file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null;
+        $examCoachImage = file_exists(public_path('images/academy/olivia.jpg'))
+            ? asset('images/academy/olivia.jpg')
+            : $practiceCoachImage;
         $recentAcademySessions = auth()->check()
             ? AcademySession::query()
                 ->where('user_id', auth()->id())
@@ -556,13 +558,14 @@ class EduconecxAcademyController extends Controller
     private function examAvatarConfig(?AcademyUserAvatarSetting $avatarSetting): array
     {
         $config = $this->currentAvatarConfig($avatarSetting);
+        $examImage = file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null;
 
         return array_merge($config, [
             'avatar_id' => config('services.heygen.exam_avatar_id') ?: $config['avatar_id'],
             'voice_id' => config('services.heygen.exam_voice_id') ?: $config['voice_id'],
             'context_id' => config('services.heygen.exam_context_id') ?: $config['context_id'],
-            'avatar_name' => 'Olivia',
-            'avatar_image_url' => file_exists(public_path('images/academy/olivia.jpg')) ? asset('images/academy/olivia.jpg') : null,
+            'avatar_name' => config('services.heygen.exam_avatar_id') ? 'Olivia' : $config['avatar_name'],
+            'avatar_image_url' => $examImage ?: $config['avatar_image_url'],
             'context_name' => 'English Speaking Exam',
         ]);
     }

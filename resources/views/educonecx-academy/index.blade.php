@@ -1220,7 +1220,7 @@
     const currentPracticeConfig = @json($currentAvatarConfig ?? []);
     const coachImages = {
         practice: { url: @json($isCoachImageUrl ? $coachImage : null), exists: @json($isCoachImageUrl), name: 'Olivia Clarcke', title: 'English Coach', specialty: 'Speaking Practice Specialist' },
-        exam: { url: @json($isExamImageUrl ? $examImage : null), exists: @json($isExamImageUrl), name: 'Olivia', title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
+        exam: { url: @json($isExamImageUrl ? $examImage : ($isCoachImageUrl ? $coachImage : null)), exists: @json($isExamImageUrl || $isCoachImageUrl), name: @json((config('services.heygen.exam_avatar_id') || $examCoachImage !== $practiceCoachImage) ? 'Olivia' : ($currentPracticeConfig['avatar_name'] ?? 'Olivia Clarcke')), title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const practiceMinuteRequirement = 20;
@@ -1852,6 +1852,8 @@
     endSessionBtn?.addEventListener('click', () => endActiveSession(false));
     startBtn?.addEventListener('click', () => startSpeakingSession('practice'));
     showExamRulesBtn?.addEventListener('click', () => {
+        sessionMode = 'exam';
+        updateModeMessaging();
         examRulesArea.classList.toggle('d-none');
         if (!examRulesArea.classList.contains('d-none')) {
             examRulesArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
