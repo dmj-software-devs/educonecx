@@ -853,18 +853,19 @@
             @endphp
 
 
-            <section class="academy-card academy-intro-card">
+            <section class="academy-card academy-intro-card" aria-labelledby="practice-area-heading">
                 <div class="academy-card-body">
                     <div class="academy-intro-grid">
                         <div>
-                            <h2 class="academy-intro-title">Welcome to the Practice Room</h2>
-                            <p class="academy-card-subtitle mb-3">Choose a friendly practice session for learning, or start a formal English Speaking Exam when you are ready to be assessed.</p>
+                            <span class="academy-kicker" style="color:var(--academy-teal)">Practice Area</span>
+                            <h2 id="practice-area-heading" class="academy-intro-title">Choose how you want to learn today</h2>
+                            <p class="academy-card-subtitle mb-3">Start a guided conversation or take a formal speaking exam. Everything is timed, clean, and focused.</p>
                             <div class="academy-badge-row">
-                                <span class="academy-pill"><i class="fas fa-user-graduate"></i> Practice for improvement</span>
-                                <span class="academy-pill"><i class="fas fa-lock"></i> Exam attempts lock after submission</span>
+                                <span class="academy-pill"><i class="fas fa-user-graduate"></i> Practice Sessions</span>
+                                <span class="academy-pill"><i class="fas fa-stopwatch"></i> {{ $practiceMinutesAvailable }} Minutes Remaining</span>
                             </div>
                         </div>
-                        <div class="academy-media-frame">
+                        <div class="academy-media-frame" aria-label="Olivia avatar card">
                             @if(! empty($introVideoUrl))
                                 <video src="{{ $introVideoUrl }}" controls playsinline preload="metadata" @if($isCoachImageUrl) poster="{{ $coachImage }}" @endif></video>
                             @elseif($isCoachImageUrl)
@@ -876,29 +877,21 @@
                     </div>
                 </div>
             </section>
-<!-- 
-            @if(config('app.debug'))
-                <div class="alert alert-info small">
-                    <strong>Practice Avatar Debug</strong><br>
-                    default_avatar_id: {{ data_get($defaultAvatarDebug ?? [], 'default_avatar_id') }}<br>
-                    resolved image_url: {{ data_get($defaultAvatarDebug ?? [], 'resolved_image_url') ?: 'none' }}<br>
-                    currentAvatarConfig avatar_image_url: {{ data_get($defaultAvatarDebug ?? [], 'current_avatar_image_url') ?: 'none' }}
-                </div>
-            @endif -->
+
 
             <section class="academy-actions-grid" aria-label="Practice Room actions">
-                <article class="academy-action-card" style="border-top:4px solid #2f80ed">
-                    <span class="academy-action-icon"><i class="fas fa-comments"></i></span>
-                    <h3>Practice Mode <small class="text-primary">Learning Mode</small></h3>
-                    <p>Practice speaking with Olivia and receive guidance during your conversation.</p>
+                <article class="academy-action-card" style="border-top:6px solid #2f80ed;background:linear-gradient(160deg,#eef6ff 0%,#fff 58%)">
+                    <span class="academy-action-icon" style="background:#2f80ed;color:#fff"><i class="fas fa-comments"></i></span>
+                    <h3>Practice Mode</h3>
+                    <p>Friendly live coaching with Olivia.</p>
                     <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPracticeSession ? 'disabled' : '' }}>
                         <i class="fas fa-play"></i> Start Practice
                     </button>
                 </article>
-                <article class="academy-action-card" style="border-top:4px solid #d4a017;background:linear-gradient(180deg,#fffaf0,#fff)">
-                    <span class="academy-action-icon"><i class="fas fa-clipboard-check"></i></span>
-                    <h3>Exam Mode <small style="color:#b8860b">Assessment Mode</small></h3>
-                    <p>Complete a timed speaking assessment and receive AI evaluation.</p>
+                <article class="academy-action-card" style="border-top:6px solid #d4a017;background:linear-gradient(160deg,#fff7db 0%,#fff 60%)">
+                    <span class="academy-action-icon" style="background:#d4a017;color:#fff"><i class="fas fa-clipboard-check"></i></span>
+                    <h3>Exam Mode</h3>
+                    <p>Timed assessment with automatic scorecard.</p>
                     <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" {{ ! $canStartExamSession ? 'disabled' : '' }}>
                         <i class="fas fa-award"></i> Start Exam
                     </button>
@@ -915,15 +908,23 @@
             </section>
 
 
-            <section class="academy-card mb-4">
-                <div class="academy-card-header"><h2 class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Additional Practice Sessions</h2><p class="academy-card-subtitle">1 Practice Session = 20 Minutes = $10</p></div>
+            <section class="academy-card mb-4" aria-labelledby="purchase-sessions-heading">
+                <div class="academy-card-header"><h2 id="purchase-sessions-heading" class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Sessions</h2><p class="academy-card-subtitle">Practice Sessions • 1 Session = 20 Minutes</p></div>
                 <div class="academy-card-body">
-                    <div class="academy-action-row">
-                        <button type="button" class="btn academy-btn-soft" id="decreasePackageQty">-</button>
-                        <strong><span id="packageQty">1</span> Session</strong>
-                        <button type="button" class="btn academy-btn-soft" id="increasePackageQty">+</button>
-                        <strong id="packageTotal">$10</strong>
-                        <button type="button" class="btn academy-btn-primary" id="purchasePracticeSessionsBtn">Purchase Practice Sessions</button>
+                    <div class="academy-action-row justify-content-between" style="gap:18px">
+                        <div>
+                            <div class="small text-muted fw-semibold">Quantity</div>
+                            <div class="academy-action-row mt-2" aria-label="Practice session quantity selector">
+                                <button type="button" class="btn academy-btn-soft" id="decreasePackageQty" aria-label="Decrease quantity">−</button>
+                                <strong class="fs-4"><span id="packageQty">1</span></strong>
+                                <button type="button" class="btn academy-btn-soft" id="increasePackageQty" aria-label="Increase quantity">+</button>
+                            </div>
+                        </div>
+                        <div class="text-md-end">
+                            <div class="small text-muted fw-semibold">Dynamic total</div>
+                            <strong id="packageTotal" class="display-6 d-block" style="color:var(--academy-navy)">$10</strong>
+                        </div>
+                        <button type="button" class="btn academy-btn-primary btn-lg" id="purchasePracticeSessionsBtn"><i class="fas fa-lock"></i> Purchase</button>
                     </div>
                 </div>
             </section>
@@ -956,7 +957,7 @@
 
             <section class="academy-card mb-4">
                 <div class="academy-card-header">
-                    <h2 class="academy-card-title"><i class="fas fa-chalkboard-teacher"></i> Current Practice Setup</h2>
+                    <h2 class="academy-card-title"><i class="fas fa-chalkboard-teacher"></i> Current Coach</h2>
                     <p class="academy-card-subtitle">Meet your English Coach and prepare for a focused speaking practice session.</p>
                 </div>
                 <div class="academy-card-body">
@@ -1049,7 +1050,7 @@
             <section id="practiceEvaluationArea" class="academy-evaluation-section">
                 <div class="academy-evaluation-card">
                     <div class="academy-evaluation-header">
-                        <h2 class="academy-livecoach-title"><i class="fas fa-microphone-alt"></i> Speaking Performance Review</h2>
+                        <h2 class="academy-livecoach-title"><i class="fas fa-microphone-alt"></i> Performance Review</h2>
                         <p class="academy-livecoach-status mb-0">Receive detailed feedback on your pronunciation, fluency, grammar, vocabulary, and speaking confidence.</p>
                     </div>
                     <div class="academy-evaluation-body">
@@ -1099,7 +1100,7 @@
             <section class="academy-card mt-4">
                 <div class="academy-card-header">
                     <div>
-                        <h2 class="academy-card-title"><i class="fas fa-book-open"></i> English Practice Courses</h2>
+                        <h2 class="academy-card-title"><i class="fas fa-book-open"></i> English Courses</h2>
                         <p class="academy-card-subtitle">Watch short lessons and continue your speaking practice.</p>
                     </div>
                 </div>
@@ -1168,13 +1169,13 @@
                                     <strong>{{ ucfirst($session->session_type ?? 'practice') }} • {{ optional($session->created_at)->format('M d, Y') }}</strong><br>
                                     <span class="text-muted">{{ $session->scenario->title ?? $session->context_name ?? 'Speaking Session' }}</span>
                                     <div class="small text-muted mt-1">
-                                        Duration: {{ $session->duration_seconds ? ceil($session->duration_seconds / 60) . ' min' : 'In progress' }}
+                                        Duration: {{ $session->duration_seconds ? ceil($session->duration_seconds / 60) . ' min' : 'Active session' }}
                                         · Minutes consumed: {{ $session->duration_seconds ? ceil($session->duration_seconds / 60) : 0 }}
                                         @if($session->transcript) · Transcript saved @endif
                                         @if($session->feedback) · Feedback saved @endif
                                     </div>
                                 </div>
-                                <div><span class="academy-pill">{{ is_null($session->overall_score) ? 'In progress' : number_format($session->overall_score, 1) . '/10' }}</span></div>
+                                <div><span class="academy-pill">{{ is_null($session->overall_score) ? 'Pending score' : number_format($session->overall_score, 1) . '/10' }}</span></div>
                             </div>
                         @empty
                             <p class="text-muted mb-0">No Practice History yet. Start Practice to create your first session.</p>

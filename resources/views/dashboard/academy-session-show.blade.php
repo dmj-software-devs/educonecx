@@ -70,6 +70,10 @@
         font-size: 1.3rem;
     }
 
+    .academy-progress-track { height: 8px; border-radius: 999px; background: #e5e7eb; overflow: hidden; margin-top: 10px; }
+    .academy-progress-bar { height: 100%; border-radius: inherit; background: linear-gradient(90deg, #2E5C61, #FBC60C); }
+    .academy-collapse-button { width: 100%; text-align: left; background: #F9F7E9; border: 1px solid rgba(10,29,68,.08); border-radius: 10px; padding: 12px 14px; color: #0A1D44; font-weight: 800; }
+
     .academy-section {
         margin-top: 24px;
     }
@@ -119,6 +123,14 @@
 @section('content')
 @php
     $formatScore = fn ($score) => is_null($score) ? 'N/A' : number_format($score, 1) . '/10';
+    $scoreRows = [
+        'Overall score' => $session->overall_score,
+        'Pronunciation' => $session->pronunciation_score,
+        'Grammar' => $session->grammar_score,
+        'Fluency' => $session->fluency_score,
+        'Vocabulary' => $session->vocabulary_score,
+        'Confidence' => $session->confidence_score,
+    ];
 @endphp
 
 <div class="academy-detail-wrapper">
@@ -144,11 +156,13 @@
 
         <div class="academy-detail-body">
             <div class="academy-score-grid">
-                <div class="academy-score-box"><span>Overall</span><strong>{{ $formatScore($session->overall_score) }}</strong></div>
-                <div class="academy-score-box"><span>Pronunciation</span><strong>{{ $formatScore($session->pronunciation_score) }}</strong></div>
-                <div class="academy-score-box"><span>Grammar</span><strong>{{ $formatScore($session->grammar_score) }}</strong></div>
-                <div class="academy-score-box"><span>Fluency</span><strong>{{ $formatScore($session->fluency_score) }}</strong></div>
-                <div class="academy-score-box"><span>Vocabulary</span><strong>{{ $formatScore($session->vocabulary_score) }}</strong></div>
+                @foreach($scoreRows as $label => $score)
+                    <div class="academy-score-box">
+                        <span>{{ $label }}</span>
+                        <strong>{{ $formatScore($score) }}</strong>
+                        <div class="academy-progress-track"><div class="academy-progress-bar" style="width: {{ is_null($score) ? 0 : min(100, max(0, $score * 10)) }}%"></div></div>
+                    </div>
+                @endforeach
             </div>
 
             @if($audioUrl)
@@ -161,17 +175,13 @@
             @endif
 
             <div class="academy-section">
-                <h2>Transcript</h2>
-                <div class="academy-panel">
-                    {!! nl2br(e($session->transcript ?? 'No transcript saved yet.')) !!}
-                </div>
+                <button class="academy-collapse-button" type="button" data-bs-toggle="collapse" data-bs-target="#transcriptCollapse" aria-expanded="false" aria-controls="transcriptCollapse"><i class="fas fa-file-alt"></i> Transcript preview</button>
+                <div class="collapse mt-2" id="transcriptCollapse"><div class="academy-panel">{!! nl2br(e($session->transcript ?? 'No transcript saved yet.')) !!}</div></div>
             </div>
 
             <div class="academy-section">
-                <h2>Feedback Report</h2>
-                <div class="academy-panel">
-                    {!! nl2br(e($session->feedback ?? 'No feedback saved yet.')) !!}
-                </div>
+                <button class="academy-collapse-button" type="button" data-bs-toggle="collapse" data-bs-target="#feedbackCollapse" aria-expanded="false" aria-controls="feedbackCollapse"><i class="fas fa-comment-dots"></i> Feedback preview</button>
+                <div class="collapse mt-2" id="feedbackCollapse"><div class="academy-panel">{!! nl2br(e($session->feedback ?? 'No feedback saved yet.')) !!}</div></div>
             </div>
 
             <div class="academy-section academy-list-grid">
