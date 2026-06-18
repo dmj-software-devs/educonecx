@@ -142,22 +142,8 @@ class PracticeCreditService
 
     public function grantCourseCredits(User $user, int $credits, $course = null): ?PracticeCreditTransaction
     {
-        if ($credits <= 0) {
-            return null;
-        }
-
-        $courseId = $course instanceof Course ? $course->id : ($course?->id ?? null);
-
-        if ($courseId && PracticeCreditTransaction::where('user_id', $user->id)
-            ->where('type', 'course_grant')
-            ->where('meta->course_id', $courseId)
-            ->exists()) {
-            return null;
-        }
-
-        return $this->addCredits($user, $credits, 'course_grant', 'Course enrollment Practice Room credits', [
-            'course_id' => $courseId,
-        ]);
+        // Course enrollment no longer grants user-visible practice-time entitlements.
+        return null;
     }
 
     public function recalculateWallet(User $user): UserPracticeCredit
@@ -206,7 +192,7 @@ class PracticeCreditService
             $balance->update([
                 'monthly_minutes_allocated' => 0,
                 'monthly_minutes_used' => 0,
-                'total_available_minutes' => max(0, (int) $balance->purchased_minutes),
+                'total_available_minutes' => 0,
             ]);
             return $balance->refresh();
         }
@@ -298,6 +284,7 @@ class PracticeCreditService
                 'stripe_response' => json_encode($checkout),
                 'billing_name' => $user->name,
                 'billing_email' => $user->email,
+                'notes' => 'Purchased ' . $minutes . ' practice minutes via Stripe Checkout.',
             ]);
 
             OrderItem::create([
@@ -354,6 +341,10 @@ class PracticeCreditService
                 'credit_used' => $this->minutesToInternalCredits($minutes),
             ]);
 
+            $usageSource = $fromPurchased > 0 && $fromMonthly > 0
+                ? 'monthly+purchased'
+                : ($fromPurchased > 0 ? 'purchased' : 'monthly');
+
             return \App\Models\PracticeUsageLog::create([
                 'user_id' => $user->id,
                 'academy_session_id' => $session->id,
@@ -361,7 +352,7 @@ class PracticeCreditService
                 'started_at' => $session->started_at,
                 'ended_at' => $session->ended_at ?: now(),
                 'minutes_used' => $minutes,
-                'source' => $source,
+                'source' => $usageSource,
             ]);
         });
     }

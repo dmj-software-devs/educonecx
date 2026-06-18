@@ -27,7 +27,8 @@
         </tbody></table>{{ $balances->links() }}
     </div></div>
 
-    <div class="row"><div class="col-md-5"><div class="card"><div class="card-body"><h3>Top Users</h3><ul>@foreach($topUsers as $row)<li>{{ $row->user?->name }} — {{ $row->total_minutes }} minutes</li>@endforeach</ul></div></div></div>
-    <div class="col-md-7"><div class="card"><div class="card-body"><h3>Usage History</h3><table class="table"><thead><tr><th>User</th><th>Type</th><th>Minutes</th><th>When</th></tr></thead><tbody>@foreach($recentUsage as $log)<tr><td>{{ $log->user?->name }}</td><td>{{ ucfirst($log->session_type) }}</td><td>{{ $log->minutes_used }}</td><td>{{ optional($log->created_at)->format('M d, Y g:i A') }}</td></tr>@endforeach</tbody></table></div></div></div></div>
+    <div class="row g-4"><div class="col-md-4"><div class="card"><div class="card-body"><h3>Top Users</h3><ul>@foreach($topUsers as $row)<li>{{ $row->user?->name }} — {{ $row->total_minutes }} minutes</li>@endforeach</ul></div></div></div>
+    <div class="col-md-4"><div class="card"><div class="card-body"><h3>Purchased Sessions</h3><table class="table"><thead><tr><th>User</th><th>Total</th><th>Details</th></tr></thead><tbody>@foreach($recentPurchases as $order)<tr><td>{{ $order->user?->name }}</td><td>${{ number_format((float) $order->total, 2) }}</td><td>{{ $order->notes ?: 'Practice session purchase' }}</td></tr>@endforeach</tbody></table></div></div></div>
+    <div class="col-md-4"><div class="card"><div class="card-body"><h3>Usage History</h3><table class="table"><thead><tr><th>User</th><th>Type</th><th>Minutes</th><th>Source</th><th>When</th></tr></thead><tbody>@foreach($recentUsage as $log)<tr><td>{{ $log->user?->name }}</td><td>{{ ucfirst($log->session_type) }}</td><td>{{ $log->minutes_used }}</td><td>{{ $log->source }}</td><td>{{ optional($log->created_at)->format('M d, Y g:i A') }}</td></tr>@endforeach</tbody></table></div></div></div></div>
 </div>
 @endsection

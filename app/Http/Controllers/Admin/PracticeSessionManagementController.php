@@ -15,9 +15,16 @@ class PracticeSessionManagementController extends Controller
     public function index()
     {
         $balances = UserPracticeBalance::with('user')->latest()->paginate(25);
+        $recentPurchases = Order::with('user')
+            ->where('order_type', 'practice_sessions')
+            ->where('payment_status', 'paid')
+            ->latest()
+            ->limit(50)
+            ->get();
+        $totalPurchasedMinutes = $recentPurchases->sum(fn (Order $order) => (int) preg_replace('/\D+/', '', (string) $order->notes));
         $stats = [
             'total_minutes_used' => PracticeUsageLog::sum('minutes_used'),
-            'total_purchased_minutes' => UserPracticeBalance::sum('purchased_minutes'),
+            'total_purchased_minutes' => $totalPurchasedMinutes,
             'monthly_usage' => PracticeUsageLog::where('created_at', '>=', now()->startOfMonth())->sum('minutes_used'),
             'practice_usage' => PracticeUsageLog::where('session_type', 'practice')->sum('minutes_used'),
             'exam_usage' => PracticeUsageLog::where('session_type', 'exam')->sum('minutes_used'),
@@ -26,7 +33,7 @@ class PracticeSessionManagementController extends Controller
         $recentUsage = PracticeUsageLog::with(['user', 'session'])->latest()->limit(50)->get();
         $users = User::orderBy('name')->limit(500)->get();
 
-        return view('admin.practice-sessions.index', compact('balances', 'stats', 'topUsers', 'recentUsage', 'users'));
+        return view('admin.practice-sessions.index', compact('balances', 'stats', 'topUsers', 'recentUsage', 'recentPurchases', 'users'));
     }
 
     public function adjust(Request $request, PracticeCreditService $service)
