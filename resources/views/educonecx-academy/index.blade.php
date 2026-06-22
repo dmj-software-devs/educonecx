@@ -1016,12 +1016,12 @@
                                 </div>
                             @endif
 
-                            <div class="academy-action-row mt-2">
+                            <!-- <div class="academy-action-row mt-2">
                                 <a href="{{ route('dashboard.educonecx-academy.index') }}#coach-settings" class="btn academy-btn-soft">
                                     <i class="fas fa-sliders-h"></i> Coach Settings
                                 </a>
                                 <span id="statusMessage" class="academy-status-message"></span>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>
