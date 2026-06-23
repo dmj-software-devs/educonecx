@@ -71,9 +71,13 @@ class EduconecxAcademyController extends Controller
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
         $practiceMinutesAvailable = (int) $practiceBalance->computed_available_minutes;
         $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 20);
+        $practiceCreditValue = $creditService->minutesToDollarCredits($practiceMinutesAvailable);
+        $practiceCreditValuePerMinute = $creditService->creditValuePerMinute();
+        $subscriptionIncludedPracticeCredits = (float) config('practice_room.subscription.included_credit_amount', 4);
+        $subscriptionIncludedPracticeMinutes = $creditService->includedSubscriptionMinutes();
 
         return response()
-            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
+            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceCreditValue', 'practiceCreditValuePerMinute', 'subscriptionIncludedPracticeCredits', 'subscriptionIncludedPracticeMinutes', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
@@ -135,10 +139,13 @@ class EduconecxAcademyController extends Controller
 
         $balance = $creditService->syncMonthlyAllocation($user);
 
+        $practiceMinutesAvailable = (int) $balance->computed_available_minutes;
+
         return response()->json([
             'success' => true,
-            'practice_minutes_available' => (int) $balance->computed_available_minutes,
-            'practice_sessions_available' => intdiv((int) $balance->computed_available_minutes, 20),
+            'practice_minutes_available' => $practiceMinutesAvailable,
+            'practice_credit_value' => $creditService->minutesToDollarCredits($practiceMinutesAvailable),
+            'practice_sessions_available' => intdiv($practiceMinutesAvailable, 20),
             'practice_cost_minutes' => 20,
             'exam_cost_minutes' => 20,
         ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
@@ -217,6 +224,7 @@ class EduconecxAcademyController extends Controller
                 'type' => 'insufficient_practice_time',
                 'message' => 'You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.',
                 'balance' => $currentBalance,
+                'practice_credit_value' => $creditService->minutesToDollarCredits($currentBalance),
                 'required' => 1,
             ], 402);
         }
@@ -282,6 +290,7 @@ class EduconecxAcademyController extends Controller
                 'endpoint_url' => $embed['endpoint_url'],
                 'endpoint_status' => $embed['status'],
                 'practice_minutes_available' => $creditService->remainingMinutes($user),
+                'practice_credit_value' => $creditService->minutesToDollarCredits($creditService->remainingMinutes($user)),
                 'max_minutes' => min(20, $currentBalance),
             ]);
         } catch (InsufficientPracticeCreditsException $exception) {
@@ -289,7 +298,8 @@ class EduconecxAcademyController extends Controller
                 'success' => false,
                 'type' => 'insufficient_practice_time',
                 'message' => 'You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.',
-                'balance' => $creditService->getBalance($user),
+                'balance' => $creditService->remainingMinutes($user),
+                'practice_credit_value' => $creditService->minutesToDollarCredits($creditService->remainingMinutes($user)),
                 'required' => $creditCost,
             ], 402);
         } catch (\Throwable $exception) {
@@ -627,6 +637,7 @@ class EduconecxAcademyController extends Controller
             'success' => true,
             'message' => 'Session ended successfully.',
             'practice_minutes_available' => $remaining,
+            'practice_credit_value' => app(PracticeCreditService::class)->minutesToDollarCredits($remaining),
         ]);
     }
 

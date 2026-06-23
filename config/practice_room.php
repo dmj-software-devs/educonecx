@@ -8,4 +8,10 @@ return [
     ],
 
     'default_course_credits' => (int) env('PRACTICE_ROOM_DEFAULT_COURSE_CREDITS', 20),
+
+    'subscription' => [
+        'included_credit_amount' => (float) env('PRACTICE_ROOM_SUBSCRIPTION_INCLUDED_CREDIT_AMOUNT', 4),
+        'included_minutes' => (int) env('PRACTICE_ROOM_SUBSCRIPTION_INCLUDED_MINUTES', 8),
+        'credit_value_per_minute' => (float) env('PRACTICE_ROOM_CREDIT_VALUE_PER_MINUTE', 0.50),
+    ],
 ];

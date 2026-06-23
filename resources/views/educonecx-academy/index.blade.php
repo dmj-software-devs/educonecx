@@ -830,6 +830,9 @@
                     && empty($missingHeyGenConfig);
                 $isPaidMember = (bool) ($isPaidMember ?? false);
                 $practiceMinutesAvailable = (int) ($practiceMinutesAvailable ?? $practiceMinutesAvailableJs ?? 0);
+                $practiceCreditValue = (float) ($practiceCreditValue ?? round($practiceMinutesAvailable * ($practiceCreditValuePerMinute ?? 0.5), 2));
+                $subscriptionIncludedPracticeCredits = (float) ($subscriptionIncludedPracticeCredits ?? 4);
+                $subscriptionIncludedPracticeMinutes = (int) ($subscriptionIncludedPracticeMinutes ?? 8);
                 $practiceMinutesAvailableJs = $practiceMinutesAvailable;
                 $canStartPracticeSession = $isPaidMember && $canStartPractice && $practiceMinutesAvailable > 0;
                 $canStartExamSession = $isPaidMember && $canStartPractice && $practiceMinutesAvailable > 0;
@@ -862,6 +865,7 @@
                             <p class="academy-card-subtitle mb-3">Start a guided conversation or take a formal speaking exam. Everything is timed, clean, and focused.</p>
                             <div class="academy-badge-row">
                                 <span class="academy-pill"><i class="fas fa-user-graduate"></i> Practice Sessions</span>
+                                <span class="academy-pill"><i class="fas fa-wallet"></i> ${{ number_format($practiceCreditValue, 2) }} Credits Left</span>
                                 <span class="academy-pill"><i class="fas fa-stopwatch"></i> {{ $practiceMinutesAvailable }} Minutes Remaining</span>
                             </div>
                         </div>
@@ -897,17 +901,12 @@
                     </button>
                 </article>
                 <article class="academy-action-card">
-                    <span class="academy-action-icon"><i class="fas fa-clock"></i></span>
-                    <h3>Practice Time Available</h3>
-                    <span class="academy-practice-time-value"><span id="practiceMinutesAvailableJsValue">{{ $practiceMinutesAvailable }}</span> Minutes</span>
+                    <span class="academy-action-icon"><i class="fas fa-wallet"></i></span>
+                    <h3>Practice Credits Available</h3>
+                    <span class="academy-practice-time-value">$<span id="practiceCreditValueJsValue">{{ number_format($practiceCreditValue, 2) }}</span></span>
                     <p>
-                        @if($practiceMinutesAvailable >= 20)
-                            {{ intdiv($practiceMinutesAvailable, 20) }} Full Practice Session{{ intdiv($practiceMinutesAvailable, 20) === 1 ? '' : 's' }} Remaining
-                        @elseif($practiceMinutesAvailable > 0)
-                            Partial Session Available — {{ $practiceMinutesAvailable }} Minutes Remaining
-                        @else
-                            0 Practice Sessions Remaining
-                        @endif
+                        <strong><span id="practiceMinutesAvailableJsValue">{{ $practiceMinutesAvailable }}</span> Minutes Left</strong><br>
+                        ${{ number_format($subscriptionIncludedPracticeCredits, 2) }} subscription credits = {{ $subscriptionIncludedPracticeMinutes }} minutes. Add-on sessions remain $10 for 20 minutes.
                     </p>
                     <div id="practiceTimeWarning" class="alert alert-warning mt-3 mb-0 {{ $practiceMinutesAvailable <= 0 ? '' : 'd-none' }}">
                         You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.
@@ -917,7 +916,7 @@
 
 
             <section class="academy-card mb-4" aria-labelledby="purchase-sessions-heading">
-                <div class="academy-card-header"><h2 id="purchase-sessions-heading" class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Sessions</h2><p class="academy-card-subtitle">Practice Sessions • 1 Session = 20 Minutes</p></div>
+                <div class="academy-card-header"><h2 id="purchase-sessions-heading" class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Sessions</h2><p class="academy-card-subtitle">Practice Sessions • 1 Session = $10 / 20 Minutes</p></div>
                 <div class="academy-card-body">
                     <div class="academy-action-row justify-content-between" style="gap:18px">
                         <div>
@@ -1036,7 +1035,7 @@
                         </div>
                         <div class="d-flex flex-wrap gap-2 justify-content-end">
                             <span id="currentTopicBadge" class="academy-pill">Current Topic: General English</span>
-                            <span id="practiceTimeRemainingBadge" class="academy-pill">Practice Time Remaining: {{ $practiceMinutesAvailable }} Minutes</span>
+                            <span id="practiceTimeRemainingBadge" class="academy-pill">Practice Credits Left: ${{ number_format($practiceCreditValue, 2) }} ({{ $practiceMinutesAvailable }} Minutes)</span>
                             <a id="openSessionLink" href="#" target="_blank" rel="noopener" class="btn academy-btn-soft d-none">
                                 <i class="fas fa-external-link-alt"></i> Open Session
                             </a>
@@ -1233,6 +1232,7 @@
     const startExamBtn = document.getElementById('startExamBtn');
     const confirmExamBtn = document.getElementById('confirmExamBtn');
     const practiceMinutesAvailableJsValue = document.getElementById('practiceMinutesAvailableJsValue');
+    const practiceCreditValueJsValue = document.getElementById('practiceCreditValueJsValue');
     const practiceTimeWarning = document.getElementById('practiceTimeWarning');
     const examRulesArea = document.getElementById('examRulesArea');
     const coachPhotoWrap = document.getElementById('coachPhotoWrap');
@@ -1278,12 +1278,16 @@
     const sessionCost = (mode) => mode === 'exam' ? examMinuteRequirement : practiceMinuteRequirement;
     const hasPracticeTimeFor = () => practiceMinutesAvailableJs > 0;
 
-    const updatePracticeTimeDisplay = (balance = practiceMinutesAvailableJs) => {
+    const updatePracticeTimeDisplay = (balance = practiceMinutesAvailableJs, creditValue = null) => {
         practiceMinutesAvailableJs = Number(balance ?? 0);
+        const resolvedCreditValue = creditValue === null ? (practiceMinutesAvailableJs * 0.5) : Number(creditValue ?? 0);
         if (practiceMinutesAvailableJsValue) {
             practiceMinutesAvailableJsValue.textContent = `${practiceMinutesAvailableJs}`;
         }
-        if (practiceTimeRemainingBadge) practiceTimeRemainingBadge.textContent = `Practice Time Remaining: ${practiceMinutesAvailableJs} Minutes`;
+        if (practiceCreditValueJsValue) {
+            practiceCreditValueJsValue.textContent = resolvedCreditValue.toFixed(2);
+        }
+        if (practiceTimeRemainingBadge) practiceTimeRemainingBadge.textContent = `Practice Credits Left: $${resolvedCreditValue.toFixed(2)} (${practiceMinutesAvailableJs} Minutes)`;
         if (practiceTimeWarning) {
             practiceTimeWarning.classList.toggle('d-none', practiceMinutesAvailableJs > 0);
         }
@@ -1312,7 +1316,7 @@
             const data = await response.json();
 
             if (response.ok && data.success && typeof data.practice_minutes_available !== 'undefined') {
-                updatePracticeTimeDisplay(data.practice_minutes_available);
+                updatePracticeTimeDisplay(data.practice_minutes_available, data.practice_credit_value);
             }
         } catch (error) {
             console.warn('Unable to refresh Practice Room practice time.', error);
@@ -1745,7 +1749,7 @@
 
             if (!response.ok || !data.success) {
                 if (data.type === 'insufficient_practice_time') {
-                    updatePracticeTimeDisplay(data.balance);
+                    updatePracticeTimeDisplay(data.balance, data.practice_credit_value);
                     throw new Error(data.message || 'You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.');
                 }
                 throw new Error(data.message || 'Unable to load your speaking session.');
@@ -1768,7 +1772,7 @@
                 setTimeout(() => startAutomaticExamRecording(), 500);
             }
             if (typeof data.practice_minutes_available !== 'undefined') {
-                updatePracticeTimeDisplay(data.practice_minutes_available);
+                updatePracticeTimeDisplay(data.practice_minutes_available, data.practice_credit_value);
             }
             const openSessionLink = document.getElementById('openSessionLink');
             const currentTopic = @json($practiceLessonContext?->title ?? 'General English');
@@ -1834,7 +1838,7 @@
                 })
             });
             const data = await response.json().catch(() => ({}));
-            if (typeof data.practice_minutes_available !== 'undefined') updatePracticeTimeDisplay(data.practice_minutes_available);
+            if (typeof data.practice_minutes_available !== 'undefined') updatePracticeTimeDisplay(data.practice_minutes_available, data.practice_credit_value);
         } catch (error) {
             console.error('session end error:', error);
         }

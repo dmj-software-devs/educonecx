@@ -185,6 +185,22 @@ class PracticeCreditService
         return \App\Models\UserPracticeBalance::firstOrCreate(['user_id' => $user->id]);
     }
 
+
+    public function includedSubscriptionMinutes(): int
+    {
+        return max(0, (int) config('practice_room.subscription.included_minutes', 8));
+    }
+
+    public function creditValuePerMinute(): float
+    {
+        return max(0.01, (float) config('practice_room.subscription.credit_value_per_minute', 0.50));
+    }
+
+    public function minutesToDollarCredits(int $minutes): float
+    {
+        return round(max(0, $minutes) * $this->creditValuePerMinute(), 2);
+    }
+
     public function syncMonthlyAllocation(User $user): \App\Models\UserPracticeBalance
     {
         $balance = $this->getOrCreatePracticeBalance($user);
@@ -202,11 +218,16 @@ class PracticeCreditService
             || ! $balance->monthly_reset_date
             || now()->greaterThanOrEqualTo($balance->monthly_reset_date);
 
+        $includedMinutes = $this->includedSubscriptionMinutes();
+
         if ($shouldReset) {
-            $balance->monthly_minutes_allocated = 20;
+            $balance->monthly_minutes_allocated = $includedMinutes;
             $balance->monthly_minutes_used = 0;
             $balance->last_reset_at = now();
             $balance->monthly_reset_date = $resetDate;
+        } elseif ((int) $balance->monthly_minutes_allocated !== $includedMinutes) {
+            $balance->monthly_minutes_allocated = $includedMinutes;
+            $balance->monthly_minutes_used = min((int) $balance->monthly_minutes_used, $includedMinutes);
         }
 
         $balance->total_available_minutes = $balance->recalculateAvailableMinutes();
