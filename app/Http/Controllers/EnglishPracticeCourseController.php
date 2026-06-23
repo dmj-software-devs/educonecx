@@ -5,13 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\EnglishPracticeCourse;
 use App\Models\EnglishPracticeLesson;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class EnglishPracticeCourseController extends Controller
 {
-    public function show(Request $request, EnglishPracticeCourse $course): View
+    public function show(Request $request, EnglishPracticeCourse $course): View|RedirectResponse
     {
-        abort_unless($request->user()?->canAccessPracticeRoom() || $request->user()?->isAdmin(), 403);
+        if (! ($request->user()?->canAccessPracticeRoom() || $request->user()?->isAdmin())) {
+            return redirect()
+                ->route('subscription.plans')
+                ->with('warning', 'Please choose a membership plan to access Practice Room courses.');
+        }
         abort_unless($course->status === 'published', 404);
 
         $course->load([

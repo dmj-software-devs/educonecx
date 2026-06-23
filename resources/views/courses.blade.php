@@ -876,8 +876,8 @@
 
     .course-badge {
         position: absolute;
-        bottom: 15px;
-        right: 15px;
+        top: 15px;
+        left: 15px;
         z-index: 3;
         padding: 5px 15px;
         background: var(--gradient-1);
@@ -895,8 +895,8 @@
 
     @media (max-width: 576px) {
         .course-badge {
-            bottom: 10px;
-            right: 10px;
+            top: 10px;
+            left: 10px;
             padding: 4px 12px;
             font-size: 0.7rem;
             max-width: calc(100% - 20px);

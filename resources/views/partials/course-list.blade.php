@@ -6,8 +6,8 @@
         $practiceCourseUrl = $canAccessPracticeCourse
             ? route('practice-room.courses.show', $practiceCourse->slug)
             : (Auth::check()
-                ? route('educonecx.academy.index')
-                : route('login') . '?redirect=' . urlencode(route('educonecx.academy.index')));
+                ? route('subscription.plans')
+                : route('login') . '?redirect=' . urlencode(route('subscription.plans')));
     @endphp
     <div class="course-card practice-room-course-card">
         <span class="course-badge" style="background: var(--gradient-2); color: var(--prussian-blue);">
