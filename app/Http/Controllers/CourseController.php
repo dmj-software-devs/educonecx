@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Category;
 use App\Models\Enrollment;
+use App\Models\EnglishPracticeCourse;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Certificate;
@@ -102,7 +103,8 @@ class CourseController extends Controller
 
         // Get course counts for stats
         $freeCoursesCount = Course::published()->free()->count();
-        $paidCoursesCount = Course::published()->paid()->count();
+        $practiceCourses = $this->practiceCoursesForCatalog($filters);
+        $paidCoursesCount = Course::published()->paid()->count() + $practiceCourses->count();
 
         // Paginate results (12 per page)
         $perPage = 12;
@@ -115,13 +117,52 @@ class CourseController extends Controller
         $hasActiveSubscription = Auth::check() ? Auth::user()->has_active_subscription : false;
 
         return view('courses', compact(
-            'paginatedCourses', 
-            'categories', 
-            'filters', 
-            'freeCoursesCount', 
+            'paginatedCourses',
+            'practiceCourses',
+            'categories',
+            'filters',
+            'freeCoursesCount',
             'paidCoursesCount',
             'hasActiveSubscription'
         ));
+    }
+
+
+    /**
+     * Get published Practice Room courses that should be advertised in the courses catalog.
+     */
+    private function practiceCoursesForCatalog(array $filters)
+    {
+        if (!empty($filters['categories']) || (!empty($filters['price']) && !in_array('paid', $filters['price']))) {
+            return collect();
+        }
+
+        $query = EnglishPracticeCourse::query()
+            ->withCount(['lessons as lessons_count' => fn ($query) => $query->where('status', 'published')])
+            ->where('status', 'published');
+
+        if (!empty($filters['keyword'])) {
+            $query->where(function ($q) use ($filters) {
+                $q->where('title', 'like', '%' . $filters['keyword'] . '%')
+                    ->orWhere('description', 'like', '%' . $filters['keyword'] . '%');
+            });
+        }
+
+        switch ($filters['sort']) {
+            case 'oldest_first':
+                $query->oldest('created_at');
+                break;
+            case 'course_title_az':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'course_title_za':
+                $query->orderBy('title', 'desc');
+                break;
+            default:
+                $query->orderBy('sort_order')->latest('created_at');
+        }
+
+        return $query->get();
     }
 
     /**
@@ -193,6 +234,7 @@ class CourseController extends Controller
 
             // Get paginated results
             $courses = $query->paginate(12);
+            $practiceCourses = $this->practiceCoursesForCatalog($filters);
 
             // Check if user has active subscription for the response
             $hasActiveSubscription = Auth::check() ? Auth::user()->has_active_subscription : false;
@@ -200,13 +242,14 @@ class CourseController extends Controller
             // Generate HTML for response
             $html = view('partials.course-list', [
                 'courses' => $courses,
+                'practiceCourses' => $practiceCourses,
                 'hasActiveSubscription' => $hasActiveSubscription
             ])->render();
 
             return response()->json([
                 'success' => true,
                 'html' => $html,
-                'count' => $courses->total(),
+                'count' => $courses->total() + $practiceCourses->count(),
                 'pagination' => (string) $courses->links()
             ]);
         } catch (\Exception $e) {

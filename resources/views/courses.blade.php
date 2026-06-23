@@ -1705,7 +1705,7 @@
                     </div>
                     <div class="stats-item">
                         <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('courses.stats_total') }}</span>
-                        <span class="stats-value" id="totalCoursesCount">{{ $paginatedCourses->total() ?? 0 }}</span>
+                        <span class="stats-value" id="totalCoursesCount">{{ ($paginatedCourses->total() ?? 0) + ($practiceCourses ?? collect())->count() }}</span>
                     </div>
                     <div class="stats-item">
                         <span class="stats-label">{{ App\Helpers\TranslationHelper::trans('courses.stats_free') }}</span>
@@ -1726,7 +1726,7 @@
                         {!! App\Helpers\TranslationHelper::trans('courses.results_showing', [
                             'from' => '<strong id="showingFrom">' . ($paginatedCourses->firstItem() ?? 0) . '</strong>',
                             'to' => '<strong id="showingTo">' . ($paginatedCourses->lastItem() ?? 0) . '</strong>',
-                            'total' => '<strong id="totalResults">' . $paginatedCourses->total() . '</strong>'
+                            'total' => '<strong id="totalResults">' . ($paginatedCourses->total() + ($practiceCourses ?? collect())->count()) . '</strong>'
                         ]) !!}
                     </div>
 
@@ -1749,141 +1749,7 @@
 
                 <!-- Courses Container -->
                 <div id="coursesContainer">
-                    @if($paginatedCourses->count() > 0)
-                    <div class="course-grid">
-                        @foreach($paginatedCourses as $course)
-                        <div class="course-card" data-aos="fade-up" data-aos-delay="{{ min($loop->index * 50, 300) }}">
-                            <div class="course-thumbnail">
-                                @if($course->featured)
-                                <span class="course-badge popular">{{ App\Helpers\TranslationHelper::trans('courses.badge_popular') }}</span>
-                                @elseif($course->is_free)
-                                <span class="course-badge free">{{ App\Helpers\TranslationHelper::trans('courses.badge_free') }}</span>
-                                @elseif(Auth::check() && Auth::user()->has_active_subscription)
-                                <span class="course-badge" style="background: var(--gradient-3); color: var(--prussian-blue);">
-                                    <i class="fas fa-check-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.badge_subscribed') }}
-                                </span>
-                                @endif
-
-                                <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
-                                <div class="course-overlay">
-                                    @if($course->video_intro)
-                                        <a href="#" class="course-preview" onclick="openVideoPreview(event, '{{ Storage::url($course->video_intro) }}', '{{ $course->title }}')">
-                                            <i class="far fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.preview_course') }}
-                                        </a>
-                                    @else
-                                        <span class="course-preview disabled">
-                                            <i class="far fa-play-circle"></i> Preview Unavailable
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="course-content">
-                                <div class="course-meta-top">
-                                    <span class="course-category">{{ $course->category->name ?? App\Helpers\TranslationHelper::trans('courses.course_category') }}</span>
-                                    <!-- <div class="course-rating">
-                                        <span class="stars">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= floor($course->average_rating ?? 0))
-                                                <i class="fas fa-star"></i>
-                                                @elseif($i - 0.5 <= ($course->average_rating ?? 0))
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                    @else
-                                                    <i class="far fa-star"></i>
-                                                    @endif
-                                                    @endfor
-                                        </span>
-                                        <span class="rating-value">{{ number_format($course->average_rating ?? 0, 1) }}</span>
-                                        <span class="rating-count">({{ $course->reviews_count ?? 0 }})</span>
-                                    </div> -->
-                                </div>
-
-                                <h3 class="course-title">
-                                    <a href="{{ route('courses.show', $course->slug) }}">{{ $course->title }}</a>
-                                </h3>
-
-                                <p class="course-description">{{ $course->excerpt ?? Str::limit($course->description, 100) }}</p>
-
-                                <div class="course-meta">
-                                    <!-- <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_hours', ['count' => $course->duration_hours ?? 0]) }}</span> -->
-                                    <span><i class="fas fa-signal"></i> {{ ucfirst($course->level ?? 'Beginner') }}</span>
-                                    <span><i class="fas fa-video"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_lessons', ['count' => $course->lessons_count ?? 0]) }}</span>
-                                </div>
-
-                                <div class="course-instructor">
-                                    <div class="instructor-avatar">
-                                        {{ substr($course->instructor->name ?? 'ED', 0, 1) }}
-                                    </div>
-                                    <div class="instructor-info">
-                                        <a href="#" class="instructor-name">{{ $course->instructor->name ?? App\Helpers\TranslationHelper::trans('courses.instructor_default') }}</a>
-                                        <div class="instructor-title">{{ App\Helpers\TranslationHelper::trans('courses.instructor_title') }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="course-footer">
-                                <div class="course-price {{ $course->is_free ? 'free' : '' }}">
-                                    @if($course->is_free)
-                                    {{ App\Helpers\TranslationHelper::trans('courses.price_free_label') }}
-                                    @else
-                                    @auth
-                                    {{ Auth::user()->has_active_subscription ? App\Helpers\TranslationHelper::trans('courses.badge_subscribed') : App\Helpers\TranslationHelper::trans('courses.price_subscription') }}
-                                    @else
-                                    {{ App\Helpers\TranslationHelper::trans('courses.price_subscription') }}
-                                    @endauth
-                                    @endif
-                                    <span class="price-label">
-                                        @if($course->is_free)
-                                        {{ App\Helpers\TranslationHelper::trans('courses.price_free_detail') }}
-                                        @else
-                                        @auth
-                                        {{ Auth::user()->has_active_subscription ? App\Helpers\TranslationHelper::trans('courses.price_subscribed_detail') : App\Helpers\TranslationHelper::trans('courses.price_subscription_detail') }}
-                                        @else
-                                        {{ App\Helpers\TranslationHelper::trans('courses.price_subscription_detail') }}
-                                        @endauth
-                                        @endif
-                                    </span>
-                                </div>
-
-                                @auth
-                                @if(!$course->is_free && Auth::user()->has_active_subscription)
-                                <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn" style="background: var(--gradient-3); color: var(--prussian-blue);">
-                                    <i class="fas fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.btn_start_learning') }}
-                                </a>
-                                @else
-                                <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
-                                    {{ App\Helpers\TranslationHelper::trans('courses.btn_view_details') }} <i class="fas fa-arrow-right"></i>
-                                </a>
-                                @endif
-                                @else
-                                <a href="{{ route('courses.show', $course->slug) }}" class="enroll-btn">
-                                    {{ App\Helpers\TranslationHelper::trans('courses.btn_view_details') }} <i class="fas fa-arrow-right"></i>
-                                </a>
-                                @endauth
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-
-                    <!-- Pagination -->
-                    @if($paginatedCourses->hasPages())
-                    <div class="pagination" id="paginationContainer">
-                        {{ $paginatedCourses->appends(request()->query())->links() }}
-                    </div>
-                    @endif
-                    @else
-                    <!-- No Results -->
-                    <div class="no-results" data-aos="fade-up">
-                        <div class="no-results-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h3>{{ App\Helpers\TranslationHelper::trans('courses.no_results_title') }}</h3>
-                        <p>{{ App\Helpers\TranslationHelper::trans('courses.no_results_description') }}</p>
-                        <a href="{{ route('courses') }}" class="reset-btn" id="resetFiltersBtn">
-                            <i class="fas fa-redo-alt"></i> {{ App\Helpers\TranslationHelper::trans('courses.btn_reset_filters') }}
-                        </a>
-                    </div>
-                    @endif
+                    @include('partials.course-list', ['courses' => $paginatedCourses, 'practiceCourses' => $practiceCourses ?? collect(), 'hasActiveSubscription' => $hasActiveSubscription])
                 </div>
             </main>
         </div>

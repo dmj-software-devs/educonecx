@@ -1,5 +1,63 @@
-@if($courses->count() > 0)
+@if(($practiceCourses ?? collect())->count() > 0 || $courses->count() > 0)
 <div class="course-grid">
+    @foreach(($practiceCourses ?? collect()) as $practiceCourse)
+    @php
+        $canAccessPracticeCourse = Auth::check() && (Auth::user()->canAccessPracticeRoom() || Auth::user()->isAdmin());
+        $practiceCourseUrl = $canAccessPracticeCourse
+            ? route('practice-room.courses.show', $practiceCourse->slug)
+            : (Auth::check()
+                ? route('educonecx.academy.index')
+                : route('login') . '?redirect=' . urlencode(route('educonecx.academy.index')));
+    @endphp
+    <div class="course-card practice-room-course-card">
+        <span class="course-badge" style="background: var(--gradient-2); color: var(--prussian-blue);">
+            <i class="fas fa-comments"></i> Practice Room
+        </span>
+
+        <div class="course-thumbnail">
+            <img src="{{ $practiceCourse->thumbnail_url ?? asset('images/course-placeholder.jpg') }}" alt="{{ $practiceCourse->title }}" loading="lazy">
+            <div class="course-overlay">
+                <span class="course-preview"><i class="fas fa-external-link-alt"></i> Open in Practice Room</span>
+            </div>
+        </div>
+
+        <div class="course-content">
+            <div class="course-meta-top">
+                <span class="course-category">English Practice</span>
+            </div>
+
+            <h3 class="course-title">
+                <a href="{{ $practiceCourseUrl }}">{{ $practiceCourse->title }}</a>
+            </h3>
+
+            <p class="course-description">{{ Str::limit(strip_tags($practiceCourse->description), 100) }}</p>
+
+            <div class="course-meta">
+                <span><i class="fas fa-signal"></i> {{ ucfirst($practiceCourse->level ?? 'Beginner') }}</span>
+                <span><i class="fas fa-video"></i> {{ App\Helpers\TranslationHelper::trans('courses.course_lessons', ['count' => $practiceCourse->lessons_count ?? 0]) }}</span>
+            </div>
+
+            <div class="course-instructor">
+                <div class="instructor-avatar">PR</div>
+                <div class="instructor-info">
+                    <a href="{{ $practiceCourseUrl }}" class="instructor-name">Practice Room</a>
+                    <div class="instructor-title">Paid member course</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="course-footer">
+            <div class="course-price">
+                {{ $canAccessPracticeCourse ? 'Access included' : App\Helpers\TranslationHelper::trans('courses.price_subscription') }}
+                <span class="price-label">{{ $canAccessPracticeCourse ? 'Open from the Practice Room' : 'Requires Practice Room access' }}</span>
+            </div>
+
+            <a href="{{ $practiceCourseUrl }}" class="enroll-btn" style="background: var(--gradient-3); color: var(--prussian-blue);">
+                <i class="fas fa-arrow-right"></i> Go to Practice Room
+            </a>
+        </div>
+    </div>
+    @endforeach
     @foreach($courses as $course)
     <div class="course-card">
         @if($course->featured)
