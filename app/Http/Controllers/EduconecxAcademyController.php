@@ -27,7 +27,8 @@ class EduconecxAcademyController extends Controller
     {
         $user = auth()->user();
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
-        $isPaidMember = (bool) ($user?->has_active_subscription || $practiceBalance->computed_available_minutes > 0);
+        $canAccessPracticeRoom = $this->currentUserCanAccessPracticeRoom($user, $practiceBalance);
+        $isPaidMember = $canAccessPracticeRoom;
         $practiceSessionPackage = PracticeSessionPackage::where('status', 'active')->first();
 
         $missingHeyGenConfig = $heyGenService->getMissingConfigurationKeys();
@@ -77,7 +78,7 @@ class EduconecxAcademyController extends Controller
         $subscriptionIncludedPracticeMinutes = $creditService->includedSubscriptionMinutes();
 
         return response()
-            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceCreditValue', 'practiceCreditValuePerMinute', 'subscriptionIncludedPracticeCredits', 'subscriptionIncludedPracticeMinutes', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
+            ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceCreditValue', 'practiceCreditValuePerMinute', 'subscriptionIncludedPracticeCredits', 'subscriptionIncludedPracticeMinutes', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'canAccessPracticeRoom', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
@@ -687,9 +688,25 @@ class EduconecxAcademyController extends Controller
         return redirect()->route('educonecx.academy.index')->with('success', 'Practice sessions purchased successfully.');
     }
 
-    private function currentUserCanAccessPracticeRoom(): bool
+    private function currentUserCanAccessPracticeRoom($user = null, $practiceBalance = null): bool
     {
-        return (bool) auth()->user()?->canAccessPracticeRoom();
+        $user ??= auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->has_active_subscription) {
+            return true;
+        }
+
+        $practiceBalance ??= app(PracticeCreditService::class)->syncMonthlyAllocation($user);
+
+        if ((int) ($practiceBalance?->computed_available_minutes ?? 0) > 0) {
+            return true;
+        }
+
+        return $user->canAccessPracticeRoom();
     }
 
     private function practiceRoomPaymentRequiredResponse(): JsonResponse

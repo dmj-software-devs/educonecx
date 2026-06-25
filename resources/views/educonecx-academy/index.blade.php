@@ -827,7 +827,7 @@
                 $currentPracticeConfig = $currentAvatarConfig ?? [];
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
                     && empty($missingHeyGenConfig);
-                $isPaidMember = (bool) ($isPaidMember ?? false);
+                $isPaidMember = (bool) ($canAccessPracticeRoom ?? $isPaidMember ?? false);
                 $practiceMinutesAvailable = (int) ($practiceMinutesAvailable ?? $practiceMinutesAvailableJs ?? 0);
                 $practiceCreditValue = (float) ($practiceCreditValue ?? round($practiceMinutesAvailable * ($practiceCreditValuePerMinute ?? (4 / 15)), 2));
                 $subscriptionIncludedPracticeCredits = (float) ($subscriptionIncludedPracticeCredits ?? 4);
