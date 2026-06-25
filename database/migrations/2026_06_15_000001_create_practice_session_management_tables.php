@@ -44,7 +44,7 @@ return new class extends Migration {
 
         DB::table('practice_session_packages')->insert([
             'name' => '1 Practice Session',
-            'minutes' => 20,
+            'minutes' => 30,
             'price' => 10.00,
             'status' => 'active',
             'created_at' => now(),

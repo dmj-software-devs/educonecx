@@ -70,7 +70,7 @@ class EduconecxAcademyController extends Controller
         $practiceLessonContext = $this->practiceLessonContext(request()->query('lesson_id'));
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
         $practiceMinutesAvailable = (int) $practiceBalance->computed_available_minutes;
-        $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 20);
+        $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 30);
 
         return response()
             ->view('educonecx-academy.index', compact('missingHeyGenConfig', 'avatarSetting', 'currentAvatarConfig', 'introVideoUrl', 'practiceCoachImage', 'examCoachImage', 'recentAcademySessions', 'practiceMinutesAvailable', 'practiceSessionsAvailable', 'practiceBalance', 'practiceSessionPackage', 'isPaidMember', 'defaultAvatarDebug', 'englishPracticeCourses', 'practiceLessonContext'))
@@ -138,9 +138,9 @@ class EduconecxAcademyController extends Controller
         return response()->json([
             'success' => true,
             'practice_minutes_available' => (int) $balance->computed_available_minutes,
-            'practice_sessions_available' => intdiv((int) $balance->computed_available_minutes, 20),
-            'practice_cost_minutes' => 20,
-            'exam_cost_minutes' => 20,
+            'practice_sessions_available' => intdiv((int) $balance->computed_available_minutes, 30),
+            'practice_cost_minutes' => 30,
+            'exam_cost_minutes' => 30,
         ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
@@ -282,7 +282,7 @@ class EduconecxAcademyController extends Controller
                 'endpoint_url' => $embed['endpoint_url'],
                 'endpoint_status' => $embed['status'],
                 'practice_minutes_available' => $creditService->remainingMinutes($user),
-                'max_minutes' => min(20, $currentBalance),
+                'max_minutes' => min(30, $currentBalance),
             ]);
         } catch (InsufficientPracticeCreditsException $exception) {
             return response()->json([
