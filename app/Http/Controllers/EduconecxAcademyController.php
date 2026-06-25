@@ -70,7 +70,7 @@ class EduconecxAcademyController extends Controller
         $practiceLessonContext = $this->practiceLessonContext(request()->query('lesson_id'));
         $practiceBalance = $creditService->syncMonthlyAllocation($user);
         $practiceMinutesAvailable = (int) $practiceBalance->computed_available_minutes;
-        $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 20);
+        $practiceSessionsAvailable = intdiv($practiceMinutesAvailable, 30);
         $practiceCreditValue = $creditService->minutesToDollarCredits($practiceMinutesAvailable);
         $practiceCreditValuePerMinute = $creditService->creditValuePerMinute();
         $subscriptionIncludedPracticeCredits = (float) config('practice_room.subscription.included_credit_amount', 4);
@@ -145,9 +145,9 @@ class EduconecxAcademyController extends Controller
             'success' => true,
             'practice_minutes_available' => $practiceMinutesAvailable,
             'practice_credit_value' => $creditService->minutesToDollarCredits($practiceMinutesAvailable),
-            'practice_sessions_available' => intdiv($practiceMinutesAvailable, 20),
-            'practice_cost_minutes' => 20,
-            'exam_cost_minutes' => 20,
+            'practice_sessions_available' => intdiv($practiceMinutesAvailable, 30),
+            'practice_cost_minutes' => 30,
+            'exam_cost_minutes' => 30,
         ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
@@ -291,7 +291,7 @@ class EduconecxAcademyController extends Controller
                 'endpoint_status' => $embed['status'],
                 'practice_minutes_available' => $creditService->remainingMinutes($user),
                 'practice_credit_value' => $creditService->minutesToDollarCredits($creditService->remainingMinutes($user)),
-                'max_minutes' => min(20, $currentBalance),
+                'max_minutes' => min(30, $currentBalance),
             ]);
         } catch (InsufficientPracticeCreditsException $exception) {
             return response()->json([

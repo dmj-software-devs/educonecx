@@ -11,7 +11,7 @@ return [
 
     'subscription' => [
         'included_credit_amount' => (float) env('PRACTICE_ROOM_SUBSCRIPTION_INCLUDED_CREDIT_AMOUNT', 4),
-        'included_minutes' => (int) env('PRACTICE_ROOM_SUBSCRIPTION_INCLUDED_MINUTES', 8),
-        'credit_value_per_minute' => (float) env('PRACTICE_ROOM_CREDIT_VALUE_PER_MINUTE', 0.50),
+        'included_minutes' => (int) env('PRACTICE_ROOM_SUBSCRIPTION_INCLUDED_MINUTES', 15),
+        'credit_value_per_minute' => (float) env('PRACTICE_ROOM_CREDIT_VALUE_PER_MINUTE', 4 / 15),
     ],
 ];

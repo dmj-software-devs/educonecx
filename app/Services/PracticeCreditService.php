@@ -188,12 +188,12 @@ class PracticeCreditService
 
     public function includedSubscriptionMinutes(): int
     {
-        return max(0, (int) config('practice_room.subscription.included_minutes', 8));
+        return max(0, (int) config('practice_room.subscription.included_minutes', 15));
     }
 
     public function creditValuePerMinute(): float
     {
-        return max(0.01, (float) config('practice_room.subscription.credit_value_per_minute', 0.50));
+        return max(0.01, (float) config('practice_room.subscription.credit_value_per_minute', 4 / 15));
     }
 
     public function minutesToDollarCredits(int $minutes): float
@@ -286,7 +286,7 @@ class PracticeCreditService
         }
 
         $quantity = max(1, (int) data_get($checkout, 'metadata.quantity', 1));
-        $minutes = max(20, (int) data_get($checkout, 'metadata.minutes', 20 * $quantity));
+        $minutes = max(30, (int) data_get($checkout, 'metadata.minutes', 30 * $quantity));
         $total = ((float) data_get($checkout, 'amount_total', 0)) / 100;
 
         return DB::transaction(function () use ($checkout, $stripeSessionId, $user, $quantity, $minutes, $total) {

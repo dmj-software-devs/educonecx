@@ -830,9 +830,9 @@
                     && empty($missingHeyGenConfig);
                 $isPaidMember = (bool) ($isPaidMember ?? false);
                 $practiceMinutesAvailable = (int) ($practiceMinutesAvailable ?? $practiceMinutesAvailableJs ?? 0);
-                $practiceCreditValue = (float) ($practiceCreditValue ?? round($practiceMinutesAvailable * ($practiceCreditValuePerMinute ?? 0.5), 2));
+                $practiceCreditValue = (float) ($practiceCreditValue ?? round($practiceMinutesAvailable * ($practiceCreditValuePerMinute ?? (4 / 15)), 2));
                 $subscriptionIncludedPracticeCredits = (float) ($subscriptionIncludedPracticeCredits ?? 4);
-                $subscriptionIncludedPracticeMinutes = (int) ($subscriptionIncludedPracticeMinutes ?? 8);
+                $subscriptionIncludedPracticeMinutes = (int) ($subscriptionIncludedPracticeMinutes ?? 15);
                 $practiceMinutesAvailableJs = $practiceMinutesAvailable;
                 $canStartPracticeSession = $isPaidMember && $canStartPractice && $practiceMinutesAvailable > 0;
                 $canStartExamSession = $isPaidMember && $canStartPractice && $practiceMinutesAvailable > 0;
@@ -906,7 +906,7 @@
                     <span class="academy-practice-time-value">$<span id="practiceCreditValueJsValue">{{ number_format($practiceCreditValue, 2) }}</span></span>
                     <p>
                         <strong><span id="practiceMinutesAvailableJsValue">{{ $practiceMinutesAvailable }}</span> Minutes Left</strong><br>
-                        ${{ number_format($subscriptionIncludedPracticeCredits, 2) }} subscription credits = {{ $subscriptionIncludedPracticeMinutes }} minutes. Add-on sessions remain $10 for 20 minutes.
+                        ${{ number_format($subscriptionIncludedPracticeCredits, 2) }} subscription credits = {{ $subscriptionIncludedPracticeMinutes }} minutes. Add-on sessions remain $10 for 30 minutes.
                     </p>
                     <div id="practiceTimeWarning" class="alert alert-warning mt-3 mb-0 {{ $practiceMinutesAvailable <= 0 ? '' : 'd-none' }}">
                         You have used all of your available practice sessions. Please purchase additional practice sessions to continue learning with your English Coach.
@@ -916,7 +916,7 @@
 
 
             <section class="academy-card mb-4" aria-labelledby="purchase-sessions-heading">
-                <div class="academy-card-header"><h2 id="purchase-sessions-heading" class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Sessions</h2><p class="academy-card-subtitle">Practice Sessions • 1 Session = $10 / 20 Minutes</p></div>
+                <div class="academy-card-header"><h2 id="purchase-sessions-heading" class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Sessions</h2><p class="academy-card-subtitle">Practice Sessions • 1 Session = $10 / 30 Minutes</p></div>
                 <div class="academy-card-body">
                     <div class="academy-action-row justify-content-between" style="gap:18px">
                         <div>
@@ -1222,8 +1222,8 @@
         exam: { url: @json($isExamImageUrl ? $examImage : ($isCoachImageUrl ? $coachImage : null)), exists: @json($isExamImageUrl || $isCoachImageUrl), name: @json((config('services.heygen.exam_avatar_id') || $examCoachImage !== $practiceCoachImage) ? 'Olivia' : ($currentPracticeConfig['avatar_name'] ?? 'Olivia Clarcke')), title: 'Assessment Supervisor', specialty: 'English Speaking Exam' },
     };
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    const practiceMinuteRequirement = 20;
-    const examMinuteRequirement = 20;
+    const practiceMinuteRequirement = 30;
+    const examMinuteRequirement = 30;
     const isPaidMember = @json($isPaidMember ?? false);
     let practiceMinutesAvailableJs = @json($practiceMinutesAvailableJs);
 
@@ -1280,7 +1280,7 @@
 
     const updatePracticeTimeDisplay = (balance = practiceMinutesAvailableJs, creditValue = null) => {
         practiceMinutesAvailableJs = Number(balance ?? 0);
-        const resolvedCreditValue = creditValue === null ? (practiceMinutesAvailableJs * 0.5) : Number(creditValue ?? 0);
+        const resolvedCreditValue = creditValue === null ? (practiceMinutesAvailableJs * (4 / 15)) : Number(creditValue ?? 0);
         if (practiceMinutesAvailableJsValue) {
             practiceMinutesAvailableJsValue.textContent = `${practiceMinutesAvailableJs}`;
         }
