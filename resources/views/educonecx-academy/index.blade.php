@@ -890,6 +890,7 @@
                     <button type="button" id="startPracticeBtn" class="btn academy-btn-primary btn-lg" {{ ! $canStartPracticeSession ? 'disabled' : '' }}>
                         <i class="fas fa-play"></i> Start Practice
                     </button>
+                    <span id="statusMessage" class="academy-status-message d-block mt-3" role="status" aria-live="polite"></span>
                 </article>
                 <article class="academy-action-card" style="border-top:6px solid #d4a017;background:linear-gradient(160deg,#fff7db 0%,#fff 60%)">
                     <span class="academy-action-icon" style="background:#d4a017;color:#fff"><i class="fas fa-clipboard-check"></i></span>
@@ -1323,11 +1324,17 @@
     };
 
     const setEvaluationStatus = (message, className = 'small text-muted') => {
+        if (!evaluationStatus) return;
         evaluationStatus.textContent = message;
         evaluationStatus.className = className;
     };
 
     const setStatusMessage = (message, isError = false) => {
+        if (!statusMessage) {
+            console.warn('Practice Room status message element is missing.', message);
+            return;
+        }
+
         statusMessage.textContent = message;
         statusMessage.classList.toggle('text-danger', isError);
     };
