@@ -203,7 +203,7 @@ class PracticeCreditService
             || now()->greaterThanOrEqualTo($balance->monthly_reset_date);
 
         if ($shouldReset) {
-            $balance->monthly_minutes_allocated = 20;
+            $balance->monthly_minutes_allocated = 15;
             $balance->monthly_minutes_used = 0;
             $balance->last_reset_at = now();
             $balance->monthly_reset_date = $resetDate;
@@ -265,7 +265,7 @@ class PracticeCreditService
         }
 
         $quantity = max(1, (int) data_get($checkout, 'metadata.quantity', 1));
-        $minutes = max(20, (int) data_get($checkout, 'metadata.minutes', 20 * $quantity));
+        $minutes = max(30, (int) data_get($checkout, 'metadata.minutes', 30 * $quantity));
         $total = ((float) data_get($checkout, 'amount_total', 0)) / 100;
 
         return DB::transaction(function () use ($checkout, $stripeSessionId, $user, $quantity, $minutes, $total) {

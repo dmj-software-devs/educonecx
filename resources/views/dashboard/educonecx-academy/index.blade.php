@@ -175,7 +175,7 @@
                 <div class="academy-card-body">
                     <div class="academy-stats-grid">
                         <div class="academy-stat"><span>Practice Time Available</span><strong>{{ $practiceBalance->computed_available_minutes ?? 0 }} Minutes</strong></div>
-                        <div class="academy-stat"><span>Practice Sessions Available</span><strong>{{ intdiv((int) ($practiceBalance->computed_available_minutes ?? 0), 20) }}</strong></div>
+                        <div class="academy-stat"><span>Practice Sessions Available</span><strong>{{ intdiv((int) ($practiceBalance->computed_available_minutes ?? 0), 30) }}</strong></div>
                         <div class="academy-stat"><span>Monthly Used</span><strong>{{ $practiceBalance->monthly_minutes_used ?? 0 }} Minutes</strong></div>
                         <div class="academy-stat"><span>Next Reset</span><strong>{{ optional($practiceBalance->monthly_reset_date)->format('M d, Y') ?? 'N/A' }}</strong></div>
                     </div>
