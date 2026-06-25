@@ -826,7 +826,6 @@
             @php
                 $currentPracticeConfig = $currentAvatarConfig ?? [];
                 $canStartPractice = ! empty($currentPracticeConfig['avatar_id'])
-                    && ! empty($currentPracticeConfig['context_id'])
                     && empty($missingHeyGenConfig);
                 $isPaidMember = (bool) ($isPaidMember ?? false);
                 $practiceMinutesAvailable = (int) ($practiceMinutesAvailable ?? $practiceMinutesAvailableJs ?? 0);
@@ -1273,7 +1272,7 @@
     let transcriptActive = false;
     let demoSessionLocked = false;
 
-    const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && currentPracticeConfig.context_id && !missingHeyGenConfig.length);
+    const hasPracticeConfig = Boolean(currentPracticeConfig.avatar_id && !missingHeyGenConfig.length);
 
     const sessionCost = (mode) => mode === 'exam' ? examMinuteRequirement : practiceMinuteRequirement;
     const hasPracticeTimeFor = () => practiceMinutesAvailableJs > 0;
