@@ -114,7 +114,7 @@ class EnrollmentController extends Controller
                     'course_id' => $course->id,
                     'access_type' => 'subscription',
                     'enrollment_date' => now(),
-                    'expiry_date' => $user->active_subscription->end_date,
+                    'expiry_date' => optional($user->active_subscription)->end_date,
                     'status' => 'active',
                     'progress' => 0
                 ]);
@@ -171,6 +171,11 @@ class EnrollmentController extends Controller
 
         $user = Auth::user();
 
+        if (!$user) {
+            return redirect()->guest(route('login') . '?redirect=' . urlencode(request()->fullUrl()))
+                ->with('error', 'Please log in to continue learning this course.');
+        }
+
         // Check if user has access
         if (!$course->canUserAccess($user->id)) {
             if (!$course->is_free && !$user->has_active_subscription) {
@@ -193,7 +198,7 @@ class EnrollmentController extends Controller
                 'course_id' => $course->id,
                 'access_type' => 'subscription',
                 'enrollment_date' => now(),
-                'expiry_date' => $user->active_subscription->end_date,
+                'expiry_date' => optional($user->active_subscription)->end_date,
                 'status' => 'active',
                 'progress' => 0
             ]);
@@ -213,7 +218,11 @@ class EnrollmentController extends Controller
             ->toArray();
 
         $currentLesson = null;
-        if (session()->has('current_lesson_' . $course->id)) {
+        if (request()->filled('lesson')) {
+            $currentLesson = $course->lessons->firstWhere('id', (int) request('lesson'));
+        }
+
+        if (! $currentLesson && session()->has('current_lesson_' . $course->id)) {
             $currentLesson = $course->lessons->firstWhere('id', (int) session('current_lesson_' . $course->id));
         }
 
