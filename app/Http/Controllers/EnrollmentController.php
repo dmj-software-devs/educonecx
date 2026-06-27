@@ -200,15 +200,37 @@ class EnrollmentController extends Controller
             $course->increment('total_students');
         }
 
-        // Get course progress
+        // Get course progress and each lesson's saved playback position for this user.
         $progress = $enrollment ? $enrollment->progress : 0;
-        $completedLessons = LessonProgress::where('user_id', $user->id)
+        $lessonProgress = LessonProgress::where('user_id', $user->id)
             ->where('course_id', $course->id)
+            ->get()
+            ->keyBy('lesson_id');
+
+        $completedLessons = $lessonProgress
             ->where('status', 'completed')
             ->pluck('lesson_id')
             ->toArray();
 
-        return view('course-learning', compact('course', 'enrollment', 'progress', 'completedLessons'));
+        $currentLesson = null;
+        if (session()->has('current_lesson_' . $course->id)) {
+            $currentLesson = $course->lessons->firstWhere('id', (int) session('current_lesson_' . $course->id));
+        }
+
+        $lastTouchedProgress = $lessonProgress
+            ->sortByDesc(fn ($item) => $item->last_accessed ?: $item->updated_at)
+            ->first();
+
+        if (! $currentLesson && $lastTouchedProgress) {
+            $currentLesson = $course->lessons->firstWhere('id', $lastTouchedProgress->lesson_id);
+        }
+
+        if (! $currentLesson) {
+            $currentLesson = $course->lessons->first(fn ($lesson) => ! in_array($lesson->id, $completedLessons))
+                ?: $course->lessons->first();
+        }
+
+        return view('course-learning', compact('course', 'enrollment', 'progress', 'completedLessons', 'lessonProgress', 'currentLesson'));
     }
 
     /**

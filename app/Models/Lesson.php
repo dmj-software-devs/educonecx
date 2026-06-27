@@ -184,14 +184,14 @@ class Lesson extends Model
         return $progress;
     }
 
-    public function updateProgress($secondsWatched, $userId = null)
+    public function updateProgress($secondsWatched, $userId = null, $durationSeconds = null)
     {
         $userId = $userId ?? auth()->id();
         if (!$userId) return false;
 
-        if (!$this->video_duration) return false;
-
-        $progress = min(round(($secondsWatched / $this->video_duration) * 100), 100);
+        $duration = (int) ($durationSeconds ?: $this->video_duration ?: 0);
+        $secondsWatched = max(0, (int) round($secondsWatched));
+        $progress = $duration > 0 ? min(round(($secondsWatched / $duration) * 100), 100) : 0;
         
         $wasCompleted = LessonProgress::where('user_id', $userId)
             ->where('lesson_id', $this->id)
@@ -208,9 +208,12 @@ class Lesson extends Model
             [
                 'watched_seconds' => $secondsWatched,
                 'last_position' => $secondsWatched,
-                'progress' => $progress,
-                'status' => $progress > 90 ? 'completed' : 'in_progress',
-                'completed_at' => $progress > 90 ? now() : null
+                'progress' => $wasCompleted ? 100 : $progress,
+                'status' => ($wasCompleted || $progress > 90) ? 'completed' : 'in_progress',
+                'completed_at' => ($wasCompleted || $progress > 90)
+                    ? (optional($this->progress()->where('user_id', $userId)->where('course_id', $this->course_id)->first())->completed_at ?: now())
+                    : null,
+                'last_accessed' => now(),
             ]
         );
 

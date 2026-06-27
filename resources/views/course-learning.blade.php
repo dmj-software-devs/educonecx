@@ -128,7 +128,10 @@
                                     data-content="{{ $lesson->content ?? '' }}"
                                     data-description="{{ $lesson->description ?? '' }}"
                                     data-is-preview="{{ $lesson->is_preview ? 'true' : 'false' }}"
-                                    data-attachment="{{ $lesson->attachment_url ?? '' }}">
+                                    data-attachment="{{ $lesson->attachment_url ?? '' }}"
+                                    data-last-position="{{ (int) optional(($lessonProgress ?? collect())->get($lesson->id))->last_position }}"
+                                    data-watched-seconds="{{ (int) optional(($lessonProgress ?? collect())->get($lesson->id))->watched_seconds }}"
+                                    data-lesson-progress="{{ (int) optional(($lessonProgress ?? collect())->get($lesson->id))->progress }}">
                                     <div class="lesson-status">
                                         @if($isCompleted)
                                             <i class="fas fa-check-circle"></i>
@@ -1446,7 +1449,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (_embedEndedFallbackTimer) { clearTimeout(_embedEndedFallbackTimer); _embedEndedFallbackTimer = null; }
     }
 
-    function loadVideo(url, type = 'youtube', lessonTitle = '', lessonDurationSecs = 0) {
+    function loadVideo(url, type = 'youtube', lessonTitle = '', lessonDurationSecs = 0, resumeSeconds = 0) {
         destroyYT();
         cancelAutoAdvance();
         clearEmbedEndedFallback();
@@ -1491,7 +1494,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 spinner.remove();
                 _ytPlayer = new YT.Player(wrap.id, {
                     videoId: vid,
-                    playerVars: { autoplay:1, mute:1, controls:1, rel:0, modestbranding:1, iv_load_policy:3, fs:1 },
+                    playerVars: { autoplay:1, mute:1, controls:1, rel:0, modestbranding:1, iv_load_policy:3, fs:1, start: Math.max(0, Math.floor(resumeSeconds || 0)) },
                     events: {
                         onReady(e) {
                             e.target.playVideo();
@@ -1517,12 +1520,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const mw  = document.createElement('div'); mw.className = 'vp-media-wrap';
             const ifr = document.createElement('iframe');
-            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&controls=1&playsinline=1&api=1&byline=0&portrait=0&title=0`;
+            ifr.src = `https://player.vimeo.com/video/${vid}?autoplay=1&muted=1&controls=1&playsinline=1&api=1&byline=0&portrait=0&title=0#t=${Math.max(0, Math.floor(resumeSeconds || 0))}s`; 
             ifr.allow = 'autoplay; fullscreen; picture-in-picture'; ifr.allowFullscreen = true;
             mw.appendChild(ifr); videoPlayer.appendChild(mw);
 
             if (window.Vimeo && window.Vimeo.Player) {
                 _vmPlayer = new Vimeo.Player(ifr);
+                if (resumeSeconds > 5) _vmPlayer.setCurrentTime(resumeSeconds).catch(() => {});
                 _vmPlayer.on('ended', onVideoEnded);
                 _vmPlayer.on('timeupdate', (data) => {
                     if (data?.seconds > 0) updateVideoProgress(data.seconds);
@@ -1571,6 +1575,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             /* Initially paused because autoplay may be blocked */
             vid.addEventListener('loadedmetadata', () => {
+                if (resumeSeconds > 5 && resumeSeconds < vid.duration) vid.currentTime = resumeSeconds;
                 if (vid.paused) { bp.classList.add('visible'); videoContainer.classList.add('vp-paused'); }
                 tryStartPlayback(vid).then(started => {
                     if (!started) {
@@ -1634,6 +1639,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 videoPlayer.appendChild(mw);
 
                 vid.addEventListener('loadedmetadata', () => {
+                    if (resumeSeconds > 5 && resumeSeconds < vid.duration) vid.currentTime = resumeSeconds;
                     tryStartPlayback(vid);
                 });
                 let lastProg = 0;
@@ -1676,6 +1682,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+
+    function getActiveVideoDuration() {
+        const vid = videoPlayer.querySelector('video');
+        if (vid && Number.isFinite(vid.duration) && vid.duration > 0) return vid.duration;
+        const currentEl = document.querySelector(`[data-lesson-id="${currentLessonId}"]`);
+        return parseDurationToSeconds(currentEl?.dataset.lessonDuration || '');
+    }
+
     /* ====================================================
        PROGRESS API
     ==================================================== */
@@ -1684,8 +1698,23 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/lessons/${currentLessonId}/progress`, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', 'Content-Type': 'application/json' },
-            body: JSON.stringify({ seconds: Math.round(seconds) })
-        }).catch(() => {});
+            body: JSON.stringify({ seconds: Math.round(seconds), duration: Math.round(getActiveVideoDuration()) })
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (!data?.success) return;
+            const el = document.querySelector(`[data-lesson-id="${currentLessonId}"]`);
+            if (el) {
+                el.dataset.lastPosition = data.last_position ?? Math.round(seconds);
+                el.dataset.watchedSeconds = data.last_position ?? Math.round(seconds);
+                el.dataset.lessonProgress = data.progress ?? el.dataset.lessonProgress ?? 0;
+            }
+            if (data.status === 'completed' && !courseData.completedLessons.includes(parseInt(currentLessonId))) {
+                courseData.completedLessons.push(parseInt(currentLessonId));
+                updateLessonUI(currentLessonId, true);
+            }
+        })
+        .catch(() => {});
     }
 
     /* ====================================================
@@ -1855,7 +1884,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const url   = el.dataset.videoUrl;
         const title = el.dataset.lessonTitle || 'Lesson';
         const durationSecs = parseDurationToSeconds(el.dataset.lessonDuration || '');
-        if (url?.trim()) loadVideo(url, el.dataset.videoType, title, durationSecs);
+        const resumeSeconds = Math.max(parseInt(el.dataset.lastPosition || '0', 10), parseInt(el.dataset.watchedSeconds || '0', 10));
+        if (url?.trim()) loadVideo(url, el.dataset.videoType, title, durationSecs, resumeSeconds);
         else showVideoPlaceholder('No video available for this lesson');
 
         loadLessonContent(title, el.dataset.content || el.dataset.description || '', el.dataset.attachment);

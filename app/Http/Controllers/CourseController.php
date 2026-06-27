@@ -718,7 +718,8 @@ class CourseController extends Controller
     {
         try {
             $request->validate([
-                'seconds' => 'required|numeric|min:0'
+                'seconds' => 'required|numeric|min:0',
+                'duration' => 'nullable|numeric|min:0'
             ]);
 
             $user = Auth::user();
@@ -728,12 +729,20 @@ class CourseController extends Controller
 
             $lesson = Lesson::findOrFail($lessonId);
             
-            $progress = $lesson->updateProgress($request->seconds, $user->id);
+            $progress = $lesson->updateProgress($request->seconds, $user->id, $request->duration);
+
+            if (! $progress) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unable to update progress'
+                ], 422);
+            }
 
             return response()->json([
                 'success' => true,
                 'progress' => $progress->progress,
-                'status' => $progress->status
+                'status' => $progress->status,
+                'last_position' => $progress->last_position
             ]);
 
         } catch (\Exception $e) {

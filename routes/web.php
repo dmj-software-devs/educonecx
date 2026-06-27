@@ -293,6 +293,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/courses/{course}/learn', [CourseController::class, 'learn'])->name('courses.learn');
     Route::post('/courses/{course}/rate', [CourseController::class, 'rate'])->name('courses.rate');
     Route::post('/lessons/{lesson}/complete', [CourseController::class, 'completeLesson'])->name('lessons.complete');
+    Route::post('/lessons/{lesson}/progress', [CourseController::class, 'updateLessonProgress'])->name('lessons.progress');
 
     // Quiz Routes
     Route::get('/quizzes', [QuizController::class, 'index'])->name('quizzes.index');
