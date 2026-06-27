@@ -2096,13 +2096,13 @@
                 </div>
                 <div class="course-content">
                     <div class="course-meta">
-                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => $course->duration ?? '10']) }}</span>
+                        <span><i class="far fa-clock"></i> {{ App\Helpers\TranslationHelper::trans('home.course_hours', ['hours' => $course->duration_hours ?? 1]) }}</span>
                         <span><i class="fas fa-signal"></i> {{ $course->level ?? App\Helpers\TranslationHelper::trans('common.beginner') }}</span>
                     </div>
                     <h3 class="course-title">
                         <a href="{{ route('courses.show', $course->slug ?? '#') }}">{{ $course->title ?? App\Helpers\TranslationHelper::trans('home.course_title_placeholder') }}</a>
                     </h3>
-                    <p>{{ Str::limit($course->excerpt ?? App\Helpers\TranslationHelper::trans('home.course_desc_placeholder'), 80) }}</p>
+                    <p>{{ Str::limit($course->excerpt ?: ($course->description ? strip_tags($course->description) : App\Helpers\TranslationHelper::trans('home.course_desc_placeholder')), 80) }}</p>
 
                     @if(isset($course->total_students) && $course->total_students > 0)
                     <div class="course-stats">

@@ -22,6 +22,8 @@ return [
     'message' => 'Message',
     'subject' => 'Subject',
     'address' => 'Address',
+    'general' => 'General',
+    'beginner' => 'Beginner',
     
     // Status messages
     'success' => 'Success',

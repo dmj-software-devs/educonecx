@@ -76,8 +76,16 @@ class TranslationHelper
             return $key;
         }
         
-        // Get translation
-        $translation = $translations[$transKey] ?? $key;
+        // Get translation; if the active locale file exists but the key is missing,
+        // fall back to the English value before returning the raw key.
+        $translation = $translations[$transKey] ?? null;
+
+        if ($translation === null && $locale !== self::DEFAULT) {
+            $fallbackTranslations = self::loadFile($file, self::DEFAULT);
+            $translation = $fallbackTranslations[$transKey] ?? null;
+        }
+
+        $translation = $translation ?? $key;
         
         // Replace placeholders
         foreach ($replace as $search => $replaceValue) {

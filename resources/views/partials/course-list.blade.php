@@ -76,12 +76,17 @@
             </button>
         </div>
 
-        <div class="course-thumbnail">
+        <a class="course-thumbnail"
+           href="{{ route('courses.show', $course->slug) }}"
+           @if($course->video_intro_url)
+           onclick="openVideoPreview(event, @js($course->video_intro_url), @js($course->title))"
+           @endif
+           aria-label="{{ App\Helpers\TranslationHelper::trans('courses.preview_course') }}: {{ $course->title }}">
             <img src="{{ $course->thumbnail_url ?? 'https://via.placeholder.com/600x400' }}" alt="{{ $course->title }}" loading="lazy">
             <div class="course-overlay">
-                <span class="course-preview"><i class="far fa-play-circle"></i> {{ App\Helpers\TranslationHelper::trans('courses.preview_course') }}</span>
+                <span class="course-preview {{ $course->video_intro_url ? '' : 'disabled' }}"><i class="far fa-play-circle"></i> {{ $course->video_intro_url ? App\Helpers\TranslationHelper::trans('courses.preview_course') : App\Helpers\TranslationHelper::trans('courses.btn_view_details') }}</span>
             </div>
-        </div>
+        </a>
 
         <div class="course-content">
             <div class="course-meta-top">

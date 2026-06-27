@@ -67,6 +67,8 @@ return [
     'course_start' => 'Start',
     'course_free' => 'Free',
     'course_view_all' => 'View All Courses',
+    'course_title_placeholder' => 'Featured EDUCONECX Course',
+    'course_desc_placeholder' => 'Build practical language and digital business skills with guided EDUCONECX learning content.',
     
     // Sample Courses
     'course_1_title' => 'Business English Mastery',
