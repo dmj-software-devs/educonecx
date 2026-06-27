@@ -75,6 +75,7 @@ class Course extends Model
         'has_discount',
         'discount_percentage',
         'formatted_duration',
+        'duration_hours',
         'is_paid',
         'instructor_name',
         'category_name',
@@ -201,6 +202,20 @@ class Course extends Model
             return 0;
         }
         return (int) round((($this->price - $this->sale_price) / $this->price) * 100);
+    }
+
+
+    public function getDurationHoursAttribute(): int
+    {
+        if (!empty($this->duration)) {
+            return max(1, (int) ceil((float) $this->duration));
+        }
+
+        if (!empty($this->total_duration)) {
+            return max(1, (int) ceil($this->total_duration / 3600));
+        }
+
+        return 1;
     }
 
     public function getFormattedDurationAttribute(): string

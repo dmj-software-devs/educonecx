@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'meta_description' => 'Découvrez EDUCONECX, une plateforme éducative interactive internationale dédiée à accompagner les apprenants du monde entier avec des compétences pratiques en langues et en affaires numériques.',
+
     // Hero Section
     'hero_badge' => 'À Propos d\'EDUCONECX',
     'hero_title' => 'Autonomiser les <span>Apprenants du Monde Entier</span>',

@@ -21,6 +21,7 @@ return [
     'phone' => 'Phone',
     'message' => 'Message',
     'subject' => 'Subject',
+    'address' => 'Address',
     
     // Status messages
     'success' => 'Success',

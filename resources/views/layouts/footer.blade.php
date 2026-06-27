@@ -96,7 +96,7 @@
     <div class="footer-bottom">
         <div class="container">
             <div class="footer-bottom-content">
-                <p>&copy; {{ date('Y') }} {{ App\Helpers\TranslationHelper::trans('footer.copyright', ['year' => date('Y')]) }}</p>
+                <p>{{ App\Helpers\TranslationHelper::trans('footer.copyright', ['year' => date('Y')]) }}</p>
                 <div class="footer-bottom-links">
                     <a href="{{ route('privacy') }}">{{ App\Helpers\TranslationHelper::trans('footer.privacy') }}</a>
                     <a href="{{ route('terms') }}">{{ App\Helpers\TranslationHelper::trans('footer.terms') }}</a>

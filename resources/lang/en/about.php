@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'meta_description' => 'Learn about EDUCONECX, an international interactive educational platform dedicated to supporting learners worldwide with practical language and digital business skills.',
+
     // Hero Section
     'hero_badge' => 'About EDUCONECX',
     'hero_title' => 'Empowering <span>Learners Worldwide</span>',

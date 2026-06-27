@@ -1768,7 +1768,7 @@
         <div class="video-modal-body">
             <video id="videoPlayer" controls controlsList="nodownload">
                 <source src="" type="video/mp4">
-                Your browser does not support the video tag.
+                Preview video is unavailable in this browser. You can still open the course details to view available content.
             </video>
         </div>
         <div class="video-modal-footer">
@@ -1788,6 +1788,11 @@
         const videoPlayer = document.getElementById('videoPlayer');
         const modalTitle = document.getElementById('videoModalTitle');
         
+        if (!videoUrl) {
+            window.location.href = event.currentTarget?.href || '{{ route('courses') }}';
+            return;
+        }
+
         // Set video source
         videoPlayer.querySelector('source').src = videoUrl;
         videoPlayer.load();
