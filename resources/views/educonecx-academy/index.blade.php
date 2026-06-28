@@ -67,6 +67,14 @@
         display: none !important;
     }
 
+    .academy-back-practice-btn {
+        display: none;
+    }
+
+    .academy-page.academy-exam-active .academy-back-practice-btn {
+        display: inline-flex;
+    }
+
     .academy-hero-content {
         position: relative;
         z-index: 1;
@@ -835,6 +843,7 @@
                 <span class="academy-hero-badge"><i class="fas fa-chalkboard-teacher"></i> Olivia Clarcke</span>
                 <span class="academy-hero-badge"><i class="fas fa-microphone-alt"></i> Speaking Practice</span>
                 <span class="academy-hero-badge"><i class="fas fa-chart-line"></i> Performance Feedback</span>
+                <button type="button" id="backToPracticeBtn" class="btn academy-btn-soft academy-back-practice-btn"><i class="fas fa-arrow-left"></i> Back to Practice</button>
             </div>
         </div>
     </section>
@@ -1226,6 +1235,7 @@
     const heroSubtitle = document.getElementById('academyHeroSubtitle');
     const startBtn = document.getElementById('startPracticeBtn');
     const showExamRulesBtn = document.getElementById('showExamRulesBtn');
+    const backToPracticeBtn = document.getElementById('backToPracticeBtn');
     const practiceMinutesAvailableJsValue = document.getElementById('practiceMinutesAvailableJsValue');
     const practiceCreditValueJsValue = document.getElementById('practiceCreditValueJsValue');
     const practiceTimeWarning = document.getElementById('practiceTimeWarning');
@@ -1861,9 +1871,47 @@
         }
     };
 
+
+    const returnToPracticeMode = async () => {
+        const wasExamSessionActive = sessionMode === 'exam' && academySessionId && !activeSessionEnded;
+
+        if (wasExamSessionActive) {
+            await endActiveSession(false);
+        }
+
+        sessionMode = 'practice';
+        examSubmitted = false;
+        transcriptActive = false;
+        shouldEvaluateAfterRecordingStops = false;
+        if (practiceTranscript) practiceTranscript.readOnly = false;
+        resetRecording();
+        updateModeMessaging();
+        coachSessionArea?.classList.add('d-none');
+        endSessionBtn?.classList.add('d-none');
+
+        const openSessionLink = document.getElementById('openSessionLink');
+        openSessionLink?.classList.add('d-none');
+        if (openSessionLink) openSessionLink.href = '#';
+
+        if (coachMount) {
+            coachMount.innerHTML = `
+                <div class="academy-livecoach-placeholder">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <strong>Your Speaking Session will appear here.</strong>
+                    <span>Confirm your practice setup and click “Start Practice”.</span>
+                </div>
+            `;
+        }
+
+        setStatusMessage('Practice mode is ready.');
+        setEvaluationStatus('Start a speaking session, then record your voice for pronunciation feedback.');
+        updatePracticeTimeDisplay();
+    };
+
     endSessionBtn?.addEventListener('click', () => endActiveSession(false));
     startBtn?.addEventListener('click', () => startSpeakingSession('practice'));
     showExamRulesBtn?.addEventListener('click', () => startSpeakingSession('exam'));
+    backToPracticeBtn?.addEventListener('click', () => returnToPracticeMode());
 
     let packageQty = 1;
     const updatePackageTotal = () => {
