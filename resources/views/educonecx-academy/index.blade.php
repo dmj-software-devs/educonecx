@@ -864,7 +864,7 @@
                             <p class="academy-card-subtitle mb-3">Start a guided conversation or take a formal speaking exam. Everything is timed, clean, and focused.</p>
                             <div class="academy-badge-row">
                                 <span class="academy-pill"><i class="fas fa-user-graduate"></i> Practice Sessions</span>
-                                <span class="academy-pill"><i class="fas fa-wallet"></i> ${{ number_format($practiceCreditValue, 2) }} Credits Left</span>
+                                <!-- <span class="academy-pill"><i class="fas fa-wallet"></i> ${{ number_format($practiceCreditValue, 2) }} Credits Left</span> -->
                                 <span class="academy-pill"><i class="fas fa-stopwatch"></i> {{ $practiceMinutesAvailable }} Minutes Remaining</span>
                             </div>
                         </div>
@@ -903,7 +903,7 @@
                 <article class="academy-action-card">
                     <span class="academy-action-icon"><i class="fas fa-wallet"></i></span>
                     <h3>Practice Credits Available</h3>
-                    <span class="academy-practice-time-value">$<span id="practiceCreditValueJsValue">{{ number_format($practiceCreditValue, 2) }}</span></span>
+                    <!-- <span class="academy-practice-time-value">$<span id="practiceCreditValueJsValue">{{ number_format($practiceCreditValue, 2) }}</span></span> -->
                     <p>
                         <strong><span id="practiceMinutesAvailableJsValue">{{ $practiceMinutesAvailable }}</span> Minutes Left</strong><br>
                         <!-- ${{ number_format($subscriptionIncludedPracticeCredits, 2) }} subscription credits = {{ $subscriptionIncludedPracticeMinutes }} minutes. Add-on sessions remain $10 for 30 minutes. -->
