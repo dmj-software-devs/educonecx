@@ -1889,7 +1889,7 @@
                     <h3>{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_title') }}</h3>
                     <div class="price">{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_price') }} <span>{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_price_suffix') }}</span></div>
                     <p class="description">{{ App\Helpers\TranslationHelper::trans('home.feature_card_1_desc') }}</p>
-                    <a href="{{ route('courses') }}" class="btn btn-primary">
+                    <a href="{{ Auth::check() && Auth::user()->has_active_subscription ? route('courses') : route('subscription.plans') }}" class="btn btn-primary">
                         {{ App\Helpers\TranslationHelper::trans('home.feature_card_1_btn') }} <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
@@ -1912,7 +1912,7 @@
             <div class="checkout-highlight" data-aos="fade-up" data-aos-delay="300">
                 <i class="fas fa-shopping-cart"></i>
                 <span>{{ App\Helpers\TranslationHelper::trans('home.checkout_text') }}</span>
-                <a href="{{ route('courses') }}">{{ App\Helpers\TranslationHelper::trans('home.checkout_link') }} →</a>
+                <a href="{{ Auth::check() && Auth::user()->has_active_subscription ? route('courses') : route('subscription.plans') }}">{{ App\Helpers\TranslationHelper::trans('home.checkout_link') }} →</a>
             </div>
 
             <p class="hero-text">
