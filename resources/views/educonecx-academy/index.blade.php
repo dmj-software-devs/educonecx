@@ -45,6 +45,28 @@
         background: rgba(90, 209, 228, 0.12);
     }
 
+    .academy-page.academy-exam-active {
+        background: linear-gradient(180deg, #07142f 0%, #0A1D44 34%, #f8fafc 34%, #fff 100%);
+    }
+
+    .academy-page.academy-exam-active .academy-hero {
+        background: radial-gradient(circle at top right, rgba(251, 198, 12, 0.38), transparent 30%),
+                    linear-gradient(135deg, #060d22 0%, #0A1D44 48%, #7a5b00 100%);
+        padding: 54px 0 64px;
+    }
+
+    .academy-page.academy-exam-active .academy-hero-subtitle {
+        max-width: 760px;
+    }
+
+    .academy-page.academy-exam-active .academy-main {
+        margin-top: -28px;
+    }
+
+    .academy-page.academy-exam-active [data-hide-during-exam] {
+        display: none !important;
+    }
+
     .academy-hero-content {
         position: relative;
         z-index: 1;
@@ -806,9 +828,9 @@
 <div class="academy-page">
     <section class="academy-hero">
         <div class="container academy-hero-content">
-            <div class="academy-kicker">Interactive English Speaking Practice</div>
+            <div class="academy-kicker" id="academyHeroKicker">Interactive English Speaking Practice</div>
             <h1 class="academy-hero-title">Practice Room</h1>
-            <p class="academy-hero-subtitle">Practice English in real time with your English Coach, Olivia Clarcke, then receive guided feedback on pronunciation, grammar, fluency, vocabulary, and speaking confidence.</p>
+            <p class="academy-hero-subtitle" id="academyHeroSubtitle">Practice English in real time with your English Coach, Olivia Clarcke, then receive guided feedback on pronunciation, grammar, fluency, vocabulary, and speaking confidence.</p>
             <div class="academy-badge-row">
                 <span class="academy-hero-badge"><i class="fas fa-chalkboard-teacher"></i> Olivia Clarcke</span>
                 <span class="academy-hero-badge"><i class="fas fa-microphone-alt"></i> Speaking Practice</span>
@@ -855,7 +877,7 @@
             @endphp
 
 
-            <section class="academy-card academy-intro-card" aria-labelledby="practice-area-heading">
+            <section class="academy-card academy-intro-card" aria-labelledby="practice-area-heading" data-hide-during-exam>
                 <div class="academy-card-body">
                     <div class="academy-intro-grid">
                         <div>
@@ -882,7 +904,7 @@
             </section>
 
 
-            <section class="academy-actions-grid" aria-label="Practice Room actions">
+            <section class="academy-actions-grid" aria-label="Practice Room actions" data-hide-during-exam>
                 <article class="academy-action-card" style="border-top:6px solid #2f80ed;background:linear-gradient(160deg,#eef6ff 0%,#fff 58%)">
                     <span class="academy-action-icon" style="background:#2f80ed;color:#fff"><i class="fas fa-comments"></i></span>
                     <h3>Practice Mode</h3>
@@ -896,7 +918,7 @@
                     <span class="academy-action-icon" style="background:#d4a017;color:#fff"><i class="fas fa-clipboard-check"></i></span>
                     <h3>Exam Mode</h3>
                     <p>Timed assessment with automatic scorecard.</p>
-                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" data-bs-toggle="modal" data-bs-target="#examConfirmModal" {{ ! $canStartExamSession ? 'disabled' : '' }}>
+                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" {{ ! $canStartExamSession ? 'disabled' : '' }}>
                         <i class="fas fa-award"></i> Start Exam
                     </button>
                 </article>
@@ -915,7 +937,7 @@
             </section>
 
 
-            <section class="academy-card mb-4" aria-labelledby="purchase-sessions-heading">
+            <section class="academy-card mb-4" aria-labelledby="purchase-sessions-heading" data-hide-during-exam>
                 <div class="academy-card-header"><h2 id="purchase-sessions-heading" class="academy-card-title"><i class="fas fa-shopping-bag"></i> Purchase Sessions</h2>
                 <!-- <p class="academy-card-subtitle">Practice Sessions • 1 Session = $10 / 30 Minutes</p> -->
             </div>
@@ -939,7 +961,7 @@
             </section>
 
             @if(! $isPaidMember)
-                <section class="academy-card mb-4" id="freeDemoCard">
+                <section class="academy-card mb-4" id="freeDemoCard" data-hide-during-exam>
                     <div class="academy-card-header"><h2 class="academy-card-title"><i class="fas fa-user"></i> Guided Onboarding Demo</h2></div>
                     <div class="academy-card-body">
                         <p class="mb-3"><strong>Olivia:</strong> Hello, what is your name?</p>
@@ -952,7 +974,7 @@
                 </section>
             @endif
 
-            <section class="academy-card mb-4">
+            <section class="academy-card mb-4" data-hide-during-exam>
                 <div class="academy-card-header">
                     <h2 class="academy-card-title"><i class="fas fa-chalkboard-teacher"></i> Current Coach</h2>
                     <p class="academy-card-subtitle">Meet your English Coach and prepare for a focused speaking practice session.</p>
@@ -1081,7 +1103,7 @@
 
 
             @if($practiceLessonContext)
-                <div class="practice-lesson-context">
+                <div class="practice-lesson-context" data-hide-during-exam>
                     <div class="d-flex flex-wrap justify-content-between gap-2 align-items-center">
                         <div>
                             <strong><i class="fas fa-bullseye"></i> You are practicing: {{ $practiceLessonContext->title }}</strong>
@@ -1094,7 +1116,7 @@
                 </div>
             @endif
 
-            <section class="academy-card mt-4">
+            <section class="academy-card mt-4" data-hide-during-exam>
                 <div class="academy-card-header">
                     <div>
                         <h2 class="academy-card-title"><i class="fas fa-book-open"></i> English Courses</h2>
@@ -1150,7 +1172,7 @@
                 </div>
             </section>
 
-            <section class="academy-card mt-4">
+            <section class="academy-card mt-4" data-hide-during-exam>
                 <div class="academy-card-header">
                     <div>
                         <h2 class="academy-card-title"><i class="fas fa-history"></i> Practice History</h2>
@@ -1186,24 +1208,6 @@
 
 
 
-    <div class="modal fade" id="examConfirmModal" tabindex="-1" aria-labelledby="examConfirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="examConfirmModalLabel">Are you ready to start the exam?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Olivia will supervise a formal English Speaking Exam. After your final performance review is submitted, the attempt will be locked.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn academy-btn-soft" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="startExamBtn" class="btn academy-btn-primary" data-bs-dismiss="modal">Start Exam</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
 <script>
     const missingHeyGenConfig = @json($missingHeyGenConfig ?? []);
     const currentPracticeConfig = @json($currentAvatarConfig ?? []);
@@ -1217,9 +1221,11 @@
     const isPaidMember = @json($isPaidMember ?? false);
     let practiceMinutesAvailableJs = @json($practiceMinutesAvailableJs);
 
+    const academyPage = document.querySelector('.academy-page');
+    const heroKicker = document.getElementById('academyHeroKicker');
+    const heroSubtitle = document.getElementById('academyHeroSubtitle');
     const startBtn = document.getElementById('startPracticeBtn');
     const showExamRulesBtn = document.getElementById('showExamRulesBtn');
-    const startExamBtn = document.getElementById('startExamBtn');
     const practiceMinutesAvailableJsValue = document.getElementById('practiceMinutesAvailableJsValue');
     const practiceCreditValueJsValue = document.getElementById('practiceCreditValueJsValue');
     const practiceTimeWarning = document.getElementById('practiceTimeWarning');
@@ -1681,7 +1687,14 @@
         coachPhotoWrap.innerHTML = coach.exists
             ? `<img src="${coach.url}" alt="${coach.name}, ${coach.title}" loading="lazy">`
             : '<div class="academy-coach-placeholder"><i class="fas fa-user-tie"></i></div>';
+        academyPage?.classList.toggle('academy-exam-active', isExam);
+        if (heroKicker) heroKicker.textContent = isExam ? 'Formal Speaking Assessment' : 'Interactive English Speaking Practice';
         document.querySelector('.academy-hero-title').textContent = isExam ? 'English Speaking Exam' : 'Practice Room';
+        if (heroSubtitle) {
+            heroSubtitle.textContent = isExam
+                ? 'Focus only on your timed assessment. The extra practice cards, purchases, courses, and history are hidden so the page stays clean while Olivia supervises your exam.'
+                : 'Practice English in real time with your English Coach, Olivia Clarcke, then receive guided feedback on pronunciation, grammar, fluency, vocabulary, and speaking confidence.';
+        }
         coachSessionStatus.innerHTML = isExam
             ? '<span class="academy-status-dot"></span>Start a formal English Speaking Exam with Olivia, Assessment Supervisor.'
             : '<span class="academy-status-dot"></span>Start a live speaking session with Olivia Clarcke and practice real-world English conversations.';
@@ -1800,6 +1813,10 @@
             }, 300);
         } catch (error) {
             console.error('speaking session embed error:', error);
+            if (mode === 'exam') {
+                sessionMode = 'practice';
+                updateModeMessaging();
+            }
             setStatusMessage(error.message || 'Unable to load your speaking session.', true);
             coachSessionStatus.innerHTML = '<span class="academy-status-dot"></span>Ready';
         } finally {
@@ -1846,11 +1863,7 @@
 
     endSessionBtn?.addEventListener('click', () => endActiveSession(false));
     startBtn?.addEventListener('click', () => startSpeakingSession('practice'));
-    showExamRulesBtn?.addEventListener('click', () => {
-        sessionMode = 'exam';
-        updateModeMessaging();
-    });
-    startExamBtn?.addEventListener('click', () => startSpeakingSession('exam'));
+    showExamRulesBtn?.addEventListener('click', () => startSpeakingSession('exam'));
 
     let packageQty = 1;
     const updatePackageTotal = () => {
