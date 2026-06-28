@@ -896,7 +896,7 @@
                     <span class="academy-action-icon" style="background:#d4a017;color:#fff"><i class="fas fa-clipboard-check"></i></span>
                     <h3>Exam Mode</h3>
                     <p>Timed assessment with automatic scorecard.</p>
-                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" {{ ! $canStartExamSession ? 'disabled' : '' }}>
+                    <button type="button" id="showExamRulesBtn" class="btn academy-btn-navy btn-lg" data-bs-toggle="modal" data-bs-target="#examConfirmModal" {{ ! $canStartExamSession ? 'disabled' : '' }}>
                         <i class="fas fa-award"></i> Start Exam
                     </button>
                 </article>
@@ -951,18 +951,6 @@
                     </div>
                 </section>
             @endif
-
-            <section id="examRulesArea" class="academy-exam-rules mb-4 d-none">
-                <h3>English Speaking Exam Rules</h3>
-                <ul class="mb-3">
-                    <li>This is a formal speaking assessment.</li>
-                    <li>You must complete your response before submission.</li>
-                    <li>Once submitted, you cannot retry or edit the attempt.</li>
-                    <li>Your score will be saved in your dashboard.</li>
-                    <li>Make sure your microphone works before starting.</li>
-                </ul>
-                <button type="button" id="confirmExamBtn" class="btn academy-btn-primary" data-bs-toggle="modal" data-bs-target="#examConfirmModal" {{ ! $canStartExamSession ? 'disabled' : '' }}><i class="fas fa-play"></i> Start Exam</button>
-            </section>
 
             <section class="academy-card mb-4">
                 <div class="academy-card-header">
@@ -1232,11 +1220,9 @@
     const startBtn = document.getElementById('startPracticeBtn');
     const showExamRulesBtn = document.getElementById('showExamRulesBtn');
     const startExamBtn = document.getElementById('startExamBtn');
-    const confirmExamBtn = document.getElementById('confirmExamBtn');
     const practiceMinutesAvailableJsValue = document.getElementById('practiceMinutesAvailableJsValue');
     const practiceCreditValueJsValue = document.getElementById('practiceCreditValueJsValue');
     const practiceTimeWarning = document.getElementById('practiceTimeWarning');
-    const examRulesArea = document.getElementById('examRulesArea');
     const coachPhotoWrap = document.getElementById('coachPhotoWrap');
     const coachName = document.getElementById('coachName');
     const coachTitle = document.getElementById('coachTitle');
@@ -1298,9 +1284,6 @@
         }
         if (showExamRulesBtn) {
             showExamRulesBtn.disabled = !hasPracticeConfig || !hasPracticeTimeFor('exam');
-        }
-        if (confirmExamBtn) {
-            confirmExamBtn.disabled = !hasPracticeConfig || !hasPracticeTimeFor('exam');
         }
     };
 
@@ -1866,10 +1849,6 @@
     showExamRulesBtn?.addEventListener('click', () => {
         sessionMode = 'exam';
         updateModeMessaging();
-        examRulesArea.classList.toggle('d-none');
-        if (!examRulesArea.classList.contains('d-none')) {
-            examRulesArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
     });
     startExamBtn?.addEventListener('click', () => startSpeakingSession('exam'));
 
