@@ -295,13 +295,22 @@ class Course extends Model
             return true;
         }
         
-        // Check if user is enrolled (via subscription)
-        $isEnrolled = $this->students()->where('user_id', $userId)->exists();
-        if ($isEnrolled) {
+        // Subscription enrollments only grant access until their expiry date.
+        // Non-subscription enrollments, such as free/purchased access, remain valid while active.
+        $hasCurrentEnrollment = $this->enrollments()
+            ->where('user_id', $userId)
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->where('access_type', '!=', 'subscription')
+                    ->orWhere('expiry_date', '>', now());
+            })
+            ->exists();
+
+        if ($hasCurrentEnrollment) {
             return true;
         }
         
-        // Check if user has active subscription
+        // Check if user has active subscription within the paid subscription window.
         return $this->hasSubscriptionAccess($userId);
     }
 
