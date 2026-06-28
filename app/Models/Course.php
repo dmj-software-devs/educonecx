@@ -295,15 +295,13 @@ class Course extends Model
             return true;
         }
         
-        // Subscription enrollments only grant access until their expiry date.
         // Non-subscription enrollments, such as free/purchased access, remain valid while active.
+        // Subscription-based course access must come from a currently active, paid subscription below,
+        // so cancelled/expired subscriptions cannot keep paid courses unlocked through old enrollments.
         $hasCurrentEnrollment = $this->enrollments()
             ->where('user_id', $userId)
             ->where('status', 'active')
-            ->where(function ($query) {
-                $query->where('access_type', '!=', 'subscription')
-                    ->orWhere('expiry_date', '>', now());
-            })
+            ->where('access_type', '!=', 'subscription')
             ->exists();
 
         if ($hasCurrentEnrollment) {

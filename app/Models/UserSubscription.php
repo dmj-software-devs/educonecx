@@ -141,6 +141,14 @@ class UserSubscription extends Model
             'status' => 'cancelled',
             'auto_renew' => false
         ]);
+
+        // Cancelled subscriptions should immediately remove subscription-based course access.
+        Enrollment::where('user_id', $this->user_id)
+            ->where('access_type', 'subscription')
+            ->update([
+                'status' => 'expired',
+                'expiry_date' => now()
+            ]);
     }
 
     public function renew()

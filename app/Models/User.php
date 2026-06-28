@@ -136,6 +136,8 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $this->enrollments()
+            ->where('status', 'active')
+            ->where('access_type', '!=', 'subscription')
             ->whereHas('course', fn ($query) => $query->where('is_free', false))
             ->exists();
     }
@@ -184,10 +186,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $enrolledCourseIds = $this->enrollments()
             ->where('status', 'active')
-            ->where(function ($query) {
-                $query->where('access_type', '!=', 'subscription')
-                    ->orWhere('expiry_date', '>', now());
-            })
+            ->where('access_type', '!=', 'subscription')
             ->pluck('course_id')
             ->toArray();
 
