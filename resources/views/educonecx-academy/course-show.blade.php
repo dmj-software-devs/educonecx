@@ -65,29 +65,76 @@
     .practice-course-layout {
         display: grid;
         grid-template-columns: minmax(0, 1.48fr) minmax(300px, .78fr);
+        grid-template-areas: "player lessons";
         gap: 24px;
         align-items: start;
     }
+
+    .practice-course-video-card { grid-area: player; }
+    .lesson-list-card { grid-area: lessons; }
 
     .practice-course-video-card,
     .lesson-list-card {
         padding: 22px;
     }
 
+    .current-lesson-heading {
+        background: linear-gradient(135deg, rgba(10, 29, 68, .98), rgba(24, 56, 110, .94));
+        border-radius: 18px;
+        box-shadow: 0 14px 34px rgba(10, 29, 68, .16);
+        color: #fff;
+        margin-bottom: 18px;
+        padding: 18px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .current-lesson-heading::after {
+        content: '';
+        position: absolute;
+        right: -36px;
+        top: -48px;
+        width: 150px;
+        height: 150px;
+        background: rgba(251, 198, 12, .2);
+        border-radius: 999px;
+    }
+
     .practice-card-label {
         color: #FBC60C;
-        font-size: .78rem;
-        font-weight: 900;
-        letter-spacing: .1em;
+        font-size: .76rem;
+        font-weight: 950;
+        letter-spacing: .13em;
         text-transform: uppercase;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
     }
 
     .lesson-current-title {
-        color: #0A1D44;
+        color: #fff;
         font-size: clamp(1.35rem, 3vw, 2rem);
-        font-weight: 900;
-        margin-bottom: 8px;
+        font-weight: 950;
+        line-height: 1.12;
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .current-section-chip {
+        align-items: center;
+        background: rgba(251, 198, 12, .16);
+        border: 1px solid rgba(251, 198, 12, .42);
+        border-radius: 999px;
+        color: #FDE68A;
+        display: inline-flex;
+        font-size: .78rem;
+        font-weight: 850;
+        gap: 7px;
+        margin-top: 12px;
+        padding: 7px 11px;
+        position: relative;
+        z-index: 1;
     }
 
     .lesson-current-description {
@@ -241,10 +288,27 @@
         margin-bottom: 4px;
     }
 
-    .lesson-list-meta {
+    .lesson-section-pill {
+        align-items: center;
+        background: rgba(46, 92, 97, .1);
+        border: 1px solid rgba(46, 92, 97, .18);
+        border-radius: 999px;
+        color: #2E5C61;
+        display: inline-flex;
+        font-size: .72rem;
+        font-weight: 900;
+        gap: 6px;
+        line-height: 1.2;
+        margin-top: 6px;
+        padding: 5px 8px;
+    }
+
+    .lesson-duration-meta {
         color: #6B7280;
-        font-size: .84rem;
+        display: block;
+        font-size: .8rem;
         line-height: 1.35;
+        margin-top: 6px;
     }
 
     .lesson-status-badge {
@@ -260,8 +324,13 @@
     .lesson-status-not-started { background: #eef2f7; color: #6B7280; }
 
     @media (max-width: 768px) {
-        .practice-course-page { padding: 24px 0 48px; }
-        .practice-course-layout { grid-template-columns: 1fr; }
+        .practice-course-page { padding: 18px 0 40px; }
+        .practice-course-layout {
+            grid-template-columns: 1fr;
+            grid-template-areas:
+                "lessons"
+                "player";
+        }
         .practice-course-header,
         .practice-course-video-card,
         .lesson-list-card { padding: 18px; }
@@ -269,6 +338,17 @@
         .practice-course-actions-main { flex-direction: column; }
         .practice-course-actions .btn,
         .autoplay-card { width: 100%; }
+        .current-lesson-heading {
+            border-radius: 16px;
+            margin-bottom: 14px;
+            padding: 15px;
+        }
+        .lesson-list {
+            max-height: 330px;
+        }
+        .lesson-list-card-title {
+            margin-bottom: 12px;
+        }
         .lesson-list-item { align-items: flex-start; }
     }
 </style>
@@ -300,8 +380,13 @@
 
         <div class="practice-course-layout">
             <main class="practice-course-video-card">
-                <div class="practice-card-label">Current Lesson</div>
-                <h2 class="lesson-current-title">{{ $selectedLesson->title }}</h2>
+                <div class="current-lesson-heading">
+                    <div class="practice-card-label">Current Lesson</div>
+                    <h2 class="lesson-current-title">{{ $selectedLesson->title }}</h2>
+                    @if($selectedLesson->module?->title)
+                        <div class="current-section-chip"><i class="fas fa-layer-group"></i> Section: {{ $selectedLesson->module->title }}</div>
+                    @endif
+                </div>
                 @if($selectedLesson->description)
                     <p class="lesson-current-description">{{ $selectedLesson->description }}</p>
                 @endif
@@ -367,13 +452,17 @@
                             $started = optional($progress)->watched_seconds > 0;
                             $statusClass = $completed ? 'lesson-status-completed' : ($started ? 'lesson-status-progress' : 'lesson-status-not-started');
                             $statusText = $completed ? 'Completed' : ($started ? 'In Progress' : 'Not Started');
-                            $lessonMeta = $lesson->module?->title ?: ($lesson->duration_seconds ? gmdate($lesson->duration_seconds >= 3600 ? 'H:i:s' : 'i:s', $lesson->duration_seconds) : 'Watch lesson');
+                            $lessonSection = $lesson->module?->title;
+                            $lessonDuration = $lesson->duration_seconds ? gmdate($lesson->duration_seconds >= 3600 ? 'H:i:s' : 'i:s', $lesson->duration_seconds) : 'Watch lesson';
                         @endphp
                         <a class="lesson-list-item {{ $lesson->id === $selectedLesson->id ? 'active' : '' }}" href="{{ route('practice-room.courses.show', [$course, 'lesson' => $lesson->id]) }}">
                             <span class="lesson-number">{{ $loop->iteration }}</span>
                             <span class="flex-grow-1">
                                 <span class="lesson-list-title d-block">{{ $lesson->title }}</span>
-                                <span class="lesson-list-meta d-block">{{ $lessonMeta }}</span>
+                                @if($lessonSection)
+                                    <span class="lesson-section-pill"><i class="fas fa-layer-group"></i> {{ $lessonSection }}</span>
+                                @endif
+                                <span class="lesson-duration-meta"><i class="far fa-clock"></i> {{ $lessonDuration }}</span>
                             </span>
                             <span class="text-end">
                                 <span class="lesson-status-badge {{ $statusClass }}">{{ $statusText }}</span>
