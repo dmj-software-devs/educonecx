@@ -32,7 +32,8 @@ class Order extends Model
         'billing_state',
         'billing_country',
         'billing_postal',
-        'notes'
+        'notes',
+        'specimen_request_id'
     ];
 
     protected $casts = [
@@ -74,6 +75,11 @@ class Order extends Model
         return $this->hasOne(UserSubscription::class);
     }
 
+    public function specimenRequest()
+    {
+        return $this->belongsTo(SpecimenRequest::class);
+    }
+
     // Accessors
     public function getPaymentStatusLabelAttribute()
     {
@@ -90,7 +96,8 @@ class Order extends Model
     {
         $labels = [
             'course' => 'Course Purchase',
-            'subscription' => 'Subscription'
+            'subscription' => 'Subscription',
+            'specimen_delivery' => 'Specimen Delivery'
         ];
         return $labels[$this->order_type] ?? ucfirst($this->order_type);
     }
