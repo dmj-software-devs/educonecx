@@ -36,6 +36,7 @@ class EnglishPracticeCourseController extends Controller
         $selectedLesson ??= $lessons->first(fn ($lesson) => ! optional($lesson->userProgress)->is_completed) ?: $lessons->first();
         $selectedLesson->load('userProgress');
 
+        $previousLesson = $lessons->takeUntil(fn ($lesson) => $lesson->id === $selectedLesson->id)->last();
         $nextLesson = $lessons->skipUntil(fn ($lesson) => $lesson->id === $selectedLesson->id)->skip(1)->first();
         $completedCount = $lessons->filter(fn ($lesson) => optional($lesson->userProgress)->is_completed)->count();
         $progressPercent = $lessons->count() > 0 ? round(($completedCount / $lessons->count()) * 100) : 0;
@@ -44,6 +45,7 @@ class EnglishPracticeCourseController extends Controller
             'course',
             'lessons',
             'selectedLesson',
+            'previousLesson',
             'nextLesson',
             'completedCount',
             'progressPercent'

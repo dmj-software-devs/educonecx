@@ -38,7 +38,7 @@
                         
                         <div class="subscription-notice">
                             <i class="fas fa-info-circle"></i>
-                            <span>This is a one-time payment for {{ $plan->duration_text }} of unlimited access to all paid courses.</span>
+                            <span>This is a recurring {{ $plan->duration_text }} subscription for unlimited access to all paid courses.</span>
                         </div>
                     </div>
 

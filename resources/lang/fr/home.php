@@ -16,7 +16,7 @@ return [
     // Hero Feature Cards
     'feature_card_1_title' => 'Accès à Tous les Cours',
     'feature_card_1_price' => '22$',
-    'feature_card_1_price_suffix' => 'paiement unique',
+    'feature_card_1_price_suffix' => 'par mois',
     'feature_card_1_desc' => 'Obtenez un accès illimité à notre bibliothèque complète de cours alimentés par l\'IA. Apprenez à votre rythme avec des instructeurs experts.',
     'feature_card_1_btn' => 'Obtenir l\'Accès à Tous les Cours',
     
@@ -54,7 +54,7 @@ return [
 
     // Offer Banner
     'offer_title' => 'Offre à Durée Limitée',
-    'offer_description' => 'Accès Illimité à Tous les Cours – Seulement 22$',
+    'offer_description' => 'Accès Illimité à Tous les Cours – Seulement 22$/mois',
     'offer_btn' => 'Commencer Maintenant',
 
     // Courses Section

@@ -356,15 +356,18 @@
             display: block;
         }
 
+        .navbar-brand img,
+        header .logo img,
         .logo-img {
-            height: 45px;
+            max-height: 40px;
+            height: auto;
             width: auto;
             display: block;
         }
 
         @media (max-width: 480px) {
             .logo-img {
-                height: 35px;
+                max-height: 35px;
             }
         }
 

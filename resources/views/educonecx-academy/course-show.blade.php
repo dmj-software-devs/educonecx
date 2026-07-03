@@ -74,6 +74,18 @@
         padding: 22px;
     }
 
+    .lesson-info-panel {
+        background: #ffffff;
+        border-left: 4px solid #FBC60C;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 18px;
+    }
+
+    .lesson-current-box {
+        background: #ffffff !important;
+    }
+
     .practice-card-label {
         color: #FBC60C;
         font-size: .78rem;
@@ -194,6 +206,15 @@
         padding-right: 4px;
     }
 
+    .lesson-section-header {
+        background: #0A1D44;
+        color: #FFFFFF;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font-weight: 900;
+        width: 100%;
+    }
+
     .lesson-list-item {
         display: flex;
         justify-content: space-between;
@@ -214,8 +235,14 @@
     }
 
     .lesson-list-item.active {
-        background: #F9F7E9;
-        border-color: rgba(251, 198, 12, 0.55);
+        background: #1A6FD4;
+        border-color: #1A6FD4;
+        color: #FFFFFF;
+    }
+
+    .lesson-list-item.active:hover,
+    .lesson-list-item.active .lesson-list-meta {
+        color: #FFFFFF;
     }
 
     .lesson-number {
@@ -232,7 +259,8 @@
     }
 
     .lesson-list-item.active .lesson-number {
-        background: #FBC60C;
+        background: #FFFFFF;
+        color: #1A6FD4;
     }
 
     .lesson-list-title {
@@ -255,7 +283,7 @@
         white-space: nowrap;
     }
 
-    .lesson-status-completed { background: rgba(46, 92, 97, .13); color: #2E5C61; }
+    .lesson-status-completed { background: rgba(30, 122, 64, .13); color: #1e7a40; }
     .lesson-status-progress { background: rgba(251, 198, 12, .2); color: #0A1D44; }
     .lesson-status-not-started { background: #eef2f7; color: #6B7280; }
 
@@ -265,11 +293,30 @@
         .practice-course-header,
         .practice-course-video-card,
         .lesson-list-card { padding: 18px; }
-        .practice-course-actions { flex-direction: column; align-items: stretch; }
-        .practice-course-actions-main { flex-direction: column; }
+        .practice-course-layout { display: flex; flex-direction: column; }
+        .practice-course-video-card { display: flex; flex-direction: column; }
+        .lesson-video-wrapper { order: 1; }
+        .mobile-lesson-nav { order: 2; display: flex; }
+        .practice-course-actions { order: 3; flex-direction: column; align-items: stretch; margin-top: 12px; }
+        .autoplay-card { order: 1; }
+        .practice-course-actions-main { order: 2; flex-direction: column; }
+        .lesson-list-card { order: 2; }
+        .lesson-info-panel { order: 4; margin-top: 14px; }
         .practice-course-actions .btn,
         .autoplay-card { width: 100%; }
         .lesson-list-item { align-items: flex-start; }
+    }
+
+    .mobile-lesson-nav {
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-lesson-nav { display: flex; }
     }
 </style>
 @endpush
@@ -300,12 +347,6 @@
 
         <div class="practice-course-layout">
             <main class="practice-course-video-card">
-                <div class="practice-card-label">Current Lesson</div>
-                <h2 class="lesson-current-title">{{ $selectedLesson->title }}</h2>
-                @if($selectedLesson->description)
-                    <p class="lesson-current-description">{{ $selectedLesson->description }}</p>
-                @endif
-
                 <div class="lesson-video-wrapper">
                     @if(in_array($selectedLesson->video_type, ['upload', 'url']) && $videoUrl)
                         <video
@@ -331,6 +372,20 @@
                     @endif
                 </div>
 
+                <div class="mobile-lesson-nav">
+                    @if($previousLesson)
+                        <a href="{{ route('practice-room.courses.show', [$course, 'lesson' => $previousLesson->id]) }}" class="btn btn-outline-secondary simple-btn">Previous</a>
+                    @else
+                        <span></span>
+                    @endif
+                    <strong>{{ $lessons->search(fn ($lesson) => $lesson->id === $selectedLesson->id) + 1 }} / {{ $lessons->count() }}</strong>
+                    @if($nextLesson)
+                        <a href="{{ route('practice-room.courses.show', [$course, 'lesson' => $nextLesson->id]) }}" class="btn btn-outline-secondary simple-btn">Next</a>
+                    @else
+                        <span></span>
+                    @endif
+                </div>
+
                 @if($canResume)
                     <div id="resumeMessage" class="resume-message">
                         Continue from <strong id="resumeTime"></strong>
@@ -342,9 +397,12 @@
 
                 <div class="practice-course-actions">
                     <div class="practice-course-actions-main">
+                        <!-- Practice room shortcut hidden per client request.
                         <a href="{{ route('educonecx.academy.index', ['lesson_id' => $selectedLesson->id]) }}" class="btn btn-yellow simple-btn"><i class="fas fa-microphone-alt"></i> Practice This Lesson</a>
+                        -->
+                        <button type="button" id="markCompletedBtn" class="btn btn-yellow simple-btn"><i class="fas fa-check"></i> Mark as Completed</button>
                         @if($nextLesson)
-                            <a href="{{ route('practice-room.courses.show', [$course, 'lesson' => $nextLesson->id]) }}" class="btn btn-navy simple-btn">Next Lesson</a>
+                            <a href="{{ route('practice-room.courses.show', [$course, 'lesson' => $nextLesson->id]) }}" class="btn btn-navy simple-btn d-none d-md-inline-flex">Next Lesson</a>
                         @endif
                     </div>
                     <div class="autoplay-card">
@@ -355,11 +413,20 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="lesson-info-panel lesson-current-box">
+                    <div class="practice-card-label">Current Lesson</div>
+                    <h2 class="lesson-current-title">{{ $selectedLesson->title }}</h2>
+                    @if($selectedLesson->description)
+                        <p class="lesson-current-description mb-0">{{ $selectedLesson->description }}</p>
+                    @endif
+                </div>
             </main>
 
             <aside class="lesson-list-card">
                 <h3 class="lesson-list-card-title">Lessons</h3>
                 <div class="lesson-list">
+                    @php $currentModuleKey = null; @endphp
                     @foreach($lessons as $lesson)
                         @php
                             $progress = $lesson->userProgress;
@@ -367,13 +434,21 @@
                             $started = optional($progress)->watched_seconds > 0;
                             $statusClass = $completed ? 'lesson-status-completed' : ($started ? 'lesson-status-progress' : 'lesson-status-not-started');
                             $statusText = $completed ? 'Completed' : ($started ? 'In Progress' : 'Not Started');
-                            $lessonMeta = $lesson->module?->title ?: ($lesson->duration_seconds ? gmdate($lesson->duration_seconds >= 3600 ? 'H:i:s' : 'i:s', $lesson->duration_seconds) : 'Watch lesson');
+                            $moduleKey = $lesson->module?->id ?: 'unassigned';
+                            $moduleTitle = $lesson->module?->title ?: 'Course Lessons';
+                            $lessonMeta = ($lesson->duration_seconds ?? 0) > 0 ? gmdate($lesson->duration_seconds >= 3600 ? 'H:i:s' : 'i:s', $lesson->duration_seconds) : '';
                         @endphp
+                        @if($moduleKey !== $currentModuleKey)
+                            <div class="lesson-section-header">{{ $moduleTitle }}</div>
+                            @php $currentModuleKey = $moduleKey; @endphp
+                        @endif
                         <a class="lesson-list-item {{ $lesson->id === $selectedLesson->id ? 'active' : '' }}" href="{{ route('practice-room.courses.show', [$course, 'lesson' => $lesson->id]) }}">
                             <span class="lesson-number">{{ $loop->iteration }}</span>
                             <span class="flex-grow-1">
                                 <span class="lesson-list-title d-block">{{ $lesson->title }}</span>
-                                <span class="lesson-list-meta d-block">{{ $lessonMeta }}</span>
+                                @if(($lesson->duration_seconds ?? 0) > 0)
+                                    <span class="lesson-list-meta lesson-duration d-block">{{ $lessonMeta }}</span>
+                                @endif
                             </span>
                             <span class="text-end">
                                 <span class="lesson-status-badge {{ $statusClass }}">{{ $statusText }}</span>
@@ -401,6 +476,7 @@
     const nextUrl = @json($nextLesson ? route('practice-room.courses.show', [$course, 'lesson' => $nextLesson->id]) : null);
     const autoplayToggle = document.getElementById('autoplayNext');
     const completedMessage = document.getElementById('courseCompletedMessage');
+    const markCompletedBtn = document.getElementById('markCompletedBtn');
     let lastSavedAt = 0;
 
     function formatTime(seconds) {
@@ -450,6 +526,12 @@
 
     video.addEventListener('pause', () => saveProgress(false).catch(() => {}));
     window.addEventListener('beforeunload', () => saveProgress(false, true));
+    markCompletedBtn?.addEventListener('click', async function () {
+        markCompletedBtn.disabled = true;
+        await saveProgress(true).catch(() => { markCompletedBtn.disabled = false; });
+        markCompletedBtn.innerHTML = '<i class="fas fa-check"></i> Completed';
+    });
+
     video.addEventListener('ended', async function () {
         await saveProgress(true).catch(() => {});
         if (nextUrl && autoplayToggle?.checked) {
