@@ -1,8 +1,8 @@
 @extends('layouts.main')
 
-@section('title', 'All-Access Pass - One-Time Payment for All Courses')
+@section('title', 'All-Access Pass - Monthly Access to All Courses')
 
-@section('meta_description', 'Get unlimited access to all paid courses with a single one-time payment. Lifetime access to all current and future courses.')
+@section('meta_description', 'Get unlimited access to all paid courses with a monthly subscription for current and future courses.')
 
 @push('styles')
 <style>
@@ -479,12 +479,12 @@
     <div class="container">
         <div class="all-access-content text-center" data-aos="fade-up">
             <span class="all-access-badge">
-                <i class="fas fa-crown"></i> One Payment. Lifetime Access.
+                <i class="fas fa-crown"></i> Monthly Access. Cancel Anytime.
             </span>
             <h1 class="all-access-title">All-Access Pass</h1>
             <p class="all-access-subtitle mx-auto">
-                Get unlimited access to ALL our paid courses with a single one-time payment. 
-                No subscriptions, no recurring fees — just lifetime learning.
+                Get unlimited access to ALL our paid courses for one monthly price. 
+                Your access continues while your monthly subscription is active.
             </p>
         </div>
     </div>
@@ -504,7 +504,7 @@
                         <h2 class="pricing-name">{{ $plan['name'] }}</h2>
                         <div class="pricing-price">
                             ${{ number_format($plan['price'], 2) }}
-                            <small>one-time</small>
+                            <small>/month</small>
                         </div>
                         <p class="pricing-description">{{ $plan['description'] }}</p>
                     </div>
@@ -567,8 +567,8 @@
                             <div class="benefit-icon">
                                 <i class="fas fa-infinity"></i>
                             </div>
-                            <h4 class="benefit-title">Lifetime Access</h4>
-                            <p class="benefit-text">One payment, lifetime access to all courses. No recurring fees, ever.</p>
+                            <h4 class="benefit-title">Monthly Access</h4>
+                            <p class="benefit-text">Unlimited access to all courses while your monthly subscription is active.</p>
                         </div>
                         
                         <div class="benefit-item">
@@ -626,9 +626,9 @@
                                     <td><i class="fas fa-check feature-check"></i></td>
                                 </tr>
                                 <tr>
-                                    <td class="feature-name">One-time payment</td>
+                                    <td class="feature-name">Monthly subscription</td>
                                     <td><i class="fas fa-check feature-check"></i> per course</td>
-                                    <td><i class="fas fa-check feature-check"></i> one payment</td>
+                                    <td><i class="fas fa-check feature-check"></i> monthly access</td>
                                 </tr>
                                 <tr>
                                     <td class="feature-name">Total cost for 10 courses</td>

@@ -16,7 +16,7 @@ return [
     // Hero Feature Cards
     'feature_card_1_title' => 'Access All Courses',
     'feature_card_1_price' => '$22',
-    'feature_card_1_price_suffix' => 'one-time payment',
+    'feature_card_1_price_suffix' => 'per month',
     'feature_card_1_desc' => 'Get unlimited access to our complete library of interactive courses. Learn at your own pace with expert instructors.',
     'feature_card_1_btn' => 'Get Access to All Courses',
     
@@ -54,7 +54,7 @@ return [
 
     // Offer Banner
     'offer_title' => 'Limited Time Offer',
-    'offer_description' => 'Unlimited Access To All Courses – Only $22',
+    'offer_description' => 'Unlimited Access To All Courses – Only $22/month',
     'offer_btn' => 'Get Started Now',
 
     // Courses Section
