@@ -303,6 +303,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/quizzes/{quiz}/attempt/{attempt}', [QuizController::class, 'submit'])->name('quizzes.submit');
     Route::get('/quizzes/{quiz}/results', [QuizController::class, 'results'])->name('quizzes.results');
 
+    // Specimen delivery requests and payments
+    Route::prefix('client')->name('client.')->group(function () {
+        Route::get('requests', [App\Http\Controllers\ClientSpecimenRequestController::class, 'index'])->name('requests.index');
+        Route::get('requests/payments', [App\Http\Controllers\ClientSpecimenRequestController::class, 'payments'])->name('requests.payments');
+        Route::get('requests/{request}', [App\Http\Controllers\ClientSpecimenRequestController::class, 'show'])->name('requests.show');
+        Route::get('requests/{request}/pay', [App\Http\Controllers\ClientSpecimenRequestController::class, 'pay'])->name('requests.pay');
+        Route::post('requests/{request}/checkout', [App\Http\Controllers\ClientSpecimenRequestController::class, 'checkout'])->name('requests.checkout');
+        Route::get('requests/{request}/payment/success', [App\Http\Controllers\ClientSpecimenRequestController::class, 'paymentSuccess'])->name('requests.payment.success');
+        Route::get('requests/{request}/confirm', [App\Http\Controllers\ClientSpecimenRequestController::class, 'confirm'])->name('requests.confirm');
+        Route::post('requests/{request}/confirm', [App\Http\Controllers\ClientSpecimenRequestController::class, 'submitConfirmation'])->name('requests.confirm.submit');
+    });
+
     // Wishlist Routes
     Route::post('/wishlist/{course}', [DashboardController::class, 'addToWishlist'])->name('wishlist.add');
     Route::delete('/wishlist/{course}', [DashboardController::class, 'removeFromWishlist'])->name('wishlist.remove');
@@ -447,6 +459,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('users/instructors', [App\Http\Controllers\Admin\UserController::class, 'instructors'])->name('users.instructors');
     Route::post('users/{user}/impersonate', [App\Http\Controllers\Admin\UserController::class, 'impersonate'])->name('users.impersonate');
     Route::post('users/stop-impersonating', [App\Http\Controllers\Admin\UserController::class, 'stopImpersonating'])->name('users.stop-impersonating');
+
+    // Specimen delivery payment tracking
+    Route::get('specimen-payments', [App\Http\Controllers\Admin\SpecimenPaymentController::class, 'index'])->name('specimen-payments.index');
+    Route::get('specimen-payments/{payment}', [App\Http\Controllers\Admin\SpecimenPaymentController::class, 'show'])->name('specimen-payments.show');
 
     // Orders Management
     Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'destroy']);
